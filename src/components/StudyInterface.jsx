@@ -11,10 +11,9 @@ import useGemini from '../hooks/useGemini';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import '../styles/StudyInterface.css';
-import PDFWorkerUrl from 'react-pdf/dist/pdf.worker.entry.js?url';
 
-// Use react-pdf's own worker entry — guarantees version match with react-pdf's bundled pdfjs-dist
-pdfjs.GlobalWorkerOptions.workerSrc = PDFWorkerUrl;
+// Configure PDF.js worker - use CDN with HTTPS
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 const PRESETS = [30, 50, 70];
 const SNAP_THRESHOLD = 3;
