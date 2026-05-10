@@ -12,8 +12,8 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import '../styles/StudyInterface.css';
 
-// Configure PDF.js worker - version must match react-pdf's pdfjs version
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs`;
+// Configure PDF.js worker - use version 5.4.296 to match react-pdf 10.4.1
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.4.296/build/pdf.worker.min.mjs`;
 
 const PRESETS = [30, 50, 70];
 const SNAP_THRESHOLD = 3;
