@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useSession from '../../hooks/useSession';
+import useSessionAssessment from '../../hooks/useSessionAssessment';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
+import SessionAssessment from '../../components/SessionAssessment';
 import { 
   FocusBreakdownIcon, 
   BookIcon,
@@ -33,6 +35,15 @@ const FocusBreakdown = () => {
   const [showTldr, setShowTldr] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pdfLibraryOpen, setPdfLibraryOpen] = useState(false);
+
+  const { showAssessment, handleAssessmentComplete, handleAssessmentSkip } = useSessionAssessment({
+    user,
+    sessionId,
+    activeSession,
+    messages,
+    mode: 'focus_breakdown',
+    sendMessageWithAI,
+  });
 
   const handlePDFUploaded = useCallback((fileData) => {
     console.log('[FocusBreakdown] PDF uploaded:', fileData.name);
@@ -108,6 +119,13 @@ const FocusBreakdown = () => {
 
   return (
     <div className="mode-page focus-breakdown">
+      {showAssessment && (
+        <SessionAssessment
+          mode="focus_breakdown"
+          onComplete={handleAssessmentComplete}
+          onSkip={handleAssessmentSkip}
+        />
+      )}
       <div className="mode-content">
         <div className="chat-section">
           {!activeSession ? (

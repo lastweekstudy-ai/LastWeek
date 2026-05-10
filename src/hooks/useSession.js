@@ -44,11 +44,22 @@ const useSession = () => {
 
     const messageToSave = userDisplayMessage || aiContextMessage;
 
-    // Build system prompt for current mode
+    // Load session context for student profile injection
+    let sessionCtx = null;
+    try {
+      const { getSessionContext } = await import('../appwrite/sessionContext');
+      sessionCtx = await getSessionContext(activeSession.$id, activeSession.userId);
+    } catch (e) {
+      // Non-fatal — fall back to default depth
+      console.warn('[useSession] Could not load session context for prompt:', e.message);
+    }
+
+    // Build system prompt for current mode — now includes student profile
     const systemPrompt = getPromptForMode(
       activeSession.mode, 
       activeSession.subject, 
-      persona
+      persona,
+      sessionCtx
     );
 
     // ── ROUTING ──────────────────────────────────────────────────────────────

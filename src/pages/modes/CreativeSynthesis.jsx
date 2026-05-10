@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useSession from '../../hooks/useSession';
+import useSessionAssessment from '../../hooks/useSessionAssessment';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
+import SessionAssessment from '../../components/SessionAssessment';
 import { 
   CreativeSynthesisIcon, 
   BookIcon,
@@ -29,10 +31,19 @@ const CreativeSynthesis = () => {
     switchMode 
   } = useSession();
 
-  const [currentMode, setCurrentMode] = useState('mindmap'); // mindmap, storyteller, projects
+  const [currentMode, setCurrentMode] = useState('mindmap');
   const [userNotes, setUserNotes] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pdfLibraryOpen, setPdfLibraryOpen] = useState(false);
+
+  const { showAssessment, handleAssessmentComplete, handleAssessmentSkip } = useSessionAssessment({
+    user,
+    sessionId,
+    activeSession,
+    messages,
+    mode: 'creative_synthesis',
+    sendMessageWithAI,
+  });
 
   const handlePDFUploaded = useCallback((fileData) => {
     console.log('[CreativeSynthesis] PDF uploaded:', fileData.name);
@@ -136,6 +147,13 @@ const CreativeSynthesis = () => {
 
   return (
     <div className="mode-page creative-synthesis">
+      {showAssessment && (
+        <SessionAssessment
+          mode="creative_synthesis"
+          onComplete={handleAssessmentComplete}
+          onSkip={handleAssessmentSkip}
+        />
+      )}
       <div className="mode-content">
         <div className="chat-section">
           {!activeSession ? (

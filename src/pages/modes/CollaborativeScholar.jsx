@@ -2,8 +2,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useSession from '../../hooks/useSession';
+import useSessionAssessment from '../../hooks/useSessionAssessment';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
+import SessionAssessment from '../../components/SessionAssessment';
 import { 
   CollaborativeScholarIcon, 
   UserIcon,
@@ -30,10 +32,19 @@ const CollaborativeScholar = () => {
   } = useSession();
 
   const [selectedPersona, setSelectedPersona] = useState('Einstein');
-  const [currentMode, setCurrentMode] = useState('talk'); // talk, debate, review
+  const [currentMode, setCurrentMode] = useState('talk');
   const [essayContent, setEssayContent] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pdfLibraryOpen, setPdfLibraryOpen] = useState(false);
+
+  const { showAssessment, handleAssessmentComplete, handleAssessmentSkip } = useSessionAssessment({
+    user,
+    sessionId,
+    activeSession,
+    messages,
+    mode: 'collaborative_scholar',
+    sendMessageWithAI,
+  });
 
   const handlePDFUploaded = useCallback((fileData) => {
     console.log('[CollaborativeScholar] PDF uploaded:', fileData.name);
@@ -111,6 +122,13 @@ const CollaborativeScholar = () => {
 
   return (
     <div className="mode-page collaborative-scholar">
+      {showAssessment && (
+        <SessionAssessment
+          mode="collaborative_scholar"
+          onComplete={handleAssessmentComplete}
+          onSkip={handleAssessmentSkip}
+        />
+      )}
       <div className="mode-content">
         <div className="chat-section">
           {!activeSession ? (

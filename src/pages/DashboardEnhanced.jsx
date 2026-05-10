@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getUserSessions, getDueFlashcards, deleteSession } from '../appwrite/database';
+import { getUserSessions, getDueFlashcards, getUserFlashcards, getUserStorageUsage, deleteSession } from '../appwrite/database';
 import StorageIndicator from '../components/StorageIndicator';
 import SessionActions from '../components/SessionActions';
 import SessionSearch from '../components/SessionSearch';
@@ -36,6 +36,8 @@ const DashboardEnhanced = () => {
   const [sessions, setSessions] = useState([]);
   const [filteredSessions, setFilteredSessions] = useState([]);
   const [dueFlashcards, setDueFlashcards] = useState([]);
+  const [allFlashcards, setAllFlashcards] = useState([]);
+  const [totalMessages, setTotalMessages] = useState(0);
   const [selectedSessions, setSelectedSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -65,9 +67,16 @@ const DashboardEnhanced = () => {
       setSessions(userSessions);
       setFilteredSessions(userSessions);
       
-      getDueFlashcards(user.$id)
-        .then(flashcards => setDueFlashcards(flashcards))
-        .catch(err => console.error('Failed to load flashcards:', err));
+      // Load flashcards and message counts in parallel
+      const [dueCards, allCards, storageUsage] = await Promise.allSettled([
+        getDueFlashcards(user.$id),
+        getUserFlashcards(user.$id),
+        getUserStorageUsage(user.$id),
+      ]);
+
+      if (dueCards.status === 'fulfilled') setDueFlashcards(dueCards.value);
+      if (allCards.status === 'fulfilled') setAllFlashcards(allCards.value);
+      if (storageUsage.status === 'fulfilled') setTotalMessages(storageUsage.value.totalMessages || 0);
         
     } catch (err) {
       setError('Failed to load dashboard data');
@@ -222,7 +231,7 @@ const DashboardEnhanced = () => {
         )}
 
         {showStats && (
-          <StudyStatistics sessions={sessions} flashcards={dueFlashcards} />
+          <StudyStatistics sessions={sessions} flashcards={allFlashcards} dueFlashcards={dueFlashcards} totalMessages={totalMessages} />
         )}
 
         {dueFlashcards.length > 0 && (

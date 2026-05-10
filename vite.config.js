@@ -15,8 +15,5 @@ export default defineConfig({
         /pdf\.worker/
       ]
     }
-  },
-  optimizeDeps: {
-    exclude: ['pdfjs-dist']
   }
 })

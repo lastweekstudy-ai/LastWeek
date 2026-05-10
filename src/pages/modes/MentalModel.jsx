@@ -2,8 +2,11 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useSession from '../../hooks/useSession';
+import useSessionAssessment from '../../hooks/useSessionAssessment';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
+import SessionAssessment from '../../components/SessionAssessment';
+import { getSessionContext } from '../../appwrite/sessionContext';
 import { 
   MentalModelIcon, 
   BookIcon,
@@ -34,10 +37,16 @@ const MentalModel = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pdfLibraryOpen, setPdfLibraryOpen] = useState(false);
 
-  // NEW: Handle PDF upload - automatically open PDF library
+  const { showAssessment, handleAssessmentComplete, handleAssessmentSkip } = useSessionAssessment({
+    user,
+    sessionId,
+    activeSession,
+    messages,
+    mode: 'mental_model',
+    sendMessageWithAI,
+  });
+
   const handlePDFUploaded = useCallback((fileData) => {
-    console.log('[MentalModel] PDF uploaded:', fileData.name);
-    // Automatically open PDF library after upload
     setPdfLibraryOpen(true);
   }, []);
 
@@ -130,6 +139,15 @@ const MentalModel = () => {
 
   return (
     <div className="mode-page mental-model">
+      {/* Show assessment overlay if needed */}
+      {showAssessment && (
+        <SessionAssessment
+          mode="mental_model"
+          onComplete={handleAssessmentComplete}
+          onSkip={handleAssessmentSkip}
+        />
+      )}
+      
       <div className="mode-content">
         <div className="chat-section">
           {!activeSession ? (
