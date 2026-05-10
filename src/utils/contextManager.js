@@ -286,9 +286,7 @@ export function buildContextMessages(
 
   // ── Step 9: Log evictions ─────────────────────────────────────────────────
   if (evictedCount > 0) {
-    console.log(
-      `[contextManager] Evicted ${evictedCount} messages. Token estimate: ${tokenEstimate}`
-    );
+    // Silent eviction — no logging needed in production
   }
 
   return {

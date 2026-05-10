@@ -212,19 +212,15 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
 
   const toggleBookmark = async () => {
     const isBookmarked = bookmarks.some(b => b.page === pageNumber);
-    console.log('Toggle bookmark - Current page:', pageNumber, 'Is bookmarked:', isBookmarked);
-
     try {
       if (isBookmarked) {
         await removePDFBookmark(pdfResource.$id, pageNumber);
         setBookmarks(bookmarks.filter(b => b.page !== pageNumber));
-        console.log('Bookmark removed');
       } else {
         const title = `Page ${pageNumber}`;
         await addPDFBookmark(pdfResource.$id, pageNumber, title);
         const newBookmark = { page: pageNumber, title, timestamp: new Date().toISOString() };
         setBookmarks([...bookmarks, newBookmark]);
-        console.log('Bookmark added:', newBookmark);
       }
     } catch (error) {
       console.error('Failed to toggle bookmark:', error);
@@ -238,7 +234,6 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
     requestAnimationFrame(() => {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0 || !selection.toString().trim()) {
-        console.log('[saveHighlight] No text selected');
         return;
       }
 

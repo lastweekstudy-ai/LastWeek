@@ -34,7 +34,6 @@ export const useDualAI = () => {
     try {
       // Stage 1: Gemini analyzes the PDF for visual content
       setStage('gemini-visual-analysis');
-      console.log('[Dual-AI] Stage 1: Gemini analyzing visuals...');
       
       const geminiPrompt = `Analyze this PDF content and identify ALL visual elements (charts, tables, graphs, diagrams, images).
 
@@ -61,12 +60,7 @@ If there are NO visual elements, respond with: "NO_VISUALS_FOUND"
 Be thorough - extract every chart, table, graph, and diagram you can identify.`;
 
       const geminiAnalysis = await processDocument(extractedText, geminiPrompt);
-      console.log('[Dual-AI] Gemini visual analysis complete');
 
-      // Stage 2: Gemini breaks down visuals for DeepSeek
-      setStage('gemini-breakdown');
-      console.log('[Dual-AI] Stage 2: Gemini breaking down visuals for DeepSeek...');
-      
       let visualBreakdown = '';
       if (!geminiAnalysis.includes('NO_VISUALS_FOUND')) {
         const breakdownPrompt = `You previously identified visual elements in a PDF. Now convert them into a format that a text-only AI can understand and work with.
@@ -83,14 +77,12 @@ Create a detailed text breakdown that includes:
 Make it so detailed that someone who cannot see the visuals can fully understand the data.`;
 
         visualBreakdown = await processDocument(geminiAnalysis, breakdownPrompt);
-        console.log('[Dual-AI] Gemini breakdown complete');
       } else {
         visualBreakdown = 'This PDF contains primarily text content without complex visual elements.';
       }
 
       // Stage 3: DeepSeek analyzes and formulates response
       setStage('deepseek-analysis');
-      console.log('[Dual-AI] Stage 3: DeepSeek analyzing content...');
       
       const deepseekSystemPrompt = `You are an expert tutor in ${subject} using ${studyMode} mode.
 
@@ -117,13 +109,8 @@ Now provide your analysis and help the student learn this content effectively.`;
       const deepseekResponse = await askDeepSeek(deepseekSystemPrompt, [
         { role: 'user', content: 'Please analyze this PDF content and help me understand it.' }
       ]);
-      
-      console.log('[Dual-AI] DeepSeek analysis complete');
 
-      // Stage 4: Combine insights
       setStage('combining');
-      console.log('[Dual-AI] Stage 4: Combining AI insights...');
-      
       const combinedResponse = `${deepseekResponse}`;
 
       return combinedResponse;
@@ -150,7 +137,6 @@ Now provide your analysis and help the student learn this content effectively.`;
     try {
       // Stage 1: Gemini analyzes the image
       setStage('gemini-image-analysis');
-      console.log('[Dual-AI] Gemini analyzing image...');
       
       const geminiPrompt = `Analyze this image in detail. Identify:
 1. Any charts, graphs, or data visualizations
@@ -163,11 +149,8 @@ Now provide your analysis and help the student learn this content effectively.`;
 Extract ALL data points, labels, and values. Describe relationships and patterns.`;
 
       const geminiAnalysis = await processImage(imageBase64, geminiPrompt);
-      console.log('[Dual-AI] Gemini image analysis complete');
 
-      // Stage 2: DeepSeek provides educational insights
       setStage('deepseek-analysis');
-      console.log('[Dual-AI] DeepSeek analyzing content...');
       
       const deepseekSystemPrompt = `You are an expert tutor in ${subject} using ${studyMode} mode.
 
@@ -184,8 +167,6 @@ Your job is to:
       const deepseekResponse = await askDeepSeek(deepseekSystemPrompt, [
         { role: 'user', content: 'Please help me understand this image content.' }
       ]);
-      
-      console.log('[Dual-AI] DeepSeek analysis complete');
 
       const combinedResponse = `${deepseekResponse}`;
 

@@ -5,22 +5,15 @@ import '../styles/SessionAssessment.css';
 const SessionAssessment = ({ mode, onComplete, onSkip }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState({});
-  const [customInput, setCustomInput] = useState('');
-  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [freeText, setFreeText] = useState(''); // always-visible free text field
 
-  // Mode-specific questions
   const questions = getQuestionsForMode(mode);
 
   const handleOptionClick = (questionKey, value) => {
-    const newResponses = {
-      ...responses,
-      [questionKey]: value
-    };
+    const newResponses = { ...responses, [questionKey]: value };
     setResponses(newResponses);
-    setShowCustomInput(false);
-    setCustomInput('');
+    setFreeText('');
 
-    // Auto-advance to next question
     setTimeout(() => {
       if (currentQuestion < questions.length - 1) {
         setCurrentQuestion(currentQuestion + 1);
@@ -30,13 +23,14 @@ const SessionAssessment = ({ mode, onComplete, onSkip }) => {
     }, 300);
   };
 
-  const handleCustomSubmit = (questionKey) => {
-    if (customInput.trim()) {
-      handleOptionClick(questionKey, customInput.trim());
-    }
+  const handleFreeTextSubmit = (questionKey) => {
+    const val = freeText.trim();
+    if (!val) return;
+    handleOptionClick(questionKey, val);
   };
 
   const handleSkip = () => {
+    setFreeText('');
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
@@ -65,6 +59,7 @@ const SessionAssessment = ({ mode, onComplete, onSkip }) => {
           <h3>{question.question}</h3>
           {question.subtitle && <p className="question-subtitle">{question.subtitle}</p>}
 
+          {/* Clickable options */}
           <div className="assessment-options">
             {question.options.map((option, index) => (
               <button
@@ -84,45 +79,30 @@ const SessionAssessment = ({ mode, onComplete, onSkip }) => {
                 )}
               </button>
             ))}
+          </div>
 
-            {question.allowCustom && (
-              <div className="custom-option">
-                {!showCustomInput ? (
-                  <button
-                    className="option-btn custom-trigger"
-                    onClick={() => setShowCustomInput(true)}
-                  >
-                    <span className="option-icon">✏️</span>
-                    <div className="option-content">
-                      <div className="option-label">Other (specify)</div>
-                    </div>
-                  </button>
-                ) : (
-                  <div className="custom-input-container">
-                    <input
-                      type="text"
-                      className="custom-input"
-                      placeholder="Type your answer..."
-                      value={customInput}
-                      onChange={(e) => setCustomInput(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          handleCustomSubmit(question.key);
-                        }
-                      }}
-                      autoFocus
-                    />
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => handleCustomSubmit(question.key)}
-                      disabled={!customInput.trim()}
-                    >
-                      Submit
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
+          {/* Always-visible free text field */}
+          <div className="free-text-section">
+            <p className="free-text-label">Or describe in your own words:</p>
+            <div className="free-text-row">
+              <input
+                type="text"
+                className="custom-input"
+                placeholder="Type anything on your mind…"
+                value={freeText}
+                onChange={(e) => setFreeText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleFreeTextSubmit(question.key);
+                }}
+              />
+              <button
+                className="btn btn-primary btn-sm"
+                onClick={() => handleFreeTextSubmit(question.key)}
+                disabled={!freeText.trim()}
+              >
+                →
+              </button>
+            </div>
           </div>
 
           <div className="assessment-actions">
@@ -132,7 +112,7 @@ const SessionAssessment = ({ mode, onComplete, onSkip }) => {
             {currentQuestion > 0 && (
               <button
                 className="btn btn-secondary"
-                onClick={() => setCurrentQuestion(currentQuestion - 1)}
+                onClick={() => { setFreeText(''); setCurrentQuestion(currentQuestion - 1); }}
               >
                 ← Back
               </button>

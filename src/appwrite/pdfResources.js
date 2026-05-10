@@ -48,7 +48,6 @@ export const getSessionPDFs = async (sessionId) => {
         Query.limit(100) // Ensure we get all resources
       ]
     );
-    console.log(`Found ${pdfs.documents.length} resources for session ${sessionId}`);
     return pdfs.documents;
   } catch (error) {
     console.error('Failed to get session resources:', error);
@@ -197,26 +196,15 @@ export const updatePDFCategory = async (pdfId, category) => {
 // Add bookmark to PDF
 export const addPDFBookmark = async (pdfId, page, title) => {
   try {
-    console.log('[addPDFBookmark] Starting - pdfId:', pdfId, 'page:', page);
-    
-    // Get current PDF
     const pdf = await getPDFResource(pdfId);
-    console.log('[addPDFBookmark] Got PDF resource:', pdf.$id);
-    
-    // Parse existing bookmarks
     const bookmarks = JSON.parse(pdf.bookmarks || '[]');
-    console.log('[addPDFBookmark] Existing bookmarks:', bookmarks.length);
     
-    // Add new bookmark
     bookmarks.push({
       page,
       title,
       timestamp: new Date().toISOString()
     });
     
-    console.log('[addPDFBookmark] Updating with', bookmarks.length, 'bookmarks');
-    
-    // Update PDF
     const updated = await databases.updateDocument(
       DATABASE_ID,
       PDF_RESOURCES_COLLECTION_ID,
@@ -227,11 +215,9 @@ export const addPDFBookmark = async (pdfId, page, title) => {
       }
     );
     
-    console.log('[addPDFBookmark] Successfully saved bookmark');
     return updated;
   } catch (error) {
-    console.error('[addPDFBookmark] Failed:', error);
-    console.error('[addPDFBookmark] Error details:', error.message, error.code, error.response);
+    console.error('[addPDFBookmark] Failed:', error.message);
     throw new Error(`Failed to add PDF bookmark: ${error.message}`);
   }
 };

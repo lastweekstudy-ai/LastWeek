@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useSession from '../../hooks/useSession';
 import useSessionAssessment from '../../hooks/useSessionAssessment';
+import useSessionSummary from '../../hooks/useSessionSummary';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
 import SessionAssessment from '../../components/SessionAssessment';
@@ -28,7 +29,8 @@ const CreativeSynthesis = () => {
     error, 
     loadSession, 
     sendMessageWithAI,
-    switchMode 
+    switchMode,
+    generateAndSaveSummary
   } = useSession();
 
   const [currentMode, setCurrentMode] = useState('mindmap');
@@ -37,16 +39,12 @@ const CreativeSynthesis = () => {
   const [pdfLibraryOpen, setPdfLibraryOpen] = useState(false);
 
   const { showAssessment, handleAssessmentComplete, handleAssessmentSkip } = useSessionAssessment({
-    user,
-    sessionId,
-    activeSession,
-    messages,
-    mode: 'creative_synthesis',
-    sendMessageWithAI,
+    user, sessionId, activeSession, messages, mode: 'creative_synthesis', sendMessageWithAI,
   });
 
+  useSessionSummary({ messages, generateAndSaveSummary });
+
   const handlePDFUploaded = useCallback((fileData) => {
-    console.log('[CreativeSynthesis] PDF uploaded:', fileData.name);
     setPdfLibraryOpen(true);
   }, []);
 

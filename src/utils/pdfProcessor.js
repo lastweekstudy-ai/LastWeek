@@ -5,16 +5,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.4.296/b
 
 export const extractTextFromPDF = async (file) => {
   try {
-    console.log('Starting PDF text extraction for:', file.name, 'Size:', file.size);
-    
-    // Convert file to array buffer
     const arrayBuffer = await file.arrayBuffer();
-    console.log('PDF converted to array buffer, size:', arrayBuffer.byteLength);
     
-    // Load the PDF document with timeout
     const loadingTask = pdfjsLib.getDocument({ 
       data: arrayBuffer,
-      verbosity: 0 // Reduce console noise
+      verbosity: 0
     });
     
     const pdf = await Promise.race([
@@ -24,12 +19,9 @@ export const extractTextFromPDF = async (file) => {
       )
     ]);
     
-    console.log('PDF loaded successfully, pages:', pdf.numPages);
-    
     let fullText = '';
-    const maxPages = pdf.numPages; // Extract ALL pages for accuracy
+    const maxPages = pdf.numPages;
     
-    // Extract text from each page with line-by-line precision
     for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
       try {
         const page = await pdf.getPage(pageNum);
@@ -78,7 +70,6 @@ export const extractTextFromPDF = async (file) => {
         
         if (pageText) {
           fullText += `\n\n=== PAGE ${pageNum} ===\n${pageText}\n=== END PAGE ${pageNum} ===`;
-          console.log(`Page ${pageNum} extracted: ${lines.length} lines, ${pageText.length} chars`);
         }
       } catch (pageError) {
         console.error(`Error processing page ${pageNum}:`, pageError);
@@ -91,12 +82,6 @@ export const extractTextFromPDF = async (file) => {
     if (cleanText.length < 100) {
       throw new Error('PDF appears to contain mostly images or unreadable text. Please try a text-based PDF or copy the content manually.');
     }
-    
-    console.log('PDF text extraction completed:', {
-      totalPages: pdf.numPages,
-      totalLength: fullText.length,
-      preview: fullText.substring(0, 500)
-    });
     
     return fullText.trim();
   } catch (error) {

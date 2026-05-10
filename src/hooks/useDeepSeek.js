@@ -49,8 +49,7 @@ const useDeepSeek = () => {
                             err.name === 'AbortError';
       
       if (isNetworkError && retryCount < 2) {
-        console.log(`Retrying request (attempt ${retryCount + 1}/2)...`);
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+        await new Promise(resolve => setTimeout(resolve, 2000));
         return makeRequest(systemPrompt, messagesHistory, retryCount + 1);
       }
       
@@ -176,7 +175,6 @@ const useDeepSeek = () => {
         err.name === 'AbortError';
 
       if (isNetworkError && retryCount < 2) {
-        console.log(`[askStream] Retrying stream (attempt ${retryCount + 1}/2)...`);
         await new Promise(resolve => setTimeout(resolve, 2000));
         return askStream(systemPrompt, messagesHistory, onChunk, retryCount + 1);
       }

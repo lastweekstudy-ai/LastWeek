@@ -3,10 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useSession from '../../hooks/useSession';
 import useSessionAssessment from '../../hooks/useSessionAssessment';
+import useSessionSummary from '../../hooks/useSessionSummary';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
 import SessionAssessment from '../../components/SessionAssessment';
-import { getSessionContext } from '../../appwrite/sessionContext';
 import { 
   MentalModelIcon, 
   BookIcon,
@@ -30,7 +30,8 @@ const MentalModel = () => {
     error, 
     loadSession, 
     sendMessageWithAI,
-    switchMode 
+    switchMode,
+    generateAndSaveSummary
   } = useSession();
 
   const [analogiesUsed, setAnalogiesUsed] = useState([]);
@@ -46,6 +47,8 @@ const MentalModel = () => {
     sendMessageWithAI,
   });
 
+  useSessionSummary({ messages, generateAndSaveSummary });
+
   const handlePDFUploaded = useCallback((fileData) => {
     setPdfLibraryOpen(true);
   }, []);
@@ -58,14 +61,10 @@ const MentalModel = () => {
 
     // Don't reload if session is already loaded with messages
     if (sessionId && sessionId !== 'new' && (!activeSession || activeSession.$id !== sessionId)) {
-      console.log('MentalModel: Loading session', sessionId);
       loadSession(sessionId).catch(error => {
         console.error('Failed to load session:', error);
-        alert('Failed to load session: ' + error.message);
         navigate('/dashboard');
       });
-    } else if (activeSession && messages.length > 0) {
-      console.log('MentalModel: Session already loaded with', messages.length, 'messages');
     }
   }, [user, sessionId, navigate, activeSession, loadSession, messages.length]);
 
@@ -99,22 +98,11 @@ const MentalModel = () => {
   }, [messages]);
 
   const handleSendMessage = async (userMessage, aiContextMessage = null, fileAttachment = null) => {
-    console.log('[MentalModel] handleSendMessage called:', {
-      userMessage,
-      hasAiContext: !!aiContextMessage,
-      aiContextLength: aiContextMessage?.length || 0,
-      hasFileAttachment: !!fileAttachment
-    });
-
     try {
       const messageForAI = aiContextMessage || userMessage;
-      console.log('[MentalModel] Calling sendMessageWithAI with message length:', messageForAI.length);
       await sendMessageWithAI(messageForAI, null, userMessage, fileAttachment || undefined);
-      console.log('[MentalModel] sendMessageWithAI completed successfully');
     } catch (err) {
       console.error('[MentalModel] Failed to send message:', err);
-      // Error is already set in sessionContext.error — it will display in the UI
-      // No alert needed; the error banner at the bottom of the page will show it
     }
   };
 

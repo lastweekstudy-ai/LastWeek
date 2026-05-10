@@ -1,0 +1,280 @@
+/* ── Navbar trigger button ────────────────────────────────────────────────── */
+.pomo-fab {
+  position: relative;
+  height: 34px;
+  padding: 0 0.625rem;
+  border-radius: 8px;
+  background: var(--color-bg-tertiary);
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.pomo-fab:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+.pomo-fab.running {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  color: var(--color-accent);
+}
+
+.pomo-fab-emoji {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.pomo-fab-idle {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
+}
+
+.pomo-fab-countdown {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Running indicator dot */
+.pomo-fab-dot {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 1px solid var(--color-bg-secondary);
+  animation: pomo-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes pomo-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}
+
+/* ── Dropdown panel — fixed to viewport, always visible ──────────────────── */
+.pomo-wrapper {
+  position: relative;
+}
+
+.pomo-panel {
+  position: fixed;   /* ← fixed, not absolute — stays anchored to button regardless of scroll */
+  z-index: 9999;
+  width: 260px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  animation: pomo-drop 0.18s ease;
+}
+
+@keyframes pomo-drop {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.pomo-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pomo-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  flex: 1;
+}
+
+.pomo-sessions {
+  display: flex;
+  gap: 4px;
+}
+
+.pomo-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-border);
+  transition: background 0.2s;
+}
+
+.pomo-dot.filled {
+  background: var(--color-accent);
+}
+
+.pomo-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+  font-family: inherit;
+  line-height: 1;
+}
+
+.pomo-close:hover { color: var(--color-text-primary); }
+
+/* ── Mode tabs ────────────────────────────────────────────────────────────── */
+.pomo-tabs {
+  display: flex;
+  gap: 3px;
+  background: var(--color-bg-tertiary);
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.pomo-tab {
+  flex: 1;
+  padding: 0.3rem 0.2rem;
+  border-radius: 6px;
+  border: 1.5px solid transparent;
+  background: none;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.pomo-tab:hover { color: var(--color-text-primary); }
+
+.pomo-tab.active {
+  background: var(--color-bg-secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ── Circle ───────────────────────────────────────────────────────────────── */
+.pomo-circle-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.pomo-time {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.pomo-digits {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.pomo-mode-label {
+  font-size: 0.6rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Controls ─────────────────────────────────────────────────────────────── */
+.pomo-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.pomo-btn-primary {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s, transform 0.1s;
+  box-shadow: var(--shadow-md);
+}
+
+.pomo-btn-primary:hover {
+  opacity: 0.9;
+  transform: scale(1.05);
+}
+
+.pomo-btn-secondary {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.pomo-btn-secondary:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ── Session count ────────────────────────────────────────────────────────── */
+.pomo-session-count {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* ── Guard notices ────────────────────────────────────────────────────────── */
+.pomo-guard-notice {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  border-radius: 6px;
+  padding: 0.4rem 0.5rem;
+  margin: 0;
+}
+
+.pomo-break-notice {
+  color: var(--color-success);
+  background: color-mix(in srgb, var(--color-success) 8%, transparent);
+}
+
+/* ── Mobile ───────────────────────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .pomo-panel {
+    right: -60px;
+    width: 240px;
+  }
+}

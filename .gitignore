@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Appwrite function environment files (contain secrets)
+appwrite-functions/**/.env

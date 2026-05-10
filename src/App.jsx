@@ -6,7 +6,6 @@ import { ThemeProvider, useTheme } from './context/ThemeContext';
 import useSession from './hooks/useSession';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import Navbar from './components/Navbar';
-import DebugInfo from './components/DebugInfo';
 import ErrorBoundary from './components/ErrorBoundary';
 import Landing from './pages/Landing';
 import Auth from './pages/Auth';
@@ -19,8 +18,9 @@ import ActiveRecall from './pages/modes/ActiveRecall';
 import FocusBreakdown from './pages/modes/FocusBreakdown';
 import CollaborativeScholar from './pages/modes/CollaborativeScholar';
 import CreativeSynthesis from './pages/modes/CreativeSynthesis';
+import ExamPlanner from './pages/ExamPlanner';
+import ExamSession from './pages/ExamSession';
 import './styles/global.css';
-import './styles/Navbar.css';
 import './styles/ModePage.css';
 import './styles/ErrorBoundary.css';
 import './styles/MessageFormatter.css';
@@ -110,7 +110,6 @@ function App() {
           <SessionProvider>
             <Router>
               <div className="app">
-                <DebugInfo />
                 <Routes>
               {/* Public routes */}
               <Route path="/" element={<Landing />} />
@@ -155,6 +154,25 @@ function App() {
                     <PDFManager />
                   </ProtectedRoute>
                 } 
+              />
+
+              <Route
+                path="/exam-planner"
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <ExamPlanner />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/exam-session/:planId/:topicIndex"
+                element={
+                  <ProtectedRoute>
+                    <ExamSession />
+                  </ProtectedRoute>
+                }
               />
               
               {/* Session routes */}

@@ -5,6 +5,7 @@ import StorageIndicator from './StorageIndicator';
 import ThemeToggle from './ThemeToggle';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import ProfileDropdown from './ProfileDropdown';
+import PomodoroTimer from './PomodoroTimer';
 import { 
   HomeIcon,
   MentalModelIcon,
@@ -16,6 +17,7 @@ import {
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { useAuth } from '../context/AuthContext';
 import '../styles/StorageIndicator.css';
+import '../styles/Navbar.css';
 
 const Navbar = ({ 
   isSessionPage = false
@@ -133,6 +135,30 @@ const Navbar = ({
                 {/* Common actions */}
                 {!isOnSessionPage && <StorageIndicator userId={user.$id} className="compact" lazy={true} />}
                 
+                {!isOnSessionPage && (
+                  <button
+                    className="btn btn-ghost"
+                    onClick={() => navigate('/exam-planner')}
+                    title="Exam Planner"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      fontSize: '0.875rem',
+                      fontWeight: 600,
+                      color: location.pathname === '/exam-planner' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Exam Planner
+                  </button>
+                )}
+                
                 <button
                   className="btn btn-ghost btn-icon"
                   onClick={() => setShowShortcuts(true)}
@@ -146,6 +172,9 @@ const Navbar = ({
                 </button>
                 
                 <ThemeToggle />
+                
+                {/* Pomodoro — only on session pages (passed explicitly via isSessionPage prop) */}
+                {isSessionPage && <PomodoroTimer />}
                 
                 <ProfileDropdown />
               </div>

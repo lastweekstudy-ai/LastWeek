@@ -40,17 +40,11 @@ const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessio
         let extractedContent = null;
         
         if (fileType === 'application/pdf') {
-          // Extract text from PDF — DeepSeek handles analysis directly via useSession.
-          // Gemini is NOT called here: it times out on large PDFs and the text
-          // extraction already gives DeepSeek everything it needs.
           try {
-            console.log('Processing PDF:', file.name, 'Size:', file.size);
-            
             if (!isPDFProcessable(file)) {
               throw new Error('PDF is too large or not processable');
             }
             
-            console.log('Starting PDF text extraction...');
             const arrayBuffer = await file.arrayBuffer();
             const pdfText = await extractText(arrayBuffer, {
               processImage,
@@ -59,14 +53,12 @@ const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessio
               }
             });
             setProgressText('');
-            console.log('PDF text extracted, length:', pdfText.length);
             
             if (!pdfText || pdfText.length < 50) {
               throw new Error('No readable text found in PDF');
             }
             
             extractedContent = pdfText;
-            console.log('PDF ready for DeepSeek analysis');
           } catch (pdfError) {
             setProgressText('');
             console.error('PDF processing failed:', pdfError);
@@ -83,10 +75,8 @@ To proceed with studying this content, please:
 If this PDF contains mainly images, diagrams, or charts, please describe what you see and I'll help you understand the concepts.`;
           }
         } else if (fileType.startsWith('image/')) {
-          // Process images with Gemini directly
           try {
             const base64 = await fileToBase64(file);
-            console.log('Processing image with Gemini...');
             const geminiAnalysis = await processImage(base64, "Analyze this image and explain the concepts shown. Extract any text, diagrams, charts, tables, or educational content that would be useful for studying.");
             extractedContent = `[Image analyzed: ${file.name}]\n\nImage analysis:\n${geminiAnalysis}\n\nThe image has been processed. I can now help you study this content using the ${studyMode} approach.`;
           } catch (geminiError) {
@@ -138,16 +128,11 @@ This file type requires manual content extraction. Please:
             try {
               const uploadResult = await uploadFile(file);
               storageFileId = uploadResult.$id;
-              console.log('File uploaded to storage:', storageFileId);
             } catch (storageError) {
               console.error('Storage upload failed, continuing without storage:', storageError);
-              // storageFileId stays null — resource will be created without a streaming URL
             }
-          } else {
-            console.log(`File is ${(file.size / 1024 / 1024).toFixed(1)}MB — over 10MB limit, skipping storage upload. Resource will be created with extracted text only.`);
           }
 
-          // Always create the resource record (with or without storageFileId)
           try {
             await createFileAttachment(
               userId,
@@ -159,21 +144,18 @@ This file type requires manual content extraction. Please:
               extractedContent.substring(0, 50000)
             );
 
-            console.log('Creating resource for:', file.name);
             const resource = await createPDFResource(
               userId,
               sessionId,
               file.name,
               file.size,
-              storageFileId, // null if over 10MB — viewer will show a message
+              storageFileId,
               extractedContent.substring(0, 1000000),
               null,
               fileType
             );
-            console.log('Resource created:', resource.$id);
           } catch (resourceError) {
             console.error('Failed to create resource:', resourceError.message);
-            // Non-fatal — the file content is still available for the current chat
           }
         } else if (userId && sessionId) {
           // Non-viewable file types — just save metadata
@@ -301,12 +283,12 @@ This file type is supported. Please describe the content you'd like me to help y
               null, // No storage file ID
               content.substring(0, 50000) // Limit content size for database
             );
-            console.log('File metadata saved successfully');
           } catch (dbError) {
-            console.error('Database save failed, continuing without saving:', dbError);
-            // Continue anyway - file processing still works for the current session
+            console.error('Database save failed, continuing:', dbError);
           }
         }
+
+        content = extractedContent;
       }
 
       await onFileProcess({

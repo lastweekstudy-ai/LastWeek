@@ -255,3 +255,31 @@
     font-size: 0.8125rem;
   }
 }
+
+/* Free-text field — always visible below options */
+.free-text-section {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
+}
+
+.free-text-label {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-sm);
+}
+
+.free-text-row {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.free-text-row .custom-input {
+  flex: 1;
+}
+
+.free-text-row .btn {
+  flex-shrink: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: 1rem;
+}

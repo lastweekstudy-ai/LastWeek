@@ -56,15 +56,11 @@ export const SessionProvider = ({ children }) => {
   const loadSession = async (sessionId) => {
     if (!user) throw new Error('User must be logged in');
     
-    // Prevent loading if already loading this session
     if (loadingSessionId === sessionId) {
-      console.log('Already loading this session, skipping duplicate call');
       return;
     }
     
-    // Prevent loading the same session multiple times
     if (activeSession && activeSession.$id === sessionId) {
-      console.log('Session already loaded');
       return activeSession;
     }
     

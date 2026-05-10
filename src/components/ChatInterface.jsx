@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import '../styles/ChatInterface.css';
 import LoadingDots from './LoadingDots';
 import FileAttachment from './FileAttachment';
 import QuickActions from './QuickActions';
@@ -89,24 +90,11 @@ const ChatInterface = ({
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
     if (input.trim() && !isLoading && !isStreaming) {
-      console.log('[ChatInterface] handleSubmit called:', {
-        input: input.trim(),
-        hasPendingFile: !!pendingFile
-      });
-
-      // Check if user is asking about a PDF without having one open
       const pdfQuery = input.match(/(?:in|from|about|of)\s+([a-zA-Z0-9_\-\.]+\.pdf)/i) || 
                        input.match(/📄([a-zA-Z0-9_\-\.]+\.pdf)/i) ||
                        input.match(/page\s+\d+/i);
-      
-      console.log('[ChatInterface] PDF query detection:', {
-        pdfQuery: !!pdfQuery,
-        matchedText: pdfQuery ? pdfQuery[0] : null,
-        hasPendingFile: !!pendingFile
-      });
 
       if (pdfQuery && !pendingFile && !insideStudyMode) {
-        // User is asking about a PDF but no PDF is open
         const pdfName = pdfQuery[1] || 'the PDF';
         const warningMessage = `To answer questions about ${pdfName}, please:
 1. Click the 📚 Resources button
@@ -114,32 +102,21 @@ const ChatInterface = ({
 3. Then ask your question in the split-screen chat
 
 This ensures I have the complete PDF content with accurate page and line numbers.`;
-        
-        console.log('[ChatInterface] Sending system warning');
-        
-        // Send warning as a system message
         onSend(input.trim(), `[SYSTEM WARNING]\n${warningMessage}\n\nUser asked: ${input.trim()}`);
         setInput('');
         return;
       }
       
       if (pendingFile) {
-        // Create a clean user message for display
         const userDisplayMessage = input.trim();
-        
-        // Create full context for AI (includes file analysis)
         const aiContextMessage = `${pendingFile.content}\n\nUser Question: ${input.trim()}`;
-        
-        // Send both: display message for user, context for AI
         onSend(userDisplayMessage, aiContextMessage, pendingFile);
         setPendingFile(null);
       } else {
-        console.log('[ChatInterface] Sending regular message');
         onSend(input.trim());
       }
       setInput('');
       setShowAttachments(false);
-      // Reset textarea height after send
       if (textareaRef.current) {
         textareaRef.current.style.height = 'auto';
       }

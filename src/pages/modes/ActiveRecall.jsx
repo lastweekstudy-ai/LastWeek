@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useSession from '../../hooks/useSession';
 import useSessionAssessment from '../../hooks/useSessionAssessment';
+import useSessionSummary from '../../hooks/useSessionSummary';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
 import SessionAssessment from '../../components/SessionAssessment';
@@ -33,7 +34,8 @@ const ActiveRecall = () => {
     error, 
     loadSession, 
     sendMessageWithAI,
-    switchMode 
+    switchMode,
+    generateAndSaveSummary
   } = useSession();
 
   const [currentMode, setCurrentMode] = useState('quiz');
@@ -44,17 +46,12 @@ const ActiveRecall = () => {
   const [scheduleError, setScheduleError] = useState(null);
 
   const { showAssessment, handleAssessmentComplete, handleAssessmentSkip } = useSessionAssessment({
-    user,
-    sessionId,
-    activeSession,
-    messages,
-    mode: 'active_recall',
-    sendMessageWithAI,
+    user, sessionId, activeSession, messages, mode: 'active_recall', sendMessageWithAI,
   });
 
-  // NEW: Handle PDF upload - automatically open PDF library
+  useSessionSummary({ messages, generateAndSaveSummary });
+
   const handlePDFUploaded = useCallback((fileData) => {
-    console.log('[ActiveRecall] PDF uploaded:', fileData.name);
     setPdfLibraryOpen(true);
   }, []);
 

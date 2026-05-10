@@ -4,6 +4,7 @@ import useDeepSeek from './useDeepSeek';
 import { useGemini } from './useGemini';
 import { getPromptForMode } from '../utils/promptBuilder';
 import { buildContextMessages } from '../utils/contextManager';
+import { saveSessionSummary } from '../appwrite/database';
 
 // File content markers that indicate processed file content
 const FILE_MARKERS = [
@@ -88,34 +89,25 @@ const useSession = () => {
 
     // ── Study mode: focused page extraction, straight to DeepSeek ────────────
     if (isStudyMode(aiContextMessage)) {
-      console.log('[useSession] Study mode detected — buildContextMessages will handle page extraction...');
-
       const parts = aiContextMessage.split('\nUser Question:');
       const studyHeader = parts[0] || aiContextMessage;
       const userQuestion = parts[1]?.trim() || aiContextMessage;
 
-      // Detect which page the user is asking about
       const pageMatch = userQuestion.match(/page\s+(\d+)/i) || 
                         studyHeader.match(/currently on page (\d+)/i);
       requestedPage = pageMatch ? parseInt(pageMatch[1]) : null;
 
-      // Extract the full PDF text block
       const fullTextMatch = studyHeader.match(/COMPLETE DOCUMENT TEXT:\n([\s\S]*)/);
       fullText = fullTextMatch ? fullTextMatch[1] : null;
 
-      // Extract the header metadata (file name, page info, highlights, notes)
       const headerEndIndex = studyHeader.indexOf('COMPLETE DOCUMENT TEXT:');
       const metaHeader = headerEndIndex > -1 
         ? studyHeader.substring(0, headerEndIndex).trim() 
         : studyHeader.substring(0, 1000);
 
-      // Build finalContextMessage with metadata + user question only;
-      // page context injection is handled by buildContextMessages via options.
       finalContextMessage = `${metaHeader}
 
 User Question: ${userQuestion}`;
-
-      console.log('[useSession] Study context prepared, requestedPage:', requestedPage);
     }
     // ── Regular file upload: Gemini pre-analysis → DeepSeek ──────────────────
     else if (hasFileContent(aiContextMessage)) {
@@ -124,8 +116,6 @@ User Question: ${userQuestion}`;
 
       setIsAnalysing(true);
       try {
-        console.log('[useSession] File content detected — running Gemini pre-analysis...');
-
         const parts = aiContextMessage.split('\nUser Question:');
         const fileContent = parts[0] || aiContextMessage;
         const userQuestion = parts[1]?.trim() || 'Please analyze this content and help me study it.';
@@ -153,7 +143,6 @@ Format your response as structured text that another AI can use to answer educat
           fileContent.substring(0, 50000), 
           geminiPrompt
         );
-        console.log('[useSession] Gemini analysis complete, length:', geminiAnalysis.length);
 
         finalContextMessage = `GEMINI PRE-ANALYSIS:
 ${geminiAnalysis}
@@ -182,21 +171,15 @@ Instructions: Use the Gemini analysis above to provide a comprehensive, educatio
       { currentPage: requestedPage, pageContext: fullText }
     );
 
-    console.log('[useSession] Calling sendMessageStreaming, final context length:', finalContextMessage.length);
-    
     try {
       const result = await sessionContext.sendMessageStreaming(
         messageToSave,
         async (onChunk) => {
-          console.log('[useSession] Calling askStream...');
           const response = await askStream(systemPrompt, contextualMessages, onChunk);
-          console.log('[useSession] askStream response received, length:', response?.length || 0);
           return response;
         },
         fileAttachment
       );
-      
-      console.log('[useSession] sendMessageStreaming completed successfully');
       return result;
     } catch (error) {
       console.error('[useSession] Error in sendMessageStreaming:', error);
@@ -204,10 +187,45 @@ Instructions: Use the Gemini analysis above to provide a comprehensive, educatio
     }
   };
 
+  const generateAndSaveSummary = async () => {
+    const { activeSession, messages } = sessionContext;
+    if (!activeSession || messages.length < 2) return null;
+
+    const recentMessages = messages.slice(-20);
+    const conversationText = recentMessages
+      .map(m => `${m.role === 'user' ? 'Student' : 'Tutor'}: ${m.content.substring(0, 300)}`)
+      .join('\n');
+
+    const summaryPrompt = `You are summarizing a study session. Based on this conversation, write a concise 3-line summary in this exact format:
+
+✅ Covered: [what topics/concepts were taught]
+⚠️ Gaps: [what the student struggled with or didn't fully grasp, or "None identified"]
+📌 Next: [what to study next or review]
+
+Keep each line under 15 words. Be specific, not generic.
+
+Conversation:
+${conversationText}`;
+
+    try {
+      const summary = await askDeepSeek(summaryPrompt, [
+        { role: 'user', content: 'Generate the session summary now.' }
+      ]);
+      if (summary && activeSession.$id) {
+        await saveSessionSummary(activeSession.$id, summary);
+      }
+      return summary;
+    } catch (err) {
+      console.error('[useSession] Failed to generate summary:', err.message);
+      return null;
+    }
+  };
+
   return {
     ...sessionContext,
     sendMessageWithAI,
-    isAnalysing
+    isAnalysing,
+    generateAndSaveSummary,
   };
 };
 

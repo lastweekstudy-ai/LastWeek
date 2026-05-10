@@ -7,9 +7,6 @@ const PDF_NOTES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_PDF_NOTES_COLLECTI
 // Create a note for a PDF page
 export const createPDFNote = async (userId, pdfResourceId, pageNumber, noteText, position = null, color = 'yellow') => {
   try {
-    console.log('[createPDFNote] Starting - userId:', userId, 'pdfResourceId:', pdfResourceId, 'page:', pageNumber);
-    console.log('[createPDFNote] Collection ID:', PDF_NOTES_COLLECTION_ID);
-    
     const note = await databases.createDocument(
       DATABASE_ID,
       PDF_NOTES_COLLECTION_ID,
@@ -19,18 +16,16 @@ export const createPDFNote = async (userId, pdfResourceId, pageNumber, noteText,
         pdfResourceId,
         pageNumber,
         noteText: noteText.substring(0, 10000),
-        position: position ? JSON.stringify(position) : '{}', // Required field - send empty object
+        position: position ? JSON.stringify(position) : '{}',
         color,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       }
     );
     
-    console.log('[createPDFNote] Successfully created note:', note.$id);
     return note;
   } catch (error) {
-    console.error('[createPDFNote] Failed:', error);
-    console.error('[createPDFNote] Error details:', error.message, error.code, error.response);
+    console.error('[createPDFNote] Failed:', error.message);
     throw new Error(`Failed to create PDF note: ${error.message}`);
   }
 };

@@ -4,6 +4,7 @@ import { getFileURL } from '../appwrite/storage';
 import StudyInterface from './StudyInterface';
 import ResourceViewer from './ResourceViewer';
 import PDFNoteEditor from './PDFNoteEditor';
+import YoutubeStudyPanel from './YoutubeStudyPanel';
 import '../styles/PDFLibrary.css';
 
 const PDFLibrary = ({ 
@@ -21,9 +22,10 @@ const PDFLibrary = ({
   const [loading, setLoading] = useState(true);
   const [selectedResource, setSelectedResource] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('recent'); // recent, name, size
+  const [sortBy, setSortBy] = useState('recent');
   const [showNotes, setShowNotes] = useState(false);
   const [notesPage, setNotesPage] = useState(1);
+  const [activeLibTab, setActiveLibTab] = useState('files'); // 'files' | 'youtube'
   
   // Study time tracking
   const studyStartTime = useRef(null);
@@ -37,33 +39,25 @@ const PDFLibrary = ({
     }
   }, [sessionId, isOpen]);
 
-  // Study time tracking effect
   useEffect(() => {
     if (selectedResource && isOpen) {
-      // Start tracking study time for this resource
       studyStartTime.current = Date.now();
       lastActivityTime.current = Date.now();
       currentResourceId.current = selectedResource.$id;
       
-      console.log('[PDFLibrary] Starting study time tracking for:', selectedResource.fileName);
-      
-      // Track study time every minute
       studyTimeInterval.current = setInterval(() => {
         const now = Date.now();
         const timeSinceLastActivity = now - lastActivityTime.current;
         
-        // Only count as study time if user was active in last 2 minutes
         if (timeSinceLastActivity < 2 * 60 * 1000) {
           const studyMinutes = Math.floor((now - studyStartTime.current) / (60 * 1000));
           if (studyMinutes > 0) {
-            console.log('[PDFLibrary] Tracking 1 minute of study time for:', selectedResource.fileName);
-            trackStudyTime(selectedResource.$id, 1); // Track 1 minute
-            studyStartTime.current = now; // Reset start time
+            trackStudyTime(selectedResource.$id, 1);
+            studyStartTime.current = now;
           }
         }
-      }, 60 * 1000); // Every minute
+      }, 60 * 1000);
 
-      // Track user activity
       const handleActivity = () => {
         lastActivityTime.current = Date.now();
       };
@@ -74,16 +68,13 @@ const PDFLibrary = ({
       document.addEventListener('click', handleActivity);
 
       return () => {
-        // Clean up study time tracking
         if (studyTimeInterval.current) {
           clearInterval(studyTimeInterval.current);
         }
         
-        // Track final study session
         if (studyStartTime.current && currentResourceId.current) {
           const finalStudyTime = Math.floor((Date.now() - studyStartTime.current) / (60 * 1000));
           if (finalStudyTime > 0) {
-            console.log('[PDFLibrary] Final study time tracking:', finalStudyTime, 'minutes for:', selectedResource?.fileName);
             trackStudyTime(currentResourceId.current, finalStudyTime);
           }
         }
@@ -99,10 +90,7 @@ const PDFLibrary = ({
   const loadResources = async () => {
     try {
       setLoading(true);
-      console.log('Loading resources for session:', sessionId);
       const sessionResources = await getSessionPDFs(sessionId);
-      console.log('Loaded resources count:', sessionResources.length);
-      console.log('Resource details:', sessionResources.map(r => ({ id: r.$id, name: r.fileName, session: r.sessionId, type: r.tags })));
       setResources(sessionResources);
     } catch (error) {
       console.error('Failed to load resources:', error);
@@ -185,94 +173,117 @@ const PDFLibrary = ({
     <>
       <div className="pdf-library-overlay" onClick={onClose} />
       <div className="pdf-library-panel">
+        {/* Header */}
         <div className="pdf-library-header">
           <h3>📚 Study Resources</h3>
-          <button className="close-btn" onClick={onClose} title="Close">
-            ✕
+          <button className="close-btn" onClick={onClose} title="Close">✕</button>
+        </div>
+
+        {/* Tab switcher */}
+        <div className="pdf-lib-tabs">
+          <button
+            className={`pdf-lib-tab ${activeLibTab === 'files' ? 'active' : ''}`}
+            onClick={() => setActiveLibTab('files')}
+          >
+            📄 Files
+          </button>
+          <button
+            className={`pdf-lib-tab ${activeLibTab === 'youtube' ? 'active' : ''}`}
+            onClick={() => setActiveLibTab('youtube')}
+          >
+            ▶ YouTube
           </button>
         </div>
 
-        <div className="pdf-library-controls">
-          <input
-            type="text"
-            className="pdf-search"
-            placeholder="Search files or tags..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <select
-            className="pdf-sort"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="recent">Recent</option>
-            <option value="name">Name</option>
-            <option value="size">Size</option>
-          </select>
-        </div>
+        {/* YouTube tab */}
+        {activeLibTab === 'youtube' && (
+          <YoutubeStudyPanel userId={userId} onSendMessage={onSendMessage} />
+        )}
 
-        <div className="pdf-library-content">
-          {loading ? (
-            <div className="pdf-loading">
-              <div className="spinner"></div>
-              <p>Loading resources...</p>
+        {/* Files tab */}
+        {activeLibTab === 'files' && (
+          <>
+            <div className="pdf-library-controls">
+              <input
+                type="text"
+                className="pdf-search"
+                placeholder="Search files or tags..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <select
+                className="pdf-sort"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="recent">Recent</option>
+                <option value="name">Name</option>
+                <option value="size">Size</option>
+              </select>
             </div>
-          ) : sortedResources.length === 0 ? (
-            <div className="pdf-empty">
-              <div className="empty-icon">📄</div>
-              <p>No resources in this session yet</p>
-              <span>Upload a PDF, image, or HTML file to get started</span>
-            </div>
-          ) : (
-            <div className="pdf-list">
-              {sortedResources.map((resource) => (
-                <div key={resource.$id} className="pdf-item">
-                  <div className="pdf-icon">{getFileIcon(resource.fileName, resource.tags)}</div>
-                  <div className="pdf-info">
-                    <div className="pdf-name" title={resource.fileName}>
-                      {resource.fileName}
-                    </div>
-                    <div className="pdf-meta">
-                      <span className="file-type-badge">{getFileTypeLabel(resource.fileName, resource.tags)}</span>
-                      {resource.pageCount && resource.pageCount > 1 && <span>{resource.pageCount} pages</span>}
-                      <span>{formatFileSize(resource.fileSize)}</span>
-                      <span>{formatDate(resource.lastAccessedAt)}</span>
-                    </div>
-                    {resource.currentPage && resource.currentPage > 1 && (
-                      <div className="pdf-progress">
-                        Page {resource.currentPage}{resource.pageCount && ` of ${resource.pageCount}`}
-                      </div>
-                    )}
-                    {resource.tags && !resource.tags.startsWith('image/') && !resource.tags.startsWith('application/') && !resource.tags.startsWith('text/') && (
-                      <div className="pdf-tags">
-                        {resource.tags.split(',').map((tag, idx) => (
-                          <span key={idx} className="pdf-tag">
-                            {tag.trim()}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="pdf-actions">
-                    <button
-                      className="pdf-action-btn primary"
-                      onClick={() => handleViewResource(resource)}
-                      title="View resource"
-                    >
-                      View
-                    </button>
-                  </div>
+
+            <div className="pdf-library-content">
+              {loading ? (
+                <div className="pdf-loading">
+                  <div className="spinner"></div>
+                  <p>Loading resources...</p>
                 </div>
-              ))}
+              ) : sortedResources.length === 0 ? (
+                <div className="pdf-empty">
+                  <div className="empty-icon">📄</div>
+                  <p>No resources in this session yet</p>
+                  <span>Upload a PDF, image, or HTML file to get started</span>
+                </div>
+              ) : (
+                <div className="pdf-list">
+                  {sortedResources.map((resource) => (
+                    <div key={resource.$id} className="pdf-item">
+                      <div className="pdf-icon">{getFileIcon(resource.fileName, resource.tags)}</div>
+                      <div className="pdf-info">
+                        <div className="pdf-name" title={resource.fileName}>
+                          {resource.fileName}
+                        </div>
+                        <div className="pdf-meta">
+                          <span className="file-type-badge">{getFileTypeLabel(resource.fileName, resource.tags)}</span>
+                          {resource.pageCount && resource.pageCount > 1 && <span>{resource.pageCount} pages</span>}
+                          <span>{formatFileSize(resource.fileSize)}</span>
+                          <span>{formatDate(resource.lastAccessedAt)}</span>
+                        </div>
+                        {resource.currentPage && resource.currentPage > 1 && (
+                          <div className="pdf-progress">
+                            Page {resource.currentPage}{resource.pageCount && ` of ${resource.pageCount}`}
+                          </div>
+                        )}
+                        {resource.tags && !resource.tags.startsWith('image/') && !resource.tags.startsWith('application/') && !resource.tags.startsWith('text/') && (
+                          <div className="pdf-tags">
+                            {resource.tags.split(',').map((tag, idx) => (
+                              <span key={idx} className="pdf-tag">{tag.trim()}</span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div className="pdf-actions">
+                        <button
+                          className="pdf-action-btn primary"
+                          onClick={() => handleViewResource(resource)}
+                          title="View resource"
+                        >
+                          View
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        <div className="pdf-library-footer">
-          <div className="pdf-stats">
-            {resources.length} resource{resources.length !== 1 ? 's' : ''} in this session
-          </div>
-        </div>
+            <div className="pdf-library-footer">
+              <div className="pdf-stats">
+                {resources.length} resource{resources.length !== 1 ? 's' : ''} in this session
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {selectedResource && (

@@ -124,6 +124,21 @@ export const updateSession = async (sessionId, data) => {
   }
 };
 
+export const saveSessionSummary = async (sessionId, summary) => {
+  try {
+    return await databases.updateDocument(
+      DATABASE_ID,
+      SESSIONS_COLLECTION_ID,
+      sessionId,
+      { summary, updatedAt: new Date().toISOString() }
+    );
+  } catch (error) {
+    // Non-fatal — summary is a nice-to-have
+    console.error('Failed to save session summary:', error.message);
+    return null;
+  }
+};
+
 export const deleteSession = async (sessionId) => {
   try {
     // First delete all messages associated with this session
@@ -298,10 +313,9 @@ export const getSessionMessages = async (sessionId) => {
       [
         Query.equal('sessionId', sessionId),
         Query.orderAsc('createdAt'),
-        Query.limit(1000) // Load up to 1000 messages (Appwrite max is 5000)
+        Query.limit(1000)
       ]
     );
-    console.log(`Loaded ${messages.documents.length} messages for session ${sessionId}`);
     return messages.documents;
   } catch (error) {
     console.error('getSessionMessages error:', error);

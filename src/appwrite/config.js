@@ -1,8 +1,7 @@
-import { Client, Account, Databases, Storage } from 'appwrite';
+import { Client, Account, Databases, Storage, Functions } from 'appwrite';
 
 const client = new Client();
 
-// Configure client with error handling
 try {
   client
     .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT || 'https://cloud.appwrite.io/v1')
@@ -14,4 +13,5 @@ try {
 export const account = new Account(client);
 export const databases = new Databases(client);
 export const storage = new Storage(client);
+export const functions = new Functions(client);
 export { client };

@@ -7,9 +7,6 @@ const PDF_HIGHLIGHTS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_PDF_HIGHLIGHT
 // Create a highlight
 export const createPDFHighlight = async (userId, pdfResourceId, pageNumber, highlightedText, position, color = 'yellow') => {
   try {
-    console.log('[createPDFHighlight] Starting - userId:', userId, 'pdfResourceId:', pdfResourceId, 'page:', pageNumber);
-    console.log('[createPDFHighlight] Collection ID:', PDF_HIGHLIGHTS_COLLECTION_ID);
-    
     if (!PDF_HIGHLIGHTS_COLLECTION_ID) {
       console.warn('[createPDFHighlight] Collection ID not set in .env file');
       return null;
@@ -24,18 +21,16 @@ export const createPDFHighlight = async (userId, pdfResourceId, pageNumber, high
         pdfResourceId,
         pageNumber,
         highlightedText: highlightedText.substring(0, 5000),
-        position: position ? JSON.stringify(position) : '{}', // Required field - send empty object
+        position: position ? JSON.stringify(position) : '{}',
         color,
         createdAt: new Date().toISOString()
       }
     );
     
-    console.log('[createPDFHighlight] Successfully created highlight:', highlight.$id);
     return highlight;
   } catch (error) {
-    console.error('[createPDFHighlight] Failed:', error);
-    console.error('[createPDFHighlight] Error details:', error.message, error.code, error.response);
-    return null; // Don't throw error, just return null
+    console.error('[createPDFHighlight] Failed:', error.message);
+    return null;
   }
 };
 

@@ -102,7 +102,6 @@ const StudyInterface = ({
   // If extractedText is missing, extract it live from the PDF URL
   useEffect(() => {
     if (!resource.extractedText && pdfUrl) {
-      console.log('[StudyInterface] No extractedText found, extracting from PDF URL...');
       setExtracting(true);
       setExtractionProgress('Starting extraction…');
       fetch(pdfUrl)
@@ -123,7 +122,6 @@ const StudyInterface = ({
         })
         .then(text => {
           if (text && text.length > 50) {
-            console.log('[StudyInterface] Live extraction successful, length:', text.length);
             setLiveExtractedText(text);
           }
         })
@@ -758,14 +756,6 @@ const StudyInterface = ({
 
   // Handle sending message with full resource context
   const handleSendWithContext = async (userMessage, aiContextMessage = null, fileAttachment = null) => {
-    console.log('[StudyInterface] handleSendWithContext called:', {
-      userMessage,
-      hasAiContext: !!aiContextMessage,
-      hasFileAttachment: !!fileAttachment,
-      resourceFileName: resource.fileName
-    });
-
-    // On mobile, switch to chat tab when sending
     if (isMobile) setMobileTab('chat');
 
     const pageHighlights = savedHighlights.filter(h => h.page === pageNumber);
@@ -777,12 +767,10 @@ const StudyInterface = ({
       ? `\nNotes on page ${pageNumber}:\n${pageNotes.map((n, i) => `${i + 1}. ${n.noteText}`).join('\n')}`
       : '';
 
-    // Selected text context
     const selectionText = selectedText
       ? `\nUser selected this text: "${selectedText}"\n`
       : '';
 
-    // Detect page number request in user message and auto-navigate
     const pageRequest = (aiContextMessage || userMessage).match(/page\s+(\d+)/i);
     if (pageRequest) {
       const requestedPage = parseInt(pageRequest[1]);
@@ -791,19 +779,8 @@ const StudyInterface = ({
       }
     }
 
-    // Build full resource context - NO TRUNCATION for accuracy
     const extractedText = resource.extractedText || liveExtractedText;
-    
-    console.log('[StudyInterface] Extracted text status:', {
-      hasResourceExtractedText: !!resource.extractedText,
-      resourceExtractedTextLength: resource.extractedText?.length || 0,
-      hasLiveExtractedText: !!liveExtractedText,
-      liveExtractedTextLength: liveExtractedText?.length || 0,
-      finalExtractedTextLength: extractedText?.length || 0,
-      isExtracting: extracting
-    });
 
-    // If no extracted text is available, show a helpful message
     if (!extractedText || extractedText.length < 50) {
       const noTextMessage = `I can see you have "${resource.fileName}" open, but the text content is not available. This could be because:
 
@@ -818,12 +795,10 @@ To fix this:
 
 For now, I can only help with general questions about the PDF structure, but cannot answer specific content questions.`;
 
-      console.log('[StudyInterface] No extracted text available, sending error message');
       await onSendMessage(userMessage, `[NO PDF TEXT AVAILABLE]\n${noTextMessage}\n\nUser asked: ${userMessage}`);
       return;
     }
 
-    // If user asks about a specific page, extract and prioritize that page
     let focusedContext = '';
     if (pageRequest && extractedText) {
       const requestedPage = parseInt(pageRequest[1]);
@@ -834,7 +809,6 @@ For now, I can only help with general questions about the PDF structure, but can
       }
     }
 
-    // CRITICAL: Lock context to THIS PDF only - ignore other PDF names mentioned
     const resourceContext = extractedText
       ? `\n\n[LOCKED PDF CONTEXT - ONLY USE THIS PDF]
 PDF Name: "${resource.fileName}"
@@ -857,24 +831,12 @@ ${extractedText}`
 
 User Question: ${aiContextMessage || userMessage}`;
     
-    console.log('[StudyInterface] Full context preview:', {
-      contextLength: fullContext.length,
-      resourceContextLength: resourceContext.length,
-      extractedTextPreview: extractedText.substring(0, 200),
-      hasPageMarkers: extractedText.includes('=== PAGE'),
-      numPages: numPages
-    });
-    
-    console.log('[StudyInterface] Sending message with context length:', fullContext.length);
-    
     setSelectedText('');
     
     try {
       await onSendMessage(userMessage, fullContext, fileAttachment);
-      console.log('[StudyInterface] Message sent successfully');
     } catch (error) {
       console.error('[StudyInterface] Error sending message:', error);
-      // Error will be displayed in the error banner at the bottom of the page
     }
   };
 

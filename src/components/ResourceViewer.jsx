@@ -26,29 +26,22 @@ const ResourceViewer = ({ resource, onClose, onOpenNotes }) => {
   }, [resource]);
 
   useEffect(() => {
-    // Start study time tracking
     studyStartTime.current = Date.now();
     lastActivityTime.current = Date.now();
     
-    console.log('[ResourceViewer] Starting study time tracking for:', resource.fileName);
-    
-    // Track study time every minute
     studyTimeInterval.current = setInterval(() => {
       const now = Date.now();
       const timeSinceLastActivity = now - lastActivityTime.current;
       
-      // Only count as study time if user was active in last 2 minutes
       if (timeSinceLastActivity < 2 * 60 * 1000) {
         const studyMinutes = Math.floor((now - studyStartTime.current) / (60 * 1000));
         if (studyMinutes > 0) {
-          console.log('[ResourceViewer] Tracking 1 minute of study time for:', resource.fileName);
-          trackStudyTime(resource.$id, 1); // Track 1 minute
-          studyStartTime.current = now; // Reset start time
+          trackStudyTime(resource.$id, 1);
+          studyStartTime.current = now;
         }
       }
-    }, 60 * 1000); // Every minute
+    }, 60 * 1000);
 
-    // Track user activity
     const handleActivity = () => {
       lastActivityTime.current = Date.now();
     };
@@ -59,15 +52,12 @@ const ResourceViewer = ({ resource, onClose, onOpenNotes }) => {
     document.addEventListener('click', handleActivity);
 
     return () => {
-      // Clean up study time tracking
       if (studyTimeInterval.current) {
         clearInterval(studyTimeInterval.current);
       }
       
-      // Track final study session
       const finalStudyTime = Math.floor((Date.now() - studyStartTime.current) / (60 * 1000));
       if (finalStudyTime > 0) {
-        console.log('[ResourceViewer] Final study time tracking:', finalStudyTime, 'minutes for:', resource.fileName);
         trackStudyTime(resource.$id, finalStudyTime);
       }
 
