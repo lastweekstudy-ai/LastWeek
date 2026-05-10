@@ -1,0 +1,234 @@
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import { SessionProvider } from './context/SessionContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
+import useSession from './hooks/useSession';
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import Navbar from './components/Navbar';
+import DebugInfo from './components/DebugInfo';
+import ErrorBoundary from './components/ErrorBoundary';
+import Landing from './pages/Landing';
+import Auth from './pages/Auth';
+import Dashboard from './pages/DashboardEnhanced';
+import ModeSelector from './pages/ModeSelector';
+import Settings from './pages/Settings';
+import PDFManager from './components/PDFManager';
+import MentalModel from './pages/modes/MentalModel';
+import ActiveRecall from './pages/modes/ActiveRecall';
+import FocusBreakdown from './pages/modes/FocusBreakdown';
+import CollaborativeScholar from './pages/modes/CollaborativeScholar';
+import CreativeSynthesis from './pages/modes/CreativeSynthesis';
+import './styles/global.css';
+import './styles/Navbar.css';
+import './styles/ModePage.css';
+import './styles/ErrorBoundary.css';
+import './styles/MessageFormatter.css';
+import './styles/RichTextViewer.css';
+import './styles/FilePromptInput.css';
+
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return (
+      <div className="loading-state">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+  
+  return user ? children : <Navigate to="/auth" replace />;
+};
+
+// Session Route Component - determines which mode page to render
+const SessionRoute = () => {
+  const { sessionId } = useParams();
+  const navigate = useNavigate();
+  const { activeSession, loadSession, messages } = useSession();
+  const { toggleTheme } = useTheme();
+  const [sessionLoaded, setSessionLoaded] = useState(false);
+  
+  // Global keyboard shortcuts
+  useKeyboardShortcuts([
+    { key: 't', ctrl: true, shift: true, callback: toggleTheme },
+  ]);
+  
+  React.useEffect(() => {
+    if (sessionId && sessionId !== 'new') {
+      // Check if this is a different session than what's currently loaded
+      if (!activeSession || activeSession.$id !== sessionId) {
+        setSessionLoaded(false);
+        loadSession(sessionId)
+          .then(() => {
+            setSessionLoaded(true);
+          })
+          .catch(error => {
+            console.error('Failed to load session:', error);
+            navigate('/dashboard');
+          });
+      } else {
+        // Session is already loaded
+        setSessionLoaded(true);
+      }
+    }
+    // Only depend on sessionId - don't re-run when activeSession or messages change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
+  
+  if (!sessionLoaded || !activeSession) {
+    return (
+      <div className="loading-state">
+        <p>Loading session...</p>
+      </div>
+    );
+  }
+  
+  // Route to appropriate mode component based on session mode
+  switch (activeSession.mode) {
+    case 'mental_model':
+      return <MentalModel />;
+    case 'active_recall':
+      return <ActiveRecall />;
+    case 'focus_breakdown':
+      return <FocusBreakdown />;
+    case 'collaborative_scholar':
+      return <CollaborativeScholar />;
+    case 'creative_synthesis':
+      return <CreativeSynthesis />;
+    default:
+      return <Navigate to="/dashboard" replace />;
+  }
+};
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <SessionProvider>
+            <Router>
+              <div className="app">
+                <DebugInfo />
+                <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Landing />} />
+              <Route path="/auth" element={<Auth />} />
+              
+              {/* Protected routes */}
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <Dashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/mode-select" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <ModeSelector />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/settings" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <Settings />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/pdf-manager" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <PDFManager />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Session routes */}
+              <Route 
+                path="/session/:sessionId" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar isSessionPage={true} />
+                    <SessionRoute />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Direct mode routes for new sessions */}
+              <Route 
+                path="/session/new/mental-model" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar isSessionPage={true} />
+                    <MentalModel />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/session/new/active-recall" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar isSessionPage={true} />
+                    <ActiveRecall />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/session/new/focus-breakdown" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar isSessionPage={true} />
+                    <FocusBreakdown />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/session/new/collaborative-scholar" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar isSessionPage={true} />
+                    <CollaborativeScholar />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/session/new/creative-synthesis" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar isSessionPage={true} />
+                    <CreativeSynthesis />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Catch all route */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
+        </Router>
+      </SessionProvider>
+    </AuthProvider>
+  </ThemeProvider>
+</ErrorBoundary>
+  );
+}
+
+export default App;

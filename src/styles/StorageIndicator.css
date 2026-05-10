@@ -1,0 +1,88 @@
+/* Storage Indicator Styles */
+.storage-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.storage-indicator.loading {
+  opacity: 0.7;
+}
+
+.storage-indicator.warning {
+  background: var(--warning-bg, #fff3cd);
+  border-color: var(--warning-border, #ffeaa7);
+  color: var(--warning-text, #856404);
+}
+
+.storage-indicator.danger {
+  background: var(--danger-bg, #f8d7da);
+  border-color: var(--danger-border, #f5c6cb);
+  color: var(--danger-text, #721c24);
+}
+
+.storage-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.storage-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.storage-text {
+  font-weight: 500;
+}
+
+.storage-bar {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-tertiary);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.storage-fill {
+  height: 100%;
+  background: var(--primary-color);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.storage-indicator.warning .storage-fill {
+  background: var(--warning-color, #f39c12);
+}
+
+.storage-indicator.danger .storage-fill {
+  background: var(--danger-color, #e74c3c);
+}
+
+.storage-details {
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+/* Compact version for navbar */
+.storage-indicator.compact {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+}
+
+.storage-indicator.compact .storage-bar {
+  width: 60px;
+  margin-bottom: 2px;
+}
+
+.storage-indicator.compact .storage-details {
+  display: none;
+}

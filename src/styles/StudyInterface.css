@@ -1,0 +1,1080 @@
+/* Study Interface - Split Screen Layout */
+.study-interface {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-bg-primary);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.study-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  background-color: var(--color-bg-secondary);
+  border-bottom: var(--border-width) solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.study-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.study-icon {
+  font-size: 1.5rem;
+}
+
+.study-title h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.study-page-info {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--border-radius);
+}
+
+.study-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Main Content - Split Screen */
+.study-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* PDF Section */
+.study-pdf-section {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-secondary);
+  border-right: var(--border-width) solid var(--color-border);
+  position: relative;
+  /* overflow: hidden was clipping the PDF viewer — use min-height: 0 instead
+     so the flex child can shrink and the inner scroll works correctly */
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* PDF Toolbar */
+.pdf-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-bg-tertiary);
+  border-bottom: var(--border-width) solid var(--color-border);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  position: relative;
+}
+
+.btn-toolbar {
+  background-color: var(--color-bg-secondary);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  transition: all 0.2s ease;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-toolbar:hover:not(:disabled) {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
+}
+
+.btn-toolbar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-toolbar.active {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: white;
+}
+
+.btn-toolbar.btn-color {
+  width: 32px;
+  border-radius: 50%;
+}
+
+.page-input-small {
+  width: 50px;
+  padding: var(--spacing-xs);
+  text-align: center;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+}
+
+.page-total-small {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+.zoom-level-small {
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  min-width: 45px;
+  text-align: center;
+}
+
+/* Color Picker Mini */
+.color-picker-mini {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--spacing-xs);
+  background-color: var(--color-bg-secondary);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-xs);
+  display: flex;
+  gap: var(--spacing-xs);
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+}
+
+.color-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+}
+
+.color-btn.active {
+  border-color: var(--color-text-primary);
+  box-shadow: 0 0 0 2px var(--color-bg-secondary);
+}
+
+/* PDF Viewer Area */
+.pdf-viewer-area {
+  flex: 1;
+  overflow: auto;
+  padding: var(--spacing-lg);
+  background-color: var(--color-bg-tertiary);
+  display: flex;
+  flex-direction: column;
+  /* Use flex-start so wide pages (zoomed in) can scroll horizontally */
+  align-items: flex-start;
+  position: relative;
+  min-height: 0;
+  /* Ensure horizontal scroll works when page is wider than container */
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.pdf-viewer-area.highlight-mode {
+  cursor: text;
+}
+
+/* The react-pdf Document wrapper — centred when content fits, scrollable when wider */
+.pdf-viewer-area .react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100%;
+}
+
+/* Each page wrapper — give it a natural size so the viewer can scroll */
+.pdf-viewer-area .react-pdf__Page {
+  position: relative;
+  /* Shadow so pages look like paper */
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  margin-bottom: var(--spacing-lg);
+  background: white;
+  /* Never clip the page canvas or text layer */
+  overflow: visible;
+}
+
+/* Canvas layer — always the reference size */
+.pdf-viewer-area .react-pdf__Page__canvas {
+  display: block;
+  max-width: none !important; /* allow zoom > 100% */
+}
+
+/* Text layer — invisible overlay for text extraction only, not for selection */
+.pdf-viewer-area .react-pdf__Page__textContent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible !important;
+  opacity: 0;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transform-origin: 0 0;
+}
+
+.pdf-viewer-area .react-pdf__Page__textContent span {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: default;
+  transform-origin: 0% 0%;
+}
+
+/* In highlight mode: show a rubber-band selection rectangle */
+.pdf-viewer-area.highlight-mode {
+  cursor: crosshair;
+}
+
+/* Rubber-band selection rectangle drawn during drag */
+.pdf-selection-rect {
+  position: absolute;
+  border: 2px solid rgba(255, 200, 0, 0.9);
+  background: rgba(255, 235, 59, 0.25);
+  pointer-events: none;
+  z-index: 50;
+  border-radius: 2px;
+}
+
+/* Saved highlights overlay */
+.highlight-overlay {
+  position: absolute;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: 0.4;
+}
+
+.highlight-overlay.yellow { background-color: #ffeb3b; }
+.highlight-overlay.green  { background-color: #4caf50; }
+.highlight-overlay.blue   { background-color: #2196f3; }
+.highlight-overlay.pink   { background-color: #e91e63; }
+.highlight-overlay.orange { background-color: #ff9800; }
+.highlight-overlay.purple { background-color: #9c27b0; }
+
+/* ── Highlight overlay layer (rendered per-page on top of canvas) ─────────── */
+.pdf-highlight-overlay-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.pdf-highlight-mark {
+  position: absolute;
+  border-radius: 2px;
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.pdf-highlight-mark:hover {
+  opacity: 0.8;
+}
+
+/* Page wrapper — position:relative for overlays, inline-block to match canvas size exactly */
+.pdf-page-wrapper {
+  position: relative;
+  display: inline-block;
+  /* inline-block shrinks to canvas size so percentage-based highlights are accurate */
+}
+
+.pdf-loading-small {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  color: var(--color-text-muted);
+}
+
+.pdf-error-small {
+  padding: var(--spacing-xl);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.highlight-hint {
+  position: absolute;
+  top: var(--spacing-md);
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-accent);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Mini Sidebar */
+.pdf-mini-sidebar {
+  width: 180px;
+  flex-shrink: 0;
+  background-color: var(--color-bg-secondary);
+  border-left: var(--border-width) solid var(--color-border);
+  overflow-y: auto;
+}
+
+.mini-sidebar-section {
+  padding: var(--spacing-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
+.mini-sidebar-section h5 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.mini-bookmark {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  transition: all 0.2s ease;
+}
+
+.mini-bookmark:hover {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+.mini-bookmark.active {
+  background-color: var(--color-accent);
+  color: white;
+  font-weight: 600;
+}
+
+.mini-highlight {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs);
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--border-radius);
+  font-size: 0.75rem;
+}
+
+.mini-highlight-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.mini-highlight-text {
+  flex: 1;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-remove-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.mini-remove-btn:hover {
+  color: var(--color-text-primary);
+}
+
+/* Resize Handle */
+.resize-handle {
+  width: 10px;
+  background-color: var(--color-bg-tertiary);
+  cursor: col-resize;
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.resize-handle:hover,
+.resize-handle.is-resizing {
+  background-color: var(--color-accent);
+}
+
+.resize-grip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+
+.resize-grip span {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--color-border-light);
+  transition: background-color 0.2s ease;
+}
+
+.resize-handle:hover .resize-grip span,
+.resize-handle.is-resizing .resize-grip span {
+  background-color: white;
+}
+
+/* Chat Section */
+.study-chat-section {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-primary);
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* The chat interface inside study mode must fill the column and scroll internally */
+.study-chat-section .chat-interface-improved {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chat-context-banner {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background-color: var(--color-accent);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.context-main {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.context-details {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.context-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.context-selection {
+  background-color: rgba(255, 235, 59, 0.3);
+  border: 1px solid rgba(255, 235, 59, 0.5);
+  max-width: 260px;
+  min-width: 0;
+  overflow: hidden;
+  flex-shrink: 1;
+}
+
+.context-selection .selection-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.clear-selection-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0 2px;
+  opacity: 0.7;
+  flex-shrink: 0;
+  margin-left: 2px;
+}
+
+.clear-selection-btn:hover {
+  opacity: 1;
+}
+
+.highlight-btn {
+  background-color: rgba(255, 235, 59, 0.3) !important;
+  border-color: rgba(255, 235, 59, 0.6) !important;
+}
+
+.quick-study-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  flex-wrap: wrap;
+  margin-top: var(--spacing-xs);
+}
+
+.quick-study-btn {
+  background-color: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--border-radius);
+  color: white;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-study-btn:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.quick-study-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Error State */
+.study-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.study-error h3 {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+.study-error p {
+  margin-bottom: var(--spacing-xl);
+  color: var(--color-text-muted);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .study-content {
+    flex-direction: column;
+  }
+  
+  .study-pdf-section,
+  .study-chat-section {
+    width: 100% !important;
+    height: 50%;
+  }
+  
+  .resize-handle {
+    width: 100%;
+    height: 8px;
+    cursor: row-resize;
+  }
+  
+  .pdf-mini-sidebar {
+    width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pdf-toolbar {
+    padding: var(--spacing-xs);
+  }
+  
+  .toolbar-group {
+    gap: 2px;
+  }
+  
+  .btn-toolbar {
+    padding: var(--spacing-xs);
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+  
+  .pdf-mini-sidebar {
+    width: 120px;
+  }
+  
+  .study-title h3 {
+    font-size: 0.95rem;
+  }
+  
+  .study-page-info {
+    font-size: 0.75rem;
+  }
+}
+
+/* Scrollbar Styling */
+.pdf-viewer-area::-webkit-scrollbar,
+.pdf-mini-sidebar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.pdf-viewer-area::-webkit-scrollbar-track,
+.pdf-mini-sidebar::-webkit-scrollbar-track {
+  background: var(--color-bg-tertiary);
+}
+
+.pdf-viewer-area::-webkit-scrollbar-thumb,
+.pdf-mini-sidebar::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.pdf-viewer-area::-webkit-scrollbar-thumb:hover,
+.pdf-mini-sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* ── Floating Ask AI Tip ─────────────────────────────────────────────────── */
+.ask-ai-tip {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-accent);
+  border-radius: 20px;
+  padding: 4px 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  transform: translateX(-50%);
+  pointer-events: all;
+  animation: tipFadeIn 0.15s ease;
+}
+
+@keyframes tipFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.ask-ai-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 16px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.ask-ai-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.ask-ai-dismiss {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+.ask-ai-dismiss:hover {
+  color: white;
+  background: rgba(255,255,255,0.15);
+}
+
+/* ── Mobile Tabs ─────────────────────────────────────────────────────────── */
+.mobile-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--color-bg-tertiary);
+  border-radius: 20px;
+  padding: 3px;
+}
+
+.mobile-tab {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 5px 14px;
+  border-radius: 16px;
+  transition: all 0.2s ease;
+  opacity: 0.6;
+}
+
+.mobile-tab.active {
+  background: var(--color-accent);
+  color: white;
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.35);
+}
+
+/* ── Scanned PDF Warning ─────────────────────────────────────────────────── */
+.scanned-pdf-warning {
+  background: rgba(255, 152, 0, 0.15);
+  border: 1px solid rgba(255, 152, 0, 0.4);
+  border-radius: var(--border-radius);
+  color: var(--color-text-primary);
+  font-size: 0.8rem;
+  padding: 8px 12px;
+  margin: 8px;
+  text-align: center;
+}
+
+/* ── Clear Highlights Button ─────────────────────────────────────────────── */
+.clear-highlights-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 4px 10px;
+  transition: all 0.2s;
+}
+
+.clear-highlights-btn:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+/* ── Pane Hidden (preserves scroll/PDF state on mobile tab switch) ────────── */
+/* Hides a pane without unmounting it — preserves scroll position and PDF state */
+.pane-hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100% !important;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.study-pdf-section,
+.study-chat-section {
+  transition: opacity 0.2s ease;
+}
+
+/* ── Extraction Progress Bar ─────────────────────────────────────────────── */
+.extraction-progress-bar-wrap {
+  height: 4px;
+  background: var(--color-bg-tertiary);
+  flex-shrink: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.extraction-progress-bar {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 0.3s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+.extraction-caption {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  padding: 2px var(--spacing-md);
+  flex-shrink: 0;
+  background: var(--color-bg-secondary);
+  text-align: center;
+}
+
+/* Shimmer overlay on the PDF viewer area during extraction */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.is-extracting .pdf-viewer-area::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(168, 85, 247, 0.08) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite linear;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Inline extraction error banner */
+.extraction-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  padding: 6px var(--spacing-md);
+  background: rgba(239, 68, 68, 0.1);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+  color: var(--color-error);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.extraction-error-dismiss {
+  background: none;
+  border: 1px solid var(--color-error);
+  border-radius: var(--border-radius);
+  color: var(--color-error);
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.extraction-error-dismiss:hover {
+  background: var(--color-error);
+  color: white;
+}
+
+/* ── PDF Section Body ────────────────────────────────────────────────────── */
+.pdf-section-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.pdf-section-body .pdf-viewer-area {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Reading Progress Bar ────────────────────────────────────────────────── */
+.reading-progress-bar-wrap {
+  height: 3px;
+  background: var(--color-bg-tertiary);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+.reading-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-light));
+  transition: width 0.4s ease;
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── Floating Page Navigation ────────────────────────────────────────────── */
+.pdf-float-nav {
+  position: sticky;
+  bottom: var(--spacing-md);
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  padding: 6px 14px;
+  box-shadow: var(--shadow-lg);
+  z-index: 20;
+  margin-top: var(--spacing-md);
+  backdrop-filter: blur(8px);
+}
+
+.pdf-float-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdf-float-btn:hover:not(:disabled) {
+  background: var(--color-accent);
+  color: white;
+}
+
+.pdf-float-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pdf-float-page {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  min-width: 60px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── PDF Page Wrapper ────────────────────────────────────────────────────── */
+.pdf-page-wrapper {
+  margin-bottom: var(--spacing-lg);
+  /* No min-height — wrapper must match canvas size exactly for highlight positioning */
+}
+
+/* Placeholder height before react-pdf renders the canvas — prevents IntersectionObserver misfires */
+.pdf-page-wrapper:not(:has(canvas)) {
+  min-height: 200px;
+}
+
+.pdf-page-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Table of Contents Panel ─────────────────────────────────────────────── */
+.pdf-toc-panel {
+  width: 200px;
+  flex-shrink: 0;
+  background-color: var(--color-bg-secondary);
+  border-right: var(--border-width) solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pdf-toc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: var(--border-width) solid var(--color-border);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.pdf-toc-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-xs) 0;
+}
+
+.pdf-toc-item {
+  display: block;
+  width: calc(100% - 8px);
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 5px 8px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 4px;
+  margin: 1px 4px;
+}
+
+.pdf-toc-item:hover:not(:disabled) {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.pdf-toc-item.active {
+  background: var(--color-accent);
+  color: white;
+}
+
+.pdf-toc-item:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .pdf-toc-panel {
+    width: 160px;
+  }
+  .pdf-mini-sidebar {
+    width: 140px;
+  }
+  .pdf-float-nav {
+    padding: 4px 10px;
+  }
+}

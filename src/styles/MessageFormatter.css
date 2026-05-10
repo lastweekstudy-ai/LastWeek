@@ -1,0 +1,172 @@
+/* Message Formatter Styles */
+.formatted-message {
+  line-height: 1.6;
+  color: var(--color-text-primary);
+}
+
+.formatted-message h1,
+.formatted-message h2,
+.formatted-message h3 {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  margin: var(--spacing-md) 0 var(--spacing-sm) 0;
+  font-family: var(--font-heading);
+}
+
+.formatted-message h1 {
+  font-size: 1.25rem;
+  border-bottom: 2px solid var(--color-accent);
+  padding-bottom: var(--spacing-xs);
+}
+
+.formatted-message h2 {
+  font-size: 1.125rem;
+  color: var(--color-accent);
+}
+
+.formatted-message h3 {
+  font-size: 1rem;
+  color: var(--color-text-primary);
+}
+
+.formatted-message strong {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.formatted-message em {
+  color: var(--color-accent);
+  font-style: normal;
+  font-weight: 500;
+}
+
+.message-text-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.message-text-section:last-child {
+  margin-bottom: 0;
+}
+
+/* List Styling */
+.message-list {
+  background-color: var(--color-bg-tertiary);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+}
+
+.list-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-primary);
+}
+
+.list-item:last-child {
+  margin-bottom: 0;
+}
+
+.list-item::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  margin-right: var(--spacing-sm);
+  margin-top: 0.5em;
+  flex-shrink: 0;
+}
+
+/* Summary Styling */
+.message-summary {
+  background-color: rgba(99, 102, 241, 0.1);
+  border: var(--border-width) solid var(--color-accent);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.summary-icon {
+  color: var(--color-accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.summary-content {
+  flex: 1;
+  color: var(--color-text-primary);
+}
+
+/* Example Styling */
+.message-example {
+  background-color: rgba(16, 185, 129, 0.1);
+  border: var(--border-width) solid var(--color-success);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.example-icon {
+  color: var(--color-success);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.example-content {
+  flex: 1;
+  color: var(--color-text-primary);
+}
+
+/* Icon Styling */
+.mode-icon-svg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-accent);
+}
+
+/* Clean up spacing */
+.formatted-message p {
+  margin-bottom: var(--spacing-sm);
+}
+
+.formatted-message p:last-child {
+  margin-bottom: 0;
+}
+
+/* Code-like text */
+.formatted-message code {
+  background-color: var(--color-bg-tertiary);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: var(--font-body);
+  font-size: 0.875em;
+  color: var(--color-accent);
+}
+
+/* Blockquotes */
+.formatted-message blockquote {
+  border-left: 3px solid var(--color-border);
+  padding-left: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+/* Remove excessive spacing */
+.formatted-message > *:first-child {
+  margin-top: 0;
+}
+
+.formatted-message > *:last-child {
+  margin-bottom: 0;
+}
