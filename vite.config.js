@@ -9,4 +9,14 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: [],
   },
+  build: {
+    rollupOptions: {
+      external: [
+        /pdf\.worker/
+      ]
+    }
+  },
+  optimizeDeps: {
+    exclude: ['pdfjs-dist']
+  }
 })
