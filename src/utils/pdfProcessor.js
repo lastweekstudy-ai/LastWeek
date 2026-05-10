@@ -1,8 +1,7 @@
 import { pdfjs as pdfjsLib } from 'react-pdf';
-import PDFWorkerUrl from 'react-pdf/dist/pdf.worker.entry.js?url';
 
-// Use the same pdfjs instance as react-pdf (5.4.296) with its matching worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = PDFWorkerUrl;
+// Configure PDF.js worker - use CDN with HTTPS
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 export const extractTextFromPDF = async (file) => {
   try {
