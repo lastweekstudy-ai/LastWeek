@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import useSession from '../../hooks/useSession';
 import useSessionAssessment from '../../hooks/useSessionAssessment';
 import useSessionSummary from '../../hooks/useSessionSummary';
+import usePerformanceTracking from '../../hooks/usePerformanceTracking';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
 import SessionAssessment from '../../components/SessionAssessment';
@@ -43,6 +44,13 @@ const FocusBreakdown = () => {
   });
 
   useSessionSummary({ messages, generateAndSaveSummary });
+
+  const { handleFlashcardRate, handleMCQAnswer } = usePerformanceTracking({
+    userId: user?.$id,
+    sessionId: activeSession?.$id,
+    subject: activeSession?.subject,
+    activeSession,
+  });
 
   const handlePDFUploaded = useCallback((fileData) => {
     setPdfLibraryOpen(true);
@@ -146,6 +154,8 @@ const FocusBreakdown = () => {
             onResourcesToggle={() => setPdfLibraryOpen(!pdfLibraryOpen)}
             sidebarOpen={sidebarOpen}
             onPDFUploaded={handlePDFUploaded}
+            onFlashcardRate={handleFlashcardRate}
+            onMCQAnswer={handleMCQAnswer}
           />
         </div>
 
@@ -157,6 +167,33 @@ const FocusBreakdown = () => {
           >
             ✕
           </button>
+
+          <div className="sidebar-section">
+            <h3>Quick Study</h3>
+            <div className="quick-actions">
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => handleSendMessage("Quiz me on what we've covered so far")}
+                disabled={isLoading || !activeSession}
+              >
+                🧠 Quiz me
+              </button>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => handleSendMessage("Create a flashcard for the last concept")}
+                disabled={isLoading || !activeSession}
+              >
+                🃏 Flashcard
+              </button>
+              <button
+                className="btn btn-secondary btn-sm"
+                onClick={() => handleSendMessage("Give me 3 MCQs on this topic")}
+                disabled={isLoading || !activeSession}
+              >
+                ✅ MCQ Quiz
+              </button>
+            </div>
+          </div>
 
           <div className="sidebar-section">
             <h3>Paste Content</h3>

@@ -479,3 +479,36 @@ export const getUserPDFCategories = async (userId) => {
     return [];
   }
 };
+
+// Make a resource publicly searchable
+export const makeResourcePublic = async (resourceId, aiTitle = null) => {
+  try {
+    const data = { isPublic: true };
+    if (aiTitle) data.aiTitle = aiTitle.substring(0, 500);
+    return await databases.updateDocument(DATABASE_ID, PDF_RESOURCES_COLLECTION_ID, resourceId, data);
+  } catch (error) {
+    console.error('[makeResourcePublic] Failed:', error.message);
+    throw error;
+  }
+};
+
+// Make a resource private
+export const makeResourcePrivate = async (resourceId) => {
+  try {
+    return await databases.updateDocument(DATABASE_ID, PDF_RESOURCES_COLLECTION_ID, resourceId, { isPublic: false });
+  } catch (error) {
+    console.error('[makeResourcePrivate] Failed:', error.message);
+    throw error;
+  }
+};
+
+// Update AI-generated title for a resource
+export const updateResourceAITitle = async (resourceId, aiTitle) => {
+  try {
+    return await databases.updateDocument(DATABASE_ID, PDF_RESOURCES_COLLECTION_ID, resourceId, {
+      aiTitle: aiTitle.substring(0, 500),
+    });
+  } catch (error) {
+    console.error('[updateResourceAITitle] Failed:', error.message);
+  }
+};

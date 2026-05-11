@@ -12,8 +12,10 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import '../styles/StudyInterface.css';
 
-// Configure PDF.js worker - use version 4.4.168 to match react-pdf 9.1.1
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
+// Configure PDF.js worker - use the worker from public folder
+if (typeof window !== 'undefined') {
+  pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+}
 
 const PRESETS = [30, 50, 70];
 const SNAP_THRESHOLD = 3;
@@ -88,6 +90,15 @@ const StudyInterface = ({
   const pdfUrl = resource.storageFileId 
     ? `${import.meta.env.VITE_APPWRITE_ENDPOINT}/storage/buckets/${import.meta.env.VITE_APPWRITE_STORAGE_BUCKET_ID}/files/${resource.storageFileId}/view?project=${import.meta.env.VITE_APPWRITE_PROJECT_ID}`
     : null;
+
+  console.log('[StudyInterface] Resource loaded:', {
+    fileName: resource.fileName,
+    storageFileId: resource.storageFileId,
+    pageCount: resource.pageCount,
+    hasExtractedText: !!resource.extractedText,
+    extractedTextLength: resource.extractedText?.length || 0,
+    pdfUrl: !!pdfUrl,
+  });
 
   useEffect(() => {
     // Parse bookmarks
@@ -718,21 +729,25 @@ const StudyInterface = ({
 
   const isBookmarked = bookmarks.some(b => b.page === pageNumber);
 
-  if (!pdfUrl) {
-    // File is over 10MB — no storage URL, but extracted text is available.
+  // Only show text-only view if PDF viewer truly cannot load
+  // (no pdfUrl or no numPages after attempting to load)
+  const shouldShowTextOnly = !pdfUrl || (loading === false && !numPages);
+
+  if (shouldShowTextOnly) {
+    // File cannot be previewed directly, but extracted text is available.
     // Show a text-only study interface instead of a broken PDF viewer.
-    const hasText = resource.extractedText && resource.extractedText.length > 50;
+    const hasExtractedText = resource.extractedText && resource.extractedText.length > 50;
     return (
       <div className="study-interface">
         <div className="study-error">
           <h3>📄 {resource.fileName}</h3>
-          {hasText ? (
+          {hasExtractedText ? (
             <>
               <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>
-                This file is larger than 10 MB so it cannot be previewed directly, but the full text has been extracted and the AI can answer questions about it.
+                The PDF preview is unavailable, but the full text has been extracted and the AI can answer questions about it.
               </p>
               <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-                Use the chat on the right to ask questions about the content. The AI has access to all {resource.pageCount || '?'} pages.
+                Use the chat on the right to ask questions about the content. The AI has access to all extracted text.
               </p>
             </>
           ) : (

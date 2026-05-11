@@ -31,8 +31,10 @@ const ChatInterface = ({
   onSidebarToggle = null,
   onResourcesToggle = null,
   sidebarOpen = false,
-  insideStudyMode = false,  // NEW: suppress PDF warnings when inside StudyInterface
-  onPDFUploaded = null  // NEW: callback when PDF is uploaded
+  insideStudyMode = false,
+  onPDFUploaded = null,
+  onFlashcardRate = null,  // callback(confidence, front, back)
+  onMCQAnswer = null,      // callback(isCorrect, questionText)
 }) => {
   const [input, setInput] = useState('');
   const [showAttachments, setShowAttachments] = useState(false);
@@ -189,7 +191,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
   }, []);
 
   // Memoized message component to prevent re-renders
-  const MessageItem = useMemo(() => React.memo(({ message, mode, onCopy }) => {
+  const MessageItem = useMemo(() => React.memo(({ message, mode, onCopy, onFlashcardRate, onMCQAnswer }) => {
     // Parse message content to check for file attachment
     let messageText = message.content;
     let fileAttachment = null;
@@ -270,7 +272,11 @@ This ensures I have the complete PDF content with accurate page and line numbers
             <div className="message-text-improved">
               {message.role === 'assistant' ? (
                 <>
-                  <EnhancedMessageFormatter content={messageText} />
+                  <EnhancedMessageFormatter
+                    content={messageText}
+                    onFlashcardRate={onFlashcardRate}
+                    onMCQAnswer={onMCQAnswer}
+                  />
                   {message.isStreaming && <span className="streaming-cursor" aria-hidden="true">▋</span>}
                 </>
               ) : (
@@ -341,6 +347,8 @@ This ensures I have the complete PDF content with accurate page and line numbers
             message={message}
             mode={mode}
             onCopy={copyToClipboard}
+            onFlashcardRate={onFlashcardRate}
+            onMCQAnswer={onMCQAnswer}
           />
         ))}
         

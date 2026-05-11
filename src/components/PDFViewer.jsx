@@ -7,8 +7,8 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import '../styles/PDFViewer.css';
 
-// Configure PDF.js worker - use version 4.4.168 to match react-pdf 9.1.1
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
+// Configure PDF.js worker - use the worker from public folder
+pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
   const [numPages, setNumPages] = useState(null);

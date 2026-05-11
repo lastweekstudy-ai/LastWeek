@@ -1,7 +1,9 @@
 import { pdfjs as pdfjsLib } from 'react-pdf';
 
-// Configure PDF.js worker - use version 5.4.296 to match react-pdf 10.4.1
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@5.4.296/build/pdf.worker.min.mjs`;
+// Configure PDF.js worker - use the worker from public folder
+if (typeof window !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+}
 
 export const extractTextFromPDF = async (file) => {
   try {

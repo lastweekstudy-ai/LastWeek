@@ -12,6 +12,9 @@ import {
   generateSchedule,
 } from '../appwrite/examPlanner';
 import ChatInterface from '../components/ChatInterface';
+import PDFLibrary from '../components/PDFLibrary';
+import PomodoroTimer from '../components/PomodoroTimer';
+import usePerformanceTracking from '../hooks/usePerformanceTracking';
 import '../styles/ExamSession.css';
 
 /**
@@ -35,9 +38,17 @@ const ExamSession = () => {
   const [error, setError] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAnalysing] = useState(false);
+  const [showResources, setShowResources] = useState(false);
   const openingFiredRef = useRef(false);
 
   const topicIdx = parseInt(topicIndex, 10);
+
+  const { handleFlashcardRate, handleMCQAnswer } = usePerformanceTracking({
+    userId: user?.$id,
+    sessionId: sessionCtx.activeSession?.$id,
+    subject: plan?.examName,
+    activeSession: sessionCtx.activeSession,
+  });
 
   // ── Load plan and resume or create session ────────────────────────────────
   useEffect(() => {
@@ -208,6 +219,7 @@ const ExamSession = () => {
         </div>
 
         <div className="es-topbar-right">
+          <PomodoroTimer />
           <span className={`es-days-chip ${days <= 3 ? 'urgent' : ''}`}>
             {days === 0 ? 'Exam today!' : `${days}d left`}
           </span>
@@ -273,8 +285,26 @@ const ExamSession = () => {
             sessionId={sessionCtx.activeSession?.$id}
             subject={plan.examName}
             insideStudyMode={true}
+            onFlashcardRate={handleFlashcardRate}
+            onMCQAnswer={handleMCQAnswer}
+            onResourcesToggle={() => setShowResources(!showResources)}
           />
         </main>
+
+        {/* Resources Panel */}
+        {showResources && (
+          <PDFLibrary
+            sessionId={sessionCtx.activeSession?.$id}
+            userId={user?.$id}
+            isOpen={showResources}
+            onClose={() => setShowResources(false)}
+            messages={sessionCtx.messages}
+            onSendMessage={sendMessage}
+            isLoading={sessionCtx.isLoading}
+            mode="exam_prep"
+            subject={plan.examName}
+          />
+        )}
       </div>
     </div>
   );

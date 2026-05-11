@@ -7,6 +7,7 @@ import useSession from './hooks/useSession';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
+import MigrationHelper from './components/MigrationHelper';
 import Landing from './pages/Landing';
 import Auth from './pages/Auth';
 import Dashboard from './pages/DashboardEnhanced';
@@ -108,6 +109,7 @@ function App() {
       <ThemeProvider>
         <AuthProvider>
           <SessionProvider>
+            <MigrationHelper />
             <Router>
               <div className="app">
                 <Routes>

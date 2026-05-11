@@ -48,7 +48,9 @@ export const processYoutubeVideo = async (youtubeUrl, userId) => {
     success: true,
     cached: response.cached || false,
     docId: response.docId || null,
+    title: data.title || 'Untitled Video',
     summary: data.summary,
+    detailedNotes: data.detailedNotes || '',
     flashcards: typeof data.flashcards === 'string' ? JSON.parse(data.flashcards) : data.flashcards,
     quiz: typeof data.quiz === 'string' ? JSON.parse(data.quiz) : data.quiz,
     keyTopics: data.keyTopics,
@@ -63,10 +65,11 @@ export const getUserYoutubeStudies = async (userId) => {
     const result = await databases.listDocuments(
       DATABASE_ID,
       YOUTUBE_STUDIES_COLLECTION_ID,
-      [Query.equal('userId', userId), Query.orderDesc('createdAt'), Query.limit(20)]
+      [Query.equal('userId', userId), Query.orderDesc('createdAt'), Query.limit(50)]
     );
     return result.documents.map(doc => ({
       ...doc,
+      title: doc.title || 'Untitled Video',
       flashcards: typeof doc.flashcards === 'string' ? JSON.parse(doc.flashcards) : doc.flashcards,
       quiz: typeof doc.quiz === 'string' ? JSON.parse(doc.quiz) : doc.quiz,
     }));

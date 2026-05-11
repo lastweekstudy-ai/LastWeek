@@ -118,11 +118,12 @@ const extractMCQs = (text) => {
 /**
  * MCQRenderer — stateful wrapper that tracks score across all questions in a set.
  */
-const MCQRenderer = ({ prefix, questions, suffix }) => {
-  const [answers, setAnswers] = useState({}); // { index: { label, isCorrect } }
+const MCQRenderer = ({ prefix, questions, suffix, onMCQAnswer }) => {
+  const [answers, setAnswers] = useState({});
 
   const handleAnswer = (index, answer) => {
     setAnswers(prev => ({ ...prev, [index]: answer }));
+    onMCQAnswer?.(answer.isCorrect, questions[index]?.questionText);
   };
 
   const answeredCount = Object.keys(answers).length;
@@ -168,7 +169,7 @@ const MCQRenderer = ({ prefix, questions, suffix }) => {
   );
 };
 
-const EnhancedMessageFormatter = ({ content, onFlashcardRate }) => {
+const EnhancedMessageFormatter = ({ content, onFlashcardRate, onMCQAnswer }) => {
 
   // ── Flashcard detection ────────────────────────────────────────────────────
   const flashcard = extractFlashcard(content);
@@ -197,6 +198,7 @@ const EnhancedMessageFormatter = ({ content, onFlashcardRate }) => {
         prefix={mcqData.prefix}
         questions={mcqData.questions}
         suffix={mcqData.suffix}
+        onMCQAnswer={onMCQAnswer}
       />
     );
   }

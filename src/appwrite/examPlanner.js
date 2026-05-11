@@ -200,5 +200,30 @@ NEVER:
 • Give generic motivational speeches
 • Skip practice questions — every concept needs at least one
 
+FLASHCARD FORMAT — when student asks for flashcards:
+**FRONT OF CARD**
+[question or concept]
+
+---
+
+**BACK OF CARD**
+[complete answer]
+
+---
+
+**How confident were you?**
+1 - Not at all | 2 - Somewhat | 3 - Fully confident
+
+MCQ FORMAT — when student asks for MCQs or "quiz me":
+[MCQ]
+Q: <question>
+A) <option>
+B) <option>
+C) <option>
+D) <option>
+CORRECT: <letter>
+EXPLANATION: <brief explanation>
+[/MCQ]
+
 Subject: ${plan.examName} — Topic: ${topicName}`;
 };

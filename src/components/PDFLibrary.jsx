@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getSessionPDFs, trackStudyTime } from '../appwrite/pdfResources';
+import { getSessionPDFs, trackStudyTime, makeResourcePublic, makeResourcePrivate } from '../appwrite/pdfResources';
+import { getUserAudioLectures, makeAudioLecturePublic, makeAudioLecturePrivate } from '../appwrite/audioLecture';
 import { getFileURL } from '../appwrite/storage';
 import StudyInterface from './StudyInterface';
 import ResourceViewer from './ResourceViewer';
 import PDFNoteEditor from './PDFNoteEditor';
 import YoutubeStudyPanel from './YoutubeStudyPanel';
+import AudioProcessor from './AudioProcessor';
+import AudioLectureViewer from './AudioLectureViewer';
+import ResourceSearch from './ResourceSearch';
 import '../styles/PDFLibrary.css';
 
 const PDFLibrary = ({ 
@@ -25,7 +29,9 @@ const PDFLibrary = ({
   const [sortBy, setSortBy] = useState('recent');
   const [showNotes, setShowNotes] = useState(false);
   const [notesPage, setNotesPage] = useState(1);
-  const [activeLibTab, setActiveLibTab] = useState('files'); // 'files' | 'youtube'
+  const [activeLibTab, setActiveLibTab] = useState('files');
+  const [showAudioProcessor, setShowAudioProcessor] = useState(false);
+  const [showResourceSearch, setShowResourceSearch] = useState(false);
   
   // Study time tracking
   const studyStartTime = useRef(null);
@@ -90,8 +96,38 @@ const PDFLibrary = ({
   const loadResources = async () => {
     try {
       setLoading(true);
-      const sessionResources = await getSessionPDFs(sessionId);
-      setResources(sessionResources);
+      
+      // Fetch both PDFs and audio lectures in parallel
+      const [sessionResources, audioLectures] = await Promise.all([
+        getSessionPDFs(sessionId),
+        getUserAudioLectures(userId, sessionId) // ← Pass sessionId to filter by session
+      ]);
+      
+      // Transform audio lectures to match resource format
+      const audioResources = audioLectures.map(lecture => ({
+        $id: lecture.$id,
+        fileName: lecture.title,
+        fileSize: 0, // Audio size not tracked in display
+        tags: 'audio/lecture',
+        pageCount: 0,
+        currentPage: 0,
+        lastAccessedAt: lecture.updatedAt || lecture.createdAt,
+        resourceType: 'audio',
+        isPublic: lecture.isPublic || false, // ← Include isPublic for share button
+        audioData: {
+          audioUrl: lecture.audioUrl,
+          transcript: lecture.transcript,
+          lectureNotes: lecture.lectureNotes,
+          duration: lecture.duration
+        }
+      }));
+      
+      // Merge and sort by last accessed
+      const allResources = [...sessionResources, ...audioResources].sort(
+        (a, b) => new Date(b.lastAccessedAt) - new Date(a.lastAccessedAt)
+      );
+      
+      setResources(allResources);
     } catch (error) {
       console.error('Failed to load resources:', error);
     } finally {
@@ -113,14 +149,16 @@ const PDFLibrary = ({
     loadResources();
   };
 
-  const getFileIcon = (fileName, fileType) => {
+  const getFileIcon = (fileName, fileType, resourceType) => {
+    if (resourceType === 'audio') return '🎙️';
     if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) return '📄';
     if (fileType?.startsWith('image/') || /\.(jpg|jpeg|png|svg)$/i.test(fileName)) return '🖼️';
     if (fileType === 'text/html' || fileName.endsWith('.html')) return '🌐';
     return '📄';
   };
 
-  const getFileTypeLabel = (fileName, fileType) => {
+  const getFileTypeLabel = (fileName, fileType, resourceType) => {
+    if (resourceType === 'audio') return 'Audio Lecture';
     if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) return 'PDF';
     if (fileType === 'image/jpeg' || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg')) return 'JPG';
     if (fileType === 'image/png' || fileName.endsWith('.png')) return 'PNG';
@@ -179,7 +217,7 @@ const PDFLibrary = ({
           <button className="close-btn" onClick={onClose} title="Close">✕</button>
         </div>
 
-        {/* Tab switcher */}
+        {/* Tab switcher - YouTube tab hidden for now */}
         <div className="pdf-lib-tabs">
           <button
             className={`pdf-lib-tab ${activeLibTab === 'files' ? 'active' : ''}`}
@@ -187,18 +225,21 @@ const PDFLibrary = ({
           >
             📄 Files
           </button>
+          {/* YouTube tab temporarily disabled - uncomment when transcript fetching is solved
           <button
             className={`pdf-lib-tab ${activeLibTab === 'youtube' ? 'active' : ''}`}
             onClick={() => setActiveLibTab('youtube')}
           >
             ▶ YouTube
           </button>
+          */}
         </div>
 
-        {/* YouTube tab */}
+        {/* YouTube tab - kept for future use
         {activeLibTab === 'youtube' && (
           <YoutubeStudyPanel userId={userId} onSendMessage={onSendMessage} />
         )}
+        */}
 
         {/* Files tab */}
         {activeLibTab === 'files' && (
@@ -220,6 +261,20 @@ const PDFLibrary = ({
                 <option value="name">Name</option>
                 <option value="size">Size</option>
               </select>
+              <button
+                className="audio-upload-btn"
+                onClick={() => setShowAudioProcessor(true)}
+                title="Process Audio Lecture"
+              >
+                🎙️ Audio
+              </button>
+              <button
+                className="rs-search-lib-btn"
+                onClick={() => setShowResourceSearch(true)}
+                title="Search shared resources"
+              >
+                🔍 Library
+              </button>
             </div>
 
             <div className="pdf-library-content">
@@ -238,15 +293,15 @@ const PDFLibrary = ({
                 <div className="pdf-list">
                   {sortedResources.map((resource) => (
                     <div key={resource.$id} className="pdf-item">
-                      <div className="pdf-icon">{getFileIcon(resource.fileName, resource.tags)}</div>
+                      <div className="pdf-icon">{getFileIcon(resource.fileName, resource.tags, resource.resourceType)}</div>
                       <div className="pdf-info">
                         <div className="pdf-name" title={resource.fileName}>
                           {resource.fileName}
                         </div>
                         <div className="pdf-meta">
-                          <span className="file-type-badge">{getFileTypeLabel(resource.fileName, resource.tags)}</span>
+                          <span className="file-type-badge">{getFileTypeLabel(resource.fileName, resource.tags, resource.resourceType)}</span>
                           {resource.pageCount && resource.pageCount > 1 && <span>{resource.pageCount} pages</span>}
-                          <span>{formatFileSize(resource.fileSize)}</span>
+                          {resource.fileSize > 0 && <span>{formatFileSize(resource.fileSize)}</span>}
                           <span>{formatDate(resource.lastAccessedAt)}</span>
                         </div>
                         {resource.currentPage && resource.currentPage > 1 && (
@@ -254,7 +309,7 @@ const PDFLibrary = ({
                             Page {resource.currentPage}{resource.pageCount && ` of ${resource.pageCount}`}
                           </div>
                         )}
-                        {resource.tags && !resource.tags.startsWith('image/') && !resource.tags.startsWith('application/') && !resource.tags.startsWith('text/') && (
+                        {resource.tags && !resource.tags.startsWith('image/') && !resource.tags.startsWith('application/') && !resource.tags.startsWith('text/') && resource.tags !== 'audio/lecture' && (
                           <div className="pdf-tags">
                             {resource.tags.split(',').map((tag, idx) => (
                               <span key={idx} className="pdf-tag">{tag.trim()}</span>
@@ -268,7 +323,33 @@ const PDFLibrary = ({
                           onClick={() => handleViewResource(resource)}
                           title="View resource"
                         >
-                          View
+                          {resource.resourceType === 'audio' ? 'Study' : 'View'}
+                        </button>
+                        <button
+                          className={`pdf-action-btn ${resource.isPublic ? 'share-active' : ''}`}
+                          onClick={async () => {
+                            try {
+                              if (resource.resourceType === 'audio') {
+                                // Handle audio sharing
+                                if (resource.isPublic) {
+                                  await makeAudioLecturePrivate(resource.$id);
+                                } else {
+                                  await makeAudioLecturePublic(resource.$id);
+                                }
+                              } else {
+                                // Handle PDF sharing
+                                if (resource.isPublic) {
+                                  await makeResourcePrivate(resource.$id);
+                                } else {
+                                  await makeResourcePublic(resource.$id, resource.aiTitle || resource.fileName);
+                                }
+                              }
+                              loadResources();
+                            } catch (e) { console.error(e); }
+                          }}
+                          title={resource.isPublic ? 'Remove from shared library' : 'Share to library'}
+                        >
+                          {resource.isPublic ? '🌐 Shared' : '🔒 Share'}
                         </button>
                       </div>
                     </div>
@@ -287,7 +368,19 @@ const PDFLibrary = ({
       </div>
 
       {selectedResource && (
-        selectedResource.tags === 'application/pdf' || selectedResource.fileName.endsWith('.pdf') ? (
+        selectedResource.resourceType === 'audio' ? (
+          <AudioLectureViewer
+            lecture={selectedResource}
+            onClose={handleCloseViewer}
+            messages={messages}
+            onSendMessage={onSendMessage}
+            isLoading={isLoading}
+            mode={mode}
+            userId={userId}
+            sessionId={sessionId}
+            subject={subject}
+          />
+        ) : selectedResource.tags === 'application/pdf' || selectedResource.fileName.endsWith('.pdf') ? (
           <StudyInterface
             resource={selectedResource}
             onClose={handleCloseViewer}
@@ -317,6 +410,27 @@ const PDFLibrary = ({
           pageNumber={notesPage}
           userId={userId}
           onClose={() => setShowNotes(false)}
+        />
+      )}
+
+      {showAudioProcessor && (
+        <AudioProcessor
+          userId={userId}
+          sessionId={sessionId}
+          onClose={() => setShowAudioProcessor(false)}
+          onLectureCreated={(lecture) => {
+            setShowAudioProcessor(false);
+            loadResources();
+          }}
+        />
+      )}
+
+      {showResourceSearch && (
+        <ResourceSearch
+          userId={userId}
+          sessionId={sessionId}
+          onImported={() => loadResources()}
+          onClose={() => setShowResourceSearch(false)}
         />
       )}
     </>

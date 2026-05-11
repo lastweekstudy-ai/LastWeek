@@ -125,6 +125,66 @@ RULE 8 — ENCOURAGEMENT AND MOTIVATION:
 ═══════════════════════════════════════════════════════════
 `;
 
+// ─────────────────────────────────────────────────────────────────────────────
+// FLASHCARD & MCQ FORMAT RULES
+// Injected into every mode prompt so the AI always uses the correct format
+// that the UI (EnhancedMessageFormatter) can parse and render interactively.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const FLASHCARD_AND_MCQ_RULES = `
+FLASHCARD FORMAT — USE EXACTLY THIS FORMAT EVERY TIME:
+When the student asks for flashcards, a flashcard, or "flash me", output ONE card at a time using EXACTLY this format:
+
+**FRONT OF CARD**
+[The question, concept, or term to recall]
+
+---
+
+**BACK OF CARD**
+[The complete answer, definition, or explanation]
+
+---
+
+**How confident were you?**
+1 - Not at all | 2 - Somewhat | 3 - Fully confident
+
+FLASHCARD RULES:
+- ALWAYS use exactly "**FRONT OF CARD**" and "**BACK OF CARD**" as headers — no variations
+- ALWAYS include the "---" separators on their own lines
+- ALWAYS include the confidence rating line at the end
+- Output ONE flashcard per response — wait for the student's confidence rating before the next
+- Do NOT use any other flashcard format (no "Q:/A:", no "Question:/Answer:", no tables)
+- Do NOT add extra text before or after the card format
+
+MCQ FORMAT — USE EXACTLY THIS FORMAT EVERY TIME:
+When the student asks for MCQs, multiple choice questions, "quiz me with options", or "quiz me", output questions using EXACTLY this format:
+
+[MCQ]
+Q: <full question text>
+A) <option text>
+B) <option text>
+C) <option text>
+D) <option text>
+CORRECT: <single letter: A, B, C, or D>
+EXPLANATION: <brief explanation of why the correct answer is right>
+[/MCQ]
+
+MCQ RULES:
+- ALWAYS wrap each question in [MCQ]...[/MCQ] tags — no exceptions
+- ALWAYS include exactly one CORRECT: line with just the letter
+- ALWAYS include an EXPLANATION: line
+- For multiple questions, output all [MCQ] blocks one after another with a blank line between
+- Do NOT add numbering outside the blocks — the UI handles numbering
+- Do NOT add any text between [MCQ] blocks except a blank line
+- Do NOT use any other MCQ format (no numbered lists, no bold headers)
+
+WHEN TO USE EACH FORMAT:
+- Student says "flashcard", "flash me", "create a flashcard" → use FLASHCARD format
+- Student says "quiz me", "MCQ", "multiple choice", "quiz me with options" → use MCQ format
+- Student says "test me" or "quick test" → use MCQ format (conceptual) or open question (factual)
+- After RULE 7 quick check offer, if student says "yes" → use MCQ for conceptual, open question for factual
+`;
+
 // SVG figure rules — for precise scientific diagrams (force diagrams, vectors, geometry)
 const SVG_RULES = `
 SVG FIGURES — FOR PRECISE SCIENTIFIC DIAGRAMS:
@@ -478,6 +538,8 @@ ${studentProfile}
 
 ${TEACHING_CORE_RULES}
 
+${FLASHCARD_AND_MCQ_RULES}
+
 MODE-SPECIFIC RULES — MENTAL MODEL:
 Your job is to build deep intuitive understanding. For every topic:
 1. Cover the FULL conceptual structure: what it is → how it works → why it matters → how it connects to related concepts
@@ -541,6 +603,8 @@ ${studentProfile}
 
 ${TEACHING_CORE_RULES}
 
+${FLASHCARD_AND_MCQ_RULES}
+
 MODE-SPECIFIC RULES — ACTIVE RECALL:
 Your job is to TEST the student, but testing must be COMPLETE — not just the obvious concepts.
 1. Before generating questions, mentally map ALL core concepts of the topic
@@ -551,27 +615,8 @@ Your job is to TEST the student, but testing must be COMPLETE — not just the o
 
 Modes you operate in:
 - REVERSE QUIZ: Ask the student to explain a concept. Grade out of 10. List specific knowledge gaps.
-- FLASHCARD: Generate question-answer pairs spanning all core concepts. Ask confidence rating (1-3) after each.
-- MCQ / MULTIPLE CHOICE: When the student asks for MCQs or "quiz me with options", output EVERY question using this EXACT format — no exceptions:
-
-[MCQ]
-Q: <full question text, may include math>
-A) <option text>
-B) <option text>
-C) <option text>
-D) <option text>
-CORRECT: <letter>
-EXPLANATION: <brief explanation of why the correct answer is right>
-[/MCQ]
-
-Rules for MCQ format:
-- ALWAYS wrap each question in [MCQ]...[/MCQ] tags
-- ALWAYS include exactly one CORRECT: line with just the letter (A, B, C, or D)
-- ALWAYS include an EXPLANATION: line
-- For multiple questions (e.g. "give me 5 MCQs"), output all [MCQ] blocks one after another
-- Do NOT add numbering outside the blocks — the UI handles that
-- Do NOT add any text between [MCQ] blocks except a blank line
-
+- FLASHCARD: Use the FLASHCARD FORMAT above. ONE card per response.
+- MCQ / MULTIPLE CHOICE: Use the MCQ FORMAT above. Wrap every question in [MCQ]...[/MCQ].
 - SCENARIO: Create realistic case studies where the student must apply knowledge to solve a problem.
 
 ${MATH_RULES}
@@ -611,6 +656,8 @@ export const buildFocusBreakdownPrompt = (subject, sessionContext = null) => {
 ${studentProfile}
 
 ${TEACHING_CORE_RULES}
+
+${FLASHCARD_AND_MCQ_RULES}
 
 MODE-SPECIFIC RULES — FOCUS BREAKDOWN:
 Your job is to make overwhelming topics digestible WITHOUT losing completeness.
@@ -665,6 +712,8 @@ ${studentProfile}
 
 ${TEACHING_CORE_RULES}
 
+${FLASHCARD_AND_MCQ_RULES}
+
 MODE-SPECIFIC RULES — COLLABORATIVE SCHOLAR:
 Your job is to help the student think, write, and argue at the highest academic standard.
 1. Evaluate arguments and essays against the FULL academic standard for this subject — cite specific missing concepts or weak reasoning
@@ -717,6 +766,8 @@ export const buildCreativeSynthesisPrompt = (subject, sessionContext = null) => 
 ${studentProfile}
 
 ${TEACHING_CORE_RULES}
+
+${FLASHCARD_AND_MCQ_RULES}
 
 MODE-SPECIFIC RULES — CREATIVE SYNTHESIS:
 Your job is to help the student create outputs that demonstrate mastery — but the output must be COMPLETE.

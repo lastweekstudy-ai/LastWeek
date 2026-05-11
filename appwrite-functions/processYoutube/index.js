@@ -42,34 +42,67 @@ export default async ({ req, res, log, error }) => {
 
     if (existing.documents.length > 0) {
       const doc = existing.documents[0];
-      log(`Cache hit for videoId: ${videoId}`);
-      return res.json({
-        success: true,
-        cached: true,
-        docId: doc.$id,
-        data: {
-          summary:    doc.summary,
-          flashcards: doc.flashcards,
-          quiz:       doc.quiz,
-          keyTopics:  doc.keyTopics,
-        },
-      });
+      
+      // If old cache missing new fields, reprocess
+      if (!doc.title || !doc.detailedNotes) {
+        log(`Cache outdated for videoId: ${videoId}, reprocessing...`);
+        // Delete old cache and continue to reprocess
+        try {
+          await databases.deleteDocument(DATABASE_ID, COLLECTION_ID, doc.$id);
+        } catch (e) {
+          log('Failed to delete outdated cache: ' + e.message);
+        }
+      } else {
+        log(`Cache hit for videoId: ${videoId}`);
+        return res.json({
+          success: true,
+          cached: true,
+          docId: doc.$id,
+          data: {
+            title:       doc.title,
+            summary:     doc.summary,
+            detailedNotes: doc.detailedNotes,
+            flashcards:  doc.flashcards,
+            quiz:        doc.quiz,
+            keyTopics:   doc.keyTopics,
+          },
+        });
+      }
     }
   } catch (e) {
     // Collection empty or query failed — continue to process
     log('Cache check failed, continuing: ' + e.message);
   }
 
-  // ── Fetch YouTube transcript ───────────────────────────────────────────────
-  let transcript;
-  try {
-    const raw = await YoutubeTranscript.fetchTranscript(videoId);
-    transcript = raw.map(t => t.text).join(' ');
-  } catch (e) {
-    error('Transcript fetch failed: ' + e.message);
-    return res.json({
-      error: 'No captions available for this video. Try a different video that has subtitles/captions enabled.',
-    }, 400);
+  // ── Fetch YouTube transcript (server-side, try multiple times with delay) ──
+  let transcript, videoTitle = 'Untitled Video';
+  let attempts = 0;
+  const maxAttempts = 3;
+  
+  while (attempts < maxAttempts) {
+    try {
+      attempts++;
+      log(`Fetching transcript, attempt ${attempts}/${maxAttempts}`);
+      
+      const raw = await YoutubeTranscript.fetchTranscript(videoId);
+      transcript = raw.map(t => t.text).join(' ');
+      
+      if (transcript && transcript.trim().length >= 100) {
+        log('Transcript fetched successfully');
+        break;
+      }
+    } catch (e) {
+      error(`Transcript fetch attempt ${attempts} failed: ${e.message}`);
+      
+      if (attempts < maxAttempts) {
+        // Wait 2 seconds before retry
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } else {
+        return res.json({
+          error: 'No captions available for this video. Try a different video that has subtitles/captions enabled.',
+        }, 400);
+      }
+    }
   }
 
   if (!transcript || transcript.trim().length < 100) {
@@ -95,33 +128,38 @@ export default async ({ req, res, log, error }) => {
         messages: [
           {
             role: 'system',
-            content: 'You are an expert study assistant. Always respond with valid JSON only. No markdown, no explanation outside the JSON.',
+            content: 'You are an expert study assistant. Always respond with valid JSON only. No markdown, no explanation outside the JSON. Always write your response in English, even if the transcript is in another language.',
           },
           {
             role: 'user',
             content: `Analyze this video transcript and return a JSON object with exactly this structure:
 {
-  "summary": ["key point 1", "key point 2", "key point 3", "key point 4", "key point 5"],
+  "title": "Inferred video title from content (10-15 words max)",
+  "summary": ["key point 1", "key point 2", ..., "key point 10"],
+  "detailedNotes": "A comprehensive 3-4 paragraph summary covering all major concepts, examples, and takeaways from the video. Write in clear, educational prose.",
   "flashcards": [
     { "question": "...", "answer": "..." },
     { "question": "...", "answer": "..." },
-    { "question": "...", "answer": "..." },
-    { "question": "...", "answer": "..." },
-    { "question": "...", "answer": "..." }
+    ... (10 total flashcards)
   ],
   "quiz": [
-    { "question": "...", "options": ["A", "B", "C", "D"], "correct": 0 },
-    { "question": "...", "options": ["A", "B", "C", "D"], "correct": 1 },
-    { "question": "...", "options": ["A", "B", "C", "D"], "correct": 2 }
+    { "question": "...", "options": ["A", "B", "C", "D"], "correct": 0, "explanation": "Why this answer is correct" },
+    { "question": "...", "options": ["A", "B", "C", "D"], "correct": 1, "explanation": "..." },
+    ... (5 total quiz questions)
   ],
-  "keyTopics": ["topic 1", "topic 2", "topic 3", "topic 4", "topic 5"]
+  "keyTopics": ["topic 1", "topic 2", ..., "topic 8"]
 }
 
 Rules:
+- Infer a descriptive title from the content (10-15 words max)
+- Generate exactly 10 summary points (each under 20 words)
+- Write detailed notes as 3-4 connected paragraphs (200-300 words total)
+- Create 10 flashcards covering all major concepts
+- Create 5 quiz questions with explanations for each correct answer
+- Extract 8 key topics/concepts
 - "correct" is the 0-based index of the correct option in the options array
-- Generate exactly 5 summary points, 5 flashcards, 3 quiz questions, 5 key topics
-- Keep each summary point under 20 words
 - Make flashcard questions specific and testable
+- Quiz questions should test understanding, not just recall
 
 Transcript:
 ${textToAnalyze}`,
@@ -150,7 +188,9 @@ ${textToAnalyze}`,
 
   // ── Validate AI output ─────────────────────────────────────────────────────
   if (
+    !studyMaterial.title ||
     !Array.isArray(studyMaterial.summary) ||
+    !studyMaterial.detailedNotes ||
     !Array.isArray(studyMaterial.flashcards) ||
     !Array.isArray(studyMaterial.quiz) ||
     !Array.isArray(studyMaterial.keyTopics)
@@ -165,11 +205,13 @@ ${textToAnalyze}`,
       userId,
       videoId,
       youtubeUrl,
-      summary:    studyMaterial.summary,
-      flashcards: JSON.stringify(studyMaterial.flashcards),
-      quiz:       JSON.stringify(studyMaterial.quiz),
-      keyTopics:  studyMaterial.keyTopics,
-      createdAt:  new Date().toISOString(),
+      title:       studyMaterial.title,
+      summary:     studyMaterial.summary,
+      detailedNotes: studyMaterial.detailedNotes,
+      flashcards:  JSON.stringify(studyMaterial.flashcards),
+      quiz:        JSON.stringify(studyMaterial.quiz),
+      keyTopics:   studyMaterial.keyTopics,
+      createdAt:   new Date().toISOString(),
     });
     log(`Saved study for videoId: ${videoId}, docId: ${saved.$id}`);
   } catch (e) {
@@ -180,10 +222,12 @@ ${textToAnalyze}`,
       cached:  false,
       docId:   null,
       data: {
-        summary:    studyMaterial.summary,
-        flashcards: JSON.stringify(studyMaterial.flashcards),
-        quiz:       JSON.stringify(studyMaterial.quiz),
-        keyTopics:  studyMaterial.keyTopics,
+        title:       studyMaterial.title,
+        summary:     studyMaterial.summary,
+        detailedNotes: studyMaterial.detailedNotes,
+        flashcards:  JSON.stringify(studyMaterial.flashcards),
+        quiz:        JSON.stringify(studyMaterial.quiz),
+        keyTopics:   studyMaterial.keyTopics,
       },
     });
   }
@@ -193,10 +237,12 @@ ${textToAnalyze}`,
     cached:  false,
     docId:   saved.$id,
     data: {
-      summary:    studyMaterial.summary,
-      flashcards: JSON.stringify(studyMaterial.flashcards),
-      quiz:       JSON.stringify(studyMaterial.quiz),
-      keyTopics:  studyMaterial.keyTopics,
+      title:       studyMaterial.title,
+      summary:     studyMaterial.summary,
+      detailedNotes: studyMaterial.detailedNotes,
+      flashcards:  JSON.stringify(studyMaterial.flashcards),
+      quiz:        JSON.stringify(studyMaterial.quiz),
+      keyTopics:   studyMaterial.keyTopics,
     },
   });
 };

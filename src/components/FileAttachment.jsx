@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { uploadFile } from '../appwrite/storage';
 import { createFileAttachment } from '../appwrite/database';
 import { createPDFResource } from '../appwrite/pdfResources';
-import { useGemini } from '../hooks/useGemini';
+import useGemini from '../hooks/useGemini';
 import { extractTextFromPDF, isPDFProcessable, extractText } from '../utils/pdfProcessor';
 
 const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessionId = null, studyMode = 'mental_model', subject = 'General' }) => {
@@ -49,7 +49,7 @@ const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessio
             const pdfText = await extractText(arrayBuffer, {
               processImage,
               onProgress: ({ pageNum }) => {
-                setProgressText(`Processing page ${pageNum} of ${file.name}…`);
+                setProgressText(`Processing page ${pageNum}…`);
               }
             });
             setProgressText('');
@@ -62,6 +62,12 @@ const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessio
           } catch (pdfError) {
             setProgressText('');
             console.error('PDF processing failed:', pdfError);
+            console.error('PDF processing error details:', {
+              message: pdfError.message,
+              name: pdfError.name,
+              code: pdfError.code,
+              stack: pdfError.stack
+            });
             extractedContent = `[PDF file: ${file.name}]
 
 PDF text extraction failed: ${pdfError.message}
