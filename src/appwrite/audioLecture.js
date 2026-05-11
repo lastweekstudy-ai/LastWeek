@@ -191,7 +191,17 @@ Format the output in clean Markdown. Embed SVG figures inline where appropriate 
       // If sessionId attribute doesn't exist, remove it and retry
       if (err.message?.includes('sessionId') && lectureData.sessionId) {
         console.warn('[processAudioLecture] sessionId attribute not in schema yet, saving without it');
+        console.warn('[processAudioLecture] To enable session scoping for audio, add sessionId attribute to audio_lectures collection in Appwrite');
         delete lectureData.sessionId;
+        lectureDoc = await databases.createDocument(
+          DATABASE_ID,
+          AUDIO_LECTURES_COLLECTION_ID,
+          ID.unique(),
+          lectureData
+        );
+      } else if (err.message?.includes('isPublic') && lectureData.isPublic !== undefined) {
+        console.warn('[processAudioLecture] isPublic attribute not in schema yet, saving without it');
+        delete lectureData.isPublic;
         lectureDoc = await databases.createDocument(
           DATABASE_ID,
           AUDIO_LECTURES_COLLECTION_ID,

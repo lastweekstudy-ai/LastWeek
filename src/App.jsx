@@ -8,11 +8,16 @@ import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
 import MigrationHelper from './components/MigrationHelper';
-import Landing from './pages/Landing';
+import LandingPage from './pages/landing/LandingPage';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
 import Auth from './pages/Auth';
 import Dashboard from './pages/DashboardEnhanced';
 import ModeSelector from './pages/ModeSelector';
 import Settings from './pages/Settings';
+import DocsPage from './pages/docs/DocsPage';
 import PDFManager from './components/PDFManager';
 import MentalModel from './pages/modes/MentalModel';
 import ActiveRecall from './pages/modes/ActiveRecall';
@@ -114,8 +119,15 @@ function App() {
               <div className="app">
                 <Routes>
               {/* Public routes */}
-              <Route path="/" element={<Landing />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route path="/terms" element={<Terms />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/docs" element={<DocsPage />} />
+              <Route path="/docs/:slug" element={<DocsPage />} />
+              <Route path="/docs/:slug/:sectionId" element={<DocsPage />} />
               
               {/* Protected routes */}
               <Route 

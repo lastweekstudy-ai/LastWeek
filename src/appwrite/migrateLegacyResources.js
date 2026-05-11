@@ -66,7 +66,7 @@ export const migratePDFResources = async () => {
 
 /**
  * Migrate audio lectures — ensure all have proper structure
- * (Audio lectures are always public by nature, but we verify structure)
+ * Sets isPublic: false for all existing audio lectures (private by default)
  */
 export const migrateAudioLectures = async () => {
   console.log('[Migration] Starting audio lectures migration...');
@@ -85,9 +85,9 @@ export const migrateAudioLectures = async () => {
 
       if (res.documents.length === 0) break;
 
-      // Verify audio lectures have required fields
+      // Verify audio lectures have required fields and set isPublic
       for (const doc of res.documents) {
-        const needsUpdate = !doc.title || !doc.transcript || !doc.lectureNotes;
+        const needsUpdate = !doc.title || !doc.transcript || !doc.lectureNotes || doc.isPublic === undefined;
         
         if (needsUpdate) {
           try {
@@ -95,6 +95,7 @@ export const migrateAudioLectures = async () => {
             if (!doc.title) updateData.title = `Audio Lecture ${doc.$id.substring(0, 8)}`;
             if (!doc.transcript) updateData.transcript = '';
             if (!doc.lectureNotes) updateData.lectureNotes = '';
+            if (doc.isPublic === undefined) updateData.isPublic = false; // Private by default
 
             await databases.updateDocument(
               DATABASE_ID,

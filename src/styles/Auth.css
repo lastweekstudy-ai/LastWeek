@@ -4,6 +4,41 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-lg);
+  position: relative;
+}
+
+.home-button {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.home-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.home-button:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .home-button {
+    top: 1rem;
+    left: 1rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
 }
 
 .auth-container {

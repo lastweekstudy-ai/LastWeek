@@ -89,6 +89,9 @@ const Auth = () => {
 
   return (
     <div className="auth">
+      <button className="home-button" onClick={() => navigate('/')} title="Back to Home">
+        ← Home
+      </button>
       <div className="container">
         <div className="auth-container">
           <div className="auth-header">
