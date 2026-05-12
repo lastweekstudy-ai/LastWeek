@@ -32,6 +32,7 @@ import './styles/ErrorBoundary.css';
 import './styles/MessageFormatter.css';
 import './styles/RichTextViewer.css';
 import './styles/FilePromptInput.css';
+import './styles/mobile-responsive.css';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {

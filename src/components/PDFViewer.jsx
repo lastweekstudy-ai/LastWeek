@@ -3,9 +3,12 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import { updatePDFProgress, addPDFBookmark, removePDFBookmark, trackStudyTime } from '../appwrite/pdfResources';
 import { getPageNotes } from '../appwrite/pdfNotes';
 import { createPDFHighlight, getPageHighlights, deletePDFHighlight } from '../appwrite/pdfHighlights';
+import useOrientation from '../hooks/useOrientation';
+import OrientationPrompt from './OrientationPrompt';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
 import '../styles/PDFViewer.css';
+import '../styles/PDFViewerMobile.css';
 
 // Configure PDF.js worker - use the worker from public folder
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
@@ -26,6 +29,14 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
   // Refs for overlay infrastructure (Tasks 1 & 2)
   const pageContainerRef = useRef(null);
   const overlayLayerRef = useRef(null);
+
+  // Orientation handling for mobile/tablet
+  const { 
+    isLandscape, 
+    isMobileOrTablet, 
+    showOrientationPrompt, 
+    setShowOrientationPrompt 
+  } = useOrientation();
 
   // Study time tracking
   const studyStartTime = useRef(Date.now());
@@ -347,96 +358,102 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
   }
 
   return (
-    <div className={`pdf-viewer-container ${isFullscreen ? 'fullscreen' : ''}`}>
-      {/* Header */}
-      <div className="pdf-viewer-header">
-        <div className="pdf-viewer-title">
-          <span className="pdf-icon">📄</span>
-          <h3>{pdfResource.fileName}</h3>
-        </div>
-
-        <div className="pdf-viewer-actions">
-          <button
-            onClick={toggleBookmark}
-            className={`btn-icon ${isBookmarked ? 'active' : ''}`}
-            title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
-          >
-            {isBookmarked ? '⭐' : '☆'}
-          </button>
-
-          <div className="highlight-controls">
-            <button
-              onClick={() => setHighlightMode(!highlightMode)}
-              className={`btn-icon ${highlightMode ? 'active' : ''}`}
-              title={highlightMode ? 'Disable highlight mode' : 'Enable highlight mode'}
-            >
-              🖍️ {highlightMode && 'ON'}
-            </button>
-
-            {highlightMode && (
-              <>
-                <button
-                  onClick={() => setShowColorPicker(!showColorPicker)}
-                  className="btn-icon btn-color-picker"
-                  title="Choose highlight color"
-                  style={{ backgroundColor: highlightColors.find(c => c.value === highlightColor)?.color }}
-                >
-                  🎨
-                </button>
-
-                <button
-                  onClick={saveHighlight}
-                  className="btn-icon btn-save-highlight"
-                  title="Save selected text as highlight"
-                >
-                  💾
-                </button>
-
-                {showColorPicker && (
-                  <div className="color-picker-dropdown">
-                    {highlightColors.map((color) => (
-                      <button
-                        key={color.value}
-                        className={`color-option ${highlightColor === color.value ? 'active' : ''}`}
-                        style={{ backgroundColor: color.color }}
-                        onClick={() => {
-                          setHighlightColor(color.value);
-                          setShowColorPicker(false);
-                        }}
-                        title={color.name}
-                      >
-                        {highlightColor === color.value && '✓'}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
+    <>
+      {/* Orientation Prompt for Mobile/Tablet */}
+      {showOrientationPrompt && (
+        <OrientationPrompt onDismiss={() => setShowOrientationPrompt(false)} />
+      )}
+      
+      <div className={`pdf-viewer-container ${isFullscreen ? 'fullscreen' : ''}`}>
+        {/* Header */}
+        <div className="pdf-viewer-header">
+          <div className="pdf-viewer-title">
+            <span className="pdf-icon">📄</span>
+            <h3>{pdfResource.fileName}</h3>
           </div>
 
-          <button
-            onClick={() => onOpenNotes(pageNumber)}
-            className="btn-icon"
-            title="Open notes"
-          >
-            📝 {pageNotes.length > 0 && `(${pageNotes.length})`}
-          </button>
+          <div className="pdf-viewer-actions">
+            <button
+              onClick={toggleBookmark}
+              className={`btn-icon ${isBookmarked ? 'active' : ''}`}
+              title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+            >
+              {isBookmarked ? '⭐' : '☆'}
+            </button>
 
-          <button
-            onClick={toggleFullscreen}
-            className="btn-icon"
-            title="Toggle fullscreen"
-          >
-            {isFullscreen ? '⊡' : '⊞'}
-          </button>
+            <div className="highlight-controls">
+              <button
+                onClick={() => setHighlightMode(!highlightMode)}
+                className={`btn-icon ${highlightMode ? 'active' : ''}`}
+                title={highlightMode ? 'Disable highlight mode' : 'Enable highlight mode'}
+              >
+                🖍️ {highlightMode && 'ON'}
+              </button>
 
-          <button
-            onClick={onClose}
-            className="btn-icon btn-close"
-            title="Close viewer"
-          >
-            ✕
-          </button>
+              {highlightMode && (
+                <>
+                  <button
+                    onClick={() => setShowColorPicker(!showColorPicker)}
+                    className="btn-icon btn-color-picker"
+                    title="Choose highlight color"
+                    style={{ backgroundColor: highlightColors.find(c => c.value === highlightColor)?.color }}
+                  >
+                    🎨
+                  </button>
+
+                  <button
+                    onClick={saveHighlight}
+                    className="btn-icon btn-save-highlight"
+                    title="Save selected text as highlight"
+                  >
+                    💾
+                  </button>
+
+                  {showColorPicker && (
+                    <div className="color-picker-dropdown">
+                      {highlightColors.map((color) => (
+                        <button
+                          key={color.value}
+                          className={`color-option ${highlightColor === color.value ? 'active' : ''}`}
+                          style={{ backgroundColor: color.color }}
+                          onClick={() => {
+                            setHighlightColor(color.value);
+                            setShowColorPicker(false);
+                          }}
+                          title={color.name}
+                        >
+                          {highlightColor === color.value && '✓'}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+
+            <button
+              onClick={() => onOpenNotes(pageNumber)}
+              className="btn-icon"
+              title="Open notes"
+            >
+              📝 {pageNotes.length > 0 && `(${pageNotes.length})`}
+            </button>
+
+            <button
+              onClick={toggleFullscreen}
+              className="btn-icon"
+              title="Toggle fullscreen"
+            >
+              {isFullscreen ? '⊡' : '⊞'}
+            </button>
+
+            <button
+              onClick={onClose}
+              className="btn-icon btn-close"
+              title="Close viewer"
+            >
+              ✕
+            </button>
         </div>
       </div>
 
@@ -621,6 +638,7 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

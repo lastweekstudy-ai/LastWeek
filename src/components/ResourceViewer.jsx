@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { updatePDFProgress, addPDFBookmark, removePDFBookmark, trackStudyTime } from '../appwrite/pdfResources';
+import useOrientation from '../hooks/useOrientation';
+import OrientationPrompt from './OrientationPrompt';
 import '../styles/PDFViewer.css';
+import '../styles/PDFViewerMobile.css';
 
 const ResourceViewer = ({ resource, onClose, onOpenNotes }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -13,6 +16,14 @@ const ResourceViewer = ({ resource, onClose, onOpenNotes }) => {
   const studyStartTime = useRef(Date.now());
   const lastActivityTime = useRef(Date.now());
   const studyTimeInterval = useRef(null);
+
+  // Orientation handling for mobile/tablet
+  const { 
+    isLandscape, 
+    isMobileOrTablet, 
+    showOrientationPrompt, 
+    setShowOrientationPrompt 
+  } = useOrientation();
 
   useEffect(() => {
     // Load bookmarks
@@ -136,22 +147,28 @@ const ResourceViewer = ({ resource, onClose, onOpenNotes }) => {
   const isHTML = fileType === 'text/html' || resource.fileName.endsWith('.html');
 
   return (
-    <div className={`pdf-viewer-container ${isFullscreen ? 'fullscreen' : ''}`}>
-      {/* Header */}
-      <div className="pdf-viewer-header">
-        <div className="pdf-viewer-title">
-          <span className="pdf-icon">{isImage ? '🖼️' : '🌐'}</span>
-          <h3>{resource.fileName}</h3>
-        </div>
-        
-        <div className="pdf-viewer-actions">
-          <button
-            className="viewer-btn"
-            onClick={handleZoomOut}
-            title="Zoom out"
-            disabled={zoom <= 50}
-          >
-            🔍-
+    <>
+      {/* Orientation Prompt for Mobile/Tablet */}
+      {showOrientationPrompt && (
+        <OrientationPrompt onDismiss={() => setShowOrientationPrompt(false)} />
+      )}
+      
+      <div className={`pdf-viewer-container ${isFullscreen ? 'fullscreen' : ''}`}>
+        {/* Header */}
+        <div className="pdf-viewer-header">
+          <div className="pdf-viewer-title">
+            <span className="pdf-icon">{isImage ? '🖼️' : '🌐'}</span>
+            <h3>{resource.fileName}</h3>
+          </div>
+          
+          <div className="pdf-viewer-actions">
+            <button
+              className="viewer-btn"
+              onClick={handleZoomOut}
+              title="Zoom out"
+              disabled={zoom <= 50}
+            >
+              🔍-
           </button>
           
           <span className="zoom-level">{zoom}%</span>
@@ -286,6 +303,7 @@ const ResourceViewer = ({ resource, onClose, onOpenNotes }) => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

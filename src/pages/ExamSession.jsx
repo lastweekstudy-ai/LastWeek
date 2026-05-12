@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSession as useSessionContext } from '../context/SessionContext';
 import useDeepSeek from '../hooks/useDeepSeek';
+import useMobileViewport from '../hooks/useMobileViewport';
 import { buildContextMessages } from '../utils/contextManager';
 import {
   getUserExamPlans,
@@ -40,6 +41,9 @@ const ExamSession = () => {
   const [isAnalysing] = useState(false);
   const [showResources, setShowResources] = useState(false);
   const openingFiredRef = useRef(false);
+  
+  // Mobile viewport handling
+  const { isMobile } = useMobileViewport();
 
   const topicIdx = parseInt(topicIndex, 10);
 

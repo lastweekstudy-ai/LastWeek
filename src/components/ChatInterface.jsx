@@ -5,6 +5,7 @@ import FileAttachment from './FileAttachment';
 import QuickActions from './QuickActions';
 import EnhancedMessageFormatter from './EnhancedMessageFormatter';
 import MathKeyboard from './MathKeyboard';
+import useMobileViewport from '../hooks/useMobileViewport';
 import { 
   MentalModelIcon, 
   ActiveRecallIcon, 
@@ -47,6 +48,9 @@ const ChatInterface = ({
   const messagesContainerRef = useRef(null);
   const textareaRef = useRef(null);
   const scrollTimeoutRef = useRef(null);
+  
+  // Mobile viewport handling
+  const { isMobile, adjustForKeyboard, scrollIntoViewMobile } = useMobileViewport();
 
   // Optimized scroll with debouncing
   const scrollToBottom = useCallback(() => {
@@ -88,6 +92,13 @@ const ChatInterface = ({
     setInput(e.target.value);
     autoResizeTextarea();
   }, [autoResizeTextarea]);
+
+  // Mobile-optimized textarea focus handler
+  const handleTextareaFocus = useCallback((e) => {
+    if (isMobile && textareaRef.current) {
+      adjustForKeyboard(textareaRef.current);
+    }
+  }, [isMobile, adjustForKeyboard]);
 
   const handleSubmit = useCallback((e) => {
     e.preventDefault();
@@ -523,6 +534,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
               ref={textareaRef}
               value={input}
               onChange={handleInputChange}
+              onFocus={handleTextareaFocus}
               onKeyDown={handleKeyPress}
               placeholder={isUploadingPDF ? "Processing PDF..." : pendingFile ? "What would you like to learn from this file?" : "Type your message... (Shift+Enter for new line)"}
               className="chat-input-improved"

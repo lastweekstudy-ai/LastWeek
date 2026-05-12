@@ -4,7 +4,10 @@ import EnhancedMessageFormatter from './EnhancedMessageFormatter';
 import { createPDFHighlight, getPDFHighlights, deletePDFHighlight } from '../appwrite/pdfHighlights';
 import { createPDFNote, getPDFNotes, deletePDFNote } from '../appwrite/pdfNotes';
 import { trackAudioLectureView, trackAudioStudyTime } from '../appwrite/audioLecture';
+import useOrientation from '../hooks/useOrientation';
+import OrientationPrompt from './OrientationPrompt';
 import '../styles/AudioLectureViewer.css';
+import '../styles/AudioLectureViewerMobile.css';
 
 const PRESETS = [35, 50, 65];
 const SNAP_THRESHOLD = 3;
@@ -32,6 +35,14 @@ const AudioLectureViewer = ({
   sessionId,
   subject       = 'General',
 }) => {
+  // Orientation handling for mobile/tablet
+  const { 
+    isLandscape, 
+    isMobileOrTablet, 
+    showOrientationPrompt, 
+    setShowOrientationPrompt 
+  } = useOrientation();
+
   // ── Player ──────────────────────────────────────────────────────────────────
   const [isPlaying,   setIsPlaying]   = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -354,25 +365,31 @@ User Question: ${aiContextMessage || userMessage}`;
   const audioUrl = lecture.audioData?.audioUrl;
 
   return (
-    <div className="alv-overlay" onClick={onClose}>
-      <div className="alv-container" ref={containerRef} onClick={e => e.stopPropagation()}>
+    <>
+      {/* Orientation Prompt for Mobile/Tablet */}
+      {showOrientationPrompt && (
+        <OrientationPrompt onDismiss={() => setShowOrientationPrompt(false)} />
+      )}
+      
+      <div className="alv-overlay" onClick={onClose}>
+        <div className="alv-container" ref={containerRef} onClick={e => e.stopPropagation()}>
 
-        {/* Floating selection tip */}
-        {selectionTip && (
-          <div
-            className="alv-selection-tip"
-            style={{ left: selectionTip.x, top: Math.max(8, selectionTip.y) }}
-            onMouseDown={e => e.preventDefault()}
-          >
-            <button className="alv-tip-btn alv-tip-ask" onClick={() => askAboutSelection(selectionTip.text)}>✨ Ask AI</button>
-            {highlightMode && (
-              <button className="alv-tip-btn alv-tip-highlight" onClick={applyHighlight}>🖍️ Highlight</button>
-            )}
-            <button className="alv-tip-btn alv-tip-dismiss" onClick={() => { setSelectionTip(null); window.getSelection()?.removeAllRanges(); }}>✕</button>
-          </div>
-        )}
+          {/* Floating selection tip */}
+          {selectionTip && (
+            <div
+              className="alv-selection-tip"
+              style={{ left: selectionTip.x, top: Math.max(8, selectionTip.y) }}
+              onMouseDown={e => e.preventDefault()}
+            >
+              <button className="alv-tip-btn alv-tip-ask" onClick={() => askAboutSelection(selectionTip.text)}>✨ Ask AI</button>
+              {highlightMode && (
+                <button className="alv-tip-btn alv-tip-highlight" onClick={applyHighlight}>🖍️ Highlight</button>
+              )}
+              <button className="alv-tip-btn alv-tip-dismiss" onClick={() => { setSelectionTip(null); window.getSelection()?.removeAllRanges(); }}>✕</button>
+            </div>
+          )}
 
-        {/* Header */}
+          {/* Header */}
         <div className="alv-header">
           <div className="alv-header-left">
             <span className="alv-header-icon">🎙️</span>
@@ -600,6 +617,7 @@ User Question: ${aiContextMessage || userMessage}`;
         </div>
       </div>
     </div>
+    </>
   );
 };
 

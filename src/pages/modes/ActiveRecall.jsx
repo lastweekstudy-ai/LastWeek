@@ -5,6 +5,7 @@ import useSession from '../../hooks/useSession';
 import useSessionAssessment from '../../hooks/useSessionAssessment';
 import useSessionSummary from '../../hooks/useSessionSummary';
 import usePerformanceTracking from '../../hooks/usePerformanceTracking';
+import useMobileViewport from '../../hooks/useMobileViewport';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
 import SessionAssessment from '../../components/SessionAssessment';
@@ -45,6 +46,9 @@ const ActiveRecall = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [pdfLibraryOpen, setPdfLibraryOpen] = useState(false);
   const [scheduleError, setScheduleError] = useState(null);
+  
+  // Mobile viewport handling
+  const { isMobile } = useMobileViewport();
 
   const { showAssessment, handleAssessmentComplete, handleAssessmentSkip } = useSessionAssessment({
     user, sessionId, activeSession, messages, mode: 'active_recall', sendMessageWithAI,
