@@ -26,6 +26,9 @@ import CollaborativeScholar from './pages/modes/CollaborativeScholar';
 import CreativeSynthesis from './pages/modes/CreativeSynthesis';
 import ExamPlanner from './pages/ExamPlanner';
 import ExamSession from './pages/ExamSession';
+import LanguageLearning from './pages/LanguageLearning';
+import LanguageLearningLesson from './pages/LanguageLearningLesson';
+import LanguageLearningPractice from './pages/LanguageLearningPractice';
 import './styles/global.css';
 import './styles/ModePage.css';
 import './styles/ErrorBoundary.css';
@@ -188,6 +191,46 @@ function App() {
                     <ExamSession />
                   </ProtectedRoute>
                 }
+              />
+
+              {/* Language Learning Routes */}
+              <Route 
+                path="/language-learning" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <LanguageLearning />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/language-learning/lessons/:moduleId?/:stageId?" 
+                element={
+                  <ProtectedRoute>
+                    <LanguageLearningLesson />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/language-learning/practice" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <LanguageLearningPractice />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/language-learning/continue" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <LanguageLearning />
+                  </ProtectedRoute>
+                } 
               />
               
               {/* Session routes */}
