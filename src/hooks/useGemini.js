@@ -1,59 +1,27 @@
 import { useState } from 'react';
+import { callGeminiVision, callGeminiText, smartAnalyzeDocument, smartAnalyzeImage } from '../services/aiProvider';
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent';
-
+/**
+ * useGemini — Vision and document analysis hook
+ *
+ * processImage: Groq Vision (fast, free) → Gemini Vision fallback
+ * processDocument: Gemini 2.0 Flash → DeepSeek → Groq (truncated)
+ */
 export const useGemini = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const processImage = async (imageBase64, prompt = "Analyze this image and extract key information for studying") => {
-    if (!GEMINI_API_KEY) {
-      throw new Error('Gemini API key not configured');
-    }
-
+  /**
+   * Analyze an image — uses Groq Vision first (fast), Gemini as fallback
+   */
+  const processImage = async (imageBase64, prompt = 'Analyze this image and extract key information for studying') => {
     setLoading(true);
     setError(null);
 
     try {
-      // Remove data URL prefix if present
-      const base64Data = imageBase64.replace(/^data:image\/[a-z]+;base64,/, '');
-
-      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              {
-                text: prompt
-              },
-              {
-                inline_data: {
-                  mime_type: "image/jpeg", // Gemini accepts various image formats
-                  data: base64Data
-                }
-              }
-            ]
-          }]
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Failed to process image with Gemini');
-      }
-
-      const data = await response.json();
-      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      
-      if (!content) {
-        throw new Error('No content received from Gemini API');
-      }
-
-      return content;
+      const mimeMatch = imageBase64.match(/^data:(image\/[a-z]+);base64,/);
+      const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+      return await smartAnalyzeImage(imageBase64, prompt, mimeType);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -62,73 +30,28 @@ export const useGemini = () => {
     }
   };
 
-  const processDocument = async (documentText, prompt = "Summarize and extract key concepts from this document for studying") => {
-    if (!GEMINI_API_KEY) {
-      throw new Error('Gemini API key not configured');
-    }
-
+  /**
+   * Analyze a document — Gemini (2M context) → DeepSeek → Groq fallback
+   * NOTE: For PDFs, Gemini is always used first since Groq cannot process PDFs natively.
+   */
+  const processDocument = async (documentText, prompt = 'Summarize and extract key concepts from this document for studying') => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `${prompt}\n\nDocument content:\n${documentText}`
-            }]
-          }]
-        }),
-        // Add timeout and better error handling
-        signal: AbortSignal.timeout(30000) // 30 second timeout
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || `HTTP ${response.status}: Failed to process document with Gemini`);
-      }
-
-      const data = await response.json();
-      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      
-      if (!content) {
-        throw new Error('No content received from Gemini API');
-      }
-
-      return content;
+      return await smartAnalyzeDocument(documentText, prompt);
     } catch (err) {
       setError(err.message);
-      
-      // Provide more specific error messages for common network issues
       if (err.name === 'AbortError' || err.message.includes('timeout')) {
         throw new Error('Network timeout - please check your internet connection and try again');
-      } else if (err.message.includes('Failed to fetch') || err.message.includes('ERR_CONNECTION_CLOSED')) {
-        throw new Error('Network connection error - please check your internet connection and try again');
-      } else {
-        throw err;
       }
+      throw err;
     } finally {
       setLoading(false);
     }
   };
 
-  const extractTextFromPDF = async (pdfBase64) => {
-    // Note: Gemini doesn't directly process PDFs, but we can use it to analyze extracted text
-    // For now, we'll return a placeholder that indicates PDF processing needs improvement
-    return "PDF text extraction requires additional setup. Please copy and paste the text content for now.";
-  };
-
-  return {
-    processImage,
-    processDocument,
-    extractTextFromPDF,
-    loading,
-    error
-  };
+  return { processImage, processDocument, loading, error };
 };
 
 export default useGemini;

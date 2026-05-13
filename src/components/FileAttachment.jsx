@@ -4,6 +4,7 @@ import { createFileAttachment } from '../appwrite/database';
 import { createPDFResource } from '../appwrite/pdfResources';
 import useGemini from '../hooks/useGemini';
 import { extractTextFromPDF, isPDFProcessable, extractText } from '../utils/pdfProcessor';
+import { transcribeAudio } from '../services/aiProvider';
 
 const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessionId = null, studyMode = 'mental_model', subject = 'General' }) => {
   const [processing, setProcessing] = useState(false);
@@ -20,7 +21,15 @@ const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessio
     'text/plain': 'Text',
     'text/markdown': 'Markdown',
     'text/csv': 'CSV',
-    'application/json': 'JSON'
+    'application/json': 'JSON',
+    'audio/mpeg': 'Audio',
+    'audio/mp3': 'Audio',
+    'audio/wav': 'Audio',
+    'audio/mp4': 'Audio',
+    'audio/m4a': 'Audio',
+    'audio/ogg': 'Audio',
+    'audio/flac': 'Audio',
+    'audio/webm': 'Audio',
   };
 
   const processFile = async (file) => {
@@ -31,6 +40,37 @@ const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessio
       let content = '';
       let fileType = file.type;
       let storageFileId = null;
+
+      // ── Audio files: transcribe with Groq Whisper ─────────────────────────
+      const isAudio = fileType.startsWith('audio/') || 
+                      file.name.match(/\.(mp3|wav|m4a|ogg|flac|webm|aac)$/i);
+      
+      if (isAudio) {
+        const MAX_AUDIO_SIZE = 25 * 1024 * 1024; // 25MB Groq limit
+        if (file.size > MAX_AUDIO_SIZE) {
+          content = `[Audio file: ${file.name}]\n\nThis audio file is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Maximum size is 25MB. Please trim the audio and try again.`;
+        } else {
+          try {
+            setProgressText('Transcribing audio…');
+            const transcript = await transcribeAudio(file);
+            setProgressText('');
+            
+            content = `[Audio transcribed: ${file.name}]\n\nTranscription:\n${transcript}\n\nThe audio has been transcribed. I can now help you study this content.`;
+          } catch (audioError) {
+            setProgressText('');
+            console.error('Audio transcription failed:', audioError);
+            content = `[Audio file: ${file.name}]\n\nAudio transcription failed: ${audioError.message}\n\nPlease try again or manually type out the content you want to study.`;
+          }
+        }
+
+        await onFileProcess({
+          name: file.name,
+          type: fileType || 'audio/mpeg',
+          size: file.size,
+          content,
+        });
+        return;
+      }
 
       // For larger files or PDFs, try to process content first, then optionally store
       const shouldTryProcessing = file.size > 100000 || fileType === 'application/pdf'; // 100KB threshold
@@ -294,7 +334,7 @@ This file type is supported. Please describe the content you'd like me to help y
           }
         }
 
-        content = extractedContent;
+        // content is already set above in the small files branch
       }
 
       await onFileProcess({
@@ -369,7 +409,7 @@ This file type is supported. Please describe the content you'd like me to help y
           className="file-input-hidden"
           onChange={handleFileSelect}
           disabled={disabled || processing}
-          accept=".pdf,.jpg,.jpeg,.png,.svg,.html,.htm,.txt,.md,.csv,.json"
+          accept=".pdf,.jpg,.jpeg,.png,.svg,.html,.htm,.txt,.md,.csv,.json,.mp3,.wav,.m4a,.ogg,.flac,.webm,.aac"
         />
         
         <label htmlFor="file-input" className="file-input-label">

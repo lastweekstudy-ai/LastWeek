@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { generateLesson, generateFlashcards, generateMCQ } from '../services/languageAI';
-import { getLanguageUser, saveLessonProgress, addUserPoints, LANGUAGES } from '../appwrite/languageLearning';
+import { getLanguageUser, saveLessonProgress, addUserPoints, getLessonByModuleAndStage, getInProgressLesson, getAnyLessonForUser, updateLesson, LANGUAGES } from '../appwrite/languageLearning';
 import './LanguageLearningLesson.css';
 
 const LanguageLearningLesson = () => {
@@ -18,10 +18,28 @@ const LanguageLearningLesson = () => {
   const [showResults, setShowResults] = useState(false);
   const [error, setError] = useState('');
   const [userData, setUserData] = useState(null);
+  const [savedLessonId, setSavedLessonId] = useState(null);
+  const [lastSection, setLastSection] = useState('introduction');
 
   useEffect(() => {
     loadLesson();
   }, [moduleId, stageId]);
+
+  // Save current section when it changes (for resuming later)
+  useEffect(() => {
+    if (savedLessonId && currentSection && lesson) {
+      const saveLastSection = async () => {
+        try {
+          await updateLesson(savedLessonId, {
+            lastSection: currentSection,
+          });
+        } catch (err) {
+          console.error('Error saving section progress:', err);
+        }
+      };
+      saveLastSection();
+    }
+  }, [currentSection, savedLessonId]);
 
   const loadLesson = async () => {
     if (!user) return;
@@ -43,19 +61,100 @@ const LanguageLearningLesson = () => {
       const primaryLang = LANGUAGES.PRIMARY.find(l => l.code === profile.primaryLanguage);
       const targetLang = LANGUAGES.TARGET.find(l => l.code === profile.targetLanguage);
       
-      // Generate lesson using AI
+      // Get module and stage names
       const moduleName = moduleId?.replace(/-/g, ' ') || 'Vocabulary';
       const stageName = stageId || profile.currentStage || 'beginner';
+      const lessonModuleId = moduleId || 'vocabulary';
       
-      const lessonData = await generateLesson(
-        primaryLang?.name || 'English',
-        targetLang?.name || 'Spanish',
-        stageName,
-        moduleName
-      );
+      // FIRST: Check if there's ANY existing lesson for this user (most important!)
+      const anyLesson = await getAnyLessonForUser(user.$id);
+      
+      // SECOND: Check if there's an exact match for this module/stage
+      const existingLesson = await getLessonByModuleAndStage(user.$id, lessonModuleId, stageName);
+      
+      let lessonData;
+      
+      // Priority 1: Exact match with lesson content
+      if (existingLesson && existingLesson.lessonContent) {
+        console.log('Loading existing exact match lesson from database');
+        lessonData = typeof existingLesson.lessonContent === 'string' 
+          ? JSON.parse(existingLesson.lessonContent) 
+          : existingLesson.lessonContent;
+        setSavedLessonId(existingLesson.$id);
+        setLastSection(existingLesson.lastSection || 'introduction');
+        setCurrentSection(existingLesson.lastSection || 'introduction');
+      }
+      // Priority 2: Any lesson with content
+      else if (anyLesson && anyLesson.lessonContent) {
+        console.log('Loading any existing lesson with content from database');
+        lessonData = typeof anyLesson.lessonContent === 'string' 
+          ? JSON.parse(anyLesson.lessonContent) 
+          : anyLesson.lessonContent;
+        setSavedLessonId(anyLesson.$id);
+        setLastSection(anyLesson.lastSection || 'introduction');
+        setCurrentSection(anyLesson.lastSection || 'introduction');
+      }
+      // Priority 3: Any lesson at all (even without content - just use module/stage info)
+      else if (anyLesson) {
+        console.log('Found lesson but no content, will generate new with same module/stage');
+        // Try to generate lesson with the same module/stage as the existing record
+        const existingModuleName = anyLesson.moduleName || moduleName;
+        const existingStageName = anyLesson.stageName || stageName;
+        
+        try {
+          lessonData = await generateLesson(
+            primaryLang?.name || 'English',
+            targetLang?.name || 'Spanish',
+            existingStageName,
+            existingModuleName
+          );
+          
+          // Update existing lesson record with new content
+          const updatedLesson = await updateLesson(anyLesson.$id, {
+            status: 'in_progress',
+            lessonContent: JSON.stringify(lessonData),
+            lastSection: 'introduction',
+            moduleId: anyLesson.moduleId || lessonModuleId,
+            stageName: existingStageName,
+            moduleName: existingModuleName,
+          });
+          setSavedLessonId(anyLesson.$id);
+          setCurrentSection('introduction');
+        } catch (aiError) {
+          console.error('AI failed:', aiError);
+          throw aiError;
+        }
+      }
+      // Priority 4: No existing lessons at all
+      else {
+        // Generate new lesson with AI
+        console.log('No existing lesson found, generating new one...');
+        try {
+          lessonData = await generateLesson(
+            primaryLang?.name || 'English',
+            targetLang?.name || 'Spanish',
+            stageName,
+            moduleName
+          );
+          
+          // Save the new lesson to database
+          const savedLesson = await saveLessonProgress(user.$id, {
+            moduleId: lessonModuleId,
+            stageName: stageName,
+            moduleName: moduleName,
+            status: 'in_progress',
+            lessonContent: JSON.stringify(lessonData),
+            lastSection: 'introduction',
+          });
+          setSavedLessonId(savedLesson.$id);
+          setCurrentSection('introduction');
+        } catch (aiError) {
+          console.error('AI lesson generation failed:', aiError);
+          throw aiError;
+        }
+      }
       
       setLesson(lessonData);
-      setCurrentSection('introduction');
     } catch (err) {
       console.error('Error loading lesson:', err);
       setError('Failed to load lesson. Please try again.');
@@ -87,26 +186,45 @@ const LanguageLearningLesson = () => {
     
     // Save progress if passed
     if (score >= 80) {
-      saveProgress(score);
+      saveProgress(score, true);
+    } else {
+      saveProgress(score, false);
     }
   };
 
-  const saveProgress = async (score) => {
+  const saveProgress = async (score, isCompleted = false) => {
     if (!user) return;
     
     try {
-      // Save lesson progress
-      await saveLessonProgress(user.$id, {
-        moduleId: moduleId || 'vocabulary',
-        stageName: stageId || 'beginner',
-        moduleName: moduleId?.replace(/-/g, ' ') || 'Vocabulary',
-        status: 'completed',
+      const updateData = {
         score,
-      });
+        lastSection: currentSection,
+      };
       
-      // Add XP points
-      const xpEarned = score >= 100 ? 25 : 15; // 25 for perfect, 15 for passing
-      await addUserPoints(user.$id, xpEarned, `Completed lesson: ${moduleId}`);
+      if (isCompleted) {
+        updateData.status = 'completed';
+      }
+      
+      // Update existing lesson instead of creating new one
+      if (savedLessonId) {
+        await updateLesson(savedLessonId, updateData);
+      } else {
+        await saveLessonProgress(user.$id, {
+          moduleId: moduleId || 'vocabulary',
+          stageName: stageId || 'beginner',
+          moduleName: moduleId?.replace(/-/g, ' ') || 'Vocabulary',
+          status: isCompleted ? 'completed' : 'in_progress',
+          score,
+          lastSection: currentSection,
+          lessonContent: JSON.stringify(lesson),
+        });
+      }
+      
+      // Add XP points only on completion
+      if (isCompleted) {
+        const xpEarned = score >= 100 ? 25 : 15;
+        await addUserPoints(user.$id, xpEarned, `Completed lesson: ${moduleId}`);
+      }
     } catch (err) {
       console.error('Error saving progress:', err);
     }
@@ -306,18 +424,30 @@ const LanguageLearningLesson = () => {
         <h2>{moduleId?.replace(/-/g, ' ') || 'Vocabulary'} - {stageId || 'Beginner'}</h2>
         <div className="lesson-progress">
           <div className="progress-steps">
-            {['intro', 'content', 'practice', 'summary', 'check'].map((step, i) => (
-              <div 
-                key={step}
-                className={`progress-step ${
-                  ['introduction', 'coreContent', 'miniPractice', 'summary', 'masteryCheck'].includes(currentSection)
-                    ? (i <= ['introduction', 'coreContent', 'miniPractice', 'summary', 'masteryCheck'].indexOf(currentSection) ? 'completed' : '')
-                    : ''
-                }`}
-              >
-                {i + 1}
-              </div>
-            ))}
+            {[
+              { key: 'introduction', label: '1' },
+              { key: 'coreContent', label: '2' },
+              { key: 'miniPractice', label: '3' },
+              { key: 'summary', label: '4' },
+              { key: 'masteryCheck', label: '5' },
+            ].map((step, i) => {
+              const sections = ['introduction', 'coreContent', 'miniPractice', 'summary', 'masteryCheck'];
+              const currentIndex = sections.indexOf(currentSection);
+              const isCompleted = i < currentIndex;
+              const isCurrent = i === currentIndex;
+              
+              return (
+                <button
+                  key={step.key}
+                  className={`progress-step ${isCompleted ? 'completed' : ''} ${isCurrent ? 'current' : ''}`}
+                  onClick={() => setCurrentSection(step.key)}
+                  disabled={!isCompleted && !isCurrent}
+                  title={step.key}
+                >
+                  {step.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

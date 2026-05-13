@@ -132,10 +132,12 @@ Role: Member
 | moduleId | string | 100 | Yes | - | Module identifier |
 | stageName | string | 50 | Yes | - | Stage (beginner, elementary, etc.) |
 | moduleName | string | 100 | Yes | - | Display name |
-| status | string | 20 | No | 'available' | locked/available/completed |
+| status | string | 20 | No | 'available' | locked/available/in_progress/completed |
 | score | integer | - | No | 0 | Best score (0-100) |
 | attempts | integer | - | No | 1 | Number of attempts |
 | completedAt | datetime | - | No | - | Completion timestamp |
+| lessonContent | string | 65000 | No | - | JSON string of lesson data (for resuming lessons) |
+| lastSection | string | 30 | No | 'introduction' | Last section user was on (introduction/coreContent/miniPractice/summary/masteryCheck) |
 
 **Indexes**:
 | Key | Type | Attributes | Unique | Purpose |

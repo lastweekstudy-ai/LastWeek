@@ -1,6 +1,7 @@
 import { storage, databases, ID } from './config';
 import { Query } from 'appwrite';
 import { uploadAudioToR2, deleteAudioFromR2 } from './r2Storage';
+import { transcribeAudio, callGeminiText, callDeepSeek } from '../services/aiProvider';
 
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const AUDIO_LECTURES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_AUDIO_LECTURES_COLLECTION_ID || 'audio_lectures';
@@ -9,67 +10,75 @@ const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
 
 /**
- * Process audio file: upload to R2 → transcribe with Gemini → structure with DeepSeek → save as lecture
+ * Transcribe audio with Groq Whisper first, fall back to Gemini inline_data if Groq fails.
+ */
+async function transcribeWithFallback(audioFile, onProgress) {
+  // Try Groq Whisper first (fastest, most accurate for transcription)
+  try {
+    onProgress?.('Transcribing audio with Groq Whisper...');
+    const transcript = await transcribeAudio(audioFile);
+    if (transcript && transcript.length > 50) {
+      console.log('[Whisper] Transcription success, length:', transcript.length);
+      return transcript;
+    }
+    throw new Error('Transcript too short');
+  } catch (groqError) {
+    console.warn('[Whisper] Failed, falling back to Gemini:', groqError.message);
+  }
+
+  // Fallback: Gemini multimodal (sends audio as base64 inline_data)
+  try {
+    onProgress?.('Transcribing audio with Gemini AI...');
+    const base64data = await fileToBase64(audioFile);
+    const mimeType = audioFile.type === 'audio/mpeg' ? 'audio/mp3' : audioFile.type;
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { inline_data: { mime_type: mimeType, data: base64data } },
+              { text: 'Transcribe this audio lecture accurately. Include all spoken content, maintaining the structure and flow of the lecture.' },
+            ],
+          }],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `Gemini error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const transcript = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!transcript || transcript.length < 100) {
+      throw new Error('Gemini transcript too short or empty');
+    }
+    console.log('[Gemini] Transcription fallback success, length:', transcript.length);
+    return transcript;
+  } catch (geminiError) {
+    console.error('[Gemini] Transcription fallback also failed:', geminiError.message);
+    throw new Error(`Audio transcription failed. Groq: rate limit or file issue. Gemini: ${geminiError.message}`);
+  }
+}
+
+/**
+ * Process audio file: upload to R2 → transcribe (Groq Whisper → Gemini) → structure with DeepSeek → save
  */
 export const processAudioLecture = async (audioFile, userId, sessionId, onProgress) => {
   try {
     // Step 1: Upload audio to Cloudflare R2
     onProgress?.('Uploading audio to cloud storage...');
-    console.log('[R2] Uploading file:', audioFile.name, audioFile.type);
     const { fileId, url: audioUrl } = await uploadAudioToR2(audioFile, userId);
-    console.log('[R2] Upload success. fileId:', fileId, 'url:', audioUrl);
 
-    // Step 2: Transcribe with Gemini (supports audio input)
-    onProgress?.('Transcribing audio with Gemini AI...');
-    console.log('[Gemini] Starting transcription, mime_type:', 
-      audioFile.type === 'audio/mpeg' ? 'audio/mp3' : audioFile.type);
-    
-    const base64data = await fileToBase64(audioFile);
-    console.log('[Gemini] Base64 length:', base64data.length, 'chars (~', 
-      (base64data.length * 0.75 / 1024 / 1024).toFixed(2), 'MB)');
+    // Step 2: Transcribe (Groq Whisper → Gemini fallback)
+    const transcript = await transcribeWithFallback(audioFile, onProgress);
 
-    // Use Gemini's audio transcription - use gemini-flash-latest (same as chat)
-    const transcriptResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              inline_data: {
-                // Normalize mime type - Gemini needs specific audio types
-                mime_type: audioFile.type === 'audio/mpeg' ? 'audio/mp3' : audioFile.type,
-                data: base64data
-              }
-            }, {
-              text: "Transcribe this audio lecture accurately. Include all spoken content, maintaining the structure and flow of the lecture."
-            }]
-          }]
-        })
-      }
-    );
-
-    console.log('[Gemini] Response status:', transcriptResponse.status, transcriptResponse.statusText);
-
-    if (!transcriptResponse.ok) {
-      const errBody = await transcriptResponse.json().catch(() => ({}));
-      console.error('[Gemini] Error body:', errBody);
-      throw new Error(`Failed to transcribe audio: ${errBody?.error?.message || transcriptResponse.status}`);
-    }
-
-    const transcriptData = await transcriptResponse.json();
-    console.log('[Gemini] Response candidates:', transcriptData.candidates?.length);
-    const transcript = transcriptData.candidates?.[0]?.content?.parts?.[0]?.text;
-    console.log('[Gemini] Transcript length:', transcript?.length, 'chars');
-
-    if (!transcript || transcript.length < 100) {
-      throw new Error('Transcript is too short or empty. Please use a longer audio file.');
-    }
-
-    // Step 2: Process transcript with DeepSeek to create structured lecture notes
+    // Step 3: Process transcript with DeepSeek to create structured lecture notes
     onProgress?.('Creating structured lecture notes with DeepSeek...');
     
     const lectureResponse = await fetch('https://api.deepseek.com/chat/completions', {

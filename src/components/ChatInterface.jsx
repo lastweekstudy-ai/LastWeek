@@ -257,9 +257,9 @@ This ensures I have the complete PDF content with accurate page and line numbers
             {/* Show file attachment for user messages */}
             {message.role === 'user' && fileAttachment && (
               <div className="message-file-attachment">
-                {fileAttachment.type?.startsWith('image/') && fileAttachment.url ? (
+                {fileAttachment.type?.startsWith('image/') && (fileAttachment.url || fileAttachment.fileUrl) ? (
                   <img 
-                    src={fileAttachment.url} 
+                    src={fileAttachment.url || fileAttachment.fileUrl} 
                     alt={fileAttachment.name}
                     style={{ 
                       maxWidth: '300px', 
@@ -417,9 +417,9 @@ This ensures I have the complete PDF content with accurate page and line numbers
         {pendingFile && (
           <div className="file-indicator">
             <div className="file-indicator-content">
-              {pendingFile.type?.startsWith('image/') && pendingFile.fileUrl ? (
+              {pendingFile.type?.startsWith('image/') && (pendingFile.fileUrl || pendingFile.url) ? (
                 <div className="file-preview-image">
-                  <img src={pendingFile.fileUrl} alt={pendingFile.name} style={{ maxHeight: '100px', maxWidth: '200px', borderRadius: '8px' }} />
+                  <img src={pendingFile.fileUrl || pendingFile.url} alt={pendingFile.name} style={{ maxHeight: '100px', maxWidth: '200px', borderRadius: '8px' }} />
                   <span className="file-name-small">{pendingFile.name}</span>
                 </div>
               ) : (

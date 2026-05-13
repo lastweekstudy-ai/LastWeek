@@ -23,5 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment files — NEVER commit these (contain API keys and secrets)
+.env
+.env.*
+!.env.example
+
 # Appwrite function environment files (contain secrets)
 appwrite-functions/**/.env

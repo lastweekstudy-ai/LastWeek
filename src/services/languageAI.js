@@ -1,10 +1,10 @@
 // Language Learning AI Service
-// Uses Gemini API (primary) and DeepSeek API (fallback)
+// Uses smartGenerateJSON with automatic failover:
+// Gemini 2.0 Flash → Groq Llama 3.3 70B → DeepSeek
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
-const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent';
-const DEEPSEEK_ENDPOINT = 'https://api.deepseek.com/v1/chat/completions';
+import { smartGenerateJSON, callGeminiText, callGroq, callDeepSeek, GROQ_MODELS } from './aiProvider';
+
+// ===== PROMPTS =====
 
 // System prompt for lesson generation
 const LESSON_SYSTEM_PROMPT = (primaryLanguage, targetLanguage, currentStage, moduleName) => `
@@ -123,147 +123,77 @@ Evaluate pronunciation and return JSON:
 `;
 
 // ===== MAIN AI FUNCTIONS =====
-
-// Call Gemini API
-async function callGemini(prompt, systemInstruction = '') {
-  try {
-    const response = await fetch(
-      `${GEMINI_ENDPOINT}?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined,
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 8192,
-            topP: 0.95,
-            topK: 40,
-          },
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`Gemini API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    
-    // Try to extract JSON from response
-    try {
-      // Find JSON in the response
-      const jsonMatch = text.match(/\{[\s\S]*\}/) || text.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      }
-      return text;
-    } catch {
-      return text;
-    }
-  } catch (error) {
-    console.error('Gemini API error:', error);
-    throw error;
-  }
-}
-
-// Call DeepSeek API (fallback)
-async function callDeepSeek(prompt, systemInstruction = '') {
-  try {
-    const response = await fetch(
-      DEEPSEEK_ENDPOINT,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: 'deepseek-chat',
-          messages: [
-            ...(systemInstruction ? [{ role: 'system', content: systemInstruction }] : []),
-            { role: 'user', content: prompt },
-          ],
-          temperature: 0.7,
-          max_tokens: 8192,
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`DeepSeek API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const text = data.choices?.[0]?.message?.content || '';
-    
-    // Try to extract JSON from response
-    try {
-      const jsonMatch = text.match(/\{[\s\S]*\}/) || text.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      }
-      return text;
-    } catch {
-      return text;
-    }
-  } catch (error) {
-    console.error('DeepSeek API error:', error);
-    throw error;
-  }
-}
+// All functions now use smartGenerateJSON (Gemini → Groq → DeepSeek failover)
 
 // Generate lesson using AI
 export const generateLesson = async (primaryLanguage, targetLanguage, currentStage, moduleName) => {
   const prompt = LESSON_SYSTEM_PROMPT(primaryLanguage, targetLanguage, currentStage, moduleName);
   
   try {
-    return await callGemini(prompt);
+    return await smartGenerateJSON(prompt);
   } catch (error) {
-    console.error('Gemini failed, trying DeepSeek:', error);
-    try {
-      return await callDeepSeek(prompt);
-    } catch (deepseekError) {
-      console.error('Both APIs failed:', deepseekError);
-      throw deepseekError;
-    }
+    console.error('All AI providers failed, using fallback lesson:', error);
+    return getFallbackLesson(targetLanguage, currentStage, moduleName);
   }
 };
+
+// Fallback lesson when AI APIs fail
+function getFallbackLesson(targetLanguage, currentStage, moduleName) {
+  const sampleVocab = {
+    en: { word: 'hello', translation: 'Hola', pinyin: 'OH-lah' },
+    es: { word: 'hello', translation: 'Hola', pinyin: 'OH-lah' },
+    de: { word: 'hello', translation: 'Hallo', pinyin: 'HAH-loh' },
+    fr: { word: 'hello', translation: 'Bonjour', pinyin: 'bohn-ZHOOR' },
+    zh: { word: 'hello', translation: '你好', pinyin: 'nee-HOW' },
+    hi: { word: 'hello', translation: 'नमस्ते', pinyin: 'nah-muh-STAY' },
+  };
+  
+  const vocab = sampleVocab[targetLanguage] || sampleVocab.en;
+  
+  return {
+    introduction: `Welcome to your ${currentStage} ${moduleName} lesson! Today you'll learn essential ${targetLanguage} vocabulary.`,
+    coreContent: `The word "${vocab.word}" in ${targetLanguage} is "${vocab.translation}". This is one of the most common words you'll use. Practice it daily!`,
+    examples: [
+      `Example: "${vocab.translation}" - Hello!`,
+      `Example: Say "${vocab.translation}" when meeting someone.`,
+      `Practice: Try using "${vocab.translation}" in a sentence.`,
+    ],
+    miniPractice: [
+      'What is the translation of "hello" in ' + targetLanguage + '?',
+      'How do you say "' + vocab.translation + '" in English?',
+    ],
+    summary: `You learned the word "${vocab.word}" which means "${vocab.translation}" in ${targetLanguage}. Keep practicing!`,
+    masteryCheck: [
+      {
+        question: `What does "${vocab.translation}" mean in English?`,
+        options: ['Goodbye', 'Hello', 'Thank you', 'Sorry'],
+        correctAnswer: 'Hello',
+      },
+      {
+        question: `How would you greet someone in ${targetLanguage}?`,
+        options: [vocab.translation, 'Goodbye', 'Thank you', 'Sorry'],
+        correctAnswer: vocab.translation,
+      },
+      {
+        question: `Is "${vocab.word}" a common word in ${targetLanguage}?`,
+        options: ['Yes, very common', 'No, rare', 'Only formal', 'Only informal'],
+        correctAnswer: 'Yes, very common',
+      },
+    ],
+  };
+}
 
 // Generate roadmap using AI
 export const generateRoadmap = async (primaryLanguage, targetLanguage) => {
   const prompt = ROADMAP_SYSTEM_PROMPT(primaryLanguage, targetLanguage);
   
   try {
-    const result = await callGemini(prompt);
-    // Ensure result is an array
-    if (Array.isArray(result)) {
-      return result;
-    }
-    // If result is not an array, try to parse it
-    if (typeof result === 'string') {
-      const jsonMatch = result.match(/\[[\s\S]*\]/);
-      if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
-      }
-    }
+    const result = await smartGenerateJSON(prompt);
+    if (Array.isArray(result)) return result;
     throw new Error('Invalid roadmap format');
   } catch (error) {
-    console.error('Gemini failed, trying DeepSeek:', error);
-    try {
-      const result = await callDeepSeek(prompt);
-      if (Array.isArray(result)) {
-        return result;
-      }
-      throw new Error('Invalid roadmap format');
-    } catch (deepseekError) {
-      console.error('Both APIs failed:', deepseekError);
-      throw deepseekError;
-    }
+    console.error('All AI providers failed for roadmap:', error);
+    throw error;
   }
 };
 
@@ -277,47 +207,23 @@ export const generateConversationResponse = async (targetLanguage, completedModu
   const prompt = `${conversationHistory}\nUser: ${newMessage}\n\nRespond as the AI conversation partner following the rules. Keep your response natural and conversational.`;
   
   try {
-    return await callGemini(prompt, systemPrompt);
+    return await callGroq(systemPrompt, [{ role: 'user', content: prompt }], GROQ_MODELS.LLAMA_70B);
   } catch (error) {
-    console.error('Gemini failed, trying DeepSeek:', error);
-    try {
-      return await callDeepSeek(prompt, systemPrompt);
-    } catch (deepseekError) {
-      throw deepseekError;
-    }
+    console.error('Groq failed for conversation, trying Gemini:', error);
+    return await callGeminiText(`${systemPrompt}\n\n${prompt}`);
   }
 };
 
 // Evaluate writing
 export const evaluateWriting = async (targetLanguage, prompt, userWriting) => {
   const fullPrompt = WRITING_EVALUATION_PROMPT(targetLanguage, prompt, userWriting);
-  
-  try {
-    return await callGemini(fullPrompt);
-  } catch (error) {
-    console.error('Gemini failed, trying DeepSeek:', error);
-    try {
-      return await callDeepSeek(fullPrompt);
-    } catch (deepseekError) {
-      throw deepseekError;
-    }
-  }
+  return await smartGenerateJSON(fullPrompt);
 };
 
 // Evaluate pronunciation
 export const evaluatePronunciation = async (targetLanguage, expected, spoken) => {
   const fullPrompt = PRONUNCIATION_PROMPT(targetLanguage, expected, spoken);
-  
-  try {
-    return await callGemini(fullPrompt);
-  } catch (error) {
-    console.error('Gemini failed, trying DeepSeek:', error);
-    try {
-      return await callDeepSeek(fullPrompt);
-    } catch (deepseekError) {
-      throw deepseekError;
-    }
-  }
+  return await smartGenerateJSON(fullPrompt);
 };
 
 // Generate MCQ questions
@@ -339,63 +245,51 @@ Return JSON array of questions in this format:
 `;
   
   try {
-    const result = await callGemini(prompt);
-    if (Array.isArray(result)) {
-      return result;
-    }
+    const result = await smartGenerateJSON(prompt);
+    if (Array.isArray(result)) return result;
     throw new Error('Invalid MCQ format');
   } catch (error) {
-    console.error('Gemini failed, trying DeepSeek:', error);
-    try {
-      const result = await callDeepSeek(prompt);
-      if (Array.isArray(result)) {
-        return result;
-      }
-      throw new Error('Invalid MCQ format');
-    } catch (deepseekError) {
-      throw deepseekError;
-    }
+    throw error;
   }
 };
 
 // Generate flashcard content
 export const generateFlashcards = async (primaryLanguage, targetLanguage, topic, count = 10) => {
   const prompt = `
-Generate ${count} flashcards for ${targetLanguage} vocabulary learning.
+You are generating language learning flashcards.
+Native language: ${primaryLanguage}
+Target language being learned: ${targetLanguage}
 Topic: ${topic}
-Student's primary language: ${primaryLanguage}
+Count: ${count}
 
-Return JSON array of flashcards:
+Each flashcard must have:
+- "front": the word in ${primaryLanguage} (e.g. if ${primaryLanguage} is English: "hello")
+- "back": the SAME word translated into ${targetLanguage} (e.g. if ${targetLanguage} is Chinese: "你好")
+- "pronunciation": how to pronounce the ${targetLanguage} word using Roman letters (e.g. "nǐ hǎo")
+- "example": a short sentence in ${targetLanguage} using the word
+- "exampleTranslation": the English translation of that example sentence
+
+Example output for English → Chinese:
 [
   {
-    "front": "word/phrase in ${primaryLanguage}",
-    "back": "translation in ${targetLanguage}",
-    "pronunciation": "pronunciation guide",
-    "example": "example sentence in ${targetLanguage}",
-    "exampleTranslation": "translation in ${primaryLanguage}"
+    "front": "hello",
+    "back": "你好",
+    "pronunciation": "nǐ hǎo",
+    "example": "你好，你叫什么名字？",
+    "exampleTranslation": "Hello, what is your name?"
   }
 ]
 
-Use common, frequency-based vocabulary appropriate for beginners.
+Now generate ${count} flashcards for the topic "${topic}".
+Return ONLY the JSON array, no markdown, no explanation.
 `;
   
   try {
-    const result = await callGemini(prompt);
-    if (Array.isArray(result)) {
-      return result;
-    }
+    const result = await smartGenerateJSON(prompt);
+    if (Array.isArray(result)) return result;
     throw new Error('Invalid flashcard format');
   } catch (error) {
-    console.error('Gemini failed, trying DeepSeek:', error);
-    try {
-      const result = await callDeepSeek(prompt);
-      if (Array.isArray(result)) {
-        return result;
-      }
-      throw new Error('Invalid flashcard format');
-    } catch (deepseekError) {
-      throw deepseekError;
-    }
+    throw error;
   }
 };
 
@@ -422,16 +316,7 @@ Return JSON:
 }
 `;
   
-  try {
-    return await callGemini(prompt);
-  } catch (error) {
-    console.error('Gemini failed, trying DeepSeek:', error);
-    try {
-      return await callDeepSeek(prompt);
-    } catch (deepseekError) {
-      throw deepseekError;
-    }
-  }
+  return await smartGenerateJSON(prompt);
 };
 
 export default {

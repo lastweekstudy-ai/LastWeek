@@ -249,7 +249,7 @@ export const getRoadmap = async (userId) => {
 // Save lesson progress
 export const saveLessonProgress = async (userId, lessonData) => {
   try {
-    const response = await databases.createDocument(DB_ID, COLLECTIONS.LESSONS, ID.unique(), {
+    const docData = {
       userId,
       moduleId: lessonData.moduleId,
       stageName: lessonData.stageName,
@@ -257,8 +257,19 @@ export const saveLessonProgress = async (userId, lessonData) => {
       status: lessonData.status || 'completed',
       score: lessonData.score || 0,
       attempts: lessonData.attempts || 1,
-      completedAt: new Date().toISOString(),
-    });
+      completedAt: lessonData.status === 'completed' ? new Date().toISOString() : null,
+    };
+    
+    // Add lesson content and last section if provided (for in-progress lessons)
+    if (lessonData.lessonContent) {
+      docData.lessonContent = lessonData.lessonContent;
+    }
+    if (lessonData.lastSection) {
+      docData.lastSection = lessonData.lastSection;
+    }
+    
+    const response = await databases.createDocument(DB_ID, COLLECTIONS.LESSONS, ID.unique(), docData);
+    console.log('Lesson saved successfully:', response.$id);
     return response;
   } catch (error) {
     console.error('Error saving lesson progress:', error);
@@ -290,6 +301,55 @@ export const getAllLessons = async (userId) => {
   } catch (error) {
     console.error('Error getting all lessons:', error);
     return [];
+  }
+};
+
+// Get a specific lesson by userId, moduleId, and stageName
+export const getLessonByModuleAndStage = async (userId, moduleId, stageName) => {
+  try {
+    const response = await databases.listDocuments(DB_ID, COLLECTIONS.LESSONS, [
+      Query.equal('userId', userId),
+      Query.equal('moduleId', moduleId),
+      Query.equal('stageName', stageName),
+    ]);
+    return response.documents[0] || null;
+  } catch (error) {
+    console.error('Error getting lesson:', error);
+    return null;
+  }
+};
+
+// Get any in-progress lesson for a user
+export const getInProgressLesson = async (userId) => {
+  try {
+    const response = await databases.listDocuments(DB_ID, COLLECTIONS.LESSONS, [
+      Query.equal('userId', userId),
+      Query.equal('status', 'in_progress'),
+    ]);
+    return response.documents[0] || null;
+  } catch (error) {
+    console.error('Error getting in-progress lesson:', error);
+    return null;
+  }
+};
+
+// Get any lesson for a user (regardless of status) - for resuming
+export const getAnyLessonForUser = async (userId) => {
+  try {
+    const response = await databases.listDocuments(DB_ID, COLLECTIONS.LESSONS, [
+      Query.equal('userId', userId),
+      Query.limit(10),
+    ]);
+    console.log('Found lessons for user:', response.documents.length);
+    response.documents.forEach(doc => {
+      console.log('Lesson:', doc.$id, 'moduleId:', doc.moduleId, 'hasContent:', !!doc.lessonContent, 'status:', doc.status);
+    });
+    // Return the first one that has lessonContent, or any lesson if none have content
+    const lessonWithContent = response.documents.find(doc => doc.lessonContent);
+    return lessonWithContent || response.documents[0] || null;
+  } catch (error) {
+    console.error('Error getting any lesson:', error);
+    return null;
   }
 };
 

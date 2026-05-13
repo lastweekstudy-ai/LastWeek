@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Flashcard from '../components/Flashcard';
+import SpeakingRecorder from '../components/SpeakingRecorder';
 import { 
   getLanguageUser, 
   LANGUAGES, 
@@ -29,6 +31,59 @@ const PRACTICE_TYPE_INFO = {
   writing: { name: 'Writing', icon: '📝', description: 'Write and get feedback' },
 };
 
+// ─── Standalone FlashcardPractice component ───────────────────────────────────
+// Uses the existing Flashcard component (same as chat mode) — has its own state.
+const FlashcardPractice = ({ cards, userData, onRating, onFinish }) => {
+  const [index, setIndex] = useState(0);
+
+  if (!cards || cards.length === 0) return null;
+
+  const card = cards[index];
+  const targetLangName = LANGUAGES.TARGET.find(l => l.code === userData?.targetLanguage)?.name || 'Target';
+
+  const handleRate = async (confidence) => {
+    // Map numeric confidence (1/2/3) to rating string
+    const ratingMap = { 1: 'forgot', 2: 'hard', 3: 'easy' };
+    await onRating(ratingMap[confidence] || 'hard', index, card);
+
+    if (index < cards.length - 1) {
+      setIndex(i => i + 1);
+    } else {
+      onFinish();
+    }
+  };
+
+  return (
+    <div className="practice-content flashcard-content">
+      <div className="practice-header">
+        <h3>🃏 Flashcards — {targetLangName}</h3>
+      </div>
+
+      <div className="practice-progress">
+        <span>Card {index + 1} of {cards.length}</span>
+        <div className="progress-bar">
+          <div className="progress-fill" style={{ width: `${((index + 1) / cards.length) * 100}%` }} />
+        </div>
+      </div>
+
+      {/* Reuse the same Flashcard component as chat mode */}
+      <Flashcard
+        key={index}
+        front={`How do you say "${card.front}" in ${targetLangName}?`}
+        back={`${card.back}${card.pronunciation ? `  (${card.pronunciation})` : ''}`}
+        onRate={handleRate}
+      />
+
+      {card.example && (
+        <div className="example-sentence" style={{ marginTop: '1rem', padding: '0.75rem', background: 'var(--color-bg-secondary)', borderRadius: '0.5rem' }}>
+          <em style={{ color: 'var(--color-text-muted)' }}>{card.example}</em>
+          <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem' }}>{card.exampleTranslation}</p>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const LanguageLearningPractice = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -43,6 +98,8 @@ const LanguageLearningPractice = () => {
   const [showResults, setShowResults] = useState(false);
   const [score, setScore] = useState(0);
   const [dueReviews, setDueReviews] = useState([]);
+  // Flashcard state — must be at top level (Rules of Hooks)
+  const [showFlashcardAnswer, setShowFlashcardAnswer] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -106,6 +163,8 @@ const LanguageLearningPractice = () => {
               10
             );
           }
+          console.log('[Flashcards] Generated content sample:', content?.[0]);
+          console.log('[Flashcards] All cards:', content?.map(c => `${c.front} → ${c.back}`));
           break;
           
         case 'reading_comprehension':
@@ -119,6 +178,44 @@ const LanguageLearningPractice = () => {
           
         case 'conversation':
           content = { messages: [] };
+          break;
+
+        case 'typing':
+          content = await generateFlashcards(
+            primaryLang?.name || 'English',
+            targetLang?.name || 'Spanish',
+            'Basic vocabulary',
+            8
+          );
+          break;
+
+        case 'fill_blank':
+          content = await generateMCQ(
+            primaryLang?.name || 'English',
+            targetLang?.name || 'Spanish',
+            'Fill in the blank sentences',
+            6
+          );
+          break;
+
+        case 'speaking':
+          content = await generateFlashcards(
+            primaryLang?.name || 'English',
+            targetLang?.name || 'Spanish',
+            'Common phrases and pronunciation',
+            8
+          );
+          break;
+
+        case 'writing':
+          content = {
+            prompts: [
+              `Write 3 sentences in ${targetLang?.name || 'the target language'} about yourself.`,
+              `Describe your daily routine in ${targetLang?.name || 'the target language'}.`,
+              `Write about your favorite food in ${targetLang?.name || 'the target language'}.`,
+            ],
+            currentPromptIndex: 0,
+          };
           break;
           
         default:
@@ -140,14 +237,11 @@ const LanguageLearningPractice = () => {
     }));
   };
 
-  const handleFlashcardRating = async (rating) => {
-    if (!practiceContent || !practiceContent[currentIndex]) return;
-    
-    const card = practiceContent[currentIndex];
-    
+  const handleFlashcardRating = async (rating, cardIndex, card) => {
+    if (!card) return;
     try {
       await saveFlashcardReview(user.$id, {
-        itemId: card.reviewId || `card_${currentIndex}`,
+        itemId: card.reviewId || `card_${cardIndex}`,
         itemType: 'flashcard',
         itemContent: {
           front: card.front,
@@ -308,11 +402,21 @@ const LanguageLearningPractice = () => {
     );
   };
 
+  const nextFlashcard = () => {
+    if (currentIndex < practiceContent.length - 1) {
+      setCurrentIndex(prev => prev + 1);
+      setShowFlashcardAnswer(false);
+    } else {
+      navigate('/language-learning');
+    }
+  };
+
   const renderFlashcardPractice = () => {
     if (!practiceContent || !practiceContent[currentIndex]) return null;
     
     const card = practiceContent[currentIndex];
-    const [showAnswer, setShowAnswer] = useState(false);
+    console.log('[Flashcard render] index:', currentIndex, 'front:', card.front, 'back:', card.back);
+    // showFlashcardAnswer is declared at the top of the component (Rules of Hooks)
     
     return (
       <div className="practice-content flashcard-content">
@@ -328,15 +432,16 @@ const LanguageLearningPractice = () => {
         
         <div className="flashcard">
           <div className="flashcard-front">
-            <span className="flashcard-label">Translate this:</span>
+            <span className="flashcard-label">Translate to {LANGUAGES.TARGET.find(l => l.code === userData?.targetLanguage)?.name}:</span>
             <h3>{card.front}</h3>
           </div>
           
-          {showAnswer && (
+          {showFlashcardAnswer && (
             <div className="flashcard-back">
-              <span className="flashcard-label">Answer:</span>
-              <h3>{card.back}</h3>
-              {card.pronunciation && (
+              <span className="flashcard-label">{LANGUAGES.TARGET.find(l => l.code === userData?.targetLanguage)?.name} translation:</span>
+              {/* Fallback: if back is empty, AI may have put translation in pronunciation */}
+              <h3>{card.back || card.pronunciation || '—'}</h3>
+              {card.pronunciation && card.back && (
                 <p className="pronunciation">{card.pronunciation}</p>
               )}
               {card.example && (
@@ -350,8 +455,8 @@ const LanguageLearningPractice = () => {
         </div>
         
         <div className="flashcard-actions">
-          {!showAnswer ? (
-            <button className="btn-show-answer" onClick={() => setShowAnswer(true)}>
+          {!showFlashcardAnswer ? (
+            <button className="btn-show-answer" onClick={() => setShowFlashcardAnswer(true)}>
               Show Answer
             </button>
           ) : (
@@ -391,15 +496,6 @@ const LanguageLearningPractice = () => {
         </div>
       </div>
     );
-  };
-
-  const nextFlashcard = () => {
-    if (currentIndex < practiceContent.length - 1) {
-      setCurrentIndex(prev => prev + 1);
-      setShowAnswer(false);
-    } else {
-      navigate('/language-learning');
-    }
   };
 
   const renderReadingPractice = () => {
@@ -496,6 +592,388 @@ const LanguageLearningPractice = () => {
     // TODO: Call AI for response
   };
 
+  // ── Typing Practice: type the target language word ──────────────────────────
+  const renderTypingPractice = () => {
+    if (!practiceContent || !practiceContent[currentIndex]) return null;
+    const card = practiceContent[currentIndex];
+    const targetLangName = LANGUAGES.TARGET.find(l => l.code === userData?.targetLanguage)?.name || 'Target';
+    const isCorrect = answers[currentIndex]?.trim().toLowerCase() === card.back?.trim().toLowerCase();
+
+    return (
+      <div className="practice-content">
+        <div className="practice-progress">
+          <span>Card {currentIndex + 1} of {practiceContent.length}</span>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${((currentIndex + 1) / practiceContent.length) * 100}%` }} />
+          </div>
+        </div>
+        <div className="question-section">
+          <h3>Type in {targetLangName}:</h3>
+          <p className="typing-prompt" style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '1rem 0' }}>{card.front}</p>
+          {card.pronunciation && <p style={{ color: 'var(--color-text-muted)', marginBottom: '1rem' }}>Hint: {card.pronunciation}</p>}
+          <input
+            type="text"
+            className="typing-input"
+            placeholder={`Type the ${targetLangName} word...`}
+            value={answers[currentIndex] || ''}
+            onChange={(e) => handleAnswer(e.target.value)}
+            disabled={showResults}
+            style={{ width: '100%', padding: '0.75rem', fontSize: '1.1rem', borderRadius: '0.5rem', border: '2px solid var(--color-border)', background: 'var(--color-bg-secondary)', color: 'var(--color-text-primary)' }}
+            autoFocus
+          />
+          {showResults && (
+            <div style={{ marginTop: '0.75rem', padding: '0.75rem', borderRadius: '0.5rem', background: isCorrect ? '#10b98120' : '#ef444420' }}>
+              {isCorrect ? '✅ Correct!' : `❌ Correct answer: ${card.back}`}
+            </div>
+          )}
+        </div>
+        <div className="practice-actions" style={{ marginTop: '1rem' }}>
+          {!showResults ? (
+            <button className="btn-next" onClick={() => setShowResults(true)} disabled={!answers[currentIndex]}>
+              Check Answer
+            </button>
+          ) : (
+            <button className="btn-next" onClick={() => {
+              setShowResults(false);
+              if (currentIndex < practiceContent.length - 1) setCurrentIndex(i => i + 1);
+              else navigate('/language-learning');
+            }}>
+              {currentIndex < practiceContent.length - 1 ? 'Next →' : 'Finish'}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // ── Speaking Practice: record → Groq Whisper → AI pronunciation feedback ──────
+  const renderSpeakingPractice = () => {
+    if (!practiceContent || !practiceContent[currentIndex]) return null;
+    const card = practiceContent[currentIndex];
+    const targetLangName = LANGUAGES.TARGET.find(l => l.code === userData?.targetLanguage)?.name || 'Target';
+    const targetLangCode = userData?.targetLanguage || 'en';
+
+    const langCodeMap = {
+      en: 'en-US', zh: 'zh-CN', es: 'es-ES', de: 'de-DE',
+      fr: 'fr-FR', hi: 'hi-IN', bn: 'bn-BD',
+    };
+    const bcp47 = langCodeMap[targetLangCode] || 'en-US';
+
+    const speakWord = () => {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(card.back);
+      utt.lang = bcp47;
+      utt.rate = 0.85;
+      window.speechSynthesis.speak(utt);
+    };
+
+    const result = answers[currentIndex];
+
+    const goNext = () => {
+      setAnswers(prev => { const n = {...prev}; delete n[currentIndex]; return n; });
+      if (currentIndex < practiceContent.length - 1) setCurrentIndex(i => i + 1);
+      else navigate('/language-learning');
+    };
+
+    return (
+      <div className="practice-content">
+        <div className="practice-progress">
+          <span>Phrase {currentIndex + 1} of {practiceContent.length}</span>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${((currentIndex + 1) / practiceContent.length) * 100}%` }} />
+          </div>
+        </div>
+
+        <div className="question-section" style={{ textAlign: 'center' }}>
+          <h3>🎤 Speaking Practice</h3>
+          <p style={{ color: 'var(--color-text-muted)', marginBottom: '0.5rem' }}>Say this in {targetLangName}:</p>
+          <p style={{ fontSize: '1.3rem', fontWeight: 'bold', margin: '0.5rem 0' }}>{card.front}</p>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', padding: '1.25rem', background: 'var(--color-bg-secondary)', borderRadius: '1rem', margin: '1rem 0' }}>
+            <div>
+              <p style={{ fontSize: '2rem', fontWeight: 'bold', margin: 0 }}>{card.back}</p>
+              {card.pronunciation && <p style={{ color: 'var(--color-text-muted)', margin: '0.25rem 0 0', fontSize: '0.95rem' }}>{card.pronunciation}</p>}
+            </div>
+            <button onClick={speakWord} title="Listen to pronunciation"
+              style={{ background: 'var(--color-accent)', border: 'none', borderRadius: '50%', width: '44px', height: '44px', fontSize: '1.2rem', cursor: 'pointer', flexShrink: 0 }}>
+              🔊
+            </button>
+          </div>
+
+          {/* AI-powered record button */}
+          <SpeakingRecorder
+            expectedWord={card.back}
+            expectedPhrase={`${card.front} = ${card.back}`}
+            targetLanguage={targetLangName}
+            targetLangCode={targetLangCode}
+            onResult={(res) => setAnswers(prev => ({ ...prev, [currentIndex]: res }))}
+          />
+
+      {result && (
+            <div style={{ padding: '1rem', borderRadius: '0.75rem', background: 'var(--color-bg-secondary)', marginTop: '0.75rem', textAlign: 'left' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '1.5rem' }}>{result.score >= 80 ? '🌟' : result.score >= 60 ? '👍' : '📚'}</span>
+                <strong>Score: {result.score}/100</strong>
+              </div>
+              <p style={{ margin: '0 0 0.5rem' }}>{result.feedback}</p>
+              {result.mistakes?.length > 0 && (
+                <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.9rem' }}>
+                  {result.mistakes.map((m, i) => (
+                    <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem', color: 'var(--color-text-muted)' }}>
+                      <span>{m}</span>
+                      <button
+                        onClick={() => {
+                          if (!window.speechSynthesis) return;
+                          // Extract the quoted word/phrase from the mistake text if present
+                          const quoted = m.match(/[''"'""]([^''"'""\n]+)[''"'""]/) || m.match(/[「」『』]([^「」『』\n]+)[「」『』]/);
+                          const toSpeak = quoted ? quoted[1] : card.back;
+                          window.speechSynthesis.cancel();
+                          const utt = new SpeechSynthesisUtterance(toSpeak);
+                          utt.lang = bcp47;
+                          utt.rate = 0.7; // slower for correction
+                          window.speechSynthesis.speak(utt);
+                        }}
+                        title="Hear correct pronunciation"
+                        style={{ background: 'none', border: '1px solid var(--color-border)', borderRadius: '50%', width: '26px', height: '26px', fontSize: '0.75rem', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                        🔊
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {result.tip && <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#a78bfa' }}>💡 {result.tip}</p>}
+              {result.transcript && <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>🎙️ I heard: "{result.transcript}"</p>}
+            </div>
+          )}
+
+          {card.example && (
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginTop: '0.75rem' }}>
+              <em>{card.example}</em> — {card.exampleTranslation}
+            </p>
+          )}
+        </div>
+
+        <div className="practice-actions" style={{ marginTop: '1rem' }}>
+          <button className="btn-next" onClick={goNext}>
+            {currentIndex < practiceContent.length - 1 ? 'Next →' : 'Finish'}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // ── Writing Practice: upload photo of handwriting → AI feedback ─────────────
+  const renderWritingPractice = () => {
+    if (!practiceContent?.prompts) return null;
+    const idx = practiceContent.currentPromptIndex || 0;
+    const prompt = practiceContent.prompts[idx];
+    const targetLangName = LANGUAGES.TARGET.find(l => l.code === userData?.targetLanguage)?.name || 'Target';
+    const feedback = answers[`writing_${idx}`];
+    const imagePreview = answers[`img_${idx}`];
+    const isProcessing = answers[`processing_${idx}`];
+
+    const handleImageUpload = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Show preview
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const base64 = ev.target.result;
+        setAnswers(prev => ({ ...prev, [`img_${idx}`]: base64, [`processing_${idx}`]: true }));
+
+        try {
+          const { smartAnalyzeImage } = await import('../services/aiProvider');
+          const primaryLangName = LANGUAGES.PRIMARY.find(l => l.code === userData?.primaryLanguage)?.name || 'English';
+          const aiResponse = await smartAnalyzeImage(
+            base64,
+            `This is a handwriting practice image. The student's native language is ${primaryLangName}. They were asked to write in ${targetLangName}: "${prompt}"
+
+Please:
+1. Read and transcribe exactly what is written
+2. Check grammar and vocabulary
+3. Rate the writing (0-100)
+4. List specific mistakes (write each mistake in BOTH ${targetLangName} AND ${primaryLangName})
+5. Give corrections (write each correction in BOTH ${targetLangName} AND ${primaryLangName})
+6. Give overall feedback in BOTH ${targetLangName} AND ${primaryLangName} (format: "${targetLangName} feedback | ${primaryLangName} translation")
+7. Give a tip in BOTH languages
+
+Return JSON:
+{
+  "transcribed": "what you can read from the image",
+  "score": 0-100,
+  "feedback": "${targetLangName} feedback | ${primaryLangName} translation",
+  "mistakes": ["mistake in ${targetLangName} (${primaryLangName} explanation)"],
+  "corrections": ["correction in ${targetLangName} (${primaryLangName} meaning)"],
+  "tip": "${targetLangName} tip | ${primaryLangName} translation"
+}`,
+            file.type || 'image/jpeg'
+          );
+
+          // Parse response
+          let result = { score: 70, feedback: 'Good effort!', mistakes: [], corrections: [], tip: 'Keep practicing!' };
+          try {
+            const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
+            if (jsonMatch) result = JSON.parse(jsonMatch[0]);
+          } catch {
+            result.feedback = aiResponse;
+          }
+
+          setAnswers(prev => ({ ...prev, [`writing_${idx}`]: result, [`processing_${idx}`]: false }));
+        } catch (err) {
+          setAnswers(prev => ({
+            ...prev,
+            [`writing_${idx}`]: { 
+              score: 0, 
+              feedback: err.message.includes('quota') || err.message.includes('limit: 0')
+                ? 'Gemini API quota exhausted. Go to https://aistudio.google.com/app/apikey and create a new key in a new Google Cloud project, then update VITE_GEMINI_API_KEY in your .env file.'
+                : `Error: ${err.message}`,
+              mistakes: [], 
+              corrections: [], 
+              tip: 'Please fix the API key and try again.' 
+            },
+            [`processing_${idx}`]: false,
+          }));
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+
+    return (
+      <div className="practice-content">
+        <div className="practice-progress">
+          <span>Prompt {idx + 1} of {practiceContent.prompts.length}</span>
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${((idx + 1) / practiceContent.prompts.length) * 100}%` }} />
+          </div>
+        </div>
+
+        <div className="question-section">
+          <h3>✍️ Writing Practice</h3>
+
+          {/* Prompt */}
+          <div style={{ padding: '1rem', background: 'var(--color-bg-secondary)', borderRadius: '0.75rem', margin: '1rem 0' }}>
+            <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.25rem' }}>Write in {targetLangName}:</p>
+            <p style={{ margin: 0, fontSize: '1.1rem', fontWeight: '500' }}>{prompt}</p>
+          </div>
+
+          {/* Instructions */}
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', padding: '0.75rem', background: '#a78bfa15', borderRadius: '0.5rem', marginBottom: '1rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
+            <span>📝</span>
+            <span>Write your answer on paper, take a photo, then upload it below. AI will read your handwriting and give feedback.</span>
+          </div>
+
+          {/* Upload area */}
+          {!imagePreview && !isProcessing && (
+            <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', padding: '2rem', border: '2px dashed var(--color-border)', borderRadius: '1rem', cursor: 'pointer', background: 'var(--color-bg-secondary)' }}>
+              <span style={{ fontSize: '2.5rem' }}>📷</span>
+              <span style={{ fontWeight: '500' }}>Upload photo of your handwriting</span>
+              <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>JPG, PNG — tap to open camera on mobile</span>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleImageUpload}
+                style={{ display: 'none' }}
+              />
+            </label>
+          )}
+
+          {/* Processing */}
+          {isProcessing && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1.5rem', justifyContent: 'center', color: 'var(--color-text-muted)' }}>
+              <div style={{ width: '20px', height: '20px', border: '2px solid var(--color-accent)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              <span>AI is reading your handwriting...</span>
+            </div>
+          )}
+
+          {/* Image preview */}
+          {imagePreview && !isProcessing && (
+            <div style={{ marginBottom: '1rem' }}>
+              <img src={imagePreview} alt="Your writing" style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '0.75rem', objectFit: 'contain' }} />
+              <button
+                onClick={() => setAnswers(prev => { const n = {...prev}; delete n[`img_${idx}`]; delete n[`writing_${idx}`]; return n; })}
+                style={{ marginTop: '0.5rem', background: 'none', border: '1px solid var(--color-border)', borderRadius: '0.5rem', padding: '0.35rem 0.75rem', cursor: 'pointer', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}
+              >
+                🔄 Retake photo
+              </button>
+            </div>
+          )}
+
+          {/* AI Feedback */}
+          {feedback && (
+            <div style={{ padding: '1rem', borderRadius: '0.75rem', background: 'var(--color-bg-secondary)', marginTop: '0.5rem' }}>
+              {feedback.transcribed && (
+                <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
+                  📖 I read: <em>"{feedback.transcribed}"</em>
+                </p>
+              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '1.5rem' }}>{feedback.score >= 80 ? '🌟' : feedback.score >= 60 ? '👍' : '📚'}</span>
+                <strong>Score: {feedback.score}/100</strong>
+              </div>
+              {/* Bilingual feedback — split on | */}
+              {feedback.feedback && (() => {
+                const parts = feedback.feedback.split('|');
+                return (
+                  <div style={{ marginBottom: '0.75rem' }}>
+                    <p style={{ margin: '0 0 0.25rem', fontWeight: '500' }}>{parts[0]?.trim()}</p>
+                    {parts[1] && <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>{parts[1]?.trim()}</p>}
+                  </div>
+                );
+              })()}
+              {feedback.mistakes?.length > 0 && (
+                <div style={{ marginTop: '0.5rem' }}>
+                  <p style={{ fontSize: '0.85rem', fontWeight: '600', marginBottom: '0.25rem' }}>Mistakes:</p>
+                  <ul style={{ margin: 0, paddingLeft: '1.25rem', fontSize: '0.9rem' }}>
+                    {feedback.mistakes.map((m, i) => (
+                      <li key={i} style={{ marginBottom: '0.35rem' }}>
+                        <span style={{ color: '#ef4444' }}>{m}</span>
+                        {feedback.corrections?.[i] && (
+                          <div style={{ color: '#10b981', marginTop: '0.15rem', fontSize: '0.85rem' }}>
+                            ✓ {feedback.corrections[i]}
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {/* Bilingual tip */}
+              {feedback.tip && (() => {
+                const parts = feedback.tip.split('|');
+                return (
+                  <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', background: '#a78bfa15', borderRadius: '0.5rem' }}>
+                    <p style={{ margin: '0 0 0.2rem', fontSize: '0.9rem', color: '#a78bfa' }}>💡 {parts[0]?.trim()}</p>
+                    {parts[1] && <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>{parts[1]?.trim()}</p>}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+        </div>
+
+        <div className="practice-actions" style={{ marginTop: '1rem' }}>
+          <button
+            className="btn-next"
+            disabled={!feedback}
+            onClick={() => {
+              if (idx < practiceContent.prompts.length - 1) {
+                setPracticeContent(prev => ({ ...prev, currentPromptIndex: idx + 1 }));
+              } else {
+                navigate('/language-learning');
+              }
+            }}
+          >
+            {idx < practiceContent.prompts.length - 1 ? 'Next Prompt →' : 'Finish'}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="practice-loading">
@@ -507,15 +985,44 @@ const LanguageLearningPractice = () => {
 
   return (
     <div className="practice-container">
-      {!selectedPractice && renderPracticeCard()}
+      {practiceLoading && (
+        <div className="practice-loading">
+          <div className="loading-spinner"></div>
+          <p>Loading practice...</p>
+        </div>
+      )}
+
+      {!practiceLoading && !selectedPractice && renderPracticeCard()}
       
-      {selectedPractice === 'mcq' && renderMCQPractice()}
+      {!practiceLoading && selectedPractice === 'mcq' && renderMCQPractice()}
       
-      {selectedPractice === 'flashcards' && renderFlashcardPractice()}
+      {!practiceLoading && selectedPractice === 'flashcards' && (
+        <FlashcardPractice
+          cards={practiceContent}
+          userData={userData}
+          onRating={handleFlashcardRating}
+          onFinish={() => navigate('/language-learning')}
+        />
+      )}
       
-      {selectedPractice === 'reading_comprehension' && renderReadingPractice()}
+      {!practiceLoading && selectedPractice === 'reading_comprehension' && renderReadingPractice()}
       
-      {selectedPractice === 'conversation' && renderConversationPractice()}
+      {!practiceLoading && selectedPractice === 'conversation' && renderConversationPractice()}
+
+      {!practiceLoading && selectedPractice === 'typing' && renderTypingPractice()}
+
+      {!practiceLoading && selectedPractice === 'speaking' && renderSpeakingPractice()}
+
+      {!practiceLoading && selectedPractice === 'writing' && renderWritingPractice()}
+
+      {!practiceLoading && selectedPractice === 'fill_blank' && renderMCQPractice()}
+
+      {!practiceLoading && selectedPractice && !['mcq','flashcards','reading_comprehension','conversation','typing','speaking','writing','fill_blank'].includes(selectedPractice) && (
+        <div className="practice-content" style={{ textAlign: 'center', padding: '2rem' }}>
+          <p>🚧 {PRACTICE_TYPE_INFO[selectedPractice]?.name} — coming soon</p>
+          <button className="btn-back" onClick={() => setSelectedPractice(null)}>← Back</button>
+        </div>
+      )}
     </div>
   );
 };
