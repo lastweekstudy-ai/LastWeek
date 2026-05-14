@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Flashcard from '../components/Flashcard';
 import SpeakingRecorder from '../components/SpeakingRecorder';
+import { speak } from '../utils/speech';
 import { 
   getLanguageUser, 
   LANGUAGES, 
@@ -29,6 +30,29 @@ const PRACTICE_TYPE_INFO = {
   conversation: { name: 'AI Conversation', icon: '💬', description: 'Chat with AI' },
   reading_comprehension: { name: 'Reading', icon: '📖', description: 'Understand passages' },
   writing: { name: 'Writing', icon: '📝', description: 'Write and get feedback' },
+  listening: { name: 'Listening', icon: '🎧', description: 'Listen and answer' },
+};
+
+// Module-specific practice recommendations
+// Each module type has recommended practice types
+const MODULE_PRACTICE_MAP = {
+  vocabulary: ['mcq', 'flashcards', 'typing', 'fill_blank'],
+  pronunciation: ['speaking', 'listening', 'flashcards'],
+  speaking: ['speaking', 'conversation', 'listening'],
+  listening: ['listening', 'reading_comprehension'],
+  reading: ['reading_comprehension', 'mcq', 'fill_blank'],
+  writing: ['writing', 'typing'],
+  grammar: ['mcq', 'fill_blank', 'typing'],
+  sentence_structure: ['fill_blank', 'typing', 'mcq'],
+  synonyms_antonyms: ['mcq', 'flashcards', 'typing'],
+  idioms_expressions: ['flashcards', 'mcq', 'conversation'],
+  cultural_context: ['reading_comprehension', 'conversation', 'mcq'],
+};
+
+// Get available practice types for a module
+const getAvailablePractices = (moduleId) => {
+  const practices = MODULE_PRACTICE_MAP[moduleId] || ['mcq', 'flashcards'];
+  return practices.filter(p => PRACTICE_TYPES.includes(p));
 };
 
 // ─── Standalone FlashcardPractice component ───────────────────────────────────
@@ -144,7 +168,8 @@ const LanguageLearningPractice = () => {
             primaryLang?.name || 'English',
             targetLang?.name || 'Spanish',
             'General vocabulary',
-            5
+            5,
+            userData.currentStage || 'beginner'
           );
           break;
           
@@ -160,7 +185,8 @@ const LanguageLearningPractice = () => {
               primaryLang?.name || 'English',
               targetLang?.name || 'Spanish',
               'Basic vocabulary',
-              10
+              10,
+              userData.currentStage || 'beginner'
             );
           }
           console.log('[Flashcards] Generated content sample:', content?.[0]);
@@ -185,7 +211,8 @@ const LanguageLearningPractice = () => {
             primaryLang?.name || 'English',
             targetLang?.name || 'Spanish',
             'Basic vocabulary',
-            8
+            8,
+            userData.currentStage || 'beginner'
           );
           break;
 
@@ -194,7 +221,8 @@ const LanguageLearningPractice = () => {
             primaryLang?.name || 'English',
             targetLang?.name || 'Spanish',
             'Fill in the blank sentences',
-            6
+            6,
+            userData.currentStage || 'beginner'
           );
           break;
 
@@ -203,7 +231,8 @@ const LanguageLearningPractice = () => {
             primaryLang?.name || 'English',
             targetLang?.name || 'Spanish',
             'Common phrases and pronunciation',
-            8
+            8,
+            userData.currentStage || 'beginner'
           );
           break;
 
@@ -216,6 +245,16 @@ const LanguageLearningPractice = () => {
             ],
             currentPromptIndex: 0,
           };
+          break;
+
+        case 'listening':
+          const { generateListeningContent } = await import('../services/languageAI');
+          content = await generateListeningContent(
+            primaryLang?.name || 'English',
+            targetLang?.name || 'Spanish',
+            userData.currentStage || 'beginner',
+            'Daily life'
+          );
           break;
           
         default:
@@ -542,6 +581,156 @@ const LanguageLearningPractice = () => {
     );
   };
 
+  // ── Listening Practice: AI reads script, user answers questions ──────────────
+  const renderListeningPractice = () => {
+    if (!practiceContent) return null;
+    
+    const targetLangCode = userData?.targetLanguage || 'en';
+    const targetLangName = LANGUAGES.TARGET.find(l => l.code === targetLangCode)?.name || 'Target';
+
+    const doSpeak = (text) => speak(text, targetLangCode, { rate: 0.85 });
+
+    return (
+      <div className="practice-content listening-content">
+        <div className="practice-header">
+          <h3>🎧 Listening Comprehension</h3>
+          <p style={{ color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
+            Listen to the audio and answer the questions
+          </p>
+        </div>
+
+        {/* Audio Script Section */}
+        <div style={{ padding: '1rem', background: 'var(--color-bg-secondary)', borderRadius: '0.75rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+            <button
+              onClick={() => doSpeak(practiceContent.script)}
+              style={{
+                background: 'var(--color-accent)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
+                width: '50px',
+                height: '50px',
+                fontSize: '1.5rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+              title="Play audio"
+            >
+              🔊
+            </button>
+            <div>
+              <p style={{ margin: 0, fontWeight: '500' }}>Listen to the passage</p>
+              <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
+                Click the speaker icon to hear the audio
+              </p>
+            </div>
+          </div>
+
+          {/* Difficult Words */}
+          {practiceContent.difficultWords && practiceContent.difficultWords.length > 0 && (
+            <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--color-border)' }}>
+              <p style={{ margin: '0 0 0.5rem', fontSize: '0.9rem', fontWeight: '500' }}>📚 Difficult Words:</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.5rem' }}>
+                {practiceContent.difficultWords.map((w, i) => (
+                  <div key={i} style={{ padding: '0.5rem', background: 'var(--color-bg-tertiary)', borderRadius: '0.5rem', fontSize: '0.85rem' }}>
+                    <div style={{ fontWeight: '500' }}>{w.word}</div>
+                    <div style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>{w.pronunciation}</div>
+                    <div style={{ color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>{w.meaning}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Questions Section */}
+        <div className="questions-section">
+          <h4>Answer the questions:</h4>
+          {practiceContent.questions?.map((q, i) => (
+            <div key={i} className="question-item" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--color-bg-secondary)', borderRadius: '0.75rem' }}>
+              <p style={{ fontWeight: '500', marginBottom: '0.75rem' }}>{i + 1}. {q.question}</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem' }}>
+                {q.options?.map((option, j) => (
+                  <button
+                    key={j}
+                    onClick={() => !showResults && handleAnswer(option)}
+                    disabled={showResults}
+                    style={{
+                      padding: '0.75rem',
+                      background: answers[i] === option
+                        ? 'var(--color-accent)'
+                        : showResults && option === q.correctAnswer
+                        ? '#10b981'
+                        : showResults && answers[i] === option
+                        ? '#ef4444'
+                        : 'var(--color-bg-tertiary)',
+                      color: answers[i] === option || (showResults && (option === q.correctAnswer || answers[i] === option))
+                        ? 'white'
+                        : 'var(--color-text-primary)',
+                      border: 'none',
+                      borderRadius: '0.5rem',
+                      cursor: showResults ? 'default' : 'pointer',
+                      fontWeight: answers[i] === option ? '600' : '400',
+                    }}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Submit Button */}
+        <div className="practice-actions" style={{ marginTop: '1.5rem' }}>
+          {!showResults ? (
+            <button
+              className="btn-submit"
+              onClick={checkAnswers}
+              disabled={Object.keys(answers).length < (practiceContent.questions?.length || 0)}
+              style={{
+                padding: '0.75rem 2rem',
+                background: Object.keys(answers).length < (practiceContent.questions?.length || 0) ? 'var(--color-text-muted)' : 'var(--color-accent)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.5rem',
+                cursor: Object.keys(answers).length < (practiceContent.questions?.length || 0) ? 'not-allowed' : 'pointer',
+              }}
+            >
+              Submit Answers
+            </button>
+          ) : (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>
+                {score >= 80 ? '🎉' : '📚'}
+              </div>
+              <p style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '1rem' }}>
+                Score: {score}%
+              </p>
+              <button
+                className="btn-finish"
+                onClick={() => navigate('/language-learning')}
+                style={{
+                  padding: '0.75rem 2rem',
+                  background: 'var(--color-accent)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '0.5rem',
+                  cursor: 'pointer',
+                }}
+              >
+                Back to Dashboard
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const renderConversationPractice = () => (
     <div className="practice-content conversation-content">
       <div className="conversation-header">
@@ -653,20 +842,7 @@ const LanguageLearningPractice = () => {
     const targetLangName = LANGUAGES.TARGET.find(l => l.code === userData?.targetLanguage)?.name || 'Target';
     const targetLangCode = userData?.targetLanguage || 'en';
 
-    const langCodeMap = {
-      en: 'en-US', zh: 'zh-CN', es: 'es-ES', de: 'de-DE',
-      fr: 'fr-FR', hi: 'hi-IN', bn: 'bn-BD',
-    };
-    const bcp47 = langCodeMap[targetLangCode] || 'en-US';
-
-    const speakWord = () => {
-      if (!window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(card.back);
-      utt.lang = bcp47;
-      utt.rate = 0.85;
-      window.speechSynthesis.speak(utt);
-    };
+    const speakWord = () => speak(card.back, targetLangCode, { rate: 0.85 });
 
     const result = answers[currentIndex];
 
@@ -728,11 +904,7 @@ const LanguageLearningPractice = () => {
                           // Extract the quoted word/phrase from the mistake text if present
                           const quoted = m.match(/[''"'""]([^''"'""\n]+)[''"'""]/) || m.match(/[「」『』]([^「」『』\n]+)[「」『』]/);
                           const toSpeak = quoted ? quoted[1] : card.back;
-                          window.speechSynthesis.cancel();
-                          const utt = new SpeechSynthesisUtterance(toSpeak);
-                          utt.lang = bcp47;
-                          utt.rate = 0.7; // slower for correction
-                          window.speechSynthesis.speak(utt);
+                          speak(toSpeak, targetLangCode, { rate: 0.7 });
                         }}
                         title="Hear correct pronunciation"
                         style={{ background: 'none', border: '1px solid var(--color-border)', borderRadius: '50%', width: '26px', height: '26px', fontSize: '0.75rem', cursor: 'pointer', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
@@ -1015,9 +1187,11 @@ Return JSON:
 
       {!practiceLoading && selectedPractice === 'writing' && renderWritingPractice()}
 
+      {!practiceLoading && selectedPractice === 'listening' && renderListeningPractice()}
+
       {!practiceLoading && selectedPractice === 'fill_blank' && renderMCQPractice()}
 
-      {!practiceLoading && selectedPractice && !['mcq','flashcards','reading_comprehension','conversation','typing','speaking','writing','fill_blank'].includes(selectedPractice) && (
+      {!practiceLoading && selectedPractice && !['mcq','flashcards','reading_comprehension','conversation','typing','speaking','writing','fill_blank','listening'].includes(selectedPractice) && (
         <div className="practice-content" style={{ textAlign: 'center', padding: '2rem' }}>
           <p>🚧 {PRACTICE_TYPE_INFO[selectedPractice]?.name} — coming soon</p>
           <button className="btn-back" onClick={() => setSelectedPractice(null)}>← Back</button>

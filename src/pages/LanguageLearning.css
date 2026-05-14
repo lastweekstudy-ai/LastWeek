@@ -439,3 +439,145 @@
     transform: rotate(90deg);
   }
 }
+
+/* ── History & Progress Sections ─────────────────────────────────────────── */
+
+.history-section {
+  margin-top: 1.5rem;
+  background: var(--color-bg-secondary, #121212);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border, #262626);
+}
+
+.history-section h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #fff);
+}
+
+.lesson-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lesson-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--color-bg-tertiary, #1a1a1a);
+  border-left: 3px solid transparent;
+}
+
+.lesson-history-item.completed {
+  border-left-color: #10b981;
+}
+
+.lesson-history-item.in-progress {
+  border-left-color: #f59e0b;
+}
+
+.lesson-history-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.lesson-history-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-transform: capitalize;
+}
+
+.lesson-history-stage {
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #9ca3af);
+  text-transform: capitalize;
+}
+
+.lesson-history-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.lesson-history-score {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.lesson-history-section {
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #9ca3af);
+  text-transform: capitalize;
+}
+
+.completed-badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  background: #10b98120;
+  color: #10b981;
+  font-weight: 500;
+}
+
+.in-progress-badge {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  background: #f59e0b20;
+  color: #f59e0b;
+  font-weight: 500;
+}
+
+/* XP History */
+.xp-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.xp-history-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--color-bg-tertiary, #1a1a1a);
+  font-size: 0.875rem;
+}
+
+.xp-amount {
+  font-weight: 700;
+  color: #f59e0b;
+  min-width: 60px;
+}
+
+.xp-reason {
+  flex: 1;
+  color: var(--color-text-muted, #9ca3af);
+  font-size: 0.8rem;
+}
+
+.xp-date {
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+/* 4-column stats */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

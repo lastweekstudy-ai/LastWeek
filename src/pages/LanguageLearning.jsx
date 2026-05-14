@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getLanguageUser, createLanguageUser, getRoadmap, saveRoadmap, LANGUAGES, COLLECTIONS } from '../appwrite/languageLearning';
+import { getLanguageUser, createLanguageUser, getRoadmap, saveRoadmap, LANGUAGES } from '../appwrite/languageLearning';
 import { generateRoadmap, generateLesson } from '../services/languageAI';
 import useSession from '../hooks/useSession';
 import './LanguageLearning.css';
@@ -42,8 +42,8 @@ const Onboarding = ({ onComplete }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  const [step, setStep] = useState(1);
-  const [primaryLanguage, setPrimaryLanguage] = useState('');
+  const [step, setStep] = useState(2); // Skip step 1 — English is the only primary language
+  const [primaryLanguage, setPrimaryLanguage] = useState('en'); // Auto-select English
   const [targetLanguage, setTargetLanguage] = useState('');
   const [learningRatio, setLearningRatio] = useState(70);
   const [loading, setLoading] = useState(false);
@@ -214,11 +214,9 @@ const Onboarding = ({ onComplete }) => {
   return (
     <div className="onboarding-container">
       <div className="onboarding-progress">
-        <div className={`progress-dot ${step >= 1 ? 'active' : ''}`}>1</div>
+        <div className={`progress-dot ${step >= 2 ? 'active' : ''}`}>1</div>
         <div className="progress-line"></div>
-        <div className={`progress-dot ${step >= 2 ? 'active' : ''}`}>2</div>
-        <div className="progress-line"></div>
-        <div className={`progress-dot ${step >= 3 ? 'active' : ''}`}>3</div>
+        <div className={`progress-dot ${step >= 3 ? 'active' : ''}`}>2</div>
       </div>
       
       {error && <div className="error-message">{error}</div>}
@@ -231,14 +229,64 @@ const Onboarding = ({ onComplete }) => {
 };
 
 // Dashboard Component
-const Dashboard = ({ userData, onStartLesson, onStartPractice, onContinue, onReset }) => {
+const Dashboard = ({ userData, onStartLesson, onStartPractice, onContinue }) => {
   const primaryLang = LANGUAGES.PRIMARY.find(l => l.code === userData.primaryLanguage);
   const targetLang = LANGUAGES.TARGET.find(l => l.code === userData.targetLanguage);
-  
+  const [completedLessons, setCompletedLessons] = useState([]);
+  const [recentPoints, setRecentPoints] = useState([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    const loadHistory = async () => {
+      try {
+        const { getAllLessons } = await import('../appwrite/languageLearning');
+        const { databases } = await import('../appwrite/config');
+        const { Query } = await import('appwrite');
+        const DB_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
+        const POINTS_ID = import.meta.env.VITE_LANG_USER_POINTS_COLLECTION_ID;
+
+        const lessons = await getAllLessons(user.$id);
+        setCompletedLessons(lessons || []);
+
+        try {
+          const pts = await databases.listDocuments(DB_ID, POINTS_ID, [
+            Query.equal('userId', user.$id),
+            Query.orderDesc('createdAt'),
+            Query.limit(10),
+          ]);
+          setRecentPoints(pts.documents || []);
+        } catch {
+          // points collection may not exist yet
+        }
+      } catch (err) {
+        console.error('Error loading history:', err);
+      }
+    };
+    loadHistory();
+  }, [user]);
+
   // Calculate stage progress
   const stageNames = ['beginner', 'elementary', 'intermediate', 'upper_intermediate', 'advanced', 'mastery', 'native'];
   const currentStageIndex = stageNames.indexOf(userData.currentStage || 'beginner');
   const progressPercent = ((currentStageIndex + 1) / stageNames.length) * 100;
+
+  const completed = completedLessons.filter(l => l.status === 'completed');
+  const inProgress = completedLessons.filter(l => l.status === 'in_progress');
+  
+  // Remove duplicates: keep only the most recent lesson for each module+stage combination
+  const deduplicateByKey = (lessons) => {
+    const seen = {};
+    return lessons.filter(lesson => {
+      const key = `${lesson.moduleId}__${lesson.stageName}`;
+      if (seen[key]) return false; // Skip duplicate
+      seen[key] = true;
+      return true;
+    }).sort((a, b) => new Date(b.$createdAt) - new Date(a.$createdAt)); // Most recent first
+  };
+  
+  const uniqueCompleted = deduplicateByKey(completed);
+  const uniqueInProgress = deduplicateByKey(inProgress);
 
   return (
     <div className="language-dashboard">
@@ -250,9 +298,6 @@ const Dashboard = ({ userData, onStartLesson, onStartPractice, onContinue, onRes
           <span className="flag">{targetLang?.flag}</span>
         </div>
         <h1>Language Learning</h1>
-        <button className="btn-reset" onClick={onReset} title="Start over with new language">
-          🔄 Change Language
-        </button>
       </div>
 
       {/* Stats */}
@@ -273,6 +318,12 @@ const Dashboard = ({ userData, onStartLesson, onStartPractice, onContinue, onRes
           <div className="stat-icon">📈</div>
           <div className="stat-value">{userData.currentStage || 'Beginner'}</div>
           <div className="stat-label">Current Level</div>
+        </div>
+
+        <div className="stat-card lessons-card">
+          <div className="stat-icon">✅</div>
+          <div className="stat-value">{completed.length}</div>
+          <div className="stat-label">Lessons Done</div>
         </div>
       </div>
 
@@ -314,6 +365,68 @@ const Dashboard = ({ userData, onStartLesson, onStartPractice, onContinue, onRes
         )}
       </div>
 
+      {/* In Progress Lessons */}
+      {uniqueInProgress.length > 0 && (
+        <div className="history-section">
+          <h3>⏳ In Progress</h3>
+          <div className="lesson-history-list">
+            {uniqueInProgress.map(lesson => (
+              <div key={lesson.$id} className="lesson-history-item in-progress">
+                <div className="lesson-history-info">
+                  <span className="lesson-history-name">{lesson.moduleName || lesson.moduleId}</span>
+                  <span className="lesson-history-stage">{lesson.stageName}</span>
+                </div>
+                <div className="lesson-history-meta">
+                  <span className="lesson-history-section">📍 {lesson.lastSection || 'introduction'}</span>
+                  <span className="lesson-history-status in-progress-badge">In Progress</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Completed Lessons */}
+      {uniqueCompleted.length > 0 && (
+        <div className="history-section">
+          <h3>✅ Completed Lessons ({uniqueCompleted.length})</h3>
+          <div className="lesson-history-list">
+            {uniqueCompleted.slice().reverse().map(lesson => (
+              <div key={lesson.$id} className="lesson-history-item completed">
+                <div className="lesson-history-info">
+                  <span className="lesson-history-name">{lesson.moduleName || lesson.moduleId}</span>
+                  <span className="lesson-history-stage">{lesson.stageName}</span>
+                </div>
+                <div className="lesson-history-meta">
+                  {lesson.score > 0 && (
+                    <span className="lesson-history-score">
+                      {lesson.score >= 100 ? '🌟' : lesson.score >= 80 ? '✅' : '📚'} {lesson.score}%
+                    </span>
+                  )}
+                  <span className="lesson-history-status completed-badge">Completed</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Recent XP */}
+      {recentPoints.length > 0 && (
+        <div className="history-section">
+          <h3>⭐ Recent XP</h3>
+          <div className="xp-history-list">
+            {recentPoints.map(pt => (
+              <div key={pt.$id} className="xp-history-item">
+                <span className="xp-amount">+{pt.points} XP</span>
+                <span className="xp-reason">{pt.reason}</span>
+                <span className="xp-date">{new Date(pt.createdAt || pt.$createdAt).toLocaleDateString()}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Daily Tip */}
       <div className="daily-tip">
         <span className="tip-icon">💡</span>
@@ -343,7 +456,7 @@ const LanguageLearning = () => {
 
     try {
       // Check if user has language learning profile
-      const { getLanguageUser } = await import('../appwrite/languageLearning');
+      const { getLanguageUser, getAllLessons } = await import('../appwrite/languageLearning');
       const profile = await getLanguageUser(user.$id);
       
       if (profile) {
@@ -383,53 +496,67 @@ const LanguageLearning = () => {
   };
 
   const handleContinue = async () => {
-    // Try to get the last lesson user was working on and resume
     try {
-      const { getCompletedLessons, getRoadmap } = await import('../appwrite/languageLearning');
+      const { getAllLessons, getRoadmap } = await import('../appwrite/languageLearning');
       
-      const completedLessons = await getCompletedLessons(user.$id);
-      const roadmap = await getRoadmap(user.$id);
-      
-      if (completedLessons && completedLessons.length > 0) {
-        // Find the most recent completed lesson
-        const lastLesson = completedLessons[completedLessons.length - 1];
+      const [allLessons, roadmapData] = await Promise.all([
+        getAllLessons(user.$id),
+        getRoadmap(user.$id),
+      ]);
+
+      // Priority 1: Resume the MOST RECENT in-progress lesson
+      // Sort by lastSection update time (most recent first)
+      const inProgressLessons = allLessons?.filter(l => l.status === 'in_progress') || [];
+      if (inProgressLessons.length > 0) {
+        // Get the most recently updated lesson
+        const mostRecent = inProgressLessons.sort((a, b) => 
+          new Date(b.$updatedAt || b.$createdAt) - new Date(a.$updatedAt || a.$createdAt)
+        )[0];
         
-        // Navigate to that lesson
-        navigate(`/language-learning/lessons/${lastLesson.moduleId}/${lastLesson.stageName}`);
-      } else if (roadmap && roadmap.roadmap) {
-        // No lessons completed yet, go to first available module
-        const firstStage = roadmap.roadmap[0];
-        if (firstStage && firstStage.modules && firstStage.modules.length > 0) {
-          navigate(`/language-learning/lessons/${firstStage.modules[0].moduleId}/${firstStage.stageId}`);
-        } else {
-          // Fallback to lessons page
-          navigate('/language-learning/lessons');
-        }
-      } else {
-        // No roadmap, go to lessons page
-        navigate('/language-learning/lessons');
+        console.log('[Continue] Resuming in-progress lesson:', mostRecent.moduleId, mostRecent.stageName);
+        navigate(`/language-learning/lessons/${encodeURIComponent(mostRecent.moduleId)}/${encodeURIComponent(mostRecent.stageName)}`);
+        return;
       }
+
+      // Priority 2: Find next module in roadmap that hasn't been started
+      // Start from the user's current stage, not from the beginning
+      if (roadmapData?.roadmap) {
+        const roadmap = typeof roadmapData.roadmap === 'string'
+          ? JSON.parse(roadmapData.roadmap)
+          : roadmapData.roadmap;
+
+        const completedIds = new Set(
+          allLessons?.filter(l => l.status === 'completed').map(l => `${l.moduleId}__${l.stageName}`) || []
+        );
+
+        // Find the current stage index
+        const currentStage = userData?.currentStage || 'beginner';
+        let startStageIndex = roadmap.findIndex(s => s.stageId === currentStage);
+        if (startStageIndex === -1) startStageIndex = 0; // Fallback to first stage
+
+        // Search from current stage onwards
+        for (let stageIdx = startStageIndex; stageIdx < roadmap.length; stageIdx++) {
+          const stage = roadmap[stageIdx];
+          for (const module of (stage.modules || [])) {
+            const key = `${module.moduleId}__${stage.stageId}`;
+            if (!completedIds.has(key)) {
+              console.log('[Continue] Next uncompleted module:', module.moduleId, stage.stageId);
+              navigate(`/language-learning/lessons/${encodeURIComponent(module.moduleId)}/${encodeURIComponent(stage.stageId)}`);
+              return;
+            }
+          }
+        }
+      }
+
+      // Fallback: go to lesson selection
+      console.log('[Continue] No in-progress or uncompleted lessons, going to lesson selection');
+      navigate('/language-learning/lessons');
     } catch (error) {
       console.error('Error resuming lesson:', error);
-      // Fallback to lessons page
       navigate('/language-learning/lessons');
     }
   };
 
-  const handleReset = async () => {
-    const confirmed = window.confirm('Are you sure you want to start over with a new language? This will delete your current progress.');
-    if (!confirmed) return;
-
-    try {
-      const { deleteLanguageUser } = await import('../appwrite/languageLearning');
-      await deleteLanguageUser(user.$id);
-      setUserData(null);
-      setShowOnboarding(true);
-    } catch (error) {
-      console.error('Error resetting language learning:', error);
-      alert('Failed to reset. Please try again.');
-    }
-  };
 
   if (loading) {
     return (
@@ -451,7 +578,6 @@ const LanguageLearning = () => {
         onStartLesson={handleStartLesson}
         onStartPractice={handleStartPractice}
         onContinue={handleContinue}
-        onReset={handleReset}
       />
     </div>
   );

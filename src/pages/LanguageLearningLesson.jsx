@@ -2,8 +2,40 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { generateLesson, generateFlashcards, generateMCQ } from '../services/languageAI';
-import { getLanguageUser, saveLessonProgress, addUserPoints, getLessonByModuleAndStage, getInProgressLesson, getAnyLessonForUser, updateLesson, LANGUAGES } from '../appwrite/languageLearning';
+import { getLanguageUser, saveLessonProgress, addUserPoints, getLessonByModuleAndStage, updateLesson, LANGUAGES } from '../appwrite/languageLearning';
+import SpeakingRecorder from '../components/SpeakingRecorder';
+import { speak, isVoiceAvailable, extractSpeakableText } from '../utils/speech';
 import './LanguageLearningLesson.css';
+
+// Modules that require voice/speaking practice
+const SPEAKING_MODULES = ['pronunciation', 'speaking'];
+
+// Modules that require listening with audio playback
+const LISTENING_MODULES = ['listening'];
+
+// Modules that require writing with image upload
+const WRITING_MODULES = ['writing'];
+
+// Detect if this lesson should use voice mode
+const isVoiceModule = (moduleId) => {
+  if (!moduleId) return false;
+  const id = moduleId.toLowerCase();
+  return SPEAKING_MODULES.some(m => id === m || id.endsWith(`_${m}`) || id.endsWith(`-${m}`));
+};
+
+// Detect if this lesson should use listening mode
+const isListeningModule = (moduleId) => {
+  if (!moduleId) return false;
+  const id = moduleId.toLowerCase();
+  return LISTENING_MODULES.some(m => id === m || id.endsWith(`_${m}`) || id.endsWith(`-${m}`));
+};
+
+// Detect if this lesson should use writing mode
+const isWritingModule = (moduleId) => {
+  if (!moduleId) return false;
+  const id = moduleId.toLowerCase();
+  return WRITING_MODULES.some(m => id === m || id.endsWith(`_${m}`) || id.endsWith(`-${m}`));
+};
 
 const LanguageLearningLesson = () => {
   const { user } = useAuth();
@@ -20,6 +52,7 @@ const LanguageLearningLesson = () => {
   const [userData, setUserData] = useState(null);
   const [savedLessonId, setSavedLessonId] = useState(null);
   const [lastSection, setLastSection] = useState('introduction');
+  const [voiceWarning, setVoiceWarning] = useState(''); // shown when no TTS voice available
 
   useEffect(() => {
     loadLesson();
@@ -66,66 +99,28 @@ const LanguageLearningLesson = () => {
       const stageName = stageId || profile.currentStage || 'beginner';
       const lessonModuleId = moduleId || 'vocabulary';
       
-      // FIRST: Check if there's ANY existing lesson for this user (most important!)
-      const anyLesson = await getAnyLessonForUser(user.$id);
+      console.log('[Lesson] Loading module:', lessonModuleId, 'stage:', stageName);
       
-      // SECOND: Check if there's an exact match for this module/stage
+      // Check for an exact match for this specific module/stage only
       const existingLesson = await getLessonByModuleAndStage(user.$id, lessonModuleId, stageName);
       
       let lessonData;
       
-      // Priority 1: Exact match with lesson content
+      // Priority 1: Exact match with lesson content for THIS module
       if (existingLesson && existingLesson.lessonContent) {
         console.log('Loading existing exact match lesson from database');
         lessonData = typeof existingLesson.lessonContent === 'string' 
           ? JSON.parse(existingLesson.lessonContent) 
           : existingLesson.lessonContent;
+        // Mark as already completed so XP isn't awarded again
+        if (existingLesson.status === 'completed') {
+          lessonData._alreadyCompleted = true;
+        }
         setSavedLessonId(existingLesson.$id);
         setLastSection(existingLesson.lastSection || 'introduction');
         setCurrentSection(existingLesson.lastSection || 'introduction');
       }
-      // Priority 2: Any lesson with content
-      else if (anyLesson && anyLesson.lessonContent) {
-        console.log('Loading any existing lesson with content from database');
-        lessonData = typeof anyLesson.lessonContent === 'string' 
-          ? JSON.parse(anyLesson.lessonContent) 
-          : anyLesson.lessonContent;
-        setSavedLessonId(anyLesson.$id);
-        setLastSection(anyLesson.lastSection || 'introduction');
-        setCurrentSection(anyLesson.lastSection || 'introduction');
-      }
-      // Priority 3: Any lesson at all (even without content - just use module/stage info)
-      else if (anyLesson) {
-        console.log('Found lesson but no content, will generate new with same module/stage');
-        // Try to generate lesson with the same module/stage as the existing record
-        const existingModuleName = anyLesson.moduleName || moduleName;
-        const existingStageName = anyLesson.stageName || stageName;
-        
-        try {
-          lessonData = await generateLesson(
-            primaryLang?.name || 'English',
-            targetLang?.name || 'Spanish',
-            existingStageName,
-            existingModuleName
-          );
-          
-          // Update existing lesson record with new content
-          const updatedLesson = await updateLesson(anyLesson.$id, {
-            status: 'in_progress',
-            lessonContent: JSON.stringify(lessonData),
-            lastSection: 'introduction',
-            moduleId: anyLesson.moduleId || lessonModuleId,
-            stageName: existingStageName,
-            moduleName: existingModuleName,
-          });
-          setSavedLessonId(anyLesson.$id);
-          setCurrentSection('introduction');
-        } catch (aiError) {
-          console.error('AI failed:', aiError);
-          throw aiError;
-        }
-      }
-      // Priority 4: No existing lessons at all
+      // Priority 2: No existing lesson for this module — generate new one
       else {
         // Generate new lesson with AI
         console.log('No existing lesson found, generating new one...');
@@ -150,7 +145,10 @@ const LanguageLearningLesson = () => {
           setCurrentSection('introduction');
         } catch (aiError) {
           console.error('AI lesson generation failed:', aiError);
-          throw aiError;
+          // Set error message for user
+          setError(aiError.message || 'Failed to generate lesson. Please try again.');
+          setLoading(false);
+          return;
         }
       }
       
@@ -198,12 +196,16 @@ const LanguageLearningLesson = () => {
     try {
       const updateData = {
         score,
-        lastSection: currentSection,
+        // If completed, reset lastSection to introduction so next visit starts fresh
+        lastSection: isCompleted ? 'introduction' : currentSection,
       };
       
       if (isCompleted) {
         updateData.status = 'completed';
       }
+      
+      // Check if already completed to avoid duplicate XP
+      const alreadyCompleted = savedLessonId && lesson?._alreadyCompleted;
       
       // Update existing lesson instead of creating new one
       if (savedLessonId) {
@@ -215,13 +217,13 @@ const LanguageLearningLesson = () => {
           moduleName: moduleId?.replace(/-/g, ' ') || 'Vocabulary',
           status: isCompleted ? 'completed' : 'in_progress',
           score,
-          lastSection: currentSection,
+          lastSection: isCompleted ? 'introduction' : currentSection,
           lessonContent: JSON.stringify(lesson),
         });
       }
       
-      // Add XP points only on completion
-      if (isCompleted) {
+      // Add XP only on first completion (not if already completed)
+      if (isCompleted && !alreadyCompleted) {
         const xpEarned = score >= 100 ? 25 : 15;
         await addUserPoints(user.$id, xpEarned, `Completed lesson: ${moduleId}`);
       }
@@ -231,24 +233,85 @@ const LanguageLearningLesson = () => {
   };
 
   const handleRetry = () => {
+    // Clear all mastery answers to allow re-recording
     setMasteryAnswers({});
     setMasteryScore(0);
     setShowResults(false);
-    setCurrentSection('masteryCheck');
+    // Don't change section — stay in masteryCheck to re-render with fresh SpeakingRecorder components
   };
 
   const handleContinue = () => {
-    navigate('/language-learning');
+    // Go to lesson selection so user picks the next lesson
+    // (not back to dashboard which would re-open this same lesson via Continue button)
+    navigate('/language-learning/lessons');
   };
 
   const renderSection = () => {
     if (!lesson) return null;
-    
+
+    const voiceMode = isVoiceModule(moduleId);
+    const listeningMode = isListeningModule(moduleId);
+    const writingMode = isWritingModule(moduleId);
+    const targetLangCode = userData?.targetLanguage || 'en';
+    const targetLangName = LANGUAGES.TARGET.find(l => l.code === targetLangCode)?.name || 'Target';
+
+    const doSpeak = (text) => {
+      speak(text, targetLangCode, {
+        rate: 0.85,
+        onUnsupported: (reason) => setVoiceWarning(reason),
+      });
+    };
+
+    // Voice mode: wrap examples with listen + record buttons
+    const renderVoiceExample = (example, i) => {
+      const text = typeof example === 'string' ? example : JSON.stringify(example);
+      // Extract target language portion (before any romanization/translation)
+      const targetText = text.split('(')[0].trim();
+      return (
+        <div key={i} className="example-card voice-example">
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+            <span className="example-number">{i + 1}</span>
+            <p style={{ flex: 1, margin: 0 }}>{text}</p>
+          </div>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', paddingLeft: '2rem' }}>
+            <button
+              onClick={() => doSpeak(targetText)}
+              style={{ background: 'var(--color-accent)', border: 'none', borderRadius: '1.5rem', padding: '0.35rem 0.85rem', color: 'white', cursor: 'pointer', fontSize: '0.85rem' }}
+            >
+              🔊 Listen
+            </button>
+          </div>
+        </div>
+      );
+    };
+
+    // Listening mode: wrap examples with speaker buttons
+    const renderListeningExample = (example, i) => {
+      const text = typeof example === 'string' ? example : JSON.stringify(example);
+      return (
+        <div key={i} className="example-card listening-example">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <button
+              onClick={() => doSpeak(text)}
+              style={{ background: 'var(--color-accent)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', fontSize: '1.2rem', cursor: 'pointer', flexShrink: 0 }}
+              title="Click to hear the audio"
+            >
+              🔊
+            </button>
+            <div style={{ flex: 1 }}>
+              <span className="example-number">{i + 1}</span>
+              <p style={{ margin: '0.25rem 0 0' }}>{text}</p>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     switch (currentSection) {
       case 'introduction':
         return (
           <div className="lesson-section">
-            <h3>📖 Introduction</h3>
+            <h3>{voiceMode ? '🎤 Introduction' : listeningMode ? '🎧 Introduction' : writingMode ? '✍️ Introduction' : '📖 Introduction'}</h3>
             <p>{typeof lesson.introduction === 'string' ? lesson.introduction : JSON.stringify(lesson.introduction)}</p>
             <button className="btn-next" onClick={() => setCurrentSection('coreContent')}>
               Start Learning →
@@ -259,7 +322,7 @@ const LanguageLearningLesson = () => {
       case 'coreContent':
         return (
           <div className="lesson-section">
-            <h3>📚 Core Content</h3>
+            <h3>{voiceMode ? '🎙️ Core Content' : listeningMode ? '🎧 Core Content' : writingMode ? '✍️ Core Content' : '📚 Core Content'}</h3>
             <div className="content-text">
               <p>{typeof lesson.coreContent === 'string' ? lesson.coreContent : JSON.stringify(lesson.coreContent)}</p>
             </div>
@@ -267,17 +330,22 @@ const LanguageLearningLesson = () => {
             {lesson.examples && lesson.examples.length > 0 && (
               <div className="examples-section">
                 <h4>Examples:</h4>
-                {lesson.examples.map((example, i) => (
-                  <div key={i} className="example-card">
-                    <span className="example-number">{i + 1}</span>
-                    <p>{typeof example === 'string' ? example : JSON.stringify(example)}</p>
-                  </div>
-                ))}
+                {voiceMode
+                  ? lesson.examples.map((example, i) => renderVoiceExample(example, i))
+                  : listeningMode
+                  ? lesson.examples.map((example, i) => renderListeningExample(example, i))
+                  : lesson.examples.map((example, i) => (
+                    <div key={i} className="example-card">
+                      <span className="example-number">{i + 1}</span>
+                      <p>{typeof example === 'string' ? example : JSON.stringify(example)}</p>
+                    </div>
+                  ))
+                }
               </div>
             )}
             
             <button className="btn-next" onClick={() => setCurrentSection('miniPractice')}>
-              Continue to Practice →
+              {voiceMode ? 'Practice Speaking →' : listeningMode ? 'Practice Listening →' : writingMode ? 'Practice Writing →' : 'Continue to Practice →'}
             </button>
           </div>
         );
@@ -285,17 +353,135 @@ const LanguageLearningLesson = () => {
       case 'miniPractice':
         return (
           <div className="lesson-section">
-            <h3>✏️ Quick Practice</h3>
-            {lesson.miniPractice && lesson.miniPractice.length > 0 ? (
+            <h3>{voiceMode ? '🎙️ Speaking Practice' : listeningMode ? '🎧 Listening Practice' : writingMode ? '✍️ Writing Practice' : '✏️ Quick Practice'}</h3>
+            {voiceMode ? (
+              // Voice mode: show phrases to repeat with listen + record
               <div className="mini-practice">
-                {lesson.miniPractice.map((practice, i) => (
-                  <div key={i} className="practice-item">
-                    <p>{typeof practice === 'string' ? practice : (practice.question || JSON.stringify(practice))}</p>
-                  </div>
-                ))}
+                <p style={{ color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+                  Listen to each phrase, then record yourself saying it.
+                </p>
+                {lesson.miniPractice && lesson.miniPractice.length > 0 ? (
+                  lesson.miniPractice.map((practice, i) => {
+                    const text = typeof practice === 'string' ? practice : (practice.question || JSON.stringify(practice));
+                    const targetText = text.split('(')[0].trim();
+                    return (
+                      <div key={i} className="practice-item" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--color-bg-secondary)', borderRadius: '0.75rem' }}>
+                        <p style={{ marginBottom: '0.75rem' }}>{text}</p>
+                        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                          <button
+                            onClick={() => doSpeak(targetText)}
+                            style={{ background: 'var(--color-accent)', border: 'none', borderRadius: '1.5rem', padding: '0.4rem 1rem', color: 'white', cursor: 'pointer', fontSize: '0.85rem' }}
+                          >
+                            🔊 Listen
+                          </button>
+                          <SpeakingRecorder
+                            expectedWord={targetText}
+                            expectedPhrase={text}
+                            targetLanguage={targetLangName}
+                            targetLangCode={targetLangCode}
+                            onResult={(res) => {
+                              // Show inline feedback
+                              const el = document.getElementById(`voice-result-${i}`);
+                              if (el) {
+                                el.textContent = res.score >= 80
+                                  ? `✅ ${res.feedback}`
+                                  : `📚 ${res.feedback}`;
+                                el.style.color = res.score >= 80 ? '#10b981' : '#f59e0b';
+                              }
+                            }}
+                          />
+                        </div>
+                        <p id={`voice-result-${i}`} style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}></p>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>No practice phrases available.</p>
+                )}
+              </div>
+            ) : listeningMode ? (
+              // Listening mode: show audio with speaker buttons
+              <div className="mini-practice">
+                <p style={{ color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+                  Listen to each audio passage and try to understand the content.
+                </p>
+                {lesson.miniPractice && lesson.miniPractice.length > 0 ? (
+                  lesson.miniPractice.map((practice, i) => {
+                    const text = typeof practice === 'string' ? practice : (practice.question || JSON.stringify(practice));
+                    return (
+                      <div key={i} className="practice-item" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--color-bg-secondary)', borderRadius: '0.75rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <button
+                            onClick={() => doSpeak(text)}
+                            style={{ background: 'var(--color-accent)', border: 'none', borderRadius: '50%', width: '50px', height: '50px', fontSize: '1.5rem', cursor: 'pointer', flexShrink: 0 }}
+                            title="Click to hear the audio"
+                          >
+                            🔊
+                          </button>
+                          <div style={{ flex: 1 }}>
+                            <p style={{ margin: 0, fontWeight: '500' }}>Audio {i + 1}</p>
+                            <p style={{ margin: '0.25rem 0 0', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Click the speaker to listen</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>No listening practice available.</p>
+                )}
+              </div>
+            ) : writingMode ? (
+              // Writing mode: show prompts with image upload
+              <div className="mini-practice">
+                <p style={{ color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+                  Write your response on paper, take a photo, and upload it for AI feedback.
+                </p>
+                {lesson.miniPractice && lesson.miniPractice.length > 0 ? (
+                  lesson.miniPractice.map((practice, i) => {
+                    const text = typeof practice === 'string' ? practice : (practice.question || JSON.stringify(practice));
+                    return (
+                      <div key={i} className="practice-item" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--color-bg-secondary)', borderRadius: '0.75rem' }}>
+                        <p style={{ fontWeight: '500', marginBottom: '0.75rem' }}>{i + 1}. {text}</p>
+                        <label style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', padding: '1rem', border: '2px dashed var(--color-border)', borderRadius: '0.5rem', cursor: 'pointer', background: 'var(--color-bg-tertiary)' }}>
+                          <span style={{ fontSize: '1.5rem' }}>📷</span>
+                          <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Upload photo of your writing</span>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onload = (ev) => {
+                                  alert(`Photo uploaded for prompt ${i + 1}. Continue to see AI feedback in the mastery check!`);
+                                };
+                                reader.readAsDataURL(file);
+                              }
+                            }}
+                          />
+                        </label>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>No writing practice available.</p>
+                )}
               </div>
             ) : (
-              <p>No mini practice available for this lesson.</p>
+              // Text mode: show questions
+              <div className="mini-practice">
+                {lesson.miniPractice && lesson.miniPractice.length > 0 ? (
+                  lesson.miniPractice.map((practice, i) => (
+                    <div key={i} className="practice-item">
+                      <p>{typeof practice === 'string' ? practice : (practice.question || JSON.stringify(practice))}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No mini practice available for this lesson.</p>
+                )}
+              </div>
             )}
             
             <button className="btn-next" onClick={() => setCurrentSection('summary')}>
@@ -317,6 +503,111 @@ const LanguageLearningLesson = () => {
         );
         
       case 'masteryCheck':
+        // Voice mode: speaking mastery check
+        if (voiceMode) {
+          // Extract phrases from masteryCheck - voice modules use "prompt" and "expectedAnswer" fields
+          const phrases = lesson.masteryCheck?.map(q => {
+            if (typeof q === 'string') return q;
+            // Try different field names: prompt (voice), question (text), correctAnswer (fallback)
+            return q.prompt || q.question || q.expectedAnswer || q.correctAnswer || '';
+          }).filter(Boolean) || lesson.examples?.slice(0, 3) || [];
+
+          console.log('[Voice Mastery Check] Phrases:', phrases);
+
+          return (
+            <div className="lesson-section mastery-section">
+              <h3>🎤 Speaking Mastery Check</h3>
+              <p className="mastery-instructions">
+                Say each phrase clearly. Score 80%+ on at least 2 out of 3 to pass.
+              </p>
+              {phrases.slice(0, 3).map((phrase, i) => {
+                const targetText = phrase.split('(')[0].trim();
+                const resultKey = `mastery_voice_${i}`;
+                // Use showResults as part of the key to force re-mount when retrying
+                const recorderKey = `recorder_${i}_${showResults ? 'results' : 'recording'}`;
+                return (
+                  <div key={i} style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--color-bg-secondary)', borderRadius: '0.75rem' }}>
+                    <p style={{ fontWeight: '500', marginBottom: '0.75rem' }}>{i + 1}. {phrase}</p>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <button
+                        onClick={() => doSpeak(targetText)}
+                        style={{ background: 'var(--color-accent)', border: 'none', borderRadius: '1.5rem', padding: '0.4rem 1rem', color: 'white', cursor: 'pointer', fontSize: '0.85rem' }}
+                      >
+                        🔊 Listen
+                      </button>
+                      {!showResults && (
+                        <SpeakingRecorder
+                          key={recorderKey}
+                          expectedWord={targetText}
+                          expectedPhrase={phrase}
+                          targetLanguage={targetLangName}
+                          targetLangCode={targetLangCode}
+                          onResult={(res) => {
+                            setMasteryAnswers(prev => ({ ...prev, [resultKey]: res.score }));
+                          }}
+                        />
+                      )}
+                    </div>
+                    {masteryAnswers[resultKey] !== undefined && (
+                      <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: masteryAnswers[resultKey] >= 80 ? '#10b981' : '#f59e0b' }}>
+                        {masteryAnswers[resultKey] >= 80 ? '✅' : '📚'} Score: {masteryAnswers[resultKey]}/100
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+
+              {!showResults ? (
+                <div>
+                  <div style={{ marginBottom: '1rem', padding: '0.75rem', background: 'var(--color-bg-tertiary)', borderRadius: '0.5rem', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
+                    <span>Recorded: {Object.keys(masteryAnswers).filter(k => k.startsWith('mastery_voice_')).length}/{Math.min(3, phrases.length)} phrases</span>
+                  </div>
+                  <button
+                    className="btn-submit"
+                    onClick={() => {
+                      const recordedCount = Object.keys(masteryAnswers).filter(k => k.startsWith('mastery_voice_')).length;
+                      if (recordedCount === 0) {
+                        alert('Please record at least one phrase before submitting.');
+                        return;
+                      }
+                      const scores = phrases.slice(0, 3).map((_, i) => masteryAnswers[`mastery_voice_${i}`] || 0);
+                      const passed = scores.filter(s => s >= 80).length;
+                      const avg = scores.reduce((a, b) => a + b, 0) / Math.max(scores.length, 1);
+                      setMasteryScore(Math.round(avg));
+                      setShowResults(true);
+                      if (passed >= 2) saveProgress(Math.round(avg), true);
+                      else saveProgress(Math.round(avg), false);
+                    }}
+                  >
+                    Submit Speaking Results
+                  </button>
+                </div>
+              ) : (
+                <div className="results-section">
+                  <div className={`score-display ${masteryScore >= 80 ? 'passed' : 'failed'}`}>
+                    <span className="score-label">Average Score:</span>
+                    <span className="score-value">{masteryScore}%</span>
+                  </div>
+                  {masteryScore >= 80 ? (
+                    <div className="pass-message">
+                      <span className="pass-icon">🎉</span>
+                      <p>Great pronunciation! You've passed this lesson.</p>
+                      <button className="btn-continue" onClick={handleContinue}>Continue to Next Lesson</button>
+                    </div>
+                  ) : (
+                    <div className="fail-message">
+                      <span className="fail-icon">🎙️</span>
+                      <p>Keep practicing! Try the phrases again.</p>
+                      <button className="btn-retry" onClick={handleRetry}>Try Again</button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        // Text mode: standard MCQ mastery check
         return (
           <div className="lesson-section mastery-section">
             <h3>🎯 Mastery Check</h3>
@@ -407,9 +698,38 @@ const LanguageLearningLesson = () => {
 
   if (error) {
     return (
-      <div className="lesson-error">
-        <p>{error}</p>
-        <button onClick={loadLesson}>Try Again</button>
+      <div className="lesson-container">
+        <div className="lesson-header">
+          <button className="btn-back" onClick={() => navigate('/language-learning')}>
+            ← Back
+          </button>
+          <h2>Lesson Error</h2>
+        </div>
+        <div className="lesson-content">
+          <div className="lesson-error" style={{ padding: '2rem', textAlign: 'center', background: 'var(--color-bg-secondary)', borderRadius: '1rem', margin: '2rem' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>⚠️</div>
+            <h3 style={{ marginBottom: '0.5rem' }}>Unable to Load Lesson</h3>
+            <p style={{ color: 'var(--color-text-muted)', marginBottom: '1.5rem', maxWidth: '500px', margin: '0 auto 1.5rem' }}>
+              {error.includes('All AI providers failed') 
+                ? 'Our AI services are temporarily unavailable. Please try again in a few moments.'
+                : error}
+            </p>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <button 
+                onClick={loadLesson}
+                style={{ padding: '0.75rem 1.5rem', background: 'var(--color-accent)', color: 'white', border: 'none', borderRadius: '0.5rem', cursor: 'pointer', fontWeight: '500' }}
+              >
+                🔄 Try Again
+              </button>
+              <button 
+                onClick={() => navigate('/language-learning')}
+                style={{ padding: '0.75rem 1.5rem', background: 'var(--color-border)', color: 'var(--color-text)', border: 'none', borderRadius: '0.5rem', cursor: 'pointer' }}
+              >
+                ← Back to Lessons
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -451,6 +771,29 @@ const LanguageLearningLesson = () => {
           </div>
         </div>
       </div>
+
+      {/* Voice warning — shown when browser has no TTS voice for the target language */}
+      {voiceWarning && (
+        <div style={{
+          margin: '0 1rem 0.75rem',
+          padding: '0.65rem 1rem',
+          background: 'rgba(245,158,11,0.12)',
+          border: '1px solid rgba(245,158,11,0.4)',
+          borderRadius: '0.5rem',
+          fontSize: '0.82rem',
+          color: 'var(--color-text-muted)',
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '0.5rem',
+        }}>
+          <span style={{ flexShrink: 0 }}>🔇</span>
+          <span>{voiceWarning}</span>
+          <button
+            onClick={() => setVoiceWarning('')}
+            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', flexShrink: 0 }}
+          >✕</button>
+        </div>
+      )}
 
       {/* Content */}
       <div className="lesson-content">

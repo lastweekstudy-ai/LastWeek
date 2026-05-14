@@ -23,44 +23,13 @@ export const COLLECTIONS = {
 export const LANGUAGES = {
   PRIMARY: [
     { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'zh', name: 'Mandarin Chinese', flag: '🇨🇳' },
-    { code: 'es', name: 'Spanish', flag: '🇪🇸' },
-    { code: 'hi', name: 'Hindi', flag: '🇮🇳' },
-    { code: 'ar', name: 'Arabic', flag: '🇸🇦' },
-    { code: 'bn', name: 'Bengali', flag: '🇧🇩' },
-    { code: 'pt', name: 'Portuguese', flag: '🇧🇷' },
-    { code: 'ru', name: 'Russian', flag: '🇷🇺' },
-    { code: 'ja', name: 'Japanese', flag: '🇯🇵' },
-    { code: 'pa', name: 'Punjabi', flag: '🇮🇳' },
-    { code: 'mr', name: 'Marathi', flag: '🇮🇳' },
-    { code: 'te', name: 'Telugu', flag: '🇮🇳' },
-    { code: 'tr', name: 'Turkish', flag: '🇹🇷' },
-    { code: 'ko', name: 'Korean', flag: '🇰🇷' },
-    { code: 'fr', name: 'French', flag: '🇫🇷' },
-    { code: 'de', name: 'German', flag: '🇩🇪' },
-    { code: 'vi', name: 'Vietnamese', flag: '🇻🇳' },
-    { code: 'ur', name: 'Urdu', flag: '🇵🇰' },
-    { code: 'it', name: 'Italian', flag: '🇮🇹' },
-    { code: 'fa', name: 'Persian', flag: '🇮🇷' },
-    { code: 'ms', name: 'Malay', flag: '🇲🇾' },
-    { code: 'th', name: 'Thai', flag: '🇹🇭' },
-    { code: 'sw', name: 'Swahili', flag: '🇰🇪' },
-    { code: 'tl', name: 'Tagalog', flag: '🇵🇭' },
-    { code: 'nl', name: 'Dutch', flag: '🇳🇱' },
-    { code: 'pl', name: 'Polish', flag: '🇵🇱' },
-    { code: 'uk', name: 'Ukrainian', flag: '🇺🇦' },
-    { code: 'ro', name: 'Romanian', flag: '🇷🇴' },
-    { code: 'el', name: 'Greek', flag: '🇬🇷' },
-    { code: 'cs', name: 'Czech', flag: '🇨🇿' },
   ],
   TARGET: [
     { code: 'en', name: 'English', flag: '🇬🇧' },
     { code: 'zh', name: 'Chinese', flag: '🇨🇳' },
     { code: 'es', name: 'Spanish', flag: '🇪🇸' },
-    { code: 'de', name: 'German', flag: '🇩🇪' },
-    { code: 'fr', name: 'French', flag: '🇫🇷' },
-    { code: 'hi', name: 'Hindi', flag: '🇮🇳' },
-    { code: 'bn', name: 'Bangla', flag: '🇧🇩' },
+    { code: 'de', name: 'German',  flag: '🇩🇪' },
+    { code: 'fr', name: 'French',  flag: '🇫🇷' },
   ],
 };
 
@@ -161,20 +130,56 @@ export const addUserPoints = async (userId, xpAmount, reason) => {
   try {
     const user = await getLanguageUser(userId);
     if (!user) throw new Error('User not found');
-    
-    // Update user points
-    const newTotalXP = user.totalXP + xpAmount;
+
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10); // "YYYY-MM-DD"
+
+    // ── Streak calculation ──────────────────────────────────────────────────
+    const lastActive = user.lastActiveDate
+      ? new Date(user.lastActiveDate)
+      : null;
+    const lastActiveStr = lastActive
+      ? lastActive.toISOString().slice(0, 10)
+      : null;
+
+    let newStreak = user.streakDays || 0;
+
+    if (!lastActiveStr) {
+      // First ever activity
+      newStreak = 1;
+    } else if (lastActiveStr === todayStr) {
+      // Already active today — keep streak as-is
+      newStreak = user.streakDays || 1;
+    } else {
+      // Check if last active was yesterday
+      const yesterday = new Date(now);
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().slice(0, 10);
+
+      if (lastActiveStr === yesterdayStr) {
+        // Consecutive day — increment
+        newStreak = (user.streakDays || 0) + 1;
+      } else {
+        // Gap of 2+ days — reset
+        newStreak = 1;
+      }
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
+    const newTotalXP = (user.totalXP || 0) + xpAmount;
+
     await databases.updateDocument(DB_ID, COLLECTIONS.USERS, user.$id, {
       totalXP: newTotalXP,
-      lastActiveDate: new Date().toISOString(),
+      lastActiveDate: now.toISOString(),
+      streakDays: newStreak,
     });
-    
+
     // Log points
     await databases.createDocument(DB_ID, COLLECTIONS.USER_POINTS, ID.unique(), {
       userId,
-      xpAmount,
+      points: xpAmount,
       reason,
-      timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     });
     
     return newTotalXP;
@@ -246,33 +251,60 @@ export const getRoadmap = async (userId) => {
 
 // ===== LESSON FUNCTIONS =====
 
-// Save lesson progress
+// Save lesson progress — with duplicate pre-check to prevent DB bloating.
+// If a document for this userId + moduleId + stageName already exists,
+// update it in-place instead of creating a new one.
 export const saveLessonProgress = async (userId, lessonData) => {
   try {
+    // ── Duplicate pre-check ──────────────────────────────────────────────────
+    // Prevents the cultural-context__beginner-style duplicates that accumulate
+    // every time a lesson is re-entered before completion.
+    const existing = await databases.listDocuments(DB_ID, COLLECTIONS.LESSONS, [
+      Query.equal('userId', userId),
+      Query.equal('moduleId', lessonData.moduleId),
+      Query.equal('stageName', lessonData.stageName),
+      Query.orderDesc('$createdAt'),
+      Query.limit(1),
+    ]);
+
+    if (existing.documents.length > 0) {
+      // Document already exists — update it instead of creating a duplicate
+      const docId = existing.documents[0].$id;
+      const updateData = {
+        status: lessonData.status || existing.documents[0].status || 'in_progress',
+        score: lessonData.score ?? existing.documents[0].score ?? 0,
+      };
+      if (lessonData.lessonContent) updateData.lessonContent = lessonData.lessonContent;
+      if (lessonData.lastSection)   updateData.lastSection   = lessonData.lastSection;
+      if (lessonData.moduleName)    updateData.moduleName    = lessonData.moduleName;
+      if (lessonData.status === 'completed') {
+        updateData.completedAt = new Date().toISOString();
+      }
+      const response = await databases.updateDocument(DB_ID, COLLECTIONS.LESSONS, docId, updateData);
+      console.log('[saveLessonProgress] Updated existing lesson:', docId);
+      return response;
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
+    // No existing document — create fresh
     const docData = {
       userId,
-      moduleId: lessonData.moduleId,
-      stageName: lessonData.stageName,
+      moduleId:   lessonData.moduleId,
+      stageName:  lessonData.stageName,
       moduleName: lessonData.moduleName,
-      status: lessonData.status || 'completed',
-      score: lessonData.score || 0,
-      attempts: lessonData.attempts || 1,
+      status:     lessonData.status || 'in_progress',
+      score:      lessonData.score  || 0,
+      attempts:   lessonData.attempts || 1,
       completedAt: lessonData.status === 'completed' ? new Date().toISOString() : null,
     };
-    
-    // Add lesson content and last section if provided (for in-progress lessons)
-    if (lessonData.lessonContent) {
-      docData.lessonContent = lessonData.lessonContent;
-    }
-    if (lessonData.lastSection) {
-      docData.lastSection = lessonData.lastSection;
-    }
-    
+    if (lessonData.lessonContent) docData.lessonContent = lessonData.lessonContent;
+    if (lessonData.lastSection)   docData.lastSection   = lessonData.lastSection;
+
     const response = await databases.createDocument(DB_ID, COLLECTIONS.LESSONS, ID.unique(), docData);
-    console.log('Lesson saved successfully:', response.$id);
+    console.log('[saveLessonProgress] Created new lesson:', response.$id);
     return response;
   } catch (error) {
-    console.error('Error saving lesson progress:', error);
+    console.error('[saveLessonProgress] Error:', error);
     throw error;
   }
 };
@@ -305,13 +337,32 @@ export const getAllLessons = async (userId) => {
 };
 
 // Get a specific lesson by userId, moduleId, and stageName
+// Returns the MOST RECENT lesson (in case of duplicates)
 export const getLessonByModuleAndStage = async (userId, moduleId, stageName) => {
   try {
     const response = await databases.listDocuments(DB_ID, COLLECTIONS.LESSONS, [
       Query.equal('userId', userId),
       Query.equal('moduleId', moduleId),
       Query.equal('stageName', stageName),
+      Query.orderDesc('$createdAt'),
+      Query.limit(100), // Get all to check for duplicates
     ]);
+    
+    if (response.documents.length === 0) return null;
+    
+    // If there are duplicates, delete the old ones and keep the newest
+    if (response.documents.length > 1) {
+      console.warn(`[Lesson] Found ${response.documents.length} duplicate lessons for ${moduleId}/${stageName}, cleaning up...`);
+      for (let i = 1; i < response.documents.length; i++) {
+        try {
+          await databases.deleteDocument(DB_ID, COLLECTIONS.LESSONS, response.documents[i].$id);
+          console.log(`[Lesson] Deleted duplicate: ${response.documents[i].$id}`);
+        } catch (err) {
+          console.error(`[Lesson] Failed to delete duplicate ${response.documents[i].$id}:`, err);
+        }
+      }
+    }
+    
     return response.documents[0] || null;
   } catch (error) {
     console.error('Error getting lesson:', error);

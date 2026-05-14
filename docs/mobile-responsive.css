@@ -1,0 +1,1398 @@
+/* ============================================================
+   mobile-responsive.css
+   Full responsive overrides for all screen sizes
+   Breakpoints:
+     - Desktop:  1126px+   (baseline, no overrides needed)
+     - Tablet:   768px–1125px
+     - Mobile:   480px–767px
+     - Small:    <480px
+   ============================================================ */
+
+/* ============================================================
+   1. DESIGN TOKENS — index.css
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 1125px) {
+  :root {
+    font-size: 16px;
+    letter-spacing: 0.14px;
+  }
+
+  #root {
+    width: 100%;
+    border-inline: none; /* Remove side borders — full width on tablet */
+  }
+
+  h1 {
+    font-size: 36px;
+    letter-spacing: -1px;
+    margin: 20px 0;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  :root {
+    font-size: 15px;
+    letter-spacing: 0.1px;
+  }
+
+  h1 {
+    font-size: 28px;
+    letter-spacing: -0.5px;
+    margin: 16px 0;
+  }
+
+  h2 {
+    font-size: 18px;
+    margin: 0 0 6px;
+  }
+
+  code {
+    font-size: 13px;
+    padding: 3px 6px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  :root {
+    font-size: 14px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+}
+
+
+/* ============================================================
+   2. CHAT INTERFACE — ChatInterface.css
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 1125px) {
+  .chat-input-area {
+    padding: 0 24px;
+  }
+
+  .chat-messages-improved {
+    padding: 16px 20px;
+    padding-bottom: 200px;
+  }
+
+  .chat-message-improved.user,
+  .chat-message-improved.assistant {
+    max-width: 92%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  /* Messages */
+  .chat-messages-improved {
+    padding: 12px 12px;
+    padding-bottom: 180px;
+    gap: 12px;
+  }
+
+  .chat-message-improved.user,
+  .chat-message-improved.assistant {
+    max-width: 100%;
+  }
+
+  .chat-message-improved.user .message-bubble {
+    max-width: 88%;
+  }
+
+  /* Avatars — smaller on mobile */
+  .message-avatar {
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+  }
+
+  /* Input area */
+  .chat-input-area {
+    padding: 0 12px;
+  }
+
+  /* Pill textarea — slightly smaller */
+  .chat-input-improved {
+    min-height: 44px;
+    font-size: 15px;
+    padding: 10px 14px;
+  }
+
+  /* Send button */
+  .chat-send-btn-improved {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Toolbar buttons — ensure 44px minimum touch target */
+  .toolbar-btn {
+    min-width: 44px;
+    height: 44px;
+  }
+
+  /* Quick actions grid — 2 columns on mobile */
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  /* Scroll to bottom button */
+  .scroll-to-bottom-btn {
+    bottom: 120px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Math keyboard — tighter on mobile */
+  .math-keyboard {
+    max-height: 110px;
+    padding: 8px;
+  }
+
+  .math-sym-btn {
+    min-width: 34px;
+    height: 30px;
+    font-size: 13px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .chat-messages-improved {
+    padding: 8px 8px;
+    padding-bottom: 170px;
+    gap: 10px;
+  }
+
+  .chat-input-area {
+    padding: 0 8px;
+  }
+
+  .chat-message-improved.user .message-bubble {
+    max-width: 95%;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+}
+
+
+/* ============================================================
+   3. LANGUAGE LEARNING DASHBOARD — LanguageLearning.css
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 1125px) {
+  .language-learning-container {
+    padding: 20px 24px;
+  }
+
+  .modules-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+
+  .learning-stages {
+    gap: 10px;
+  }
+
+  .stage-card {
+    min-width: 160px;
+    padding: 14px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .language-learning-container {
+    padding: 16px 12px;
+  }
+
+  /* Header: stack title and selector */
+  .language-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+  }
+
+  .language-header h1 {
+    font-size: 24px;
+  }
+
+  .language-selector {
+    width: 100%;
+    min-width: unset;
+  }
+
+  /* Stages: horizontal scroll (keep horizontal, but scrollable) */
+  .learning-stages {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: 8px;
+    padding-bottom: 4px; /* Show scrollbar hint */
+    margin-bottom: 20px;
+  }
+
+  .stage-card {
+    flex: 0 0 auto;          /* Don't shrink, scroll instead */
+    min-width: 140px;
+    scroll-snap-align: start;
+    padding: 12px;
+  }
+
+  .stage-title {
+    font-size: 0.95rem;
+  }
+
+  .stage-description {
+    font-size: 0.8rem;
+  }
+
+  /* Modules: single column */
+  .modules-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .module-card {
+    padding: 16px;
+    flex-direction: row;      /* Icon left, content right on mobile */
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .module-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+
+  .module-title {
+    font-size: 1rem;
+  }
+
+  .module-description {
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+
+  /* Stats: 2×2 grid on mobile */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: 1.4rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .language-learning-container {
+    padding: 12px 8px;
+  }
+
+  .stats-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .stat-value {
+    font-size: 1.25rem;
+  }
+
+  .module-card {
+    padding: 12px;
+  }
+}
+
+
+/* ============================================================
+   4. LANGUAGE LESSON — LanguageLearningLesson.css
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 1125px) {
+  .lesson-content {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  /* Header: stack vertically */
+  .lesson-header {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .lesson-header h2 {
+    font-size: 1rem;
+    flex: 1;
+    text-align: center;
+  }
+
+  .btn-back {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  /* Progress steps: keep in a row but scale down */
+  .progress-steps {
+    gap: 4px;
+    width: 100%;
+    justify-content: center;
+    order: 3; /* Move below title row */
+  }
+
+  .progress-step {
+    width: 28px;
+    height: 28px;
+    font-size: 0.7rem;
+  }
+
+  /* Content area */
+  .lesson-content {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  .lesson-section h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+
+  .lesson-section p {
+    font-size: 0.9rem;
+  }
+
+  .content-text {
+    padding: 1rem;
+    font-size: 0.9375rem;
+  }
+
+  /* Examples: stack number above text */
+  .example-card {
+    flex-direction: row;
+    gap: 8px;
+    padding: 0.75rem;
+  }
+
+  .example-number {
+    width: 20px;
+    height: 20px;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+  }
+
+  /* Mastery section */
+  .mastery-section {
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
+
+  .option-btn {
+    padding: 0.85rem 1rem;  /* Larger touch target */
+    font-size: 0.875rem;
+  }
+
+  .btn-submit {
+    padding: 0.875rem;
+    font-size: 0.9375rem;
+  }
+
+  /* Results */
+  .score-display {
+    padding: 1rem 2rem;
+  }
+
+  .score-value {
+    font-size: 2.5rem;
+  }
+
+  .pass-icon,
+  .fail-icon {
+    font-size: 2.5rem;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .lesson-content {
+    padding: 0.75rem;
+  }
+
+  .progress-step {
+    width: 24px;
+    height: 24px;
+    font-size: 0.65rem;
+  }
+
+  .mastery-section {
+    padding: 0.75rem;
+  }
+
+  .score-value {
+    font-size: 2rem;
+  }
+}
+
+
+/* ============================================================
+   5. LANGUAGE PRACTICE — LanguageLearningPractice.css
+   (General practice page patterns)
+   ============================================================ */
+
+/* Mobile */
+@media (max-width: 767px) {
+  .practice-container {
+    padding: 1rem;
+  }
+
+  .practice-header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .practice-modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .practice-mode-card {
+    padding: 12px;
+  }
+
+  .practice-mode-icon {
+    font-size: 1.5rem;
+  }
+
+  .practice-mode-title {
+    font-size: 0.875rem;
+  }
+
+  /* Speaking/listening exercises: full width */
+  .exercise-container {
+    padding: 1rem;
+    border-radius: 0.75rem;
+  }
+
+  .exercise-prompt {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .audio-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .audio-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem;
+    min-height: 44px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .practice-modes {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-mode-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+}
+
+
+/* ============================================================
+   6. FLASHCARD — Flashcard.css
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 1125px) {
+  .inline-flashcard-container {
+    max-width: 100%;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .inline-flashcard-wrapper {
+    margin: 0.5rem 0;
+  }
+
+  .inline-flashcard-container {
+    max-width: 100%;
+  }
+
+  .inline-flashcard-face {
+    padding: 1rem 1.125rem;
+    min-height: 140px;
+  }
+
+  .inline-flashcard-card {
+    min-height: 140px;
+  }
+
+  .inline-flashcard-label {
+    font-size: 0.65rem;
+  }
+
+  .inline-flashcard-body {
+    font-size: 0.875rem;
+  }
+
+  .inline-flashcard-hint {
+    font-size: 0.7rem;
+  }
+
+  /* Confidence buttons: stacked, full width */
+  .inline-confidence-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .inline-confidence-btn {
+    padding: 0.625rem 1rem;
+    text-align: center;
+    justify-content: center;
+    min-height: 44px;         /* Touch target */
+  }
+
+  /* Legacy standalone flashcard */
+  .flashcard-container {
+    max-width: 100%;
+  }
+
+  .flashcard {
+    height: 180px;
+  }
+
+  /* Confidence buttons legacy */
+  .confidence-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .confidence-btn {
+    min-width: unset;
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .inline-flashcard-face {
+    padding: 0.875rem 1rem;
+    min-height: 120px;
+  }
+
+  .inline-flashcard-card {
+    min-height: 120px;
+  }
+
+  .inline-flashcard-body {
+    font-size: 0.8125rem;
+  }
+}
+
+
+/* ============================================================
+   7. INLINE QUIZ — InlineQuiz.css
+   ============================================================ */
+
+/* Mobile */
+@media (max-width: 767px) {
+  .iq-wrapper {
+    border-radius: 10px;
+    margin: 0.5rem 0;
+  }
+
+  .iq-header {
+    padding: 0.5rem 0.875rem;
+  }
+
+  .iq-badge {
+    font-size: 0.6rem;
+    padding: 0.175rem 0.5rem;
+  }
+
+  .iq-counter {
+    font-size: 0.75rem;
+  }
+
+  .iq-question {
+    padding: 0.875rem 1rem 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  .iq-options {
+    padding: 0 1rem 0.875rem;
+    gap: 6px;
+  }
+
+  .iq-option {
+    padding: 0.75rem 0.875rem;  /* Larger touch target */
+    border-radius: 6px;
+  }
+
+  /* Disable hover slide on mobile (no hover state) */
+  .iq-option:not(:disabled):hover {
+    transform: none;
+  }
+  .iq-option:not(:disabled):active {
+    transform: translateX(3px); /* Active (tap) instead */
+  }
+
+  .iq-option-label {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.7rem;
+  }
+
+  .iq-option-text {
+    font-size: 0.8375rem;
+  }
+
+  .iq-explanation {
+    margin: 0 1rem 0.875rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8125rem;
+  }
+
+  .iq-score {
+    margin: 0 1rem 1rem;
+    padding: 0.875rem;
+  }
+
+  .iq-score-number {
+    font-size: 1.75rem;
+  }
+
+  .iq-score-label {
+    font-size: 0.875rem;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .iq-question {
+    font-size: 0.8125rem;
+    padding: 0.75rem 0.875rem 0.5rem;
+  }
+
+  .iq-option {
+    padding: 0.625rem 0.75rem;
+  }
+
+  .iq-options {
+    padding: 0 0.875rem 0.75rem;
+  }
+}
+
+
+/* ============================================================
+   8. MESSAGE FORMATTER — MessageFormatter.css
+   ============================================================ */
+
+/* Mobile */
+@media (max-width: 767px) {
+  .formatted-message {
+    font-size: 0.9375rem;
+    line-height: 1.65;
+  }
+
+  .formatted-message h1 {
+    font-size: 1.125rem;
+  }
+
+  .formatted-message h2 {
+    font-size: 1rem;
+  }
+
+  .formatted-message h3 {
+    font-size: 0.9375rem;
+  }
+
+  .message-list {
+    padding: 10px 12px;
+    margin: 10px 0;
+  }
+
+  .message-summary,
+  .message-example {
+    padding: 10px 12px;
+    margin: 10px 0;
+    gap: 6px;
+  }
+
+  .formatted-message code {
+    font-size: 0.8rem;
+    padding: 1px 5px;
+  }
+
+  /* Prevent code blocks from overflowing chat bubbles */
+  .formatted-message pre {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+  }
+
+  .formatted-message blockquote {
+    padding-left: 10px;
+    margin: 10px 0;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .formatted-message {
+    font-size: 0.875rem;
+  }
+
+  .message-list {
+    padding: 8px 10px;
+  }
+
+  .message-summary,
+  .message-example {
+    padding: 8px 10px;
+  }
+}
+
+
+/* ============================================================
+   9. AUDIO LECTURE VIEWER — AudioLectureViewer.css
+   ============================================================ */
+
+/* Tablet: side-by-side but narrower */
+@media (max-width: 1125px) {
+  .alv-left,
+  .alv-right {
+    /* Allow panels to be resized but set better defaults */
+    min-width: 280px;
+  }
+
+  .alv-resize-handle {
+    /* Still allow resize on tablet */
+    display: flex;
+  }
+}
+
+/* Mobile: stack panels with tab switcher */
+@media (max-width: 767px) {
+  /* Full-screen overlay stays, but layout changes */
+  .alv-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Tab bar to switch between left/right panel */
+  .alv-mobile-tabs {
+    display: flex !important;  /* Hidden by default in desktop CSS */
+    background: var(--color-bg-secondary, #1f2028);
+    border-bottom: 1px solid var(--border, #2e303a);
+    flex-shrink: 0;
+  }
+
+  .alv-mobile-tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text, #9ca3af);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .alv-mobile-tab.active {
+    color: var(--accent, #c084fc);
+    border-bottom-color: var(--accent, #c084fc);
+  }
+
+  /* Body: full width, single panel visible */
+  .alv-body {
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Hide the resize handle on mobile */
+  .alv-resize-handle {
+    display: none !important;
+  }
+
+  /* Each panel takes full width; only active is shown */
+  .alv-left,
+  .alv-right {
+    width: 100% !important;   /* Override inline styles from JS resize */
+    min-width: 0 !important;
+    border-right: none;
+    border-bottom: 1px solid var(--border, #2e303a);
+    display: none;            /* Hidden by default */
+  }
+
+  .alv-left.mobile-active,
+  .alv-right.mobile-active {
+    display: flex;
+    flex: 1;
+  }
+
+  /* Header — tighter on mobile */
+  .alv-header {
+    padding: 10px 14px;
+  }
+
+  .alv-title {
+    font-size: 0.9rem;
+  }
+
+  .alv-actions {
+    gap: 6px;
+  }
+
+  .alv-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    min-height: 36px;
+  }
+
+  /* Audio player controls */
+  .alv-player {
+    padding: 12px 14px;
+  }
+
+  .alv-player-controls {
+    gap: 8px;
+  }
+
+  .alv-play-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .alv-speed-btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+
+  /* Notes area */
+  .alv-notes {
+    padding: 12px;
+  }
+
+  .alv-note-item {
+    padding: 8px 10px;
+  }
+
+  .alv-timestamp {
+    font-size: 0.7rem;
+  }
+
+  /* Transcript */
+  .alv-transcript {
+    padding: 12px;
+    font-size: 0.875rem;
+  }
+
+  .alv-transcript-segment {
+    padding: 6px 8px;
+    margin-bottom: 4px;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .alv-header {
+    padding: 8px 12px;
+  }
+
+  .alv-title {
+    font-size: 0.8rem;
+  }
+
+  .alv-btn {
+    padding: 5px 8px;
+    font-size: 0.75rem;
+  }
+
+  .alv-player {
+    padding: 10px 12px;
+  }
+}
+
+
+/* ============================================================
+   10. PDF VIEWER — PDFViewer.css
+   ============================================================ */
+
+/* Tablet */
+@media (max-width: 1125px) {
+  .pdf-viewer-header {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .pdf-highlights-sidebar {
+    width: 260px;
+  }
+
+  .pdf-bookmarks-sidebar {
+    width: 220px;
+  }
+
+  .pdf-viewer-content {
+    padding: 1.5rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  /* Header */
+  .pdf-viewer-header {
+    padding: 0.625rem 1rem;
+    gap: 8px;
+  }
+
+  .pdf-viewer-title h3 {
+    font-size: 0.875rem;
+    max-width: 140px;
+  }
+
+  .pdf-viewer-actions {
+    gap: 4px;
+  }
+
+  .btn-icon {
+    padding: 0.375rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  /* Move toolbar to BOTTOM on mobile (thumb-friendly) */
+  .pdf-viewer-toolbar {
+    order: 10;               /* Push after content in flex column */
+    padding: 0.5rem 0.875rem;
+    gap: 6px;
+    border-bottom: none;
+    border-top: 1px solid var(--border, #2e303a);
+  }
+
+  /* Rearrange flex order for mobile */
+  .pdf-viewer-container {
+    flex-direction: column;
+  }
+
+  .pdf-viewer-header  { order: 1; }
+  .pdf-viewer-content { order: 2; flex: 1; }
+  .pdf-viewer-toolbar { order: 3; }
+
+  /* Toolbar sections */
+  .toolbar-section {
+    gap: 4px;
+  }
+
+  .btn-toolbar {
+    padding: 0.375rem 0.625rem;
+    font-size: 0.8rem;
+    min-height: 36px;
+  }
+
+  .page-indicator {
+    padding: 0.375rem 0.5rem;
+    gap: 4px;
+  }
+
+  .page-input {
+    width: 44px;
+    font-size: 0.8rem;
+  }
+
+  .zoom-level {
+    min-width: 48px;
+    font-size: 0.8rem;
+    padding: 0.375rem 0.5rem;
+  }
+
+  /* PDF content area */
+  .pdf-viewer-content {
+    padding: 0.75rem;
+    align-items: flex-start; /* Left-align on mobile, fit-to-width */
+  }
+
+  .react-pdf__Page__canvas {
+    max-width: 100%;
+  }
+
+  /* Sidebars: slide from bottom on mobile instead of right */
+  .pdf-bookmarks-sidebar,
+  .pdf-highlights-sidebar {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 60vh;
+    border-left: none;
+    border-top: 1px solid var(--border, #2e303a);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+    z-index: 200;
+  }
+
+  /* Handle bar for bottom sheets */
+  .pdf-bookmarks-sidebar::before,
+  .pdf-highlights-sidebar::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--border, #2e303a);
+    border-radius: 2px;
+    margin: 8px auto 12px;
+  }
+
+  /* Highlight instructions pill — keep centered */
+  .highlight-instructions {
+    font-size: 0.8rem;
+    padding: 0.625rem 1.25rem;
+    white-space: nowrap;
+  }
+
+  /* Color picker: larger swatches for fingers */
+  .color-option {
+    width: 36px;
+    height: 36px;
+  }
+
+  .color-picker-dropdown {
+    gap: 6px;
+    padding: 0.625rem;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .pdf-viewer-title h3 {
+    font-size: 0.8rem;
+    max-width: 110px;
+  }
+
+  .btn-icon {
+    padding: 0.3rem 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .pdf-viewer-content {
+    padding: 0.5rem;
+  }
+
+  .pdf-bookmarks-sidebar,
+  .pdf-highlights-sidebar {
+    height: 65vh;
+  }
+}
+
+
+/* ============================================================
+   11. FILE PROMPT INPUT — FilePromptInput.css
+   ============================================================ */
+
+/* Mobile */
+@media (max-width: 767px) {
+  .file-prompt-input {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+
+  .file-prompt-header {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+  }
+
+  .file-icon {
+    font-size: 20px;
+  }
+
+  .file-name {
+    font-size: 13px;
+  }
+
+  .file-status {
+    font-size: 11px;
+  }
+
+  .prompt-textarea {
+    font-size: 14px;
+    min-height: 64px;
+    padding: 10px;
+  }
+
+  /* Stack actions: hints above button */
+  .prompt-actions {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .prompt-hints {
+    text-align: center;
+    font-size: 11px;
+    order: 2;              /* Hints below button on mobile */
+  }
+
+  .send-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+    min-height: 44px;
+    order: 1;
+  }
+}
+
+/* Small phones */
+@media (max-width: 479px) {
+  .file-prompt-input {
+    padding: 10px;
+  }
+
+  .prompt-textarea {
+    min-height: 56px;
+    font-size: 13px;
+  }
+
+  .file-icon {
+    font-size: 18px;
+  }
+
+  .file-name {
+    font-size: 12px;
+  }
+}
+
+
+/* ============================================================
+   12. GLOBAL UTILITY: Touch & Interaction Fixes
+   ============================================================ */
+
+/* Disable hover effects on touch devices (prevents sticky hover) */
+@media (hover: none) {
+  .module-card:hover,
+  .stage-card:hover,
+  .bookmark-item:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .module-card:hover {
+    border-color: var(--border, #2e303a);
+  }
+
+  .chat-send-btn-improved:hover,
+  .send-btn:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .inline-confidence-btn:hover {
+    transform: none;
+    opacity: 1;
+  }
+
+  /* Use :active for tap feedback instead */
+  .module-card:active {
+    transform: scale(0.98);
+  }
+
+  .inline-confidence-btn:active {
+    transform: translateY(1px);
+    opacity: 0.85;
+  }
+
+  .send-btn:not(:disabled):active {
+    transform: translateY(1px);
+  }
+}
+
+/* Prevent horizontal overflow globally */
+@media (max-width: 767px) {
+  * {
+    -webkit-tap-highlight-color: transparent; /* Remove tap flash */
+  }
+
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* All images and media responsive */
+  img, video, iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Prevent text from overflowing bubbles */
+  .message-bubble,
+  .formatted-message {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Minimum touch targets everywhere */
+  button, [role="button"], input[type="button"], input[type="submit"], a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Exception: small inline buttons can be smaller */
+  .iq-badge, .inline-flashcard-label, .alv-timestamp {
+    min-height: unset;
+    min-width: unset;
+  }
+}
+
+/* Safe area for phones with notch/home bar */
+@supports (padding: max(0px)) {
+  @media (max-width: 767px) {
+    .chat-input-area {
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    .pdf-viewer-toolbar {
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    .alv-mobile-tabs {
+      padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+  }
+}
+
+
+/* ============================================================
+   13. SCROLLBAR STYLING
+   (Thinner scrollbars on mobile/tablet for cleanliness)
+   ============================================================ */
+
+@media (max-width: 1125px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border, #2e303a);
+    border-radius: 2px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text, #9ca3af);
+  }
+}
+
+
+/* ============================================================
+   14. LANDSCAPE PHONE SPECIAL HANDLING
+   ============================================================ */
+
+@media (max-width: 767px) and (orientation: landscape) {
+  /* Chat: reduce bottom padding since keyboard takes less space */
+  .chat-messages-improved {
+    padding-bottom: 140px;
+  }
+
+  /* PDF toolbar: compact in landscape */
+  .pdf-viewer-toolbar {
+    padding: 0.375rem 1rem;
+  }
+
+  /* Audio viewer: always show both panels in landscape */
+  .alv-body {
+    flex-direction: row;
+  }
+
+  .alv-left,
+  .alv-right {
+    display: flex !important;
+    width: 50% !important;
+  }
+
+  .alv-resize-handle {
+    display: flex !important;
+  }
+
+  .alv-mobile-tabs {
+    display: none !important;
+  }
+
+  /* Lesson progress steps: keep horizontal */
+  .progress-steps {
+    flex-direction: row;
+    order: 0;
+  }
+
+  /* Stats: keep as row in landscape */
+  .stats-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+  }
+}

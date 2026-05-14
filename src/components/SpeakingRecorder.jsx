@@ -71,23 +71,33 @@ const SpeakingRecorder = ({ expectedWord, expectedPhrase, targetLanguage, target
       }
 
       // Step 3: AI pronunciation evaluation
-      const evalPrompt = `You are a ${targetLanguage} pronunciation coach.
+      const evalPrompt = `You are a ${targetLanguage} pronunciation coach evaluating a language learner.
 
 The student was asked to say: "${expectedWord}"
 What the student said (transcribed): "${transcript}"
 
-Evaluate their pronunciation and return JSON:
+Evaluate their pronunciation attempt and return ONLY valid JSON (no markdown, no explanation):
 {
-  "score": 0-100,
-  "feedback": "one sentence overall feedback",
-  "mistakes": ["specific mistake 1", "specific mistake 2"],
-  "tip": "one actionable tip to improve"
+  "score": <number 0-100>,
+  "feedback": "<one sentence feedback>",
+  "mistakes": [<list of specific mistakes if any>],
+  "tip": "<one actionable tip to improve>"
 }
 
-Be encouraging but honest. Score 90+ for near-perfect, 70-89 for good, 50-69 for needs work, below 50 for significant issues.
-If the transcript matches the expected word well, give a high score.`;
+Scoring guide:
+- 90-100: Perfect or near-perfect match
+- 80-89: Good attempt, minor pronunciation issues
+- 70-79: Acceptable, some pronunciation issues
+- 60-69: Understandable but needs work
+- 50-59: Significant issues but recognizable
+- Below 50: Very difficult to understand
 
-      const aiResponse = await smartChat('You are a language pronunciation evaluator. Return only valid JSON.', [
+If the transcript is very similar to the expected word, give a score of 85+.
+If the transcript is somewhat similar, give 70-84.
+If the transcript is different but understandable, give 50-69.
+Be encouraging - this is a learner.`;
+
+      const aiResponse = await smartChat('You are a language pronunciation evaluator. Return ONLY valid JSON with no markdown or explanation.', [
         { role: 'user', content: evalPrompt }
       ]);
 
@@ -95,12 +105,23 @@ If the transcript matches the expected word well, give a high score.`;
       let result = { score: 50, feedback: 'Keep practicing!', mistakes: [], tip: 'Try again.' };
       try {
         const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-        if (jsonMatch) result = JSON.parse(jsonMatch[0]);
-      } catch {
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          result = { ...result, ...parsed };
+          // Ensure score is a number between 0-100
+          if (typeof result.score === 'number' && result.score >= 0 && result.score <= 100) {
+            // Score is valid
+          } else {
+            result.score = 50; // Default if invalid
+          }
+        }
+      } catch (parseErr) {
+        console.error('Failed to parse AI response:', parseErr, 'Response:', aiResponse);
         // Use defaults
       }
 
       result.transcript = transcript;
+      console.log('[SpeakingRecorder] Final result:', result);
       onResult(result);
       setState('done');
     } catch (err) {

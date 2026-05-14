@@ -54,26 +54,44 @@ const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
  *   — $0.14–$0.28 per 1M tokens
  */
 export const GROQ_MODELS = {
-  LLAMA_70B: 'llama3-70b-8192',         // Best reasoning available (8k context)
-  LLAMA_8B: 'llama-3.1-8b-instant',     // Fast fallback (131k context)
-  LLAMA_8B_LEGACY: 'llama3-8b-8192',    // Legacy fallback
-  GEMMA: 'gemma2-9b-it',               // Google Gemma fallback
-  WHISPER: 'whisper-large-v3',          // Audio transcription
+  LLAMA_70B: 'llama-3.3-70b-versatile',   // Best reasoning (replaces decommissioned llama3-70b-8192)
+  LLAMA_8B: 'llama-3.1-8b-instant',       // Fast fallback (131k context)
+  LLAMA_8B_LEGACY: 'llama3-8b-8192',      // Legacy fallback
+  GEMMA: 'gemma2-9b-it',                  // Google Gemma fallback
+  WHISPER: 'whisper-large-v3',            // Audio transcription
   WHISPER_TURBO: 'whisper-large-v3-turbo', // Faster audio transcription
-  // NOTE: No vision models available on this Groq account
-  // Image analysis uses Gemini Vision only
 };
 
 // Token limits per model (conservative — leave headroom below hard limits)
 const GROQ_TOKEN_LIMITS = {
-  [GROQ_MODELS.LLAMA_70B]: 6000,       // 8k context, use 6k to be safe
-  [GROQ_MODELS.LLAMA_8B]: 9000,        // 131k context, but TPM limit ~6k
+  [GROQ_MODELS.LLAMA_70B]: 9000,       // llama-3.3-70b-versatile: 12k TPM, use 9k
+  [GROQ_MODELS.LLAMA_8B]: 4500,        // 131k context, but TPM limit ~6k
   [GROQ_MODELS.LLAMA_8B_LEGACY]: 6000, // 8k context
   [GROQ_MODELS.GEMMA]: 6000,           // 8k context
 };
 
-// Threshold: above this, skip Groq and go straight to Gemini/DeepSeek
+// Threshold: above this, skip Groq 8B and go straight to Gemini/DeepSeek
 const GROQ_MAX_SAFE_TOKENS = 8000;
+
+// ─── Backoff-and-Retry helper ─────────────────────────────────────────────────
+/**
+ * Exponential backoff delay.
+ * attempt 0 → 1s, attempt 1 → 2s, attempt 2 → 4s (capped at 8s)
+ */
+function backoffDelay(attempt) {
+  return new Promise(r => setTimeout(r, Math.min(1000 * Math.pow(2, attempt), 8000)));
+}
+
+/**
+ * Classify whether an error is retryable (transient) vs permanent.
+ * Permanent errors (wrong key, bad request) should NOT be retried.
+ */
+function isRetryable(err) {
+  if (err.code === 'GROQ_RATE_LIMIT' || err.status === 429) return false; // skip, not retry
+  if (err.status === 401 || err.status === 403) return false;             // auth errors
+  if (err.status >= 400 && err.status < 500) return false;               // bad request
+  return true; // 5xx, network errors, timeouts → retryable
+}
 
 // ─── Token utilities ─────────────────────────────────────────────────────────
 
@@ -159,6 +177,16 @@ export async function callGroq(systemPrompt, messages, model = GROQ_MODELS.LLAMA
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
+      
+      // Detect rate limit errors (429) and throw specific error
+      if (response.status === 429) {
+        const rateLimitMsg = err.error?.message || 'Rate limit reached';
+        const error = new Error(rateLimitMsg);
+        error.code = 'GROQ_RATE_LIMIT';
+        error.status = 429;
+        throw error;
+      }
+      
       throw new Error(err.error?.message || `Groq API error: ${response.status}`);
     }
 
@@ -215,15 +243,68 @@ export async function callGroqVision(base64Image, prompt, mimeType = 'image/jpeg
 
 /**
  * Transcribe audio using Groq Whisper Large V3 (fastest transcription available)
- * @param {File|Blob} audioFile - max 25MB, supports mp3/wav/m4a/ogg/flac
+ * Audio is pre-compressed to mono 16kHz WebM/Opus before upload to save bandwidth
+ * while preserving phoneme clarity (Whisper is robust to compression at 16kHz).
+ * @param {File|Blob} audioFile - max 25MB, supports mp3/wav/m4a/ogg/flac/webm
  * @param {string} [language] - optional ISO code e.g. 'en', 'zh', 'es'
  * @returns {Promise<string>} transcribed text
  */
 export async function transcribeAudio(audioFile, language = null) {
   if (!GROQ_API_KEY) throw new Error('Groq API key not configured');
 
+  // ── Client-side audio compression ──────────────────────────────────────────
+  // Re-encode to mono 16kHz WebM/Opus (~12 kbps) before sending.
+  // This reduces a typical 5-second recording from ~500 KB (wav) to ~10 KB
+  // without losing phoneme clarity — Whisper is trained on 16kHz audio.
+  let fileToSend = audioFile;
+  try {
+    const arrayBuffer = await audioFile.arrayBuffer();
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+    const decoded = await audioCtx.decodeAudioData(arrayBuffer);
+
+    // Mix down to mono
+    const offlineCtx = new OfflineAudioContext(1, decoded.length, 16000);
+    const source = offlineCtx.createBufferSource();
+    source.buffer = decoded;
+    source.connect(offlineCtx.destination);
+    source.start();
+    const rendered = await offlineCtx.startRendering();
+
+    // Encode to WebM/Opus via MediaRecorder
+    const compressedBlob = await new Promise((resolve, reject) => {
+      const stream = audioCtx.createMediaStreamDestination();
+      const bufferSource = audioCtx.createBufferSource();
+      bufferSource.buffer = rendered;
+      bufferSource.connect(stream);
+
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+        ? 'audio/webm;codecs=opus'
+        : 'audio/webm';
+
+      const recorder = new MediaRecorder(stream.stream, { mimeType, audioBitsPerSecond: 12000 });
+      const chunks = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => resolve(new Blob(chunks, { type: mimeType }));
+      recorder.onerror = reject;
+      recorder.start();
+      bufferSource.start();
+      bufferSource.onended = () => recorder.stop();
+    });
+
+    // Only use compressed version if it's actually smaller
+    if (compressedBlob.size < audioFile.size) {
+      fileToSend = new File([compressedBlob], 'audio.webm', { type: compressedBlob.type });
+      console.log(`[Whisper] Compressed audio: ${Math.round(audioFile.size / 1024)}KB → ${Math.round(fileToSend.size / 1024)}KB`);
+    }
+  } catch (compressionErr) {
+    // Compression is best-effort — fall back to original file silently
+    console.warn('[Whisper] Audio compression skipped:', compressionErr.message);
+    fileToSend = audioFile;
+  }
+  // ───────────────────────────────────────────────────────────────────────────
+
   const formData = new FormData();
-  formData.append('file', audioFile);
+  formData.append('file', fileToSend);
   formData.append('model', GROQ_MODELS.WHISPER);
   formData.append('response_format', 'text');
   if (language) formData.append('language', language);
@@ -520,6 +601,7 @@ export async function callDeepSeekStream(systemPrompt, messages, onChunk, retryC
  */
 export async function smartChat(systemPrompt, messages) {
   const totalTokens = estimateMessagesTokens(systemPrompt, messages);
+  let groqRateLimited = false;
 
   if (totalTokens > GROQ_MAX_SAFE_TOKENS) {
     // Large context: DeepSeek → Gemini → Groq 8B (truncated)
@@ -532,21 +614,42 @@ export async function smartChat(systemPrompt, messages) {
           return callGeminiText(fullPrompt);
         },
       },
-      { name: 'Groq Llama 8B', fn: () => callGroq(systemPrompt, messages, GROQ_MODELS.LLAMA_8B) },
+      {
+        name: 'Groq Llama 8B',
+        fn: () => {
+          if (groqRateLimited) throw new Error('Groq rate-limited, skipping');
+          return callGroq(systemPrompt, messages, GROQ_MODELS.LLAMA_8B);
+        },
+      },
     ];
 
     for (const p of providers) {
       try {
+        console.log(`[AI Chat] Trying ${p.name}...`);
         const result = await p.fn();
-        if (result) return result;
+        if (result) {
+          console.log(`[AI Chat] ✅ Success with ${p.name}`);
+          return result;
+        }
       } catch (err) {
-        console.warn(`[AI] ${p.name} failed:`, err.message);
+        if (err.code === 'GROQ_RATE_LIMIT' || err.status === 429) {
+          console.warn(`[AI Chat] ⚠️ ${p.name} rate-limited (429). Skipping Groq.`);
+          groqRateLimited = true;
+        } else {
+          console.warn(`[AI Chat] ❌ ${p.name} failed:`, err.message);
+        }
       }
     }
   } else {
     // Small context: Groq 70B → DeepSeek → Gemini → Groq 8B
     const providers = [
-      { name: 'Groq Llama 70B', fn: () => callGroq(systemPrompt, messages, GROQ_MODELS.LLAMA_70B) },
+      {
+        name: 'Groq Llama 70B',
+        fn: () => {
+          if (groqRateLimited) throw new Error('Groq rate-limited, skipping');
+          return callGroq(systemPrompt, messages, GROQ_MODELS.LLAMA_70B);
+        },
+      },
       { name: 'DeepSeek', fn: () => callDeepSeek(systemPrompt, messages) },
       {
         name: 'Gemini 2.0 Flash',
@@ -555,16 +658,37 @@ export async function smartChat(systemPrompt, messages) {
           return callGeminiText(fullPrompt);
         },
       },
-      { name: 'Groq Llama 8B', fn: () => callGroq(systemPrompt, messages, GROQ_MODELS.LLAMA_8B) },
-      { name: 'Groq Gemma', fn: () => callGroq(systemPrompt, messages, GROQ_MODELS.GEMMA) },
+      {
+        name: 'Groq Llama 8B',
+        fn: () => {
+          if (groqRateLimited) throw new Error('Groq rate-limited, skipping');
+          return callGroq(systemPrompt, messages, GROQ_MODELS.LLAMA_8B);
+        },
+      },
+      {
+        name: 'Groq Gemma',
+        fn: () => {
+          if (groqRateLimited) throw new Error('Groq rate-limited, skipping');
+          return callGroq(systemPrompt, messages, GROQ_MODELS.GEMMA);
+        },
+      },
     ];
 
     for (const p of providers) {
       try {
+        console.log(`[AI Chat] Trying ${p.name}...`);
         const result = await p.fn();
-        if (result) return result;
+        if (result) {
+          console.log(`[AI Chat] ✅ Success with ${p.name}`);
+          return result;
+        }
       } catch (err) {
-        console.warn(`[AI] ${p.name} failed:`, err.message);
+        if (err.code === 'GROQ_RATE_LIMIT' || err.status === 429) {
+          console.warn(`[AI Chat] ⚠️ ${p.name} rate-limited (429). Skipping Groq.`);
+          groqRateLimited = true;
+        } else {
+          console.warn(`[AI Chat] ❌ ${p.name} failed:`, err.message);
+        }
       }
     }
   }
@@ -580,6 +704,7 @@ export async function smartChat(systemPrompt, messages) {
  */
 export async function smartChatStream(systemPrompt, messages, onChunk) {
   const totalTokens = estimateMessagesTokens(systemPrompt, messages);
+  let groqRateLimited = false;
 
   if (totalTokens > GROQ_MAX_SAFE_TOKENS) {
     // Large context: DeepSeek stream → Gemini → Groq 8B
@@ -594,21 +719,42 @@ export async function smartChatStream(systemPrompt, messages, onChunk) {
           return result;
         },
       },
-      { name: 'Groq Llama 8B', fn: () => callGroqStream(systemPrompt, messages, onChunk, GROQ_MODELS.LLAMA_8B) },
+      {
+        name: 'Groq Llama 8B',
+        fn: () => {
+          if (groqRateLimited) throw new Error('Groq rate-limited, skipping');
+          return callGroqStream(systemPrompt, messages, onChunk, GROQ_MODELS.LLAMA_8B);
+        },
+      },
     ];
 
     for (const p of providers) {
       try {
+        console.log(`[AI Stream] Trying ${p.name}...`);
         const result = await p.fn();
-        if (result) return result;
+        if (result) {
+          console.log(`[AI Stream] ✅ Success with ${p.name}`);
+          return result;
+        }
       } catch (err) {
-        console.warn(`[AI Stream] ${p.name} failed:`, err.message);
+        if (err.code === 'GROQ_RATE_LIMIT' || err.status === 429) {
+          console.warn(`[AI Stream] ⚠️ ${p.name} rate-limited (429). Skipping Groq.`);
+          groqRateLimited = true;
+        } else {
+          console.warn(`[AI Stream] ❌ ${p.name} failed:`, err.message);
+        }
       }
     }
   } else {
     // Small context: Groq 70B → DeepSeek → Gemini → Groq 8B
     const providers = [
-      { name: 'Groq Llama 70B', fn: () => callGroqStream(systemPrompt, messages, onChunk, GROQ_MODELS.LLAMA_70B) },
+      {
+        name: 'Groq Llama 70B',
+        fn: () => {
+          if (groqRateLimited) throw new Error('Groq rate-limited, skipping');
+          return callGroqStream(systemPrompt, messages, onChunk, GROQ_MODELS.LLAMA_70B);
+        },
+      },
       { name: 'DeepSeek', fn: () => callDeepSeekStream(systemPrompt, messages, onChunk) },
       {
         name: 'Gemini 2.0 Flash',
@@ -619,15 +765,30 @@ export async function smartChatStream(systemPrompt, messages, onChunk) {
           return result;
         },
       },
-      { name: 'Groq Llama 8B', fn: () => callGroqStream(systemPrompt, messages, onChunk, GROQ_MODELS.LLAMA_8B) },
+      {
+        name: 'Groq Llama 8B',
+        fn: () => {
+          if (groqRateLimited) throw new Error('Groq rate-limited, skipping');
+          return callGroqStream(systemPrompt, messages, onChunk, GROQ_MODELS.LLAMA_8B);
+        },
+      },
     ];
 
     for (const p of providers) {
       try {
+        console.log(`[AI Stream] Trying ${p.name}...`);
         const result = await p.fn();
-        if (result) return result;
+        if (result) {
+          console.log(`[AI Stream] ✅ Success with ${p.name}`);
+          return result;
+        }
       } catch (err) {
-        console.warn(`[AI Stream] ${p.name} failed:`, err.message);
+        if (err.code === 'GROQ_RATE_LIMIT' || err.status === 429) {
+          console.warn(`[AI Stream] ⚠️ ${p.name} rate-limited (429). Skipping Groq.`);
+          groqRateLimited = true;
+        } else {
+          console.warn(`[AI Stream] ❌ ${p.name} failed:`, err.message);
+        }
       }
     }
   }
@@ -818,39 +979,57 @@ function extractJSON(text) {
 }
 
 /**
- * Smart JSON generation with failover:
- * Groq Llama 70B → DeepSeek → Gemini 2.0 Flash → Groq 8B
+ * Smart JSON generation with failover + backoff-and-retry.
  *
- * Order changed: Groq first (fast), DeepSeek second (paid/reliable),
- * Gemini last (has daily quota limits).
+ * Routing:
+ *   - Prompt tokens ≤ 8k  → Groq 70B → DeepSeek → Gemini → Groq 8B → Groq Gemma
+ *   - Prompt tokens > 8k  → Gemini (2M ctx) → DeepSeek → skip Groq 8B entirely
+ *
+ * Rate-limit handling: once any Groq model returns 429, ALL Groq providers are
+ * skipped for the rest of this call (groqRateLimited flag).
+ *
+ * Backoff-and-retry: transient errors (5xx, network) are retried up to 2 times
+ * with exponential backoff (1s → 2s) before moving to the next provider.
  */
 export async function smartGenerateJSON(prompt) {
   const systemMsg = 'You are a JSON generator. Return ONLY valid JSON with no markdown, no code fences, no explanation. Just the raw JSON.';
 
+  // Context-window routing: large prompts skip Groq 8B (4.5k TPM limit)
+  const promptTokens = estimateTokens(prompt);
+  const isLargeContext = promptTokens > GROQ_MAX_SAFE_TOKENS;
+
+  let groqRateLimited = false;
+
+  // Provider list — Groq 8B is excluded for large-context prompts
   const providers = [
     {
       name: 'Groq Llama 70B',
+      skipIf: () => groqRateLimited || isLargeContext,
       fn: async () => {
         const text = await callGroq(systemMsg, [{ role: 'user', content: prompt }], GROQ_MODELS.LLAMA_70B);
         return extractJSON(text);
       },
     },
     {
-      name: 'DeepSeek',
-      fn: async () => {
-        const text = await callDeepSeek(systemMsg, [{ role: 'user', content: prompt }]);
-        return extractJSON(text);
-      },
-    },
-    {
       name: 'Gemini 2.0 Flash',
+      skipIf: () => false,
       fn: async () => {
         const text = await callGeminiText(prompt);
         return extractJSON(text);
       },
     },
     {
+      name: 'DeepSeek',
+      skipIf: () => false,
+      fn: async () => {
+        const text = await callDeepSeek(systemMsg, [{ role: 'user', content: prompt }]);
+        return extractJSON(text);
+      },
+    },
+    {
       name: 'Groq Llama 8B',
+      // Skip for large context (>8k tokens) — TPM limit would truncate the response
+      skipIf: () => groqRateLimited || isLargeContext,
       fn: async () => {
         const text = await callGroq(systemMsg, [{ role: 'user', content: prompt }], GROQ_MODELS.LLAMA_8B);
         return extractJSON(text);
@@ -858,6 +1037,7 @@ export async function smartGenerateJSON(prompt) {
     },
     {
       name: 'Groq Gemma',
+      skipIf: () => groqRateLimited || isLargeContext,
       fn: async () => {
         const text = await callGroq(systemMsg, [{ role: 'user', content: prompt }], GROQ_MODELS.GEMMA);
         return extractJSON(text);
@@ -866,13 +1046,52 @@ export async function smartGenerateJSON(prompt) {
   ];
 
   for (const provider of providers) {
-    try {
-      const result = await provider.fn();
-      if (result) return result;
-    } catch (err) {
-      console.warn(`[AI JSON] ${provider.name} failed:`, err.message);
+    if (provider.skipIf()) {
+      console.log(`[AI JSON] ⏭️ Skipping ${provider.name}`);
+      continue;
+    }
+
+    // Backoff-and-retry loop for transient errors
+    let lastErr;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        if (attempt > 0) {
+          console.log(`[AI JSON] 🔄 Retry ${attempt}/2 for ${provider.name} after backoff...`);
+          await backoffDelay(attempt - 1);
+        }
+
+        console.log(`[AI JSON] Trying ${provider.name}...`);
+        const result = await provider.fn();
+        if (result) {
+          console.log(`[AI JSON] ✅ Success with ${provider.name}`);
+          return result;
+        }
+        break; // empty result — move to next provider, no retry
+      } catch (err) {
+        lastErr = err;
+
+        // Rate limit → flag and break immediately (no retry)
+        if (err.code === 'GROQ_RATE_LIMIT' || err.status === 429) {
+          console.warn(`[AI JSON] ⚠️ ${provider.name} rate-limited (429). Skipping all Groq providers.`);
+          groqRateLimited = true;
+          break;
+        }
+
+        // Non-retryable (4xx auth/bad-request) → move to next provider
+        if (!isRetryable(err)) {
+          console.warn(`[AI JSON] ❌ ${provider.name} permanent error:`, err.message);
+          break;
+        }
+
+        // Retryable (5xx / network) → loop
+        console.warn(`[AI JSON] ⚠️ ${provider.name} transient error (attempt ${attempt + 1}/3):`, err.message);
+      }
+    }
+
+    if (lastErr && !isRetryable(lastErr) && lastErr.code !== 'GROQ_RATE_LIMIT') {
+      // Already logged above
     }
   }
 
-  throw new Error('All AI providers failed to generate JSON.');
+  throw new Error('All AI providers failed to generate JSON. Please try again later.');
 }

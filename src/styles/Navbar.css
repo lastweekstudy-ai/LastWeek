@@ -1,46 +1,78 @@
+/* ============================================================
+   Navbar.css — Main application navbar
+   ============================================================ */
+
 .navbar {
   background-color: var(--color-bg-secondary);
   border-bottom: var(--border-width) solid var(--color-border);
   padding: var(--spacing-md) 0;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 200;
 }
 
+/* ── Layout ── */
 .navbar-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
-.navbar-brand {
-  cursor: pointer;
-  transition: color 0.2s ease;
+.navbar-left {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+/* ── Brand ── */
+.navbar-brand {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s;
 }
 
 .navbar-brand:hover {
-  color: var(--color-accent);
+  opacity: 0.8;
 }
 
-.navbar-brand h3 {
-  font-family: var(--font-heading);
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-accent);
-  margin: 0;
+.navbar-logo {
+  height: 48px;
+  display: block;
 }
 
-.navbar-icon {
-  color: var(--color-accent);
+/* ── Session info (desktop) ── */
+.navbar-session-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-left: 1px solid var(--color-border);
+  padding-left: 24px;
 }
 
+.navbar-session-mode {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.navbar-session-subject {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* ── Desktop actions ── */
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: 12px;
+}
+
+.navbar-desktop-actions {
+  display: flex; /* shown on desktop */
 }
 
 .btn-icon {
@@ -52,30 +84,240 @@
   justify-content: center;
 }
 
-.navbar-user {
-  color: var(--color-text-secondary);
+.mode-switcher {
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  color: var(--color-text-primary);
+  padding: 6px 12px;
   font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
+  cursor: pointer;
 }
 
-.user-icon {
+/* ── Mobile wrapper (hidden on desktop) ── */
+.navbar-mobile-wrapper {
+  display: none;
+  position: relative;
+}
+
+/* ── Hamburger button ── */
+.navbar-hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.navbar-hamburger:active {
+  background: var(--color-bg-tertiary);
+}
+
+.hamburger-bar {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--color-text-primary);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transform-origin: center;
+}
+
+/* Animate to X when open */
+.navbar-hamburger.open .hamburger-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.navbar-hamburger.open .hamburger-bar:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.navbar-hamburger.open .hamburger-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile dropdown panel ── */
+.navbar-mobile-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(320px, calc(100vw - 24px));
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 300;
+  animation: navDropdownIn 0.18s ease-out;
+}
+
+@keyframes navDropdownIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* ── Menu items ── */
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--color-text-primary);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  min-height: 44px;
+  transition: background 0.15s;
+}
+
+.mobile-menu-item:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.mobile-menu-item:active {
+  background: var(--color-bg-tertiary);
+  opacity: 0.8;
+}
+
+.mobile-menu-item.active {
+  color: var(--color-accent);
+  background: var(--color-accent-bg, rgba(192, 132, 252, 0.1));
+}
+
+.mobile-menu-item svg {
+  flex-shrink: 0;
   color: var(--color-text-muted);
 }
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
+.mobile-menu-item.active svg {
+  color: var(--color-accent);
 }
 
-@media (max-width: 768px) {
-  .navbar-actions {
-    gap: var(--spacing-sm);
+.mobile-menu-shortcut {
+  margin-left: auto;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg-tertiary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+}
+
+/* ── Divider ── */
+.mobile-menu-divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: 6px 0;
+}
+
+/* ── Label ── */
+.mobile-menu-label {
+  padding: 6px 14px 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Select inside dropdown ── */
+.mobile-menu-select {
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text-primary);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  min-height: 44px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239ca3af' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+/* ── Row (label + component side by side) ── */
+.mobile-menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  min-height: 44px;
+}
+
+.mobile-menu-row-label {
+  font-size: 0.9375rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+/* ── Storage indicator row ── */
+.mobile-menu-storage {
+  padding: 6px 14px;
+}
+
+/* ── Profile row ── */
+.mobile-menu-profile {
+  padding: 4px 6px;
+}
+
+/* ============================================================
+   RESPONSIVE — show/hide desktop vs mobile
+   ============================================================ */
+
+/* Tablet and below: hide desktop actions, show hamburger */
+@media (max-width: 767px) {
+  .navbar-desktop-actions {
+    display: none !important;
   }
-  
-  .navbar-user span {
-    display: none;
+
+  .navbar-mobile-wrapper {
+    display: block;
+  }
+
+  .navbar-logo {
+    height: 36px;
+  }
+
+  .navbar-session-info {
+    display: none; /* shown inside dropdown on mobile */
+  }
+
+  .navbar-left {
+    gap: 12px;
+  }
+}
+
+/* Tablet (768–1125px): keep desktop but compact */
+@media (min-width: 768px) and (max-width: 1125px) {
+  .navbar-actions {
+    gap: 8px;
+  }
+
+  .navbar-logo {
+    height: 40px;
+  }
+
+  .navbar-session-info {
+    padding-left: 16px;
+  }
+
+  .navbar-desktop-actions .btn {
+    font-size: 0.8125rem;
+    padding: 6px 10px;
   }
 }

@@ -28,6 +28,7 @@ import ExamPlanner from './pages/ExamPlanner';
 import ExamSession from './pages/ExamSession';
 import LanguageLearning from './pages/LanguageLearning';
 import LanguageLearningLesson from './pages/LanguageLearningLesson';
+import LanguageLearningLessons from './pages/LanguageLearningLessons';
 import LanguageLearningPractice from './pages/LanguageLearningPractice';
 import './styles/global.css';
 import './styles/ModePage.css';
@@ -205,7 +206,17 @@ function App() {
               />
               
               <Route 
-                path="/language-learning/lessons/:moduleId?/:stageId?" 
+                path="/language-learning/lessons" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <LanguageLearningLessons />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/language-learning/lessons/:moduleId/:stageId" 
                 element={
                   <ProtectedRoute>
                     <LanguageLearningLesson />

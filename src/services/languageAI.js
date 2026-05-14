@@ -1,94 +1,302 @@
 // Language Learning AI Service
 // Uses smartGenerateJSON with automatic failover:
-// Gemini 2.0 Flash → Groq Llama 3.3 70B → DeepSeek
+// Groq 70B → Gemini 2.0 Flash → DeepSeek
 
 import { smartGenerateJSON, callGeminiText, callGroq, callDeepSeek, GROQ_MODELS } from './aiProvider';
 
-// ===== PROMPTS =====
+// ===== STUDENT PROFILE SYSTEM =====
 
-// System prompt for lesson generation
-const LESSON_SYSTEM_PROMPT = (primaryLanguage, targetLanguage, currentStage, moduleName) => `
-You are a language teacher. The student's primary language is ${primaryLanguage}.
-They are learning ${targetLanguage}. They are currently at ${currentStage} level.
-Current module: ${moduleName} (e.g., Vocabulary - Stage 1)
+const LEVEL_FORMAT_RULES = {
+  beginner: `
+BEGINNER LEVEL — STRICT FORMAT RULES (never skip any of these):
+- Every {targetLanguage} word or phrase MUST be followed by:
+  1. Romanization/Pinyin in parentheses e.g. 你好 (nǐ hǎo)
+  2. English translation in brackets e.g. [Hello]
+- Example format: 你好 (nǐ hǎo) [Hello]
+- NEVER show a {targetLanguage} word without both romanization AND translation
+- Explanations must be in simple {primaryLanguage}
+- Sentences must be SHORT (max 6 words in {targetLanguage})
+- Introduce max 3-4 new words per lesson
+- Every example must have: {targetLanguage} + romanization + {primaryLanguage} translation on separate lines
+`,
+  elementary: `
+ELEMENTARY LEVEL — FORMAT RULES:
+- Every NEW word must have romanization and translation
+- Known words (taught in previous lessons) can appear without translation
+- Keep sentences short (max 8 words)
+- Explanations in {primaryLanguage}
+`,
+  intermediate: `
+INTERMEDIATE LEVEL — FORMAT RULES:
+- Romanization only for new or complex words
+- Translation only when introducing new vocabulary
+- Explanations can mix {primaryLanguage} and {targetLanguage}
+`,
+  upper_intermediate: `
+UPPER-INTERMEDIATE LEVEL — FORMAT RULES:
+- Minimal romanization (only for rare/complex characters)
+- Explanations primarily in {targetLanguage}
+- Translations only for idioms or cultural expressions
+`,
+  advanced: `
+ADVANCED LEVEL — FORMAT RULES:
+- No romanization needed
+- Explanations in {targetLanguage}
+- Treat student as near-fluent
+`,
+  mastery: `
+MASTERY LEVEL — FORMAT RULES:
+- Full {targetLanguage} immersion
+- No translations or romanization
+- Native-level content
+`,
+  native: `
+NATIVE-LIKE LEVEL — FORMAT RULES:
+- Complete immersion in {targetLanguage}
+- Native speaker content only
+`,
+};
 
-Scientific rules you MUST follow:
-1. Comprehensible Input (i+1): Use 70% words the student already knows + 30% new content. Never overwhelm.
-2. Context-first: Always introduce new words/grammar inside full sentences and real examples. Never isolated.
-3. Pattern-based grammar: Show grammar through examples, never through abstract rules.
-4. Teach in ${primaryLanguage} when explaining, but use ${targetLanguage} for all examples and exercises.
-5. Frequency-first vocabulary: Teach most commonly used words first.
-6. End every lesson with a mastery check: 3 quick questions. If score < 80%, repeat lesson with different examples.
+// ─── Frequency-based vocabulary buckets per stage ────────────────────────────
+// Krashen i+1: teach the most frequent words first so 70% of input is already known.
+const VOCAB_FREQUENCY_BUCKETS = {
+  beginner:          { count: 100,  description: 'top-100 most common everyday words' },
+  elementary:        { count: 500,  description: 'top-500 most common words' },
+  intermediate:      { count: 2000, description: 'top-2000 words including common idioms' },
+  upper_intermediate:{ count: 3000, description: 'top-3000 words including formal register' },
+  advanced:          { count: 5000, description: 'top-5000 words including literary vocabulary' },
+  mastery:           { count: 8000, description: 'top-8000 words including technical/professional' },
+  native:            { count: 10000,description: 'full native vocabulary including slang and dialects' },
+};
 
-Lesson structure to follow:
-- Introduction (explain what will be learned today)
-- Core content (teach the concept)
-- Examples (3-5 real-world examples)
-- Mini practice (2-3 quick checks inline)
-- Summary
-- Mastery check (3 questions, must score 2/3 to proceed)
+// ─── Script-specific languages that need IPA + romanization mapping ──────────
+// For Chinese the Pronunciation module MUST include:
+//   • IPA transcription
+//   • Script-to-romanization mapping (Pinyin)
+const SCRIPT_LANGUAGES = {
+  zh: { name: 'Chinese', script: 'Hanzi', romanization: 'Pinyin', ipa: true },
+};
 
-Return lesson as structured JSON with sections:
+// Language code → name map (used to look up script info from language name)
+const LANG_NAME_TO_CODE = {
+  chinese: 'zh', mandarin: 'zh',
+};
+
+function getScriptInfo(targetLanguage) {
+  const code = LANG_NAME_TO_CODE[targetLanguage?.toLowerCase()];
+  return code ? SCRIPT_LANGUAGES[code] : null;
+}
+
+// ─── Strict JSON schema injected into every lesson prompt ────────────────────
+// This prevents "hallucinated keys" that crash the React rendering engine.
+// The schema is the single source of truth for what lessonContent must contain.
+const LESSON_JSON_SCHEMA = `
+STRICT JSON SCHEMA — you MUST return an object matching EXACTLY this shape.
+Do NOT add extra keys. Do NOT omit required keys. Do NOT nest differently.
+
 {
-  "introduction": "...",
-  "coreContent": "...",
-  "examples": [...],
-  "miniPractice": [...],
-  "summary": "...",
-  "masteryCheck": [
-    { "question": "...", "options": ["a", "b", "c", "d"], "correctAnswer": "..." }
+  "introduction": string,          // 1-3 sentences in {primaryLanguage}
+  "coreContent": string,           // main teaching content, follows level format rules
+  "examples": [                    // EXACTLY 5 items
+    string,                        // each: target text + romanization + translation per level rules
+    string,
+    string,
+    string,
+    string
+  ],
+  "miniPractice": [                // 2-3 items
+    string                         // simple question or exercise in {primaryLanguage}
+  ],
+  "summary": string,               // recap in {primaryLanguage}
+  "masteryCheck": [                // EXACTLY 3 items
+    {
+      "question": string,          // question in {primaryLanguage}
+      "options": [string, string, string, string],  // EXACTLY 4 options
+      "correctAnswer": string      // must match one of the options exactly
+    }
   ]
 }
 
-Make it educational, engaging, and scientifically sound.
+VALIDATION RULES:
+- examples array must have exactly 5 string elements
+- masteryCheck array must have exactly 3 objects
+- each masteryCheck.options must have exactly 4 strings
+- correctAnswer must be identical to one of the 4 options
+- No extra keys allowed at any level
 `;
 
-// System prompt for AI conversation
-const CONVERSATION_SYSTEM_PROMPT = (targetLanguage, completedModules) => `
-You are a friendly conversation partner. The user is learning ${targetLanguage}.
-They have learned up to ${completedModules} so far.
+// Speaking/pronunciation schema (different masteryCheck shape)
+const SPEAKING_JSON_SCHEMA = `
+STRICT JSON SCHEMA — you MUST return an object matching EXACTLY this shape.
+
+{
+  "introduction": string,
+  "coreContent": string,
+  "examples": [string, string, string, string, string],
+  "miniPractice": [string, string],
+  "summary": string,
+  "masteryCheck": [
+    {
+      "prompt": string,            // instruction to say a phrase aloud
+      "expectedAnswer": string,    // the exact phrase the student should say
+      "pronunciationTips": string  // tips for correct pronunciation
+    }
+  ]
+}
+`;
+
+const buildStudentProfile = (primaryLanguage, targetLanguage, currentStage) => {
+  const stage = currentStage?.toLowerCase().replace(/[- ]/g, '_') || 'beginner';
+  const levelKey = Object.keys(LEVEL_FORMAT_RULES).find(k => stage.includes(k)) || 'beginner';
+  const formatRules = LEVEL_FORMAT_RULES[levelKey]
+    .replace(/\{targetLanguage\}/g, targetLanguage)
+    .replace(/\{primaryLanguage\}/g, primaryLanguage);
+
+  const vocabBucket = VOCAB_FREQUENCY_BUCKETS[levelKey] || VOCAB_FREQUENCY_BUCKETS.beginner;
+
+  return `
+═══════════════════════════════════════════════════════════
+STUDENT PROFILE — READ BEFORE EVERY RESPONSE
+═══════════════════════════════════════════════════════════
+Native language: ${primaryLanguage}
+Learning: ${targetLanguage}
+Current level: ${currentStage || 'beginner'}
+Vocabulary target: ${vocabBucket.description}
+
+${formatRules}
+
+UNIVERSAL RULES (apply at ALL levels):
+1. Never show ${targetLanguage} text without context appropriate for the level above
+2. Always use the i+1 principle: 70% known content + 30% new
+3. Teach through examples first, rules second
+4. Every example must be a complete, natural sentence — never isolated words
+5. If the student is beginner/elementary, ALWAYS include pronunciation guide
+6. Vocabulary MUST come from the ${vocabBucket.description} — do not use rare words
+═══════════════════════════════════════════════════════════
+`;
+};
+
+// ===== PROMPTS =====
+
+const LESSON_SYSTEM_PROMPT = (primaryLanguage, targetLanguage, currentStage, moduleName) => {
+  const schema = LESSON_JSON_SCHEMA
+    .replace(/\{primaryLanguage\}/g, primaryLanguage);
+
+  return `
+${buildStudentProfile(primaryLanguage, targetLanguage, currentStage)}
+
+You are a ${targetLanguage} language teacher. Teach the module: "${moduleName}".
+
+Scientific teaching rules:
+1. Comprehensible Input (i+1): 70% known + 30% new. Never overwhelm.
+2. Context-first: Introduce words inside full sentences, never in isolation.
+3. Pattern-based grammar: Show grammar through examples, not abstract rules.
+4. Frequency-first: Only use vocabulary from the student's frequency bucket above.
+5. Mastery check: 3 questions at the end. Student must score 2/3 to pass.
+
+${schema}
+
+CRITICAL: Follow the STUDENT PROFILE format rules above for EVERY piece of ${targetLanguage} text.
+Return ONLY the JSON object. No markdown, no explanation, no code fences.
+`;
+};
+
+const SPEAKING_LESSON_PROMPT = (primaryLanguage, targetLanguage, currentStage, moduleName) => {
+  // Inject script-specific IPA instructions for Chinese, Hindi, Bangla
+  const scriptInfo = getScriptInfo(targetLanguage);
+  const scriptBlock = scriptInfo ? `
+SCRIPT-SPECIFIC REQUIREMENTS for ${scriptInfo.name}:
+- Every ${scriptInfo.script} character/word MUST include:
+  1. ${scriptInfo.romanization} (e.g. nǐ hǎo / na-mas-te / a-mi)
+  2. IPA transcription in square brackets (e.g. [ni˨˩˦ xɑʊ̯˨˩˦])
+  3. Syllable stress markers where applicable
+- Tone marks are MANDATORY for Chinese (Pinyin tones: ā á ǎ à)
+- Aspirated vs unaspirated consonants must be explicitly noted
+` : '';
+
+  return `
+${buildStudentProfile(primaryLanguage, targetLanguage, currentStage)}
+
+You are a ${targetLanguage} pronunciation and speaking teacher. Teach the module: "${moduleName}".
+${scriptBlock}
+This is a SPEAKING/PRONUNCIATION lesson. Focus on:
+1. Correct pronunciation and intonation
+2. Natural speech patterns and rhythm
+3. Minimal pairs (sounds that differ by one phoneme)
+4. Speaking practice exercises
+
+${SPEAKING_JSON_SCHEMA}
+
+CRITICAL: Every ${targetLanguage} word MUST include romanization and IPA for script-based languages.
+Return ONLY the JSON object. No markdown, no explanation, no code fences.
+`;
+};
+
+const CONVERSATION_SYSTEM_PROMPT = (primaryLanguage, targetLanguage, currentStage, completedModules) => `
+${buildStudentProfile(primaryLanguage, targetLanguage, currentStage)}
+
+You are a friendly ${targetLanguage} conversation partner.
+The student has learned: ${completedModules}
 
 Rules:
-1. ONLY use vocabulary and grammar the user has already learned. If you must use an unknown word, immediately define it in English.
-2. Speak naturally but simply.
+1. ONLY use vocabulary the student has already learned. Define any unknown word immediately in ${primaryLanguage}.
+2. Follow the STUDENT PROFILE format rules for every ${targetLanguage} word you use.
 3. Do NOT correct errors mid-conversation (it breaks fluency).
-4. After the conversation ends (user says 'end session'), provide a summary of: errors made, better alternatives, pronunciation tips, and positive feedback.
+4. After the user says "end session", give a summary: errors made, better alternatives, pronunciation tips, positive feedback.
 5. Keep conversation relevant to topics covered in their lessons.
-6. Gradually increase complexity if user responds well.
+6. Gradually increase complexity if the student responds well.
 
-Start the conversation with a simple greeting and ask about a topic they would be familiar with based on their learning progress.
+Start with a simple greeting appropriate for the student's level.
 `;
 
-// System prompt for roadmap generation
 const ROADMAP_SYSTEM_PROMPT = (primaryLanguage, targetLanguage) => `
-You are an expert language acquisition specialist. Create a comprehensive, never-ending language learning roadmap for a user whose primary language is ${primaryLanguage} and wants to learn ${targetLanguage}.
+You are an expert language acquisition specialist. Create a language learning roadmap for a user whose primary language is ${primaryLanguage} and wants to learn ${targetLanguage}.
 
-The roadmap must include ALL of the following modules, organized in progressive stages (Beginner → Elementary → Intermediate → Upper-Intermediate → Advanced → Mastery → Native-like — each stage is never truly "done"):
+CRITICAL: You MUST use EXACTLY these stageId values (no other values allowed):
+- "beginner"
+- "elementary"  
+- "intermediate"
+- "upper_intermediate"
+- "advanced"
+- "mastery"
+- "native"
 
-Modules to include in every stage:
-1. Vocabulary (frequency-based, most common words first)
-2. Pronunciation (phonetics, sounds unique to target language)
-3. Speaking (conversation, dialogue, expression)
-4. Listening Comprehension
-5. Reading (graded texts, then authentic content)
-6. Writing (sentences → paragraphs → essays)
-7. Grammar (implicit pattern-based, not rule memorization)
-8. Sentence Structure
-9. Synonyms & Antonyms
-10. Idioms & Expressions
-11. Cultural Context
+CRITICAL: moduleId MUST be a lowercase slug using only letters, numbers, and hyphens. Examples:
+- "vocabulary", "pronunciation", "speaking", "grammar", "reading", "writing"
+- "sentence-structure", "idioms-expressions", "cultural-context"
 
-Return a JSON array of stages. Each stage has:
-- stageId, stageName, description
-- modules: array of { moduleId, moduleName, type, estimatedMinutes, pointsReward }
-- unlockCondition: points or previous stage completion
+Each stage must have exactly these 11 modules (use these exact moduleId values):
+1. { moduleId: "vocabulary", moduleName: "Vocabulary" }
+2. { moduleId: "pronunciation", moduleName: "Pronunciation" }
+3. { moduleId: "speaking", moduleName: "Speaking" }
+4. { moduleId: "listening", moduleName: "Listening" }
+5. { moduleId: "reading", moduleName: "Reading" }
+6. { moduleId: "writing", moduleName: "Writing" }
+7. { moduleId: "grammar", moduleName: "Grammar" }
+8. { moduleId: "sentence-structure", moduleName: "Sentence Structure" }
+9. { moduleId: "synonyms-antonyms", moduleName: "Synonyms & Antonyms" }
+10. { moduleId: "idioms-expressions", moduleName: "Idioms & Expressions" }
+11. { moduleId: "cultural-context", moduleName: "Cultural Context" }
 
-Make it a living roadmap — after Mastery stage, loop back with native-level content (news, literature, professional language).
+Return a JSON array of 7 stages. Each stage:
+{
+  "stageId": "beginner",
+  "stageName": "Beginner",
+  "description": "brief description",
+  "modules": [
+    {
+      "moduleId": "vocabulary",
+      "moduleName": "Vocabulary",
+      "type": "learning",
+      "estimatedMinutes": 15,
+      "pointsReward": 100
+    }
+  ]
+}
 
-Format as valid JSON only.
+Return ONLY the JSON array. No markdown, no explanation.
 `;
 
-// System prompt for writing evaluation
 const WRITING_EVALUATION_PROMPT = (targetLanguage, prompt, userWriting) => `
 You are a language teacher evaluating writing in ${targetLanguage}.
 
@@ -106,7 +314,6 @@ Evaluate and return JSON:
 }
 `;
 
-// System prompt for pronunciation evaluation
 const PRONUNCIATION_PROMPT = (targetLanguage, expected, spoken) => `
 You are a pronunciation expert for ${targetLanguage}.
 
@@ -122,47 +329,113 @@ Evaluate pronunciation and return JSON:
 }
 `;
 
-// ===== MAIN AI FUNCTIONS =====
-// All functions now use smartGenerateJSON (Gemini → Groq → DeepSeek failover)
+// ===== LESSON SCHEMA VALIDATOR =====
+/**
+ * Validates the AI-generated lesson object against the strict schema.
+ * Returns a sanitised lesson or throws if the structure is unrecoverable.
+ * This prevents hallucinated keys from crashing the React rendering engine.
+ */
+function validateLessonSchema(raw) {
+  if (!raw || typeof raw !== 'object') throw new Error('Lesson is not an object');
 
-// Generate lesson using AI
+  // Required string fields
+  const lesson = {
+    introduction: typeof raw.introduction === 'string' ? raw.introduction : String(raw.introduction ?? ''),
+    coreContent:  typeof raw.coreContent  === 'string' ? raw.coreContent  : String(raw.coreContent  ?? ''),
+    summary:      typeof raw.summary      === 'string' ? raw.summary      : String(raw.summary      ?? ''),
+  };
+
+  // examples — must be array of strings, exactly 5 (pad/trim)
+  const rawExamples = Array.isArray(raw.examples) ? raw.examples : [];
+  lesson.examples = rawExamples
+    .slice(0, 5)
+    .map(e => (typeof e === 'string' ? e : JSON.stringify(e)));
+  while (lesson.examples.length < 3) lesson.examples.push(''); // minimum 3
+
+  // miniPractice — array of strings, 2-3 items
+  const rawPractice = Array.isArray(raw.miniPractice) ? raw.miniPractice : [];
+  lesson.miniPractice = rawPractice
+    .slice(0, 3)
+    .map(p => (typeof p === 'string' ? p : (p?.question ?? JSON.stringify(p))));
+  if (lesson.miniPractice.length === 0) lesson.miniPractice = ['Review what you just learned.'];
+
+  // masteryCheck — array of {question, options[4], correctAnswer}
+  const rawMastery = Array.isArray(raw.masteryCheck) ? raw.masteryCheck : [];
+  lesson.masteryCheck = rawMastery.slice(0, 3).map(q => {
+    if (typeof q === 'string') {
+      // AI returned a string instead of object — wrap it
+      return { question: q, options: ['A', 'B', 'C', 'D'], correctAnswer: 'A' };
+    }
+    // Handle speaking-module shape (prompt/expectedAnswer/pronunciationTips)
+    if (q.prompt && q.expectedAnswer) return q;
+
+    const options = Array.isArray(q.options) ? q.options.slice(0, 4).map(String) : [];
+    while (options.length < 4) options.push(`Option ${options.length + 1}`);
+    const correctAnswer = typeof q.correctAnswer === 'string' ? q.correctAnswer : options[0];
+    return {
+      question: typeof q.question === 'string' ? q.question : JSON.stringify(q),
+      options,
+      correctAnswer,
+    };
+  });
+  // Ensure at least 1 mastery question
+  if (lesson.masteryCheck.length === 0) {
+    lesson.masteryCheck = [{
+      question: 'What did you learn in this lesson?',
+      options: ['New vocabulary', 'Grammar rules', 'Pronunciation', 'All of the above'],
+      correctAnswer: 'All of the above',
+    }];
+  }
+
+  return lesson;
+}
+
+// ===== MAIN AI FUNCTIONS =====
+
 export const generateLesson = async (primaryLanguage, targetLanguage, currentStage, moduleName) => {
-  const prompt = LESSON_SYSTEM_PROMPT(primaryLanguage, targetLanguage, currentStage, moduleName);
-  
+  const isVoiceModule = ['pronunciation', 'speaking'].some(m =>
+    moduleName?.toLowerCase().includes(m)
+  );
+
+  const prompt = isVoiceModule
+    ? SPEAKING_LESSON_PROMPT(primaryLanguage, targetLanguage, currentStage, moduleName)
+    : LESSON_SYSTEM_PROMPT(primaryLanguage, targetLanguage, currentStage, moduleName);
+
   try {
-    return await smartGenerateJSON(prompt);
+    const raw = await smartGenerateJSON(prompt);
+    // Validate and sanitise — prevents hallucinated keys crashing React
+    return validateLessonSchema(raw);
   } catch (error) {
-    console.error('All AI providers failed, using fallback lesson:', error);
-    return getFallbackLesson(targetLanguage, currentStage, moduleName);
+    console.error('[generateLesson] All AI providers failed:', error.message);
+    throw new Error('All AI providers failed. Please try again in a few moments.');
   }
 };
 
 // Fallback lesson when AI APIs fail
 function getFallbackLesson(targetLanguage, currentStage, moduleName) {
   const sampleVocab = {
-    en: { word: 'hello', translation: 'Hola', pinyin: 'OH-lah' },
-    es: { word: 'hello', translation: 'Hola', pinyin: 'OH-lah' },
-    de: { word: 'hello', translation: 'Hallo', pinyin: 'HAH-loh' },
+    en: { word: 'hello', translation: 'Hello',   pinyin: 'heh-LOH' },
+    es: { word: 'hello', translation: 'Hola',    pinyin: 'OH-lah' },
+    de: { word: 'hello', translation: 'Hallo',   pinyin: 'HAH-loh' },
     fr: { word: 'hello', translation: 'Bonjour', pinyin: 'bohn-ZHOOR' },
-    zh: { word: 'hello', translation: '你好', pinyin: 'nee-HOW' },
-    hi: { word: 'hello', translation: 'नमस्ते', pinyin: 'nah-muh-STAY' },
+    zh: { word: 'hello', translation: '你好',     pinyin: 'nǐ hǎo' },
   };
-  
   const vocab = sampleVocab[targetLanguage] || sampleVocab.en;
-  
   return {
     introduction: `Welcome to your ${currentStage} ${moduleName} lesson! Today you'll learn essential ${targetLanguage} vocabulary.`,
-    coreContent: `The word "${vocab.word}" in ${targetLanguage} is "${vocab.translation}". This is one of the most common words you'll use. Practice it daily!`,
+    coreContent: `The word "hello" in ${targetLanguage} is "${vocab.translation}" (${vocab.pinyin}). This is one of the most common words you'll use.`,
     examples: [
-      `Example: "${vocab.translation}" - Hello!`,
-      `Example: Say "${vocab.translation}" when meeting someone.`,
-      `Practice: Try using "${vocab.translation}" in a sentence.`,
+      `"${vocab.translation}" (${vocab.pinyin}) [Hello]`,
+      `Say "${vocab.translation}" when meeting someone.`,
+      `Practice: "${vocab.translation}!"`,
+      `Response: "${vocab.translation}, how are you?"`,
+      `Formal: "${vocab.translation}, nice to meet you."`,
     ],
     miniPractice: [
-      'What is the translation of "hello" in ' + targetLanguage + '?',
-      'How do you say "' + vocab.translation + '" in English?',
+      `What is the translation of "hello" in ${targetLanguage}?`,
+      `How do you pronounce "${vocab.translation}"?`,
     ],
-    summary: `You learned the word "${vocab.word}" which means "${vocab.translation}" in ${targetLanguage}. Keep practicing!`,
+    summary: `You learned "${vocab.translation}" (${vocab.pinyin}) which means "hello" in ${targetLanguage}.`,
     masteryCheck: [
       {
         question: `What does "${vocab.translation}" mean in English?`,
@@ -183,139 +456,177 @@ function getFallbackLesson(targetLanguage, currentStage, moduleName) {
   };
 }
 
-// Generate roadmap using AI
 export const generateRoadmap = async (primaryLanguage, targetLanguage) => {
   const prompt = ROADMAP_SYSTEM_PROMPT(primaryLanguage, targetLanguage);
-  
+
+  const VALID_STAGE_IDS = ['beginner', 'elementary', 'intermediate', 'upper_intermediate', 'advanced', 'mastery', 'native'];
+  const VALID_MODULE_IDS = ['vocabulary', 'pronunciation', 'speaking', 'listening', 'reading', 'writing', 'grammar', 'sentence-structure', 'synonyms-antonyms', 'idioms-expressions', 'cultural-context'];
+
+  const normalizeRoadmap = (roadmap) => {
+    return VALID_STAGE_IDS.map((stageId, i) => {
+      const existing = roadmap.find(s =>
+        s.stageId === stageId ||
+        s.stageName?.toLowerCase().replace(/[^a-z]/g, '_').includes(stageId.replace('_', ''))
+      ) || roadmap[i] || {};
+      return {
+        stageId,
+        stageName: existing.stageName || stageId.charAt(0).toUpperCase() + stageId.slice(1).replace('_', '-'),
+        description: existing.description || `${stageId} level ${targetLanguage}`,
+        modules: VALID_MODULE_IDS.map((moduleId, j) => {
+          const existingMod = existing.modules?.[j] || {};
+          return {
+            moduleId,
+            moduleName: existingMod.moduleName || moduleId.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+            type: existingMod.type || 'learning',
+            estimatedMinutes: existingMod.estimatedMinutes || 15,
+            pointsReward: existingMod.pointsReward || 100,
+          };
+        }),
+      };
+    });
+  };
+
   try {
     const result = await smartGenerateJSON(prompt);
-    if (Array.isArray(result)) return result;
+    if (Array.isArray(result)) return normalizeRoadmap(result);
     throw new Error('Invalid roadmap format');
   } catch (error) {
-    console.error('All AI providers failed for roadmap:', error);
+    console.error('[generateRoadmap] All AI providers failed:', error.message);
     throw error;
   }
 };
 
-// Generate AI conversation
-export const generateConversationResponse = async (targetLanguage, completedModules, messages, newMessage) => {
-  const systemPrompt = CONVERSATION_SYSTEM_PROMPT(targetLanguage, completedModules);
+export const generateConversationResponse = async (primaryLanguage, targetLanguage, currentStage, completedModules, messages, newMessage) => {
+  const systemPrompt = CONVERSATION_SYSTEM_PROMPT(primaryLanguage, targetLanguage, currentStage, completedModules);
   const conversationHistory = messages
     .map(m => `${m.role === 'user' ? 'User' : 'AI'}: ${m.content}`)
     .join('\n');
-  
   const prompt = `${conversationHistory}\nUser: ${newMessage}\n\nRespond as the AI conversation partner following the rules. Keep your response natural and conversational.`;
-  
+
   try {
     return await callGroq(systemPrompt, [{ role: 'user', content: prompt }], GROQ_MODELS.LLAMA_70B);
   } catch (error) {
-    console.error('Groq failed for conversation, trying Gemini:', error);
+    console.error('[generateConversationResponse] Groq failed, trying Gemini:', error.message);
     return await callGeminiText(`${systemPrompt}\n\n${prompt}`);
   }
 };
 
-// Evaluate writing
 export const evaluateWriting = async (targetLanguage, prompt, userWriting) => {
   const fullPrompt = WRITING_EVALUATION_PROMPT(targetLanguage, prompt, userWriting);
   return await smartGenerateJSON(fullPrompt);
 };
 
-// Evaluate pronunciation
 export const evaluatePronunciation = async (targetLanguage, expected, spoken) => {
   const fullPrompt = PRONUNCIATION_PROMPT(targetLanguage, expected, spoken);
   return await smartGenerateJSON(fullPrompt);
 };
 
-// Generate MCQ questions
-export const generateMCQ = async (primaryLanguage, targetLanguage, topic, count = 5) => {
+export const generateMCQ = async (primaryLanguage, targetLanguage, topic, count = 5, currentStage = 'beginner') => {
+  const profile = buildStudentProfile(primaryLanguage, targetLanguage, currentStage);
   const prompt = `
+${profile}
+
 Generate ${count} multiple choice questions for ${targetLanguage} language learning.
 Topic: ${topic}
-Primary language of student: ${primaryLanguage}
+Questions must be in ${primaryLanguage}.
+Answer options must follow the STUDENT PROFILE format rules above.
 
-Return JSON array of questions in this format:
+Return JSON array:
 [
   {
-    "question": "question in ${primaryLanguage}",
-    "options": ["option1", "option2", "option3", "option4"],
+    "question": "Question in ${primaryLanguage}",
+    "options": ["option A", "option B", "option C", "option D"],
     "correctAnswer": "correct option",
-    "explanation": "brief explanation in ${primaryLanguage}"
+    "explanation": "Brief explanation in ${primaryLanguage}"
   }
 ]
 `;
-  
-  try {
-    const result = await smartGenerateJSON(prompt);
-    if (Array.isArray(result)) return result;
-    throw new Error('Invalid MCQ format');
-  } catch (error) {
-    throw error;
-  }
+  const result = await smartGenerateJSON(prompt);
+  if (Array.isArray(result)) return result;
+  throw new Error('Invalid MCQ format');
 };
 
-// Generate flashcard content
-export const generateFlashcards = async (primaryLanguage, targetLanguage, topic, count = 10) => {
+export const generateFlashcards = async (primaryLanguage, targetLanguage, topic, count = 10, currentStage = 'beginner') => {
+  const profile = buildStudentProfile(primaryLanguage, targetLanguage, currentStage);
+  const scriptInfo = getScriptInfo(targetLanguage);
+  const scriptNote = scriptInfo
+    ? `IMPORTANT: For every ${scriptInfo.script} word include: ${scriptInfo.romanization} AND IPA transcription.`
+    : '';
+
   const prompt = `
-You are generating language learning flashcards.
-Native language: ${primaryLanguage}
-Target language being learned: ${targetLanguage}
+${profile}
+${scriptNote}
+
+Generate ${count} flashcards for learning ${targetLanguage} vocabulary.
 Topic: ${topic}
-Count: ${count}
 
-Each flashcard must have:
-- "front": the word in ${primaryLanguage} (e.g. if ${primaryLanguage} is English: "hello")
-- "back": the SAME word translated into ${targetLanguage} (e.g. if ${targetLanguage} is Chinese: "你好")
-- "pronunciation": how to pronounce the ${targetLanguage} word using Roman letters (e.g. "nǐ hǎo")
-- "example": a short sentence in ${targetLanguage} using the word
-- "exampleTranslation": the English translation of that example sentence
+Each flashcard:
+- "front": the word in ${primaryLanguage}
+- "back": the word in ${targetLanguage}
+- "pronunciation": romanization/pinyin — ALWAYS include for beginner/elementary levels
+- "ipa": IPA transcription — required for Chinese, Hindi, Bangla
+- "example": a short sentence in ${targetLanguage} — follow STUDENT PROFILE format rules
+- "exampleTranslation": ${primaryLanguage} translation of the example
 
-Example output for English → Chinese:
-[
-  {
-    "front": "hello",
-    "back": "你好",
-    "pronunciation": "nǐ hǎo",
-    "example": "你好，你叫什么名字？",
-    "exampleTranslation": "Hello, what is your name?"
-  }
-]
-
-Now generate ${count} flashcards for the topic "${topic}".
-Return ONLY the JSON array, no markdown, no explanation.
+Return ONLY the JSON array.
 `;
-  
-  try {
-    const result = await smartGenerateJSON(prompt);
-    if (Array.isArray(result)) return result;
-    throw new Error('Invalid flashcard format');
-  } catch (error) {
-    throw error;
-  }
+  const result = await smartGenerateJSON(prompt);
+  if (Array.isArray(result)) return result;
+  throw new Error('Invalid flashcard format');
 };
 
-// Generate reading comprehension passage
 export const generateReadingPassage = async (primaryLanguage, targetLanguage, level, topic) => {
+  const profile = buildStudentProfile(primaryLanguage, targetLanguage, level);
   const prompt = `
+${profile}
+
 Generate a short reading passage in ${targetLanguage} for ${level} level students.
 Topic: ${topic}
-Student's primary language: ${primaryLanguage}
 
 Requirements:
-- Use vocabulary and grammar appropriate for ${level} level (i+1 principle)
-- 100-200 words
+- Follow the STUDENT PROFILE format rules strictly for all ${targetLanguage} text
+- 80-150 words appropriate for ${level} level
 - Include 3-5 comprehension questions in ${primaryLanguage}
 
 Return JSON:
 {
-  "title": "passage title",
-  "content": "passage in ${targetLanguage}",
+  "title": "passage title in ${primaryLanguage}",
+  "content": "passage in ${targetLanguage} — follow level format rules",
   "translation": "full translation in ${primaryLanguage}",
   "questions": [
-    { "question": "question in ${primaryLanguage}", "answer": "answer in ${targetLanguage}" }
+    { "question": "question in ${primaryLanguage}", "answer": "answer following level format" }
   ]
 }
 `;
-  
+  return await smartGenerateJSON(prompt);
+};
+
+export const generateListeningContent = async (primaryLanguage, targetLanguage, level, topic) => {
+  const profile = buildStudentProfile(primaryLanguage, targetLanguage, level);
+  const prompt = `
+${profile}
+
+Generate a listening comprehension exercise in ${targetLanguage} for ${level} level students.
+Topic: ${topic}
+
+Requirements:
+- Create a short audio script (80-150 words) in ${targetLanguage}
+- Include 3-4 comprehension questions in ${primaryLanguage}
+- Provide the script text so it can be read aloud
+- Include pronunciation guide for difficult words
+
+Return JSON:
+{
+  "script": "the audio script in ${targetLanguage}",
+  "scriptTranslation": "English translation of the script",
+  "questions": [
+    { "question": "question in ${primaryLanguage}", "options": ["A", "B", "C", "D"], "correctAnswer": "A" }
+  ],
+  "difficultWords": [
+    { "word": "word in ${targetLanguage}", "pronunciation": "pronunciation", "meaning": "meaning in ${primaryLanguage}" }
+  ]
+}
+`;
   return await smartGenerateJSON(prompt);
 };
 
@@ -328,4 +639,6 @@ export default {
   generateMCQ,
   generateFlashcards,
   generateReadingPassage,
+  generateListeningContent,
 };
+
