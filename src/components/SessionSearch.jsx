@@ -81,7 +81,7 @@ const SessionSearch = ({ sessions, onFilteredSessions }) => {
 
       <div className="search-filters">
         <select
-          className="filter-select"
+          className={`filter-select${selectedMode !== 'all' ? ' is-filtered' : ''}`}
           value={selectedMode}
           onChange={(e) => setSelectedMode(e.target.value)}
         >
@@ -91,7 +91,7 @@ const SessionSearch = ({ sessions, onFilteredSessions }) => {
         </select>
 
         <select
-          className="filter-select"
+          className={`filter-select${sortBy !== 'recent' ? ' is-filtered' : ''}`}
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
         >

@@ -5,6 +5,7 @@
   margin-bottom: var(--spacing-lg);
 }
 
+/* ── Search input ── */
 .search-input-wrapper {
   position: relative;
   display: flex;
@@ -16,6 +17,7 @@
   left: var(--spacing-md);
   color: var(--color-text-muted);
   pointer-events: none;
+  flex-shrink: 0;
 }
 
 .search-input {
@@ -27,13 +29,18 @@
   color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: 0.875rem;
-  transition: all var(--transition-normal);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+  box-sizing: border-box;
+}
+
+.search-input:hover {
+  border-color: var(--color-border-light);
 }
 
 .search-input:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 0 0 3px var(--color-accent-bg, rgba(168, 85, 247, 0.15));
 }
 
 .search-input::placeholder {
@@ -46,8 +53,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   background: transparent;
   border: none;
@@ -62,36 +69,86 @@
   color: var(--color-text-primary);
 }
 
+/* ── Filter row ── */
 .search-filters {
   display: flex;
   gap: var(--spacing-md);
+  align-items: center;
 }
 
+/* ── Filter selects — distinct visual hierarchy ── */
 .filter-select {
   flex: 1;
-  padding: var(--spacing-sm) var(--spacing-md);
+  /* Custom arrow — visible on dark backgrounds */
+  appearance: none;
+  -webkit-appearance: none;
   background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23a855f7' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding: var(--spacing-sm) 36px var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border-light, #404040);
   border-radius: var(--border-radius);
   color: var(--color-text-primary);
   font-family: var(--font-body);
   font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all var(--transition-normal);
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal),
+              background-color var(--transition-normal);
+  min-height: 40px;
+}
+
+/* First select: "All Modes" — slightly different label weight */
+.filter-select:first-of-type {
+  color: var(--color-text-primary);
+}
+
+/* Second select: "Most Recent" — muted label to distinguish from filter type */
+.filter-select:last-of-type {
+  color: var(--color-text-secondary);
 }
 
 .filter-select:hover {
-  border-color: var(--color-border-light);
+  border-color: var(--color-accent);
+  background-color: var(--color-bg-tertiary);
 }
 
 .filter-select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 0 0 3px var(--color-accent-bg, rgba(168, 85, 247, 0.15));
 }
 
-@media (max-width: 768px) {
+/* Active/non-default value — highlight to show a filter is applied */
+.filter-select.is-filtered {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23a855f7' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+}
+
+/* ── Mobile ── */
+@media (max-width: 767px) {
   .search-filters {
     flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .filter-select {
+    width: 100%;
+    min-height: 44px;          /* touch target */
+    font-size: 0.9375rem;
+    padding: 10px 36px 10px 14px;
+  }
+
+  .search-input {
+    font-size: 16px;           /* prevent iOS zoom */
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 479px) {
+  .filter-select {
+    font-size: 0.875rem;
   }
 }

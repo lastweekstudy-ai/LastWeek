@@ -84,6 +84,8 @@
 
 html, body {
   height: 100%;
+  overflow-x: hidden;        /* prevent browser sidebar bleed */
+  max-width: 100vw;
 }
 
 body {
