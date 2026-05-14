@@ -972,6 +972,36 @@ body {
 
 /* Mobile */
 @media (max-width: 767px) {
+  /* Use dynamic viewport height to avoid black dead zone */
+  .study-interface,
+  .pdf-viewer-container {
+    height: 100dvh !important;
+  }
+
+  /* Study content - single view at a time */
+  .study-content {
+    position: relative;
+    flex: 1;
+  }
+
+  /* PDF and Chat sections - absolute positioned, only one visible */
+  .study-pdf-section,
+  .study-chat-section {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* Hide inactive view */
+  .study-pdf-section.pane-hidden,
+  .study-chat-section.pane-hidden {
+    display: none !important;
+  }
+
   /* Header */
   .pdf-viewer-header {
     padding: 0.625rem 1rem;
@@ -1010,9 +1040,19 @@ body {
   .pdf-viewer-content { order: 2; flex: 1; }
   .pdf-viewer-toolbar { order: 3; }
 
-  /* Toolbar sections */
+  /* Toolbar sections - hide secondary actions in overflow menu */
   .toolbar-section {
     gap: 4px;
+  }
+
+  /* Hide secondary toolbar actions on mobile */
+  .toolbar-section .btn-toolbar.secondary {
+    display: none;
+  }
+
+  /* Show overflow menu button */
+  .toolbar-overflow-btn {
+    display: flex !important;
   }
 
   .btn-toolbar {
@@ -1037,14 +1077,27 @@ body {
     padding: 0.375rem 0.5rem;
   }
 
-  /* PDF content area */
+  /* PDF content area - fill remaining space */
   .pdf-viewer-content {
+    flex: 1;
     padding: 0.75rem;
+    padding-bottom: 60px; /* Space for fixed navigation pill */
     align-items: flex-start; /* Left-align on mobile, fit-to-width */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .react-pdf__Page__canvas {
     max-width: 100%;
+  }
+
+  /* Fixed page navigation pill - positioned near bottom */
+  .pdf-float-nav {
+    position: fixed !important;
+    bottom: 16px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 100 !important;
   }
 
   /* Sidebars: slide from bottom on mobile instead of right */
@@ -1093,6 +1146,32 @@ body {
     gap: 6px;
     padding: 0.625rem;
   }
+
+  /* Chat panel - use sans-serif font */
+  .study-chat-section .message-bubble,
+  .study-chat-section .formatted-message,
+  .chat-messages-improved {
+    font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif !important;
+  }
+
+  /* Keep monospace only for code blocks */
+  .formatted-message code,
+  .formatted-message pre,
+  .formatted-message pre code {
+    font-family: 'Courier New', Consolas, Monaco, 'Andale Mono', monospace !important;
+  }
+
+  /* Mobile tabs in header */
+  .study-header .mobile-tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .mobile-tab {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    min-height: 36px;
+  }
 }
 
 /* Small phones */
@@ -1109,11 +1188,17 @@ body {
 
   .pdf-viewer-content {
     padding: 0.5rem;
+    padding-bottom: 90px;
   }
 
   .pdf-bookmarks-sidebar,
   .pdf-highlights-sidebar {
     height: 65vh;
+  }
+
+  .pdf-float-nav {
+    bottom: 70px !important;
+    padding: 4px 8px;
   }
 }
 
@@ -1405,6 +1490,8 @@ body {
   /* Quick actions */
   .quick-actions-bar {
     padding: 0.5rem !important;
+    position: relative !important;
+    z-index: 10 !important; /* Above other input area elements */
   }
   
   /* Quick actions grid — 2 columns on mobile */
@@ -1954,21 +2041,8 @@ body {
    15. NAVBAR & NAVIGATION COMPONENTS — Mobile Dropdowns
    ============================================================ */
 
-/* Main Navbar — handled entirely in Navbar.css.
-   Only global overrides needed here. */
-@media (max-width: 767px) {
-  /* Ensure navbar doesn't overflow */
-  .navbar .container {
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  /* Dropdown panel: full-width on very small screens */
-  .navbar-mobile-dropdown {
-    width: calc(100vw - 24px);
-    right: -4px;
-  }
-}
+/* Main Navbar — handled entirely in Navbar.css with drawer pattern.
+   No overrides needed here. */
 
 /* Landing Navbar (src/pages/landing/sections/Navbar.jsx) */
 @media (max-width: 767px) {
@@ -2119,10 +2193,13 @@ body {
   }
 }
 
-/* Profile Dropdown — bottom sheet on mobile */
+/* Profile Dropdown — bottom sheet on mobile (ONLY when NOT inside drawer) */
 @media (max-width: 767px) {
-  .profile-dropdown-menu,
-  .profile-menu {
+  /* Bottom sheet styles - excluded when inside .nm-profile-wrapper (drawer) */
+  .navbar-desktop-actions .profile-dropdown-menu,
+  .navbar-desktop-actions .profile-menu,
+  .profile-dropdown-menu:not(.nm-profile-wrapper .profile-menu),
+  .profile-menu:not(.nm-profile-wrapper .profile-menu) {
     position: fixed !important;
     top: auto !important;
     bottom: 0 !important;
@@ -2139,9 +2216,11 @@ body {
     padding-bottom: max(16px, env(safe-area-inset-bottom));
   }
 
-  /* Handle bar */
-  .profile-dropdown-menu::before,
-  .profile-menu::before {
+  /* Handle bar - only for bottom sheet */
+  .navbar-desktop-actions .profile-dropdown-menu::before,
+  .navbar-desktop-actions .profile-menu::before,
+  .profile-dropdown-menu:not(.nm-profile-wrapper .profile-menu)::before,
+  .profile-menu:not(.nm-profile-wrapper .profile-menu)::before {
     content: '';
     display: block;
     width: 36px;
@@ -2151,11 +2230,31 @@ body {
     margin: 10px auto 8px;
   }
 
-  .profile-dropdown-menu .dropdown-item,
-  .profile-menu .menu-item {
+  /* Item padding - only for bottom sheet */
+  .navbar-desktop-actions .profile-dropdown-menu .dropdown-item,
+  .navbar-desktop-actions .profile-menu .menu-item,
+  .profile-dropdown-menu:not(.nm-profile-wrapper .profile-menu) .dropdown-item,
+  .profile-menu:not(.nm-profile-wrapper .profile-menu) .menu-item {
     padding: 14px 20px;
     min-height: 48px;
     font-size: 0.9375rem;
+  }
+
+  /* Drawer profile: ensure static positioning wins */
+  .nm-profile-wrapper .profile-menu {
+    position: static !important;
+    box-shadow: none !important;
+    border: 1px solid var(--color-border) !important;
+    border-radius: 8px !important;
+    margin-top: 4px !important;
+    animation: none !important;
+    max-height: none !important;
+    width: 100% !important;
+    padding-bottom: 0 !important;
+  }
+
+  .nm-profile-wrapper .profile-menu::before {
+    display: none !important;
   }
 }
 

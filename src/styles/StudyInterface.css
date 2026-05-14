@@ -5,6 +5,8 @@
   left: 0;
   right: 0;
   bottom: 0;
+  height: 100vh;
+  height: 100dvh; /* Use dynamic viewport height for mobile */
   background-color: var(--color-bg-primary);
   z-index: 1000;
   display: flex;
@@ -189,9 +191,10 @@
 
 /* PDF Viewer Area */
 .pdf-viewer-area {
-  flex: 1;
+  flex: 1; /* Fill remaining space */
   overflow: auto;
   padding: var(--spacing-lg);
+  padding-bottom: 80px; /* Space for fixed navigation pill */
   background-color: var(--color-bg-tertiary);
   display: flex;
   flex-direction: column;
@@ -258,6 +261,14 @@
 /* In highlight mode: show a rubber-band selection rectangle */
 .pdf-viewer-area.highlight-mode {
   cursor: crosshair;
+  /* Prevent text selection during drag */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  /* Prevent touch callout on iOS */
+  -webkit-touch-callout: none;
+  /* Improve touch responsiveness */
+  touch-action: none;
 }
 
 /* Rubber-band selection rectangle drawn during drag */
@@ -293,7 +304,9 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 3;
+  z-index: 10; /* Increased from 3 to ensure visibility */
+  /* Ensure it's always rendered */
+  display: block !important;
 }
 
 .pdf-highlight-mark {
@@ -304,9 +317,13 @@
   pointer-events: auto;
   cursor: pointer;
   transition: opacity 0.15s ease;
+  /* Ensure visibility on all devices */
+  will-change: opacity;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.pdf-highlight-mark:hover {
+.pdf-highlight-mark:hover,
+.pdf-highlight-mark:active {
   opacity: 0.8;
 }
 
@@ -315,6 +332,8 @@
   position: relative;
   display: inline-block;
   /* inline-block shrinks to canvas size so percentage-based highlights are accurate */
+  /* Ensure stacking context for highlights */
+  isolation: isolate;
 }
 
 .pdf-loading-small {
@@ -365,6 +384,9 @@
   background-color: var(--color-bg-secondary);
   border-left: var(--border-width) solid var(--color-border);
   overflow-y: auto;
+  /* Prevent layout shift when content loads */
+  min-height: 100%;
+  transition: none; /* No transition on desktop to prevent glitches */
 }
 
 .mini-sidebar-section {
@@ -620,7 +642,291 @@
   color: var(--color-text-muted);
 }
 
-/* Responsive Design */
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* Use dynamic viewport height */
+  .study-interface {
+    height: 100dvh;
+  }
+
+  /* Study content - single column, only one view visible at a time */
+  .study-content {
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* PDF and Chat sections - both take full available space */
+  .study-pdf-section,
+  .study-chat-section {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0; /* No bottom tabs, fill to bottom */
+    width: 100% !important;
+    height: auto !important;
+    display: flex; /* Always flex */
+    flex-direction: column;
+  }
+
+  /* Hide inactive view */
+  .study-pdf-section.pane-hidden,
+  .study-chat-section.pane-hidden {
+    display: none !important;
+  }
+
+  /* PDF section - full height minus bottom tabs */
+  .study-pdf-section {
+    border-right: none;
+  }
+
+  /* PDF viewer area - fill remaining space */
+  .pdf-viewer-area {
+    flex: 1;
+    padding: var(--spacing-md);
+    padding-bottom: 60px; /* Space for fixed nav pill */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Fixed page navigation pill - inside PDF view only */
+  .study-pdf-section .pdf-float-nav {
+    position: fixed;
+    bottom: 16px; /* Near bottom of screen */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    padding: 4px 10px;
+  }
+
+  /* Hide nav pill when not in PDF view */
+  .study-chat-section .pdf-float-nav,
+  .study-pdf-section.pane-hidden .pdf-float-nav {
+    display: none !important;
+  }
+
+  .pdf-float-btn {
+    font-size: 1rem;
+    padding: 2px 4px;
+  }
+
+  .pdf-float-page {
+    font-size: 0.75rem;
+    min-width: 50px;
+  }
+
+  /* Mobile tabs in header */
+  .study-header .mobile-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--color-bg-tertiary);
+    border-radius: 8px;
+    padding: 3px;
+  }
+
+  .mobile-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .mobile-tab.active {
+    background: var(--color-accent);
+    color: white;
+    box-shadow: 0 2px 6px rgba(168, 85, 247, 0.3);
+  }
+
+  /* Toolbar - compact on mobile */
+  .pdf-toolbar {
+    padding: var(--spacing-xs);
+    gap: 4px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .toolbar-group {
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .btn-toolbar {
+    padding: var(--spacing-xs);
+    min-width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  /* Hide secondary toolbar actions on mobile */
+  .toolbar-group .btn-toolbar.secondary {
+    display: none;
+  }
+
+  /* PDF mini sidebar - bottom sheet on mobile */
+  .pdf-mini-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    height: 60vh;
+    max-height: 60vh;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.3);
+    z-index: 201;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  /* Show sidebar when not empty */
+  .pdf-mini-sidebar:not(.empty) {
+    transform: translateY(0);
+  }
+
+  /* Handle bar for bottom sheet */
+  .pdf-mini-sidebar::before {
+    content: '';
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--color-border);
+    border-radius: 2px;
+    margin: 8px auto 12px;
+    flex-shrink: 0;
+  }
+
+  /* Backdrop for mobile sidebar */
+  .sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 200;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Close button for mobile sidebar */
+  .sidebar-close-mobile {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s ease;
+  }
+
+  .sidebar-close-mobile:hover {
+    background: var(--color-bg-hover);
+    transform: scale(1.1);
+  }
+
+  /* Chat section - full height */
+  .study-chat-section {
+    background: var(--color-bg-primary);
+  }
+
+  /* Chat interface fills available space */
+  .study-chat-section .chat-interface-improved {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* Chat messages area */
+  .study-chat-section .chat-messages-improved {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 180px; /* Space for input */
+  }
+
+  /* Chat input area - fixed at bottom */
+  .study-chat-section .chat-input-area {
+    position: fixed;
+    bottom: 0; /* At bottom of screen */
+    left: 0;
+    right: 0;
+    z-index: 90;
+    background: var(--color-bg-primary);
+    border-top: 1px solid var(--color-border);
+    padding: 0; /* Remove padding, let children handle it */
+    padding-bottom: max(0, env(safe-area-inset-bottom)); /* Safe area for notched devices */
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Quick actions bar - at top of input area */
+  .study-chat-section .quick-actions-bar {
+    order: 1;
+    position: relative;
+    z-index: 1;
+    background: var(--color-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--spacing-sm) var(--spacing-md);
+    width: 100%;
+  }
+
+  /* Chat input form - below quick actions */
+  .study-chat-section .chat-input-form {
+    order: 2;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-bg-primary);
+  }
+
+  /* Chat messages - use sans-serif font */
+  .study-chat-section .message-bubble,
+  .study-chat-section .formatted-message,
+  .study-chat-section .chat-messages-improved {
+    font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  /* Keep monospace only for code blocks */
+  .study-chat-section .formatted-message code,
+  .study-chat-section .formatted-message pre {
+    font-family: 'Courier New', Consolas, Monaco, monospace;
+  }
+
+  /* Hide any carousel indicators */
+  .study-content .swiper-pagination,
+  .study-content .carousel-indicators {
+    display: none !important;
+  }
+}
+
 @media (max-width: 1024px) {
   .study-content {
     flex-direction: column;
@@ -749,33 +1055,52 @@
   background: rgba(255,255,255,0.15);
 }
 
-/* ── Mobile Tabs ─────────────────────────────────────────────────────────── */
+/* ── Mobile Tabs — Bottom Navigation Bar ────────────────────────────────── */
 .mobile-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  gap: 4px;
-  background: var(--color-bg-tertiary);
-  border-radius: 20px;
-  padding: 3px;
+  gap: 0;
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+  padding: 8px 0;
+  padding-bottom: max(8px, env(safe-area-inset-bottom)); /* Safe area for notched devices */
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.15);
 }
 
 .mobile-tab {
+  flex: 1;
   background: none;
   border: none;
   color: var(--color-text-muted);
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
-  padding: 5px 14px;
-  border-radius: 16px;
+  padding: 8px 12px;
+  border-radius: 0;
   transition: all 0.2s ease;
-  opacity: 0.6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 56px;
+}
+
+.mobile-tab svg {
+  width: 24px;
+  height: 24px;
 }
 
 .mobile-tab.active {
-  background: var(--color-accent);
-  color: white;
-  opacity: 1;
-  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.35);
+  color: var(--color-accent);
+  background: transparent;
+}
+
+.mobile-tab.active svg {
+  transform: scale(1.1);
 }
 
 /* ── Scanned PDF Warning ─────────────────────────────────────────────────── */
@@ -937,7 +1262,7 @@
 
 /* ── Floating Page Navigation ────────────────────────────────────────────── */
 .pdf-float-nav {
-  position: sticky;
+  position: fixed; /* Fixed to viewport, not content */
   bottom: var(--spacing-md);
   left: 50%;
   transform: translateX(-50%);
@@ -950,7 +1275,6 @@
   padding: 6px 14px;
   box-shadow: var(--shadow-lg);
   z-index: 20;
-  margin-top: var(--spacing-md);
   backdrop-filter: blur(8px);
 }
 

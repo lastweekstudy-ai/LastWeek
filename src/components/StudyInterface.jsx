@@ -4,7 +4,7 @@ import ChatInterface from './ChatInterface';
 import PDFNoteEditor from './PDFNoteEditor';
 import { updatePDFProgress, addPDFBookmark, removePDFBookmark, getPDFResource } from '../appwrite/pdfResources';
 import { getPageNotes } from '../appwrite/pdfNotes';
-import { createPDFHighlight, getPageHighlights, deletePDFHighlight } from '../appwrite/pdfHighlights';
+import { createPDFHighlight, getPageHighlights, deletePDFHighlight, getPDFHighlights } from '../appwrite/pdfHighlights';
 import { extractText } from '../utils/pdfProcessor';
 import { clampTooltipX, TOOLTIP_OFFSET_ABOVE } from '../utils/studyUtils';
 import useGemini from '../hooks/useGemini';
@@ -150,8 +150,40 @@ const StudyInterface = ({
 
   useEffect(() => {
     loadPageNotes();
-    loadPageHighlights();
+    // Load highlights for current page only (all highlights loaded on mount)
   }, [pageNumber, resource.$id]);
+
+  // Load ALL highlights when PDF opens
+  useEffect(() => {
+    const loadAllHighlights = async () => {
+      try {
+        const allHighlights = await getPDFHighlights(resource.$id);
+        console.log(`[StudyInterface] Loaded ${allHighlights.length} total highlights for PDF:`, allHighlights);
+        const formattedHighlights = allHighlights.map(h => ({
+          id: h.$id,
+          page: h.pageNumber,
+          text: h.highlightedText,
+          color: h.color,
+          rect: h.position && h.position !== '{}' ? (() => {
+            try {
+              const parsed = JSON.parse(h.position);
+              return parsed;
+            } catch { 
+              console.warn(`[StudyInterface] Failed to parse position for highlight ${h.$id}`);
+              return null; 
+            }
+          })() : null,
+          timestamp: h.createdAt,
+          saved: true
+        }));
+        setSavedHighlights(formattedHighlights);
+        console.log(`[StudyInterface] Set ${formattedHighlights.length} highlights in state`);
+      } catch (error) {
+        console.error('Failed to load all highlights:', error);
+      }
+    };
+    loadAllHighlights();
+  }, [resource.$id]);
 
   // Capture text selection from PDF viewer
   useEffect(() => {
@@ -216,40 +248,6 @@ const StudyInterface = ({
       setPageNotes(notes);
     } catch (error) {
       console.error('Failed to load page notes:', error);
-    }
-  };
-
-  const loadPageHighlights = async () => {
-    try {
-      const highlights = await getPageHighlights(resource.$id, pageNumber);
-      const formattedHighlights = highlights.map(h => ({
-        id: h.$id,
-        page: h.pageNumber,
-        text: h.highlightedText,
-        color: h.color,
-        // Restore rect from DB if stored (position field), otherwise null
-        rect: h.position && h.position !== '{}' ? (() => {
-          try {
-            const parsed = JSON.parse(h.position);
-            // Support both old pixel format and new percentage format
-            return parsed;
-          } catch { return null; }
-        })() : null,
-        timestamp: h.createdAt,
-        saved: true
-      }));
-      setSavedHighlights(prev => {
-        // Keep unsaved (newly created, not yet persisted) highlights
-        const unsaved = prev.filter(h => !h.saved);
-        // For saved highlights already in state, preserve their rect if DB doesn't have one
-        const merged = formattedHighlights.map(dbH => {
-          const existing = prev.find(p => p.id === dbH.id);
-          return existing ? { ...dbH, rect: dbH.rect || existing.rect } : dbH;
-        });
-        return [...unsaved, ...merged];
-      });
-    } catch (error) {
-      console.error('Failed to load page highlights:', error);
     }
   };
 
@@ -465,6 +463,148 @@ const StudyInterface = ({
     pink:   '#e91e63',
     orange: '#ff9800',
     purple: '#9c27b0',
+  };
+
+  // Touch handlers for mobile/tablet highlight support
+  const handlePDFTouchStart = (e) => {
+    if (!highlightMode) return;
+    if (e.touches.length !== 1) return; // Only single touch
+    e.preventDefault();
+    const touch = e.touches[0];
+    const viewerRect = pdfViewerRef.current?.getBoundingClientRect();
+    if (!viewerRect) return;
+    const x = touch.clientX - viewerRect.left + pdfViewerRef.current.scrollLeft;
+    const y = touch.clientY - viewerRect.top  + pdfViewerRef.current.scrollTop;
+    dragStartRef.current = { x, y };
+    setDragRect({ x, y, w: 0, h: 0 });
+  };
+
+  const handlePDFTouchMove = (e) => {
+    if (!highlightMode || !dragStartRef.current) return;
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    const viewerRect = pdfViewerRef.current?.getBoundingClientRect();
+    if (!viewerRect) return;
+    const curX = touch.clientX - viewerRect.left + pdfViewerRef.current.scrollLeft;
+    const curY = touch.clientY - viewerRect.top  + pdfViewerRef.current.scrollTop;
+    const { x: sx, y: sy } = dragStartRef.current;
+    setDragRect({
+      x: Math.min(sx, curX),
+      y: Math.min(sy, curY),
+      w: Math.abs(curX - sx),
+      h: Math.abs(curY - sy),
+    });
+  };
+
+  const handlePDFTouchEnd = (e) => {
+    // Reuse the same logic as mouse up
+    if (!highlightMode || !dragStartRef.current || !dragRect) {
+      dragStartRef.current = null;
+      setDragRect(null);
+      return;
+    }
+    const finalRect = dragRect;
+    dragStartRef.current = null;
+    setDragRect(null);
+
+    // Minimum drag size to count as intentional
+    if (finalRect.w < 5 || finalRect.h < 5) return;
+
+    // Find which page wrapper the drag rect overlaps
+    const pageWrappers = pdfViewerRef.current?.querySelectorAll('.pdf-page-wrapper') || [];
+    let capturedPage = pageNumber;
+    let pageRelRect = null;
+
+    for (const wrapper of pageWrappers) {
+      const viewerRect = pdfViewerRef.current.getBoundingClientRect();
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const wTop  = wrapperRect.top  - viewerRect.top  + pdfViewerRef.current.scrollTop;
+      const wLeft = wrapperRect.left - viewerRect.left + pdfViewerRef.current.scrollLeft;
+      const wBot  = wTop  + wrapperRect.height;
+      const wRight = wLeft + wrapperRect.width;
+
+      const overlapTop  = Math.max(finalRect.y, wTop);
+      const overlapLeft = Math.max(finalRect.x, wLeft);
+      const overlapBot  = Math.min(finalRect.y + finalRect.h, wBot);
+      const overlapRight = Math.min(finalRect.x + finalRect.w, wRight);
+
+      if (overlapBot > overlapTop && overlapRight > overlapLeft) {
+        capturedPage = parseInt(wrapper.dataset.pageNumber) || pageNumber;
+
+        const canvas = wrapper.querySelector('canvas');
+        const refEl = canvas || wrapper;
+        const refRect = refEl.getBoundingClientRect();
+        const refTop  = refRect.top  - viewerRect.top  + pdfViewerRef.current.scrollTop;
+        const refLeft = refRect.left - viewerRect.left + pdfViewerRef.current.scrollLeft;
+
+        pageRelRect = {
+          topPct:    ((overlapTop  - refTop)  / refRect.height) * 100,
+          leftPct:   ((overlapLeft - refLeft) / refRect.width)  * 100,
+          widthPct:  ((overlapRight - overlapLeft) / refRect.width)  * 100,
+          heightPct: ((overlapBot  - overlapTop)   / refRect.height) * 100,
+        };
+        break;
+      }
+    }
+
+    if (!pageRelRect) return;
+
+    // Extract text from spans
+    const pageWrapper = pdfViewerRef.current?.querySelector(`[data-page-number="${capturedPage}"]`);
+    const spans = pageWrapper?.querySelectorAll('.react-pdf__Page__textContent span') || [];
+    const viewerRect = pdfViewerRef.current.getBoundingClientRect();
+    const selectedSpans = [];
+
+    spans.forEach(span => {
+      const sr = span.getBoundingClientRect();
+      const spanTop  = sr.top  - viewerRect.top  + pdfViewerRef.current.scrollTop;
+      const spanLeft = sr.left - viewerRect.left + pdfViewerRef.current.scrollLeft;
+      const spanBot  = spanTop  + sr.height;
+      const spanRight = spanLeft + sr.width;
+
+      if (
+        spanBot  > finalRect.y &&
+        spanTop  < finalRect.y + finalRect.h &&
+        spanRight > finalRect.x &&
+        spanLeft  < finalRect.x + finalRect.w
+      ) {
+        selectedSpans.push(span.textContent || '');
+      }
+    });
+
+    const highlightedText = selectedSpans.join(' ').trim().replace(/\s+/g, ' ');
+    if (!highlightedText) return;
+
+    // Save the highlight
+    const highlight = {
+      id: `highlight-${Date.now()}`,
+      page: capturedPage,
+      text: highlightedText,
+      color: highlightColor,
+      rect: pageRelRect,
+      timestamp: new Date().toISOString(),
+      saved: false,
+    };
+
+    setSavedHighlights(prev => [...prev, highlight]);
+
+    createPDFHighlight(
+      resource.userId,
+      resource.$id,
+      capturedPage,
+      highlightedText,
+      pageRelRect,
+      highlightColor
+    ).then(savedHighlight => {
+      if (savedHighlight) {
+        setSavedHighlights(prev => prev.map(h =>
+          h.id === highlight.id
+            ? { ...h, id: savedHighlight.$id, saved: true, rect: h.rect || pageRelRect }
+            : h
+        ));
+      }
+    }).catch(err => console.error('Failed to save highlight:', err));
   };
 
   // Keep saveHighlight as manual fallback (💾 button)
@@ -906,13 +1046,15 @@ User Question: ${aiContextMessage || userMessage}`;
         )}
 
         <div className="study-actions">
-          <button 
-            onClick={() => setShowSidebar(!showSidebar)}
-            className="btn-icon"
-            title={showSidebar ? 'Hide sidebar' : 'Show sidebar'}
-          >
-            {showSidebar ? '◧' : '◨'}
-          </button>
+          {!isMobile && (
+            <button 
+              onClick={() => setShowSidebar(!showSidebar)}
+              className="btn-icon"
+              title={showSidebar ? 'Hide sidebar' : 'Show sidebar'}
+            >
+              {showSidebar ? '◧' : '◨'}
+            </button>
+          )}
           <button 
             onClick={onClose}
             className="btn-icon btn-close"
@@ -1035,6 +1177,16 @@ User Question: ${aiContextMessage || userMessage}`;
                 📝 {pageNotes.length > 0 && `(${pageNotes.length})`}
               </button>
 
+              {isMobile && (bookmarks.length > 0 || savedHighlights.length > 0) && (
+                <button 
+                  onClick={() => setShowSidebar(!showSidebar)}
+                  className={`btn-toolbar ${showSidebar ? 'active' : ''}`}
+                  title="View bookmarks & highlights"
+                >
+                  📑 {bookmarks.length + savedHighlights.length}
+                </button>
+              )}
+
               {tocItems.length > 0 && (
                 <button
                   onClick={() => setShowTOC(!showTOC)}
@@ -1080,7 +1232,11 @@ User Question: ${aiContextMessage || userMessage}`;
               onMouseDown={handlePDFMouseDown}
               onMouseMove={handlePDFMouseMove}
               onMouseUp={handlePDFMouseUp}
+              onTouchStart={handlePDFTouchStart}
+              onTouchMove={handlePDFTouchMove}
+              onTouchEnd={handlePDFTouchEnd}
               onMouseLeave={() => { dragStartRef.current = null; setDragRect(null); }}
+              onTouchCancel={() => { dragStartRef.current = null; setDragRect(null); }}
             >
               {loading && (
                 <div className="pdf-loading-small">
@@ -1130,40 +1286,31 @@ User Question: ${aiContextMessage || userMessage}`;
                       renderTextLayer={true}
                       renderAnnotationLayer={true}
                     />
-                    {/* Highlight overlay — positioned relative to the canvas via inset:0 on the Page */}
-                    {savedHighlights.filter(h => h.page === n && h.rect).length > 0 && (
-                      <div
-                        className="pdf-highlight-overlay-layer"
-                        style={{
-                          // Match the canvas size exactly by using the Page's rendered dimensions
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          width: '100%',
-                          height: '100%',
-                          pointerEvents: 'none',
-                          zIndex: 3,
-                        }}
-                      >
-                        {savedHighlights
-                          .filter(h => h.page === n && h.rect)
-                          .map(h => (
-                            <div
-                              key={h.id}
-                              className="pdf-highlight-mark"
-                              style={{
-                                top:    `${h.rect.topPct}%`,
-                                left:   `${h.rect.leftPct}%`,
-                                width:  `${h.rect.widthPct}%`,
-                                height: `${h.rect.heightPct}%`,
-                                backgroundColor: highlightColorMap[h.color] || highlightColorMap.yellow,
-                              }}
-                              title={h.text}
-                            />
-                          ))
-                        }
-                      </div>
-                    )}
+                    {/* Highlight overlay — positioned relative to the canvas */}
+                    <div className="pdf-highlight-overlay-layer">
+                      {savedHighlights
+                        .filter(h => h.page === n && h.rect)
+                        .map(h => (
+                          <div
+                            key={h.id}
+                            className="pdf-highlight-mark"
+                            style={{
+                              top:    `${h.rect.topPct}%`,
+                              left:   `${h.rect.leftPct}%`,
+                              width:  `${h.rect.widthPct}%`,
+                              height: `${h.rect.heightPct}%`,
+                              backgroundColor: highlightColorMap[h.color] || highlightColorMap.yellow,
+                            }}
+                            title={h.text}
+                            onClick={() => {
+                              if (isMobile && (bookmarks.length > 0 || savedHighlights.length > 0)) {
+                                setShowSidebar(true);
+                              }
+                            }}
+                          />
+                        ))
+                      }
+                    </div>
                   </div>
                 ))}
               </Document>
@@ -1208,56 +1355,91 @@ User Question: ${aiContextMessage || userMessage}`;
             </div>
 
             {/* Sidebar for Bookmarks & Highlights */}
-            {showSidebar && (bookmarks.length > 0 || savedHighlights.length > 0) && (
-              <div className="pdf-mini-sidebar">
-                {bookmarks.length > 0 && (
-                  <div className="mini-sidebar-section">
-                    <h5>📑 Bookmarks</h5>
-                    {bookmarks.map((bookmark, index) => (
-                      <div 
-                        key={index}
-                        className={`mini-bookmark ${bookmark.page === pageNumber ? 'active' : ''}`}
-                        onClick={() => goToPage(bookmark.page)}
-                      >
-                        <span>p.{bookmark.page}</span>
-                      </div>
-                    ))}
-                  </div>
+            {showSidebar && (
+              <>
+                {/* Backdrop for mobile sidebar */}
+                {isMobile && (bookmarks.length > 0 || savedHighlights.length > 0) && (
+                  <div 
+                    className="sidebar-backdrop"
+                    onClick={() => setShowSidebar(false)}
+                  />
                 )}
+                
+                <div className={`pdf-mini-sidebar ${(bookmarks.length === 0 && savedHighlights.length === 0) ? 'empty' : ''}`}>
+                  {/* Close button for mobile */}
+                  {isMobile && (
+                    <button 
+                      className="sidebar-close-mobile"
+                      onClick={() => setShowSidebar(false)}
+                      title="Close"
+                    >
+                      ✕
+                    </button>
+                  )}
 
-                {savedHighlights.length > 0 && (
-                  <div className="mini-sidebar-section">
-                    <h5>🖍️ Highlights ({savedHighlights.length})</h5>
-                    {savedHighlights.map((highlight) => (
-                      <div
-                        key={highlight.id}
-                        className="mini-highlight"
-                        style={{
-                          cursor: 'pointer',
-                          opacity: highlight.page === pageNumber ? 1 : 0.6,
-                        }}
-                        onClick={() => goToPage(highlight.page)}
-                        title={`Page ${highlight.page} — click to jump`}
-                      >
-                        <div
-                          className="mini-highlight-color"
-                          style={{ backgroundColor: highlightColorMap[highlight.color] || highlightColorMap.yellow }}
-                        />
-                        <div className="mini-highlight-text">
-                          <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', display: 'block' }}>p.{highlight.page}</span>
-                          {highlight.text.substring(0, 45)}{highlight.text.length > 45 ? '…' : ''}
-                        </div>
-                        <button
-                          className="mini-remove-btn"
-                          onClick={(e) => { e.stopPropagation(); removeHighlight(highlight.id); }}
+                  {bookmarks.length > 0 && (
+                    <div className="mini-sidebar-section">
+                      <h5>📑 Bookmarks</h5>
+                      {bookmarks.map((bookmark, index) => (
+                        <div 
+                          key={index}
+                          className={`mini-bookmark ${bookmark.page === pageNumber ? 'active' : ''}`}
+                          onClick={() => {
+                            goToPage(bookmark.page);
+                            if (isMobile) setShowSidebar(false);
+                          }}
                         >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                          <span>p.{bookmark.page}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {savedHighlights.length > 0 && (
+                    <div className="mini-sidebar-section">
+                      <h5>🖍️ Highlights ({savedHighlights.length})</h5>
+                      {savedHighlights.map((highlight) => (
+                        <div
+                          key={highlight.id}
+                          className="mini-highlight"
+                          style={{
+                            cursor: 'pointer',
+                            opacity: highlight.page === pageNumber ? 1 : 0.6,
+                          }}
+                          onClick={() => {
+                            goToPage(highlight.page);
+                            if (isMobile) setShowSidebar(false);
+                          }}
+                          title={`Page ${highlight.page} — click to jump`}
+                        >
+                          <div
+                            className="mini-highlight-color"
+                            style={{ backgroundColor: highlightColorMap[highlight.color] || highlightColorMap.yellow }}
+                          />
+                          <div className="mini-highlight-text">
+                            <span style={{ fontSize: '0.65rem', color: 'var(--color-text-muted)', display: 'block' }}>p.{highlight.page}</span>
+                            {highlight.text.substring(0, 45)}{highlight.text.length > 45 ? '…' : ''}
+                          </div>
+                          <button
+                            className="mini-remove-btn"
+                            onClick={(e) => { e.stopPropagation(); removeHighlight(highlight.id); }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {bookmarks.length === 0 && savedHighlights.length === 0 && (
+                    <div className="mini-sidebar-section">
+                      <p style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', padding: '1rem', textAlign: 'center' }}>
+                        No bookmarks or highlights yet. Use the toolbar to add them!
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>

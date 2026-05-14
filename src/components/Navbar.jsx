@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useSession from '../hooks/useSession';
 import StorageIndicator from './StorageIndicator';
@@ -6,93 +7,256 @@ import ThemeToggle from './ThemeToggle';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import ProfileDropdown from './ProfileDropdown';
 import PomodoroTimer from './PomodoroTimer';
-import { 
+import {
   MentalModelIcon,
   ActiveRecallIcon,
   FocusBreakdownIcon,
   CollaborativeScholarIcon,
-  CreativeSynthesisIcon
+  CreativeSynthesisIcon,
 } from './Icons';
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { useAuth } from '../context/AuthContext';
 import '../styles/StorageIndicator.css';
 import '../styles/Navbar.css';
 
+/* ─── icon helpers ─────────────────────────────────────────── */
+const IconDashboard = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="3" width="7" height="7" rx="1"/>
+    <rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="14" y="14" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/>
+  </svg>
+);
+const IconExam = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="4" width="18" height="18" rx="2"/>
+    <line x1="16" y1="2" x2="16" y2="6"/>
+    <line x1="8" y1="2" x2="8" y2="6"/>
+    <line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+);
+const IconLanguage = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="2" y1="12" x2="22" y2="12"/>
+    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+  </svg>
+);
+const IconKeyboard = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/>
+    <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/>
+  </svg>
+);
+const IconStorage = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <ellipse cx="12" cy="5" rx="9" ry="3"/>
+    <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+    <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+  </svg>
+);
+
+/* ─── NavItem — consistent row template ────────────────────── */
+const NavItem = ({ icon, label, onClick, active, badge }) => (
+  <button
+    className={`nm-item${active ? ' nm-item--active' : ''}`}
+    onClick={onClick}
+    role="menuitem"
+  >
+    <span className="nm-item__icon">{icon}</span>
+    <span className="nm-item__label">{label}</span>
+    {badge && <span className="nm-item__badge">{badge}</span>}
+  </button>
+);
+
+/* ─── NavRow — label + right-side widget ───────────────────── */
+const NavRow = ({ icon, label, children }) => (
+  <div className="nm-row">
+    <span className="nm-row__left">
+      <span className="nm-row__icon">{icon}</span>
+      <span className="nm-row__label">{label}</span>
+    </span>
+    <span className="nm-row__right">{children}</span>
+  </div>
+);
+
+/* ═══════════════════════════════════════════════════════════ */
 const Navbar = ({ isSessionPage = false }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { activeSession, switchMode } = useSession();
   const [showShortcuts, setShowShortcuts] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const menuRef = useRef(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Close menu on route change
+  /* close on route change */
+  useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
+
+  /* lock body scroll while drawer is open */
   useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [location.pathname]);
+    document.body.style.overflow = drawerOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [drawerOpen]);
 
-  // Close menu on outside click
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMobileMenuOpen(false);
-      }
-    };
-    if (mobileMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('touchstart', handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-    };
-  }, [mobileMenuOpen]);
-
-  // Keyboard shortcuts
   useKeyboardShortcuts([
     { key: 'k', ctrl: true, callback: () => setShowShortcuts(true) },
     { key: 'd', ctrl: true, callback: () => navigate('/dashboard') },
     { key: 'n', ctrl: true, callback: () => navigate('/mode-select') },
-    { key: 'Escape', callback: () => { setShowShortcuts(false); setMobileMenuOpen(false); } },
+    { key: 'Escape', callback: () => { setShowShortcuts(false); setDrawerOpen(false); } },
   ]);
 
   const handleSwitchMode = async (newMode) => {
-    try {
-      await switchMode(newMode);
-    } catch (err) {
-      console.error('Failed to switch mode:', err);
-    }
+    try { await switchMode(newMode); } catch (e) { console.error(e); }
   };
 
   const isOnSessionPage = location.pathname.includes('/session/') || isSessionPage;
+  const go = (path) => { navigate(path); setDrawerOpen(false); };
+  const is  = (path) => location.pathname === path;
 
   const getModeIcon = () => {
     if (!activeSession) return null;
-    const iconProps = { size: 20 };
+    const p = { size: 20 };
     switch (activeSession.mode) {
-      case 'mental_model':          return <MentalModelIcon {...iconProps} />;
-      case 'active_recall':         return <ActiveRecallIcon {...iconProps} />;
-      case 'focus_breakdown':       return <FocusBreakdownIcon {...iconProps} />;
-      case 'collaborative_scholar': return <CollaborativeScholarIcon {...iconProps} />;
-      case 'creative_synthesis':    return <CreativeSynthesisIcon {...iconProps} />;
+      case 'mental_model':          return <MentalModelIcon {...p} />;
+      case 'active_recall':         return <ActiveRecallIcon {...p} />;
+      case 'focus_breakdown':       return <FocusBreakdownIcon {...p} />;
+      case 'collaborative_scholar': return <CollaborativeScholarIcon {...p} />;
+      case 'creative_synthesis':    return <CreativeSynthesisIcon {...p} />;
       default: return null;
     }
   };
 
   const getModeName = () => {
-    if (!activeSession) return '';
     const names = {
-      mental_model:           'Mental Model',
-      active_recall:          'Active Recall',
-      focus_breakdown:        'Focus Breakdown',
-      collaborative_scholar:  'Collaborative Scholar',
-      creative_synthesis:     'Creative Synthesis',
+      mental_model: 'Mental Model', active_recall: 'Active Recall',
+      focus_breakdown: 'Focus Breakdown', collaborative_scholar: 'Collaborative Scholar',
+      creative_synthesis: 'Creative Synthesis',
     };
-    return names[activeSession.mode] || '';
+    return activeSession ? (names[activeSession.mode] || '') : '';
   };
 
-  const navClose = (fn) => () => { fn(); setMobileMenuOpen(false); };
+  /* ── Drawer rendered via portal so it escapes any overflow:hidden parent ── */
+  const drawer = drawerOpen && createPortal(
+    <>
+      {/* Backdrop */}
+      <div
+        className="nm-backdrop"
+        onClick={() => setDrawerOpen(false)}
+        aria-hidden="true"
+      />
+
+      {/* Drawer panel */}
+      <div className="nm-drawer" role="dialog" aria-label="Navigation menu" aria-modal="true">
+
+        {/* Header */}
+        <div className="nm-drawer__header">
+          <span className="nm-drawer__title">Menu</span>
+          <button
+            className="nm-drawer__close"
+            onClick={() => setDrawerOpen(false)}
+            aria-label="Close menu"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        {/* Scrollable body */}
+        <div className="nm-drawer__body">
+
+          {/* ── Session mode switcher ── */}
+          {isOnSessionPage && activeSession && (
+            <section className="nm-section">
+              <p className="nm-section__label">Switch Mode</p>
+              <select
+                className="nm-select"
+                value={activeSession.mode || 'mental_model'}
+                onChange={(e) => { handleSwitchMode(e.target.value); setDrawerOpen(false); }}
+              >
+                <option value="mental_model">Mental Model</option>
+                <option value="active_recall">Active Recall</option>
+                <option value="focus_breakdown">Focus Breakdown</option>
+                <option value="collaborative_scholar">Collaborative Scholar</option>
+                <option value="creative_synthesis">Creative Synthesis</option>
+              </select>
+            </section>
+          )}
+
+          {/* ── Navigation links ── */}
+          {!isOnSessionPage && (
+            <section className="nm-section">
+              <p className="nm-section__label">Navigate</p>
+              <NavItem icon={<IconDashboard />}  label="Dashboard"         active={is('/dashboard')}         onClick={() => go('/dashboard')} />
+              <NavItem icon={<IconExam />}        label="Exam Planner"      active={is('/exam-planner')}      onClick={() => go('/exam-planner')} />
+              <NavItem icon={<IconLanguage />}    label="Language Learning" active={is('/language-learning')} onClick={() => go('/language-learning')} />
+            </section>
+          )}
+
+          {/* ── Utilities ── */}
+          <section className="nm-section">
+            <p className="nm-section__label">Utilities</p>
+
+            <NavItem
+              icon={<IconKeyboard />}
+              label="Keyboard Shortcuts"
+              badge="Ctrl+K"
+              onClick={() => { setShowShortcuts(true); setDrawerOpen(false); }}
+            />
+
+            <NavRow icon={<IconStorage />} label="Storage">
+              <StorageIndicator userId={user.$id} className="compact" lazy={true} />
+            </NavRow>
+
+            <NavRow
+              icon={
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="5"/>
+                  <line x1="12" y1="1" x2="12" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="23"/>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                  <line x1="1" y1="12" x2="3" y2="12"/>
+                  <line x1="21" y1="12" x2="23" y2="12"/>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+              }
+              label="Theme"
+            >
+              <ThemeToggle />
+            </NavRow>
+
+            {isSessionPage && (
+              <NavRow
+                icon={
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                }
+                label="Pomodoro"
+              >
+                <PomodoroTimer />
+              </NavRow>
+            )}
+          </section>
+
+          {/* ── Account ── */}
+          <section className="nm-section nm-section--last">
+            <p className="nm-section__label">Account</p>
+            <div className="nm-profile-wrapper">
+              <ProfileDropdown />
+            </div>
+          </section>
+
+        </div>
+      </div>
+    </>,
+    document.body
+  );
 
   return (
     <>
@@ -100,14 +264,10 @@ const Navbar = ({ isSessionPage = false }) => {
         <div className="container">
           <div className="navbar-content">
 
-            {/* ── Left: Brand + session info ── */}
+            {/* Left: brand + session info */}
             <div className="navbar-left">
               <div className="navbar-brand" onClick={() => navigate('/dashboard')}>
-                <img
-                  src="/logos/lastweek_text_logo.png"
-                  alt="LastWeek"
-                  className="navbar-logo"
-                />
+                <img src="/logos/lastweek_text_logo.png" alt="LastWeek" className="navbar-logo" />
               </div>
 
               {isOnSessionPage && activeSession && (
@@ -123,14 +283,13 @@ const Navbar = ({ isSessionPage = false }) => {
 
             {user && (
               <>
-                {/* ── Desktop actions (hidden on mobile via CSS) ── */}
+                {/* Desktop actions */}
                 <div className="navbar-actions navbar-desktop-actions">
                   {isOnSessionPage && activeSession && (
                     <select
                       className="mode-switcher"
                       value={activeSession?.mode || 'mental_model'}
                       onChange={(e) => handleSwitchMode(e.target.value)}
-                      disabled={!activeSession}
                     >
                       <option value="mental_model">Mental Model</option>
                       <option value="active_recall">Active Recall</option>
@@ -139,197 +298,49 @@ const Navbar = ({ isSessionPage = false }) => {
                       <option value="creative_synthesis">Creative Synthesis</option>
                     </select>
                   )}
-
+                  {!isOnSessionPage && <StorageIndicator userId={user.$id} className="compact" lazy={true} />}
                   {!isOnSessionPage && (
-                    <StorageIndicator userId={user.$id} className="compact" lazy={true} />
-                  )}
-
-                  {!isOnSessionPage && (
-                    <button
-                      className="btn btn-ghost"
-                      onClick={() => navigate('/exam-planner')}
-                      title="Exam Planner"
-                      style={{ color: location.pathname === '/exam-planner' ? 'var(--color-accent)' : undefined }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                      </svg>
-                      Exam Planner
+                    <button className="btn btn-ghost" onClick={() => navigate('/exam-planner')}
+                      style={{ color: is('/exam-planner') ? 'var(--color-accent)' : undefined }}>
+                      <IconExam /> Exam Planner
                     </button>
                   )}
-
                   {!isOnSessionPage && (
-                    <button
-                      className="btn btn-ghost"
-                      onClick={() => navigate('/language-learning')}
-                      title="Language Learning"
-                      style={{ color: location.pathname === '/language-learning' ? 'var(--color-accent)' : undefined }}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="2" y1="12" x2="22" y2="12"/>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                      </svg>
-                      Language Learning
+                    <button className="btn btn-ghost" onClick={() => navigate('/language-learning')}
+                      style={{ color: is('/language-learning') ? 'var(--color-accent)' : undefined }}>
+                      <IconLanguage /> Language Learning
                     </button>
                   )}
-
-                  <button
-                    className="btn btn-ghost btn-icon"
-                    onClick={() => setShowShortcuts(true)}
-                    title="Keyboard Shortcuts (Ctrl+K)"
-                    aria-label="Show keyboard shortcuts"
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/>
-                      <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/>
-                    </svg>
+                  <button className="btn btn-ghost btn-icon" onClick={() => setShowShortcuts(true)}
+                    title="Keyboard Shortcuts (Ctrl+K)" aria-label="Show keyboard shortcuts">
+                    <IconKeyboard />
                   </button>
-
                   <ThemeToggle />
                   {isSessionPage && <PomodoroTimer />}
                   <ProfileDropdown />
                 </div>
 
-                {/* ── Mobile: hamburger + dropdown ── */}
-                <div className="navbar-mobile-wrapper" ref={menuRef}>
-                  {/* Hamburger button — only visible on mobile */}
+                {/* Mobile hamburger */}
+                <div className="navbar-mobile-wrapper">
                   <button
-                    className={`navbar-hamburger${mobileMenuOpen ? ' open' : ''}`}
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className={`navbar-hamburger${drawerOpen ? ' open' : ''}`}
+                    onClick={() => setDrawerOpen(!drawerOpen)}
                     aria-label="Toggle navigation menu"
-                    aria-expanded={mobileMenuOpen}
+                    aria-expanded={drawerOpen}
                   >
                     <span className="hamburger-bar" />
                     <span className="hamburger-bar" />
                     <span className="hamburger-bar" />
                   </button>
-
-                  {/* Dropdown panel */}
-                  {mobileMenuOpen && (
-                    <div className="navbar-mobile-dropdown" role="menu">
-
-                      {/* Session: mode switcher */}
-                      {isOnSessionPage && activeSession && (
-                        <>
-                          <div className="mobile-menu-label">Switch Mode</div>
-                          <select
-                            className="mobile-menu-select"
-                            value={activeSession?.mode || 'mental_model'}
-                            onChange={(e) => { handleSwitchMode(e.target.value); setMobileMenuOpen(false); }}
-                            disabled={!activeSession}
-                          >
-                            <option value="mental_model">Mental Model</option>
-                            <option value="active_recall">Active Recall</option>
-                            <option value="focus_breakdown">Focus Breakdown</option>
-                            <option value="collaborative_scholar">Collaborative Scholar</option>
-                            <option value="creative_synthesis">Creative Synthesis</option>
-                          </select>
-                          <div className="mobile-menu-divider" />
-                        </>
-                      )}
-
-                      {/* Non-session: nav links */}
-                      {!isOnSessionPage && (
-                        <>
-                          <button
-                            className={`mobile-menu-item${location.pathname === '/exam-planner' ? ' active' : ''}`}
-                            onClick={navClose(() => navigate('/exam-planner'))}
-                            role="menuitem"
-                          >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <rect x="3" y="4" width="18" height="18" rx="2"/>
-                              <line x1="16" y1="2" x2="16" y2="6"/>
-                              <line x1="8" y1="2" x2="8" y2="6"/>
-                              <line x1="3" y1="10" x2="21" y2="10"/>
-                            </svg>
-                            Exam Planner
-                          </button>
-
-                          <button
-                            className={`mobile-menu-item${location.pathname === '/language-learning' ? ' active' : ''}`}
-                            onClick={navClose(() => navigate('/language-learning'))}
-                            role="menuitem"
-                          >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <circle cx="12" cy="12" r="10"/>
-                              <line x1="2" y1="12" x2="22" y2="12"/>
-                              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                            </svg>
-                            Language Learning
-                          </button>
-
-                          <button
-                            className={`mobile-menu-item${location.pathname === '/dashboard' ? ' active' : ''}`}
-                            onClick={navClose(() => navigate('/dashboard'))}
-                            role="menuitem"
-                          >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                              <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                            </svg>
-                            Dashboard
-                          </button>
-
-                          <div className="mobile-menu-divider" />
-
-                          <div className="mobile-menu-storage">
-                            <StorageIndicator userId={user.$id} className="compact" lazy={true} />
-                          </div>
-
-                          <div className="mobile-menu-divider" />
-                        </>
-                      )}
-
-                      {/* Keyboard shortcuts */}
-                      <button
-                        className="mobile-menu-item"
-                        onClick={navClose(() => setShowShortcuts(true))}
-                        role="menuitem"
-                      >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <rect x="2" y="4" width="20" height="16" rx="2" ry="2"/>
-                          <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/>
-                        </svg>
-                        Keyboard Shortcuts
-                        <span className="mobile-menu-shortcut">Ctrl+K</span>
-                      </button>
-
-                      {/* Theme toggle row */}
-                      <div className="mobile-menu-row">
-                        <span className="mobile-menu-row-label">Theme</span>
-                        <ThemeToggle />
-                      </div>
-
-                      {/* Pomodoro on session pages */}
-                      {isSessionPage && (
-                        <>
-                          <div className="mobile-menu-divider" />
-                          <div className="mobile-menu-row">
-                            <span className="mobile-menu-row-label">Pomodoro</span>
-                            <PomodoroTimer />
-                          </div>
-                        </>
-                      )}
-
-                      <div className="mobile-menu-divider" />
-
-                      {/* Profile */}
-                      <div className="mobile-menu-profile">
-                        <ProfileDropdown />
-                      </div>
-
-                    </div>
-                  )}
                 </div>
               </>
             )}
           </div>
         </div>
       </nav>
+
+      {/* Drawer + backdrop via portal */}
+      {drawer}
 
       <KeyboardShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
     </>
