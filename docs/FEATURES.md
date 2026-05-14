@@ -123,19 +123,41 @@
 ### PDF Resources
 
 **Upload & Processing**:
-- Drag-and-drop PDF upload
-- Automatic text extraction
+- Drag-and-drop PDF upload (up to 100MB)
+- Automatic text extraction with OCR
 - Page-by-page processing
 - Thumbnail generation
 - Metadata extraction
+- Support for scanned documents
 
-**Features**:
-- **Highlighting**: Color-coded text highlighting
-- **Notes**: Add notes to specific pages
-- **Bookmarks**: Mark important pages
-- **Search**: Full-text search within PDF
-- **Progress Tracking**: Remember reading position
-- **Annotations**: Add comments and annotations
+**Highlighting Features**:
+- **Touch Support**: Drag-to-highlight on mobile and tablet devices
+- **6 Color Options**: Yellow, green, blue, pink, orange, purple
+- **Rubber-Band Selection**: Visual feedback during highlight creation
+- **Persistent Storage**: Highlights saved to database
+- **Cross-Device Sync**: Access highlights on any device
+- **Highlight Overlay**: Visual markers on PDF pages
+- **Click to Navigate**: Tap highlights to jump to that page
+
+**Mobile Sidebar**:
+- **Bottom Sheet**: Slides up from bottom on mobile
+- **Backdrop**: Tap outside to close
+- **Highlight List**: View all highlights with page numbers
+- **Quick Navigation**: Tap any highlight to jump to that page
+- **Auto-Close**: Closes after navigation for seamless experience
+
+**Desktop Features**:
+- **Side Panel**: Always-visible sidebar with highlights and bookmarks
+- **No Glitches**: Smooth loading without layout shifts
+- **Instant Display**: All highlights loaded on PDF open
+- **Hover Preview**: See highlight text on hover
+
+**Notes & Bookmarks**:
+- Add notes to specific pages
+- Bookmark important pages with star icon
+- Search within PDF
+- Progress tracking (remembers reading position)
+- Annotations with timestamps
 
 **Sharing**:
 - Toggle public/private status

@@ -66,18 +66,27 @@ npm run preview
 - 📝 **Exam Prep** - Prepare for tests
 - 🎨 **Focus Breakdown** - Master specific topics
 
-### Resources
-- 📄 PDFs with highlighting and notes
-- 🎤 Audio lectures with transcription
-- 🖼️ Images and diagrams
-- 📊 Charts and visualizations
+### PDF Features
+- 📄 **Smart Upload** - Drag-and-drop up to 100MB
+- 🖍️ **Touch Highlighting** - Works on mobile and tablet
+- 🎨 **6 Colors** - Yellow, green, blue, pink, orange, purple
+- 📱 **Mobile Sidebar** - Bottom sheet with all highlights
+- 🔖 **Bookmarks** - Star important pages
+- 📝 **Notes** - Add annotations to pages
+- 🔍 **Search** - Find text across documents
+
+### Audio Features
+- 🎤 **Live Recording** - Record lectures in-browser
+- 📝 **Auto Transcription** - Convert speech to text
+- 🎧 **Playback Controls** - Speed, seek, bookmarks
+- 📊 **Smart Notes** - AI-generated structured notes
 
 ### Tools
-- ⏱️ Pomodoro Timer
-- 📇 Flashcards
-- 📝 Quizzes
-- 📊 Progress Analytics
-- 🤝 Resource Sharing
+- ⏱️ **Pomodoro Timer** - Time management
+- 📇 **Flashcards** - Spaced repetition
+- 📝 **Quizzes** - Self-assessment
+- 📊 **Progress Analytics** - Track improvement
+- 🤝 **Resource Sharing** - Help other students
 
 ## 🎯 First Steps
 

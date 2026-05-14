@@ -19,23 +19,29 @@ LastWeek is a comprehensive study platform designed to help students prepare for
 - **Exam Prep**: Focused exam preparation with scheduling
 - **Focus Breakdown**: Deep dive into specific topics
 
-### 📄 Resource Management
-- **PDF Support**: Upload, extract, highlight, and annotate
-- **Audio Lectures**: Record, transcribe, and process lectures
-- **Shared Library**: Discover and import resources from other students
-- **Session Organization**: Keep resources organized by topic
+### 📄 Advanced PDF Features
+- **Smart Upload**: Drag-and-drop PDFs up to 100MB
+- **Text Extraction**: Automatic OCR for scanned documents
+- **Touch Highlighting**: Drag-to-highlight on mobile and tablet
+- **Color-Coded Highlights**: 6 colors (yellow, green, blue, pink, orange, purple)
+- **Bookmarks & Notes**: Mark important pages and add annotations
+- **Bottom Sheet Sidebar**: Easy access to highlights on mobile
+- **Progress Tracking**: Remember reading position across sessions
+- **Full-Text Search**: Search within and across documents
 
 ### 🎙️ Audio Processing
 - **Live Recording**: Record lectures directly in browser
 - **Automatic Transcription**: Convert audio to text
 - **Smart Notes**: AI-generated structured notes
 - **Playback Controls**: Speed control, seeking, bookmarks
+- **Session Organization**: Link audio to study sessions
 
 ### 🧠 AI-Powered Features
 - **Contextual Chat**: Ask questions about your study material
 - **Quiz Generation**: Auto-generated quizzes from content
 - **Flashcard Creation**: Spaced repetition cards
 - **Content Analysis**: Automatic concept extraction
+- **Real-Time Streaming**: Watch answers appear instantly
 
 ### 📊 Study Tools
 - **Pomodoro Timer**: Time management

@@ -51,19 +51,23 @@ npm run dev
 ## 📚 Documentation Files
 
 ### Essential Reading
-1. **[QUICK_START.md](./QUICK_START.md)** - Setup and first steps
-2. **[AUDIO_SETUP_INSTRUCTIONS.md](./AUDIO_SETUP_INSTRUCTIONS.md)** - Audio feature setup
-3. **[docs/TUTORIAL.md](./docs/TUTORIAL.md)** - Complete user guide
+1. **[QUICK_START.md](./QUICK_START.md)** - Setup and first steps (5 min)
+2. **[PDF_FEATURES_GUIDE.md](./PDF_FEATURES_GUIDE.md)** - Complete PDF features guide (NEW!)
+3. **[FEATURE_UPDATES_2026.md](./FEATURE_UPDATES_2026.md)** - Latest features and improvements (NEW!)
+4. **[AUDIO_SETUP_INSTRUCTIONS.md](./AUDIO_SETUP_INSTRUCTIONS.md)** - Audio feature setup (2 min)
+5. **[docs/TUTORIAL.md](./docs/TUTORIAL.md)** - Complete user guide
 
 ### Reference
 - **[docs/FEATURES.md](./docs/FEATURES.md)** - All features explained
 - **[docs/QUICK_REFERENCE.md](./docs/QUICK_REFERENCE.md)** - Quick lookup
 - **[docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md)** - Problem solving
+- **[HIGHLIGHT_GLITCH_FIXES.md](./HIGHLIGHT_GLITCH_FIXES.md)** - Highlight system fixes (NEW!)
 
 ### Technical
 - **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - System design
 - **[docs/API.md](./docs/API.md)** - API reference
 - **[APPWRITE_SETUP_GUIDE.md](./APPWRITE_SETUP_GUIDE.md)** - Appwrite config
+- **[TECHNICAL_ARCHITECTURE.md](./TECHNICAL_ARCHITECTURE.md)** - Technical details
 
 ### Status & Info
 - **[CURRENT_STATUS.md](./CURRENT_STATUS.md)** - Project status
@@ -144,18 +148,28 @@ npm run dev
 - 📝 **Exam Prep** - Prepare for tests
 - 🎨 **Focus Breakdown** - Master specific topics
 
-### Resources
-- 📄 PDFs with highlighting and notes
-- 🎤 Audio lectures with transcription
-- 🖼️ Images and diagrams
-- 📊 Charts and visualizations
+### PDF Features (NEW!)
+- 📄 **Smart Upload** - Up to 100MB with OCR
+- 🖍️ **Touch Highlighting** - Drag-to-highlight on mobile/tablet
+- 🎨 **6 Colors** - Yellow, green, blue, pink, orange, purple
+- 📱 **Mobile Sidebar** - Bottom sheet with all highlights
+- 🔖 **Bookmarks** - Star important pages
+- 📝 **Notes** - Add page annotations
+- 🔍 **Search** - Find text across documents
+- ⚡ **Instant Display** - All highlights loaded immediately
+
+### Audio Features
+- 🎤 **Live Recording** - Record in-browser
+- 📝 **Auto Transcription** - Speech-to-text
+- 🎧 **Playback Controls** - Speed, seek, bookmarks
+- 📊 **Smart Notes** - AI-generated notes
 
 ### Tools
 - ⏱️ Pomodoro Timer
-- 📇 Flashcards
-- 📝 Quizzes
-- 📊 Progress Analytics
-- 🤝 Resource Sharing
+- 📇 Flashcards with spaced repetition
+- 📝 Auto-generated quizzes
+- 📊 Progress analytics
+- 🤝 Resource sharing
 
 ---
 
