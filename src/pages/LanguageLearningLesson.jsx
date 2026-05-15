@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { generateLesson, generateFlashcards, generateMCQ } from '../services/languageAI';
 import { getLanguageUser, saveLessonProgress, addUserPoints, getLessonByModuleAndStage, updateLesson, LANGUAGES } from '../appwrite/languageLearning';
 import SpeakingRecorder from '../components/SpeakingRecorder';
+import TTSHelpModal from '../components/TTSHelpModal';
 import { speak, isVoiceAvailable, extractSpeakableText } from '../utils/speech';
 import './LanguageLearningLesson.css';
 
@@ -53,6 +54,7 @@ const LanguageLearningLesson = () => {
   const [savedLessonId, setSavedLessonId] = useState(null);
   const [lastSection, setLastSection] = useState('introduction');
   const [voiceWarning, setVoiceWarning] = useState(''); // shown when no TTS voice available
+  const [showTTSHelp, setShowTTSHelp] = useState(false); // TTS help modal
 
   useEffect(() => {
     loadLesson();
@@ -775,23 +777,67 @@ const LanguageLearningLesson = () => {
       {/* Voice warning — shown when browser has no TTS voice for the target language */}
       {voiceWarning && (
         <div style={{
-          margin: '0 1rem 0.75rem',
-          padding: '0.65rem 1rem',
-          background: 'rgba(245,158,11,0.12)',
-          border: '1px solid rgba(245,158,11,0.4)',
-          borderRadius: '0.5rem',
-          fontSize: '0.82rem',
-          color: 'var(--color-text-muted)',
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '0.5rem',
+          position: 'fixed',
+          bottom: '1rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          maxWidth: '600px',
+          width: '90%',
+          padding: '1rem',
+          background: 'var(--color-warning-bg, #fef3c7)',
+          border: '1px solid var(--color-warning-border, #fbbf24)',
+          borderRadius: '0.75rem',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 1000,
         }}>
-          <span style={{ flexShrink: 0 }}>🔇</span>
-          <span>{voiceWarning}</span>
-          <button
-            onClick={() => setVoiceWarning('')}
-            style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', flexShrink: 0 }}
-          >✕</button>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
+            <span style={{ fontSize: '1.5rem', flexShrink: 0 }}>🔊</span>
+            <div style={{ flex: 1 }}>
+              <p style={{ margin: '0 0 0.5rem', fontWeight: '600', color: 'var(--color-warning-text, #92400e)' }}>
+                Text-to-Speech Notice
+              </p>
+              <p style={{ margin: '0 0 0.75rem', fontSize: '0.9rem', color: 'var(--color-warning-text, #92400e)' }}>
+                {voiceWarning}
+              </p>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                <p style={{ margin: '0', fontSize: '0.85rem', color: 'var(--color-text-muted)', flex: 1 }}>
+                  💡 <strong>This is not an app issue.</strong> The app uses your browser's built-in text-to-speech. 
+                  For best results, use Chrome or Edge which have the most language support.
+                </p>
+                <button
+                  onClick={() => setShowTTSHelp(true)}
+                  style={{
+                    background: 'var(--color-accent)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '0.5rem',
+                    padding: '0.5rem 1rem',
+                    cursor: 'pointer',
+                    fontSize: '0.85rem',
+                    fontWeight: '600',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Learn More
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => setVoiceWarning('')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                fontSize: '1.25rem',
+                cursor: 'pointer',
+                padding: '0.25rem',
+                color: 'var(--color-text-muted)',
+                flexShrink: 0,
+              }}
+              title="Dismiss"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       )}
 
@@ -799,6 +845,13 @@ const LanguageLearningLesson = () => {
       <div className="lesson-content">
         {renderSection()}
       </div>
+
+      {/* TTS Help Modal */}
+      <TTSHelpModal
+        isOpen={showTTSHelp}
+        onClose={() => setShowTTSHelp(false)}
+        targetLanguage={userData?.targetLanguage || 'en'}
+      />
     </div>
   );
 };

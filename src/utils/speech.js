@@ -19,17 +19,52 @@
 // BCP-47 candidates per language code, in priority order.
 // Multiple variants listed because browser voice libraries vary wildly.
 const LANG_BCP47_CANDIDATES = {
-  en: ['en-US', 'en-GB', 'en-AU', 'en'],
+  en: ['en-US', 'en-GB', 'en-AU', 'en-CA', 'en-IN', 'en'],
   zh: ['zh-CN', 'zh-TW', 'zh-HK', 'zh'],
-  es: ['es-ES', 'es-MX', 'es-US', 'es'],
+  es: ['es-ES', 'es-MX', 'es-US', 'es-AR', 'es'],
   de: ['de-DE', 'de-AT', 'de-CH', 'de'],
-  fr: ['fr-FR', 'fr-CA', 'fr-BE', 'fr'],
+  fr: ['fr-FR', 'fr-CA', 'fr-BE', 'fr-CH', 'fr'],
+  ja: ['ja-JP', 'ja'],
+  ko: ['ko-KR', 'ko'],
+  it: ['it-IT', 'it'],
+  pt: ['pt-BR', 'pt-PT', 'pt'],
+  ru: ['ru-RU', 'ru'],
+  ar: ['ar-SA', 'ar-EG', 'ar-AE', 'ar'],
+  hi: ['hi-IN', 'hi'],
+  bn: ['bn-BD', 'bn-IN', 'bn'],
+  nl: ['nl-NL', 'nl-BE', 'nl'],
+  pl: ['pl-PL', 'pl'],
+  tr: ['tr-TR', 'tr'],
+  vi: ['vi-VN', 'vi'],
+  th: ['th-TH', 'th'],
+  sv: ['sv-SE', 'sv'],
+  no: ['no-NO', 'nb-NO', 'no'],
+  da: ['da-DK', 'da'],
+  fi: ['fi-FI', 'fi'],
+  el: ['el-GR', 'el'],
+  he: ['he-IL', 'he'],
+  id: ['id-ID', 'id'],
+  ms: ['ms-MY', 'ms'],
+  uk: ['uk-UA', 'uk'],
+  cs: ['cs-CZ', 'cs'],
+  ro: ['ro-RO', 'ro'],
+  hu: ['hu-HU', 'hu'],
+  sk: ['sk-SK', 'sk'],
 };
 
 // Human-readable language names for the "no voice" warning
 const LANG_NAMES = {
   en: 'English', zh: 'Chinese', es: 'Spanish',
-  de: 'German',  fr: 'French',
+  de: 'German',  fr: 'French', ja: 'Japanese',
+  ko: 'Korean', it: 'Italian', pt: 'Portuguese',
+  ru: 'Russian', ar: 'Arabic', hi: 'Hindi',
+  bn: 'Bangla', nl: 'Dutch', pl: 'Polish',
+  tr: 'Turkish', vi: 'Vietnamese', th: 'Thai',
+  sv: 'Swedish', no: 'Norwegian', da: 'Danish',
+  fi: 'Finnish', el: 'Greek', he: 'Hebrew',
+  id: 'Indonesian', ms: 'Malay', uk: 'Ukrainian',
+  cs: 'Czech', ro: 'Romanian', hu: 'Hungarian',
+  sk: 'Slovak',
 };
 
 // Cache: langCode → best BCP-47 tag (or null if unsupported)
@@ -86,7 +121,23 @@ async function findVoice(langCode) {
     }
   }
 
-  // No voice found
+  // Fallback: try any voice that contains the language code
+  const fuzzyMatch = voices.find(v => v.lang.toLowerCase().includes(langCode.toLowerCase()));
+  if (fuzzyMatch) {
+    console.log(`[Speech] Using fuzzy match voice for ${langCode}:`, fuzzyMatch.name);
+    voiceCache[langCode] = { voice: fuzzyMatch, bcp47: fuzzyMatch.lang };
+    return voiceCache[langCode];
+  }
+
+  // Last resort: use default voice if available
+  const defaultVoice = voices.find(v => v.default) || voices[0];
+  if (defaultVoice) {
+    console.warn(`[Speech] No ${langCode} voice found, using default:`, defaultVoice.name);
+    voiceCache[langCode] = { voice: defaultVoice, bcp47: defaultVoice.lang, isDefault: true };
+    return voiceCache[langCode];
+  }
+
+  // No voice found at all
   voiceCache[langCode] = null;
   return null;
 }
@@ -149,7 +200,8 @@ export function extractSpeakableText(text, langCode) {
  */
 export async function speak(text, langCode, options = {}) {
   if (!window.speechSynthesis) {
-    options.onUnsupported?.('Speech synthesis not supported in this browser.');
+    const reason = 'Text-to-speech is not supported in this browser. Try using Chrome, Edge, Safari, or Firefox.';
+    options.onUnsupported?.(reason);
     return { ok: false, reason: 'no_api' };
   }
 
@@ -160,10 +212,16 @@ export async function speak(text, langCode, options = {}) {
 
   if (!voiceInfo) {
     const langName = LANG_NAMES[langCode] || langCode;
-    const reason = `No ${langName} voice installed in your browser. Install a ${langName} TTS voice in your OS settings to hear audio.`;
+    const reason = `No voices available in your browser. This is a browser/OS limitation, not an app issue. Try: 1) Using Chrome or Edge (best voice support), 2) Checking your OS language settings, or 3) Restarting your browser.`;
     console.warn(`[Speech] ${reason}`);
     options.onUnsupported?.(reason);
     return { ok: false, reason: 'no_voice', langName };
+  }
+
+  // Show warning if using default voice as fallback
+  if (voiceInfo.isDefault) {
+    const langName = LANG_NAMES[langCode] || langCode;
+    console.info(`[Speech] Using default voice for ${langName}. For better pronunciation, add ${langName} voices in your OS settings.`);
   }
 
   window.speechSynthesis.cancel();
@@ -175,7 +233,7 @@ export async function speak(text, langCode, options = {}) {
   utt.pitch = options.pitch ?? 1;
 
   window.speechSynthesis.speak(utt);
-  return { ok: true };
+  return { ok: true, usingDefaultVoice: voiceInfo.isDefault };
 }
 
 /**
@@ -192,7 +250,7 @@ export async function isVoiceAvailable(langCode) {
 
 /**
  * Get a list of all available voices grouped by language.
- * Useful for debugging.
+ * Useful for debugging and showing users what's available.
  */
 export function listAvailableVoices() {
   const voices = window.speechSynthesis?.getVoices() || [];
@@ -203,4 +261,37 @@ export function listAvailableVoices() {
     grouped[lang].push({ name: v.name, lang: v.lang, default: v.default });
   }
   return grouped;
+}
+
+/**
+ * Get a user-friendly list of available languages
+ * @returns {Array<{code: string, name: string, voiceCount: number}>}
+ */
+export function getAvailableLanguages() {
+  const voices = window.speechSynthesis?.getVoices() || [];
+  const langMap = {};
+  
+  voices.forEach(v => {
+    const code = v.lang.split('-')[0];
+    if (!langMap[code]) {
+      langMap[code] = {
+        code,
+        name: LANG_NAMES[code] || code,
+        voiceCount: 0,
+        voices: []
+      };
+    }
+    langMap[code].voiceCount++;
+    langMap[code].voices.push(v.name);
+  });
+  
+  return Object.values(langMap).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Check if Web Speech API is supported
+ * @returns {boolean}
+ */
+export function isSpeechSupported() {
+  return 'speechSynthesis' in window;
 }
