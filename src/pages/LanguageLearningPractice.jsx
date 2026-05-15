@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Flashcard from '../components/Flashcard';
 import SpeakingRecorder from '../components/SpeakingRecorder';
-import { speak } from '../utils/speech';
+import { speak } from '../utils/geminiSpeech';
 import { 
   getLanguageUser, 
   LANGUAGES, 
@@ -900,7 +900,6 @@ const LanguageLearningPractice = () => {
                       <span>{m}</span>
                       <button
                         onClick={() => {
-                          if (!window.speechSynthesis) return;
                           // Extract the quoted word/phrase from the mistake text if present
                           const quoted = m.match(/[''"'""]([^''"'""\n]+)[''"'""]/) || m.match(/[「」『』]([^「」『』\n]+)[「」『』]/);
                           const toSpeak = quoted ? quoted[1] : card.back;

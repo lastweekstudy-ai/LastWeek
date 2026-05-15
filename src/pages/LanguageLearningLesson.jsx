@@ -5,7 +5,7 @@ import { generateLesson, generateFlashcards, generateMCQ } from '../services/lan
 import { getLanguageUser, saveLessonProgress, addUserPoints, getLessonByModuleAndStage, updateLesson, LANGUAGES } from '../appwrite/languageLearning';
 import SpeakingRecorder from '../components/SpeakingRecorder';
 import TTSHelpModal from '../components/TTSHelpModal';
-import { speak, isVoiceAvailable, extractSpeakableText } from '../utils/speech';
+import { speak, isVoiceAvailable, extractSpeakableText } from '../utils/geminiSpeech';
 import './LanguageLearningLesson.css';
 
 // Modules that require voice/speaking practice
@@ -260,7 +260,6 @@ const LanguageLearningLesson = () => {
     const doSpeak = (text) => {
       speak(text, targetLangCode, {
         rate: 0.85,
-        onUnsupported: (reason) => setVoiceWarning(reason),
       });
     };
 
