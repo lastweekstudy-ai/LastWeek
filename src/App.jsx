@@ -30,6 +30,7 @@ import LanguageLearning from './pages/LanguageLearning';
 import LanguageLearningLesson from './pages/LanguageLearningLesson';
 import LanguageLearningLessons from './pages/LanguageLearningLessons';
 import LanguageLearningPractice from './pages/LanguageLearningPractice';
+import TTSDemo from './pages/TTSDemo';
 import './styles/global.css';
 import './styles/ModePage.css';
 import './styles/ErrorBoundary.css';
@@ -240,6 +241,17 @@ function App() {
                   <ProtectedRoute>
                     <Navbar />
                     <LanguageLearning />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* TTS Demo Route */}
+              <Route 
+                path="/tts-demo" 
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <TTSDemo />
                   </ProtectedRoute>
                 } 
               />

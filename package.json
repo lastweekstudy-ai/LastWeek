@@ -9,13 +9,15 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "setup:tts": "node scripts/setup-tts-collections.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
     "@monaco-editor/react": "^4.7.0",
     "appwrite": "^25.0.0",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.4.5",
     "katex": "^0.16.22",
     "mermaid": "^11.14.0",
     "react": "^19.2.5",

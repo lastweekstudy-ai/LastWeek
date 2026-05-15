@@ -81,7 +81,7 @@ export const cacheAudio = async (text, voice, base64Data) => {
     // Upload to Appwrite Storage
     await storage.createFile(BUCKET_ID, key, file);
     
-    // Save metadata
+    // Save metadata with proper permissions
     try {
       await databases.createDocument(
         DATABASE_ID,
@@ -93,7 +93,14 @@ export const cacheAudio = async (text, voice, base64Data) => {
           fileId: key,
           createdAt: new Date().toISOString(),
           charCount: text.length,
-        }
+        },
+        [
+          // Anyone can read cached audio (shared cache)
+          'read("any")',
+          // Only authenticated users can update/delete
+          'update("users")',
+          'delete("users")',
+        ]
       );
     } catch (metaError) {
       // Metadata save failed, but file is cached - not critical
@@ -126,7 +133,14 @@ export const logUsage = async (userId, charCount, voice) => {
         charCount,
         voice,
         timestamp: new Date().toISOString(),
-      }
+      },
+      [
+        // Only the user can read their own usage
+        `read("user:${userId}")`,
+        // Only the user can update/delete their own usage
+        `update("user:${userId}")`,
+        `delete("user:${userId}")`,
+      ]
     );
     console.log('[TTS Usage] Logged:', { userId, charCount, voice });
   } catch (error) {
