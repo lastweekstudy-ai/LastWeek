@@ -1,74 +1,17 @@
 /**
- * Gemini TTS Speech Wrapper
- * Replaces the old Web Speech API with Gemini TTS
+ * Web Speech API Wrapper
+ * Provides text-to-speech functionality using browser's built-in speech synthesis
+ * (Gemini TTS requires @google/genai SDK which doesn't work in browsers)
  */
 
-import { speak as geminiSpeak, VOICES } from '../tts';
-
-// Voice mapping: language code to Gemini voice
-const VOICE_MAP = {
-  'en': VOICES.KORE,      // English - friendly
-  'en-US': VOICES.KORE,
-  'en-GB': VOICES.CHARON,
-  'es': VOICES.AOEDE,     // Spanish - melodic
-  'es-ES': VOICES.AOEDE,
-  'es-MX': VOICES.AOEDE,
-  'fr': VOICES.AOEDE,     // French - melodic
-  'fr-FR': VOICES.AOEDE,
-  'de': VOICES.FENRIR,    // German - strong
-  'de-DE': VOICES.FENRIR,
-  'it': VOICES.AOEDE,     // Italian - melodic
-  'it-IT': VOICES.AOEDE,
-  'pt': VOICES.AOEDE,     // Portuguese - melodic
-  'pt-BR': VOICES.AOEDE,
-  'pt-PT': VOICES.AOEDE,
-  'ja': VOICES.KORE,      // Japanese - friendly
-  'ja-JP': VOICES.KORE,
-  'ko': VOICES.KORE,      // Korean - friendly
-  'ko-KR': VOICES.KORE,
-  'zh': VOICES.KORE,      // Chinese - friendly
-  'zh-CN': VOICES.KORE,
-  'zh-TW': VOICES.KORE,
-  'ar': VOICES.CHARON,    // Arabic - authoritative
-  'ar-SA': VOICES.CHARON,
-  'hi': VOICES.KORE,      // Hindi - friendly
-  'hi-IN': VOICES.KORE,
-  'ru': VOICES.FENRIR,    // Russian - strong
-  'ru-RU': VOICES.FENRIR,
-};
-
 /**
- * Get Gemini voice for a language code
- * @param {string} langCode - Language code (e.g., 'en-US', 'es')
- * @returns {string} - Gemini voice name
- */
-function getVoiceForLanguage(langCode) {
-  if (!langCode) return VOICES.KORE;
-  
-  // Try exact match first
-  if (VOICE_MAP[langCode]) {
-    return VOICE_MAP[langCode];
-  }
-  
-  // Try language without region (e.g., 'en' from 'en-US')
-  const baseLang = langCode.split('-')[0];
-  if (VOICE_MAP[baseLang]) {
-    return VOICE_MAP[baseLang];
-  }
-  
-  // Default to Kore (friendly voice)
-  return VOICES.KORE;
-}
-
-/**
- * Speak text using Gemini TTS
- * Compatible with old Web Speech API interface
+ * Speak text using Web Speech API
  * 
  * @param {string} text - Text to speak
  * @param {string} langCode - Language code (e.g., 'en-US', 'es')
  * @param {Object} options - Speech options
  * @param {number} options.rate - Speech rate (0.5-2, default: 1)
- * @param {number} options.pitch - Pitch (ignored, Gemini doesn't support)
+ * @param {number} options.pitch - Pitch (0-2, default: 1)
  * @param {number} options.volume - Volume (0-1, default: 1)
  * @param {Function} options.onUnsupported - Callback if TTS not available
  * @param {Function} options.onStart - Callback when speech starts
@@ -78,43 +21,53 @@ function getVoiceForLanguage(langCode) {
  */
 export async function speak(text, langCode = 'en', options = {}) {
   try {
-    // Get user ID from localStorage or use 'guest'
-    const userId = localStorage.getItem('userId') || 'guest';
-    
-    // Get appropriate voice for language
-    const voice = getVoiceForLanguage(langCode);
-    
-    // Determine speaking style based on rate
-    let style = '';
-    if (options.rate && options.rate < 0.8) {
-      style = 'slowly';
-    } else if (options.rate && options.rate > 1.2) {
-      style = 'quickly';
+    // Check if Web Speech API is available
+    if (!window.speechSynthesis) {
+      throw new Error('Web Speech API is not supported in this browser');
     }
     
-    // Call Gemini TTS
-    await geminiSpeak(text, {
-      voice,
-      style,
-      userId,
-      volume: options.volume || 1,
-      playbackRate: options.rate || 1,
-      onStart: options.onStart,
-      onEnd: options.onEnd,
-      onError: (error) => {
-        console.error('[Gemini Speech] Error:', error);
-        if (options.onError) {
-          options.onError(error);
-        }
-      },
-    });
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
     
-    return { ok: true, usingDefaultVoice: false };
+    // Wait a bit for cancel to complete
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    // Create utterance
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = langCode;
+    utterance.rate = options.rate || 1;
+    utterance.pitch = options.pitch || 1;
+    utterance.volume = options.volume || 1;
+    
+    // Try to find a voice for the language
+    const voices = window.speechSynthesis.getVoices();
+    const langPrefix = langCode.split('-')[0];
+    const matchingVoice = voices.find(v => v.lang.startsWith(langPrefix));
+    
+    if (matchingVoice) {
+      utterance.voice = matchingVoice;
+    }
+    
+    // Set up callbacks
+    if (options.onStart) {
+      utterance.onstart = options.onStart;
+    }
+    if (options.onEnd) {
+      utterance.onend = options.onEnd;
+    }
+    if (options.onError) {
+      utterance.onerror = options.onError;
+    }
+    
+    // Speak
+    window.speechSynthesis.speak(utterance);
+    
+    return { ok: true, usingDefaultVoice: !matchingVoice };
   } catch (error) {
-    console.error('[Gemini Speech] Failed:', error);
+    console.error('[Speech] Error:', error);
     
     if (options.onUnsupported) {
-      options.onUnsupported('Gemini TTS is not available. Please check your API key.');
+      options.onUnsupported('Text-to-speech is not available. Please check your browser settings.');
     }
     
     if (options.onError) {
@@ -127,14 +80,15 @@ export async function speak(text, langCode = 'en', options = {}) {
 
 /**
  * Check if voice is available for a language
- * Always returns true for Gemini TTS (supports all languages)
- * 
  * @param {string} langCode - Language code
- * @returns {boolean} - Always true
+ * @returns {boolean} - True if voice available
  */
 export function isVoiceAvailable(langCode) {
-  // Gemini TTS supports all languages
-  return true;
+  if (!window.speechSynthesis) return false;
+  
+  const voices = window.speechSynthesis.getVoices();
+  const langPrefix = langCode.split('-')[0];
+  return voices.some(v => v.lang.startsWith(langPrefix));
 }
 
 /**
@@ -170,64 +124,63 @@ export function extractSpeakableText(text) {
 
 /**
  * Check if speech is supported
- * Always returns true for Gemini TTS
- * 
- * @returns {boolean} - Always true
+ * @returns {boolean} - True if supported
  */
 export function isSpeechSupported() {
-  // Gemini TTS is always available (API-based)
-  return true;
+  return 'speechSynthesis' in window;
 }
 
 /**
  * Get available languages
- * Returns all supported languages
+ * Returns all supported languages from browser
  * 
  * @returns {Array} - Array of language objects
  */
 export function getAvailableLanguages() {
-  // Return all languages we have voice mappings for
-  const languages = [
-    { code: 'en-US', name: 'English (US)', voiceCount: 5 },
-    { code: 'en-GB', name: 'English (UK)', voiceCount: 5 },
-    { code: 'es-ES', name: 'Spanish (Spain)', voiceCount: 5 },
-    { code: 'es-MX', name: 'Spanish (Mexico)', voiceCount: 5 },
-    { code: 'fr-FR', name: 'French', voiceCount: 5 },
-    { code: 'de-DE', name: 'German', voiceCount: 5 },
-    { code: 'it-IT', name: 'Italian', voiceCount: 5 },
-    { code: 'pt-BR', name: 'Portuguese (Brazil)', voiceCount: 5 },
-    { code: 'pt-PT', name: 'Portuguese (Portugal)', voiceCount: 5 },
-    { code: 'ja-JP', name: 'Japanese', voiceCount: 5 },
-    { code: 'ko-KR', name: 'Korean', voiceCount: 5 },
-    { code: 'zh-CN', name: 'Chinese (Simplified)', voiceCount: 5 },
-    { code: 'zh-TW', name: 'Chinese (Traditional)', voiceCount: 5 },
-    { code: 'ar-SA', name: 'Arabic', voiceCount: 5 },
-    { code: 'hi-IN', name: 'Hindi', voiceCount: 5 },
-    { code: 'ru-RU', name: 'Russian', voiceCount: 5 },
-  ];
+  if (!window.speechSynthesis) return [];
   
-  return languages;
+  const voices = window.speechSynthesis.getVoices();
+  const languageMap = {};
+  
+  // Group voices by language
+  voices.forEach(voice => {
+    const langCode = voice.lang;
+    if (!languageMap[langCode]) {
+      languageMap[langCode] = {
+        code: langCode,
+        name: voice.name.split(' - ')[0] || langCode,
+        voiceCount: 0,
+      };
+    }
+    languageMap[langCode].voiceCount++;
+  });
+  
+  return Object.values(languageMap);
 }
 
 /**
  * List available voices
- * Returns Gemini voices
+ * Returns browser voices grouped by language
  * 
  * @returns {Object} - Grouped voices by language
  */
 export function listAvailableVoices() {
-  const voices = {
-    'English': [
-      { name: 'Kore', description: 'Warm, friendly' },
-      { name: 'Charon', description: 'Deep, authoritative' },
-      { name: 'Puck', description: 'Energetic, youthful' },
-      { name: 'Fenrir', description: 'Strong, confident' },
-      { name: 'Aoede', description: 'Melodic, expressive' },
-    ],
-  };
+  if (!window.speechSynthesis) return {};
   
-  return voices;
+  const voices = window.speechSynthesis.getVoices();
+  const grouped = {};
+  
+  voices.forEach(voice => {
+    const lang = voice.lang.split('-')[0];
+    if (!grouped[lang]) {
+      grouped[lang] = [];
+    }
+    grouped[lang].push({
+      name: voice.name,
+      lang: voice.lang,
+      default: voice.default,
+    });
+  });
+  
+  return grouped;
 }
-
-// Export voice constants for direct use
-export { VOICES } from '../tts';

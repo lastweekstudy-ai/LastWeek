@@ -10,7 +10,6 @@ const TTSHelpModal = ({ isOpen, onClose, targetLanguage }) => {
 
   const isSupported = isSpeechSupported();
   const availableLanguages = isSupported ? getAvailableLanguages() : [];
-  const hasTargetLanguage = true; // Gemini TTS supports all languages
 
   return (
     <div
@@ -63,45 +62,32 @@ const TTSHelpModal = ({ isOpen, onClose, targetLanguage }) => {
           </button>
         </div>
 
-        {/* Success Status */}
+        {/* Status */}
         <div style={{ padding: '1rem', background: '#d1fae5', borderRadius: '0.5rem', marginBottom: '1.5rem' }}>
           <p style={{ margin: 0, color: '#065f46', fontWeight: '600' }}>
-            ✅ Gemini TTS is active and ready!
+            ✅ Text-to-Speech is active!
           </p>
           <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: '#047857' }}>
-            High-quality AI voices support all languages with consistent pronunciation.
+            Using browser's built-in speech synthesis for pronunciation.
           </p>
         </div>
 
-        {/* What is Gemini TTS */}
+        {/* What is TTS */}
         <div style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>What is Gemini TTS?</h3>
+          <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>How It Works</h3>
           <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.6', color: 'var(--color-text-secondary)' }}>
-            This app uses <strong>Gemini Flash TTS</strong> - Google's advanced AI text-to-speech system. 
-            It provides high-quality, natural-sounding voices for all languages with consistent pronunciation. 
-            <strong>No browser setup or voice installation needed!</strong>
+            This app uses your browser's built-in text-to-speech feature for pronunciation. 
+            No installation needed, works on most modern browsers.
           </p>
-        </div>
-
-        {/* Features */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>Features</h3>
-          <ul style={{ margin: 0, paddingLeft: '1.5rem', lineHeight: '1.8' }}>
-            <li><strong>5 Professional Voices:</strong> Kore, Charon, Puck, Fenrir, Aoede</li>
-            <li><strong>All Languages Supported:</strong> Works with any language you're learning</li>
-            <li><strong>Consistent Quality:</strong> Same voice quality across all devices</li>
-            <li><strong>Smart Caching:</strong> Repeat phrases play instantly</li>
-            <li><strong>No Setup Required:</strong> Works immediately, no installation</li>
-          </ul>
         </div>
 
         {/* Available Languages */}
         <div style={{ marginBottom: '1.5rem' }}>
           <h3 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-            Supported Languages (All)
+            Supported Languages
           </h3>
-          <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
-            Gemini TTS supports all major languages including:
+          <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--color-text-muted)', marginBottom: '0.75rem' }}>
+            Your browser supports these languages:
           </p>
           <div style={{ 
             marginTop: '0.75rem',
@@ -114,28 +100,29 @@ const TTSHelpModal = ({ isOpen, onClose, targetLanguage }) => {
                 key={lang.code}
                 style={{
                   padding: '0.5rem',
-                  background: 'var(--color-bg-secondary)',
+                  background: lang.code === targetLanguage ? 'var(--color-accent)' : 'var(--color-bg-secondary)',
+                  color: lang.code === targetLanguage ? 'white' : 'inherit',
                   borderRadius: '0.5rem',
                   fontSize: '0.85rem',
                   textAlign: 'center',
                 }}
               >
-                {lang.name}
+                {lang.name} {lang.code === targetLanguage && '⭐'}
               </div>
             ))}
           </div>
-          <p style={{ margin: '0.75rem 0 0', fontSize: '0.85rem', color: 'var(--color-text-muted)', textAlign: 'center' }}>
-            ...and many more!
-          </p>
+          {availableLanguages.length > 12 && (
+            <p style={{ margin: '0.75rem 0 0', fontSize: '0.85rem', color: 'var(--color-text-muted)', textAlign: 'center' }}>
+              ...and {availableLanguages.length - 12} more!
+            </p>
+          )}
         </div>
 
-        {/* Remove old "How to Add Voices" section since it's not needed */}
-        
         {/* Important Note */}
         <div style={{ padding: '1rem', background: 'var(--color-bg-secondary)', borderRadius: '0.5rem', borderLeft: '4px solid var(--color-accent)' }}>
           <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: '1.6' }}>
-            <strong>💡 Powered by AI:</strong> This app uses Gemini Flash TTS for superior voice quality. 
-            Audio is cached for instant playback on repeated phrases. Requires internet connection.
+            <strong>💡 Note:</strong> This app uses your browser's text-to-speech. 
+            If you don't hear audio for your target language, you may need to install additional voices in your operating system settings.
           </p>
         </div>
 

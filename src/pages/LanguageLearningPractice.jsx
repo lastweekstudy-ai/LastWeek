@@ -588,7 +588,10 @@ const LanguageLearningPractice = () => {
     const targetLangCode = userData?.targetLanguage || 'en';
     const targetLangName = LANGUAGES.TARGET.find(l => l.code === targetLangCode)?.name || 'Target';
 
-    const doSpeak = (text) => speak(text, targetLangCode, { rate: 0.85 });
+    const doSpeak = (text) => {
+      console.log('[Practice] 🔊 Listen button clicked, text:', text.substring(0, 50));
+      speak(text, targetLangCode, { rate: 0.85 });
+    };
 
     return (
       <div className="practice-content listening-content">
@@ -842,7 +845,10 @@ const LanguageLearningPractice = () => {
     const targetLangName = LANGUAGES.TARGET.find(l => l.code === userData?.targetLanguage)?.name || 'Target';
     const targetLangCode = userData?.targetLanguage || 'en';
 
-    const speakWord = () => speak(card.back, targetLangCode, { rate: 0.85 });
+    const speakWord = () => {
+      console.log('[Practice] 🔊 Flashcard speak button clicked');
+      speak(card.back, targetLangCode, { rate: 0.85 });
+    };
 
     const result = answers[currentIndex];
 
@@ -903,6 +909,7 @@ const LanguageLearningPractice = () => {
                           // Extract the quoted word/phrase from the mistake text if present
                           const quoted = m.match(/[''"'""]([^''"'""\n]+)[''"'""]/) || m.match(/[「」『』]([^「」『』\n]+)[「」『』]/);
                           const toSpeak = quoted ? quoted[1] : card.back;
+                          console.log('[Practice] 🔊 Mistake correction speak button clicked');
                           speak(toSpeak, targetLangCode, { rate: 0.7 });
                         }}
                         title="Hear correct pronunciation"

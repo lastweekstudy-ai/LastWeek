@@ -1,11 +1,11 @@
 /**
- * Gemini TTS API Integration
- * Handles API calls to Google's Gemini Flash TTS model
+ * Gemini TTS API Integration via Appwrite Function
+ * Calls Appwrite serverless function to generate TTS audio
  */
 
-const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const MODEL = 'gemini-2.0-flash-exp';
-const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${GEMINI_KEY}`;
+const APPWRITE_ENDPOINT = import.meta.env.VITE_APPWRITE_ENDPOINT;
+const APPWRITE_PROJECT_ID = import.meta.env.VITE_APPWRITE_PROJECT_ID;
+const GEMINI_TTS_FUNCTION_ID = import.meta.env.VITE_GEMINI_TTS_FUNCTION_ID;
 
 /**
  * Available voices for Gemini TTS
@@ -32,143 +32,99 @@ export const STYLES = {
 };
 
 /**
- * Fetch TTS audio from Gemini API
+ * Fetch TTS audio from Gemini via Appwrite Function
  * @param {string} text - Text to convert to speech
  * @param {string} voice - Voice name (default: Kore)
  * @param {string} style - Speaking style/emotion (optional)
  * @returns {Promise<string>} Base64 encoded audio data
  */
 export const fetchTTSAudio = async (text, voice = VOICES.KORE, style = '') => {
-  if (!GEMINI_KEY) {
-    throw new Error('Gemini API key not configured');
+  console.log('[Gemini TTS] 🎤 Starting TTS request...');
+  console.log('[Gemini TTS] Text:', text.substring(0, 50) + (text.length > 50 ? '...' : ''));
+  console.log('[Gemini TTS] Voice:', voice);
+  console.log('[Gemini TTS] Style:', style || 'normal');
+
+  if (!GEMINI_TTS_FUNCTION_ID) {
+    console.error('[Gemini TTS] ❌ Function ID not configured!');
+    console.error('[Gemini TTS] Please set VITE_GEMINI_TTS_FUNCTION_ID in .env');
+    throw new Error('Gemini TTS function not configured. Please set VITE_GEMINI_TTS_FUNCTION_ID in .env');
   }
 
+  console.log('[Gemini TTS] ✅ Function ID:', GEMINI_TTS_FUNCTION_ID);
+
   if (!text || text.trim().length === 0) {
+    console.error('[Gemini TTS] ❌ Empty text provided');
     throw new Error('Text cannot be empty');
   }
 
-  // Construct prompt with optional style
-  const prompt = style 
-    ? `Say ${style}: ${text}` 
-    : `TTS the following: ${text}`;
-
   try {
-    const response = await fetch(API_URL, {
+    // Call Appwrite Function
+    const functionUrl = `${APPWRITE_ENDPOINT}/functions/${GEMINI_TTS_FUNCTION_ID}/executions`;
+    console.log('[Gemini TTS] 📡 Calling Appwrite Function:', functionUrl);
+    
+    const requestBody = JSON.stringify({
+      text,
+      voice,
+      style,
+    });
+    console.log('[Gemini TTS] 📤 Request body:', requestBody);
+
+    const response = await fetch(functionUrl, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
+        'X-Appwrite-Project': APPWRITE_PROJECT_ID,
       },
       body: JSON.stringify({
-        contents: [{ 
-          parts: [{ text: prompt }] 
-        }],
-        generationConfig: {
-          responseModalities: ['AUDIO'],
-          speechConfig: {
-            voiceConfig: {
-              prebuiltVoiceConfig: { 
-                voiceName: voice 
-              }
-            }
-          }
-        }
+        body: requestBody, // Appwrite expects the function body in a 'body' field
+        async: false, // Wait for execution to complete
       })
     });
 
+    console.log('[Gemini TTS] 📥 Response status:', response.status, response.statusText);
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('[Gemini TTS] ❌ Function error:', errorData);
       throw new Error(
-        `Gemini TTS API error: ${response.status} - ${errorData.error?.message || response.statusText}`
+        `Appwrite Function error: ${response.status} - ${errorData.message || response.statusText}`
       );
     }
 
     const data = await response.json();
+    console.log('[Gemini TTS] 📦 Raw response:', data);
     
-    // Extract base64 audio data
-    const audioData = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    // Parse the function response
+    const functionResponse = JSON.parse(data.responseBody || '{}');
+    console.log('[Gemini TTS] 🎯 Function response:', {
+      success: functionResponse.success,
+      voice: functionResponse.voice,
+      textLength: functionResponse.textLength,
+      hasAudio: !!functionResponse.audio
+    });
+    
+    if (!functionResponse.success) {
+      console.error('[Gemini TTS] ❌ Function returned error:', functionResponse.error);
+      throw new Error(functionResponse.error || 'TTS generation failed');
+    }
+
+    const audioData = functionResponse.audio;
     
     if (!audioData) {
+      console.error('[Gemini TTS] ❌ No audio data in response');
       throw new Error('No audio data in response');
     }
+
+    console.log('[Gemini TTS] ✅ Audio data received, length:', audioData.length, 'characters');
+    console.log('[Gemini TTS] 🎉 TTS generation successful!');
 
     return audioData; // base64 PCM audio
   } catch (error) {
-    console.error('[Gemini TTS] Error:', error);
-    throw error;
-  }
-};
-
-/**
- * Fetch multi-speaker conversation audio
- * @param {Array} speakers - Array of {name, voice} objects
- * @param {Array} script - Array of {speaker, line} objects
- * @returns {Promise<string>} Base64 encoded audio data
- */
-export const fetchMultiSpeakerAudio = async (speakers, script) => {
-  if (!GEMINI_KEY) {
-    throw new Error('Gemini API key not configured');
-  }
-
-  if (!speakers || speakers.length === 0) {
-    throw new Error('At least one speaker is required');
-  }
-
-  if (!script || script.length === 0) {
-    throw new Error('Script cannot be empty');
-  }
-
-  // Format script as conversation
-  const scriptText = script
-    .map(({ speaker, line }) => `${speaker}: ${line}`)
-    .join('\n');
-
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `TTS the following conversation:\n${scriptText}`
-          }]
-        }],
-        generationConfig: {
-          responseModalities: ['AUDIO'],
-          speechConfig: {
-            multiSpeakerVoiceConfig: {
-              speakerVoiceConfigs: speakers.map(({ name, voice }) => ({
-                speaker: name,
-                voiceConfig: {
-                  prebuiltVoiceConfig: { 
-                    voiceName: voice 
-                  }
-                }
-              }))
-            }
-          }
-        }
-      })
+    console.error('[Gemini TTS] ❌ Error:', error);
+    console.error('[Gemini TTS] Error details:', {
+      message: error.message,
+      stack: error.stack
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        `Gemini TTS API error: ${response.status} - ${errorData.error?.message || response.statusText}`
-      );
-    }
-
-    const data = await response.json();
-    const audioData = data.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-    
-    if (!audioData) {
-      throw new Error('No audio data in response');
-    }
-
-    return audioData;
-  } catch (error) {
-    console.error('[Gemini Multi-Speaker TTS] Error:', error);
     throw error;
   }
 };
@@ -178,5 +134,5 @@ export const fetchMultiSpeakerAudio = async (speakers, script) => {
  * @returns {boolean}
  */
 export const isGeminiTTSAvailable = () => {
-  return !!GEMINI_KEY;
+  return !!import.meta.env.VITE_GEMINI_TTS_FUNCTION_ID;
 };

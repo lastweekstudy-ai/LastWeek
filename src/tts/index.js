@@ -27,7 +27,7 @@ export {
 } from './ttsMulti';
 
 // Low-level utilities (for advanced use)
-export { fetchTTSAudio, fetchMultiSpeakerAudio } from './ttsApi';
+export { fetchTTSAudio } from './ttsApi';
 export { base64ToAudioUrl, base64ToBlob, base64ToFile, downloadAudio } from './audioConverter';
 export { 
   playAudio, 

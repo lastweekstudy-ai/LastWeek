@@ -1,0 +1,12 @@
+{
+  "name": "gemini-tts-function",
+  "version": "1.0.0",
+  "description": "Appwrite function for Gemini TTS",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"No tests specified\""
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

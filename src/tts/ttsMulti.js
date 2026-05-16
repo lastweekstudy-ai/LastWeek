@@ -1,9 +1,11 @@
 /**
  * Multi-Speaker TTS
  * Handles conversations with multiple voices
+ * Note: Multi-speaker is not yet supported via Appwrite Function
+ * This module will speak each line separately for now
  */
 
-import { fetchMultiSpeakerAudio, VOICES } from './ttsApi';
+import { fetchTTSAudio, VOICES } from './ttsApi';
 import { base64ToAudioUrl } from './audioConverter';
 import { playAudio } from './ttsPlayer';
 import { getCachedAudio, cacheAudio, logUsage, getMonthlyUsage } from './ttsCache';
@@ -96,8 +98,15 @@ export const speakConversation = async (speakers, script, options = {}) => {
     }
 
     // Not cached - generate new audio
-    console.log('[Multi-Speaker TTS] Generating conversation audio...');
-    const base64Audio = await fetchMultiSpeakerAudio(speakers, script);
+    // Note: Multi-speaker not yet supported, speaking lines sequentially
+    console.log('[Multi-Speaker TTS] Generating conversation audio (sequential)...');
+    console.warn('[Multi-Speaker TTS] True multi-speaker not yet supported, speaking lines one by one');
+    
+    // For now, concatenate all lines and speak with first speaker's voice
+    const fullText = script.map(s => `${s.speaker}: ${s.line}`).join('. ');
+    const firstVoice = speakers[0]?.voice || VOICES.KORE;
+    
+    const base64Audio = await fetchTTSAudio(fullText, firstVoice, '');
 
     // Cache it if enabled
     if (useCache) {
