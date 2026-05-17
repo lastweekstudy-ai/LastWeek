@@ -60,16 +60,15 @@ export const expandSearchTerms = (query) => {
 /**
  * Search public resources across all users
  * Returns PDFs + audio lectures matching the query
+ * If query is empty, returns all public resources (for the library browse page)
  * 
  * Uses client-side filtering since Appwrite Query.search() requires full-text indexes
  */
 export const searchPublicResources = async (query, limit = 30) => {
-  if (!query?.trim()) return [];
-
-  const terms = expandSearchTerms(query);
+  const isEmptyQuery = !query?.trim();
+  const terms = isEmptyQuery ? [] : expandSearchTerms(query);
   const results = [];
   const seen = new Set();
-  const queryLower = query.toLowerCase();
 
   // Helper function to check if text matches any term
   const matchesAnyTerm = (text) => {
@@ -100,26 +99,32 @@ export const searchPublicResources = async (query, limit = 30) => {
           break;
         }
 
-        // Filter client-side
         res.documents.forEach(doc => {
           if (!seen.has(doc.$id)) {
-            const fileName = doc.fileName || '';
-            const aiTitle = doc.aiTitle || '';
-            const extractedText = doc.extractedText || '';
-
-            // Check if any term matches fileName, aiTitle, or extracted text
-            if (
-              matchesAnyTerm(fileName) ||
-              matchesAnyTerm(aiTitle) ||
-              matchesAnyTerm(extractedText.substring(0, 500)) // Check first 500 chars
-            ) {
+            // If empty query, include all public resources
+            if (isEmptyQuery) {
               seen.add(doc.$id);
               results.push({ ...doc, resourceType: 'pdf' });
+            } else {
+              const fileName = doc.fileName || '';
+              const aiTitle = doc.aiTitle || '';
+              const extractedText = doc.extractedText || '';
+
+              if (
+                matchesAnyTerm(fileName) ||
+                matchesAnyTerm(aiTitle) ||
+                matchesAnyTerm(extractedText.substring(0, 500))
+              ) {
+                seen.add(doc.$id);
+                results.push({ ...doc, resourceType: 'pdf' });
+              }
             }
           }
         });
 
         offset += 100;
+        // Stop paginating if we have enough results
+        if (results.length >= limit) hasMore = false;
       } catch (err) {
         console.error('[searchPublicResources] PDF batch fetch failed:', err.message);
         hasMore = false;
@@ -140,7 +145,7 @@ export const searchPublicResources = async (query, limit = 30) => {
           DATABASE_ID,
           AUDIO_LECTURES_COLLECTION_ID,
           [
-            Query.equal('isPublic', true), // Only fetch public lectures
+            Query.equal('isPublic', true),
             Query.limit(100),
             Query.offset(offset),
           ]
@@ -151,26 +156,31 @@ export const searchPublicResources = async (query, limit = 30) => {
           break;
         }
 
-        // Filter client-side
         res.documents.forEach(doc => {
           if (!seen.has(doc.$id)) {
-            const title = doc.title || '';
-            const transcript = doc.transcript || '';
-            const lectureNotes = doc.lectureNotes || '';
-
-            // Check if any term matches title, transcript, or notes
-            if (
-              matchesAnyTerm(title) ||
-              matchesAnyTerm(transcript.substring(0, 500)) ||
-              matchesAnyTerm(lectureNotes.substring(0, 500))
-            ) {
+            // If empty query, include all public resources
+            if (isEmptyQuery) {
               seen.add(doc.$id);
               results.push({ ...doc, resourceType: 'audio' });
+            } else {
+              const title = doc.title || '';
+              const transcript = doc.transcript || '';
+              const lectureNotes = doc.lectureNotes || '';
+
+              if (
+                matchesAnyTerm(title) ||
+                matchesAnyTerm(transcript.substring(0, 500)) ||
+                matchesAnyTerm(lectureNotes.substring(0, 500))
+              ) {
+                seen.add(doc.$id);
+                results.push({ ...doc, resourceType: 'audio' });
+              }
             }
           }
         });
 
         offset += 100;
+        if (results.length >= limit) hasMore = false;
       } catch (err) {
         console.error('[searchPublicResources] Audio batch fetch failed:', err.message);
         hasMore = false;
@@ -222,6 +232,8 @@ export const makeResourcePrivate = async (resourceId) => {
 /**
  * Import a shared PDF resource into the current user's session.
  * Only copies the processed output — NOT highlights, notes, bookmarks, or chat.
+ * 
+ * NEW: Tracks the original resource ID and increments addCount
  */
 export const importSharedPDFResource = async (sourceResourceId, targetUserId, targetSessionId) => {
   try {
@@ -245,7 +257,7 @@ export const importSharedPDFResource = async (sourceResourceId, targetUserId, ta
       ID.unique(),
       {
         userId:        targetUserId,
-        sessionId:     targetSessionId,
+        sessionId:     targetSessionId || '',   // empty string if no session context
         fileName:      source.aiTitle || source.fileName,
         fileSize:      source.fileSize || 0,
         storageFileId: source.storageFileId || null, // same file in storage (or null if not available)
@@ -259,15 +271,34 @@ export const importSharedPDFResource = async (sourceResourceId, targetUserId, ta
         tags:          source.tags || 'application/pdf',
         aiTitle:       source.aiTitle || null,
         isPublic:      false, // imported copy is private by default
+        originalResourceId: sourceResourceId, // ✅ NEW: Track the original shared resource
+        isImported:    true,  // ✅ NEW: Mark as imported (can't be shared again)
         lastAccessedAt: new Date().toISOString(),
         createdAt:     new Date().toISOString(),
       }
     );
 
+    // ✅ NEW: Increment the addCount on the original resource
+    try {
+      const currentAddCount = source.addCount || 0;
+      await databases.updateDocument(
+        DATABASE_ID,
+        PDF_RESOURCES_COLLECTION_ID,
+        sourceResourceId,
+        { addCount: currentAddCount + 1 }
+      );
+      console.log('[importSharedPDFResource] Incremented addCount:', currentAddCount + 1);
+    } catch (countErr) {
+      console.warn('[importSharedPDFResource] Failed to increment addCount:', countErr.message);
+      // Don't fail the import if count update fails
+    }
+
     console.log('[importSharedPDFResource] Imported resource created:', {
       $id: imported.$id,
       fileName: imported.fileName,
       storageFileId: imported.storageFileId,
+      originalResourceId: sourceResourceId,
+      isImported: true,
     });
 
     return imported;
@@ -280,6 +311,8 @@ export const importSharedPDFResource = async (sourceResourceId, targetUserId, ta
 /**
  * Import a shared audio lecture into the current user's library.
  * Only copies title, lectureNotes, transcript, audioUrl — NOT highlights/notes.
+ * 
+ * NEW: Tracks the original lecture ID and increments addCount
  */
 export const importSharedAudioLecture = async (sourceLectureId, targetUserId, targetSessionId) => {
   try {
@@ -295,7 +328,7 @@ export const importSharedAudioLecture = async (sourceLectureId, targetUserId, ta
       ID.unique(),
       {
         userId:       targetUserId,
-        sessionId:    targetSessionId, // ← Scope to target session
+        sessionId:    targetSessionId || '',   // empty string if no session context
         title:        source.title,
         audioFileId:  source.audioFileId,  // same R2 file
         audioUrl:     source.audioUrl,     // ✅ share audio
@@ -303,10 +336,27 @@ export const importSharedAudioLecture = async (sourceLectureId, targetUserId, ta
         lectureNotes: source.lectureNotes, // ✅ share notes
         duration:     source.duration || 0,
         isPublic:     false, // imported copy is private by default
+        originalLectureId: sourceLectureId, // ✅ NEW: Track the original shared lecture
+        isImported:   true,  // ✅ NEW: Mark as imported (can't be shared again)
         createdAt:    new Date().toISOString(),
         updatedAt:    new Date().toISOString(),
       }
     );
+
+    // ✅ NEW: Increment the addCount on the original lecture
+    try {
+      const currentAddCount = source.addCount || 0;
+      await databases.updateDocument(
+        DATABASE_ID,
+        AUDIO_LECTURES_COLLECTION_ID,
+        sourceLectureId,
+        { addCount: currentAddCount + 1 }
+      );
+      console.log('[importSharedAudioLecture] Incremented addCount:', currentAddCount + 1);
+    } catch (countErr) {
+      console.warn('[importSharedAudioLecture] Failed to increment addCount:', countErr.message);
+      // Don't fail the import if count update fails
+    }
 
     return imported;
   } catch (err) {
@@ -378,5 +428,60 @@ export const generateAITitle = async (content, fileName) => {
     return title || fileName;
   } catch {
     return fileName;
+  }
+};
+
+/**
+ * ✅ NEW: Check if a resource can be shared
+ * Only original resources (not imported) can be shared
+ */
+export const canShareResource = (resource) => {
+  // If resource has isImported flag, it can't be shared
+  if (resource.isImported === true) return false;
+  
+  // If resource has originalResourceId, it's imported and can't be shared
+  if (resource.originalResourceId) return false;
+  
+  // Otherwise, it's an original resource and can be shared
+  return true;
+};
+
+/**
+ * ✅ NEW: Get the add count for a resource
+ * Returns the number of users who have added this resource
+ */
+export const getResourceAddCount = (resource) => {
+  return resource.addCount || 0;
+};
+
+/**
+ * ✅ NEW: Check if user has already added a shared resource
+ * Prevents duplicate imports.
+ * Gracefully returns false if the attribute doesn't exist yet in Appwrite.
+ */
+export const hasUserAddedResource = async (userId, originalResourceId, resourceType = 'pdf') => {
+  try {
+    const collectionId = resourceType === 'pdf'
+      ? PDF_RESOURCES_COLLECTION_ID
+      : AUDIO_LECTURES_COLLECTION_ID;
+
+    const fieldName = resourceType === 'pdf' ? 'originalResourceId' : 'originalLectureId';
+
+    const result = await databases.listDocuments(
+      DATABASE_ID,
+      collectionId,
+      [
+        Query.equal('userId', userId),
+        Query.equal(fieldName, originalResourceId),
+        Query.limit(1),
+      ]
+    );
+
+    return result.documents.length > 0;
+  } catch (err) {
+    // Attribute may not exist yet in Appwrite — treat as "not added"
+    // This is safe: worst case the user can add again, which is harmless
+    console.warn('[hasUserAddedResource] Query failed (attribute may not exist yet):', err.message);
+    return false;
   }
 };

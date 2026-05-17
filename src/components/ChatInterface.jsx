@@ -5,6 +5,7 @@ import FileAttachment from './FileAttachment';
 import QuickActions from './QuickActions';
 import EnhancedMessageFormatter from './EnhancedMessageFormatter';
 import MathKeyboard from './MathKeyboard';
+import FlashcardCreateModal from './FlashcardCreateModal';
 import useMobileViewport from '../hooks/useMobileViewport';
 import { 
   MentalModelIcon, 
@@ -41,6 +42,7 @@ const ChatInterface = ({
   const [showAttachments, setShowAttachments] = useState(false);
   const [showQuickActions, setShowQuickActions] = useState(true);
   const [showMathKeyboard, setShowMathKeyboard] = useState(false);
+  const [showFlashcardModal, setShowFlashcardModal] = useState(false);
   const [pendingFile, setPendingFile] = useState(null);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [isUploadingPDF, setIsUploadingPDF] = useState(false); // NEW: track PDF upload state
@@ -285,13 +287,14 @@ This ensures I have the complete PDF content with accurate page and line numbers
                 <>
                   <EnhancedMessageFormatter
                     content={messageText}
+                    messageId={message.$id}
                     onFlashcardRate={onFlashcardRate}
                     onMCQAnswer={onMCQAnswer}
                   />
                   {message.isStreaming && <span className="streaming-cursor" aria-hidden="true">▋</span>}
                 </>
               ) : (
-                <EnhancedMessageFormatter content={messageText} />
+                <EnhancedMessageFormatter content={messageText} messageId={message.$id} />
               )}
             </div>
             
@@ -516,6 +519,17 @@ This ensures I have the complete PDF content with accurate page and line numbers
             >
               ∑
             </button>
+
+            <button
+              type="button"
+              className="toolbar-btn"
+              onClick={() => setShowFlashcardModal(true)}
+              disabled={isLoading || isUploadingPDF}
+              title="Create flashcard"
+              style={{ fontSize: '1rem' }}
+            >
+              🃏
+            </button>
             
             {!showQuickActions && (
               <button
@@ -558,6 +572,18 @@ This ensures I have the complete PDF content with accurate page and line numbers
           </div>
         </form>
       </div>
+
+      {/* Flashcard Create Modal */}
+      <FlashcardCreateModal
+        isOpen={showFlashcardModal}
+        onClose={() => setShowFlashcardModal(false)}
+        userId={userId}
+        sessionId={sessionId}
+        subject={subject}
+        onSaved={() => {
+          // Could show a toast here in future
+        }}
+      />
     </div>
   );
 };

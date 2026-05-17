@@ -78,6 +78,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  color: var(--color-text-primary, #f1f5f9); /* prevent browser default black on buttons */
 }
 
 .practice-card:hover {
@@ -92,6 +93,7 @@
 .practice-name {
   font-weight: 600;
   font-size: 1.125rem;
+  color: var(--color-text-primary, #f1f5f9);
 }
 
 .practice-desc {

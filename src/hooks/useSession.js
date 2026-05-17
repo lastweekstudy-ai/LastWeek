@@ -5,6 +5,7 @@ import { useGemini } from './useGemini';
 import { getPromptForMode } from '../utils/promptBuilder';
 import { buildContextMessages } from '../utils/contextManager';
 import { saveSessionSummary } from '../appwrite/database';
+import { processAIResponse, addChartWarningIfNeeded } from '../utils/chartFixer';
 
 // File content markers that indicate processed file content
 const FILE_MARKERS = [
@@ -176,7 +177,10 @@ Instructions: Use the Gemini analysis above to provide a comprehensive, educatio
         messageToSave,
         async (onChunk) => {
           const response = await askStream(systemPrompt, contextualMessages, onChunk);
-          return response;
+          // Post-process response to fix malformed chart data
+          const fixedResponse = processAIResponse(response);
+          const finalResponse = addChartWarningIfNeeded(fixedResponse);
+          return finalResponse;
         },
         fileAttachment
       );

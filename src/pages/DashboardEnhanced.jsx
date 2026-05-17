@@ -238,20 +238,25 @@ const DashboardEnhanced = () => {
           <StudyStatistics sessions={sessions} flashcards={allFlashcards} dueFlashcards={dueFlashcards} totalMessages={totalMessages} />
         )}
 
-        {dueFlashcards.length > 0 && (
+        {(dueFlashcards.length > 0 || allFlashcards.length > 0) && (
           <div className="dashboard-section">
             <h2>
               <FlashcardIcon size={24} className="section-icon" />
-              Flashcards Due for Review
+              Flashcards
             </h2>
             <div className="flashcard-alerts">
               <div className="alert alert-info">
                 <ClockIcon size={20} />
                 <span>
-                  You have {dueFlashcards.length} flashcard{dueFlashcards.length !== 1 ? 's' : ''} ready for review.
+                  {dueFlashcards.length > 0
+                    ? `${dueFlashcards.length} flashcard${dueFlashcards.length !== 1 ? 's' : ''} ready for review.`
+                    : `${allFlashcards.length} flashcard${allFlashcards.length !== 1 ? 's' : ''} in your library.`}
                 </span>
-                <button className="btn btn-secondary btn-sm ml-sm">
-                  Review Now
+                <button
+                  className="btn btn-secondary btn-sm ml-sm"
+                  onClick={() => navigate('/flashcards')}
+                >
+                  {dueFlashcards.length > 0 ? 'Review Now' : 'Open Library'}
                 </button>
               </div>
             </div>

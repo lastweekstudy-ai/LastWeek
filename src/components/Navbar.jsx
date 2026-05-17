@@ -57,6 +57,12 @@ const IconStorage = () => (
   </svg>
 );
 
+const IconFlashcard = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+    <polyline points="17 2 12 7 7 2"/>
+  </svg>
+);
 /* ─── NavItem — consistent row template ────────────────────── */
 const NavItem = ({ icon, label, onClick, active, badge }) => (
   <button
@@ -192,6 +198,7 @@ const Navbar = ({ isSessionPage = false }) => {
               <NavItem icon={<IconDashboard />}  label="Dashboard"         active={is('/dashboard')}         onClick={() => go('/dashboard')} />
               <NavItem icon={<IconExam />}        label="Exam Planner"      active={is('/exam-planner')}      onClick={() => go('/exam-planner')} />
               <NavItem icon={<IconLanguage />}    label="Language Learning" active={is('/language-learning')} onClick={() => go('/language-learning')} />
+              <NavItem icon={<IconFlashcard />}   label="Flashcard Library" active={is('/flashcards')}        onClick={() => go('/flashcards')} />
             </section>
           )}
 
@@ -309,6 +316,12 @@ const Navbar = ({ isSessionPage = false }) => {
                     <button className="btn btn-ghost" onClick={() => navigate('/language-learning')}
                       style={{ color: is('/language-learning') ? 'var(--color-accent)' : undefined }}>
                       <IconLanguage /> Language Learning
+                    </button>
+                  )}
+                  {!isOnSessionPage && (
+                    <button className="btn btn-ghost" onClick={() => navigate('/flashcards')}
+                      style={{ color: is('/flashcards') ? 'var(--color-accent)' : undefined }}>
+                      <IconFlashcard /> Flashcards
                     </button>
                   )}
                   <button className="btn btn-ghost btn-icon" onClick={() => setShowShortcuts(true)}

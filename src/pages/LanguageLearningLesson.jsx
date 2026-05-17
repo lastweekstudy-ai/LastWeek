@@ -258,8 +258,17 @@ const LanguageLearningLesson = () => {
     const targetLangName = LANGUAGES.TARGET.find(l => l.code === targetLangCode)?.name || 'Target';
 
     const doSpeak = (text) => {
-      console.log('[Lesson] 🔊 Listen button clicked, text:', text.substring(0, 50));
-      speak(text, targetLangCode, {
+      console.log('[Lesson] 🔊 Listen button clicked, full text:', text.substring(0, 100));
+      
+      // Extract target language text from format: "English (target, romanization, [IPA]) [Translation]"
+      // We want the "target" part from inside the first parentheses
+      const match = text.match(/\(([^,]+)/); // Match first part inside parentheses before comma
+      const targetText = match ? match[1].trim() : text.split('(')[0].trim();
+      
+      console.log('[Lesson] 🔊 Extracted target text:', targetText);
+      console.log('[Lesson] 🔊 Language code:', targetLangCode);
+      
+      speak(targetText, targetLangCode, {
         rate: 0.85,
       });
     };
@@ -267,8 +276,6 @@ const LanguageLearningLesson = () => {
     // Voice mode: wrap examples with listen + record buttons
     const renderVoiceExample = (example, i) => {
       const text = typeof example === 'string' ? example : JSON.stringify(example);
-      // Extract target language portion (before any romanization/translation)
-      const targetText = text.split('(')[0].trim();
       return (
         <div key={i} className="example-card voice-example">
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}>
@@ -277,7 +284,7 @@ const LanguageLearningLesson = () => {
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', paddingLeft: '2rem' }}>
             <button
-              onClick={() => doSpeak(targetText)}
+              onClick={() => doSpeak(text)}
               style={{ background: 'var(--color-accent)', border: 'none', borderRadius: '1.5rem', padding: '0.35rem 0.85rem', color: 'white', cursor: 'pointer', fontSize: '0.85rem' }}
             >
               🔊 Listen

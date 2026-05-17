@@ -7,6 +7,7 @@ const MESSAGES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_MESSAGES_COLLECTION
 const FLASHCARDS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_FLASHCARDS_COLLECTION_ID;
 const PROFILES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_PROFILES_COLLECTION_ID;
 const ATTACHMENTS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_ATTACHMENTS_COLLECTION_ID;
+const FLASHCARD_COLLECTIONS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_FLASHCARD_COLLECTIONS_COLLECTION_ID;
 
 // Sessions CRUD
 export const createSession = async (userId, mode, subject, title) => {
@@ -90,6 +91,7 @@ export const getUserSessions = async (userId) => {
       SESSIONS_COLLECTION_ID,
       [
         Query.equal('userId', userId),
+        Query.notEqual('mode', 'exam_prep'), // exam sessions live at /exam-session, not /session
         Query.orderDesc('updatedAt')
       ]
     );
@@ -324,8 +326,9 @@ export const getSessionMessages = async (sessionId) => {
 };
 
 // Flashcards CRUD
-export const createFlashcard = async (userId, sessionId, front, back) => {
+export const createFlashcard = async (userId, sessionId, front, back, options = {}) => {
   try {
+    const { collectionId = null, source = 'ai', subject = null } = options;
     const flashcard = await databases.createDocument(
       DATABASE_ID,
       FLASHCARDS_COLLECTION_ID,
@@ -337,7 +340,10 @@ export const createFlashcard = async (userId, sessionId, front, back) => {
         back,
         confidence: 0,
         nextReviewAt: new Date().toISOString(),
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        ...(collectionId && { collectionId }),
+        ...(source && { source }),
+        ...(subject && { subject }),
       }
     );
     return flashcard;
@@ -490,5 +496,116 @@ export const getSessionAttachments = async (sessionId) => {
   } catch (error) {
     console.error('Failed to get session attachments:', error);
     return [];
+  }
+};
+
+// ─── Flashcard Collections CRUD ───────────────────────────────────────────────
+
+/**
+ * Get all flashcard collections for a user.
+ * Returns [] if the collection doesn't exist yet (graceful degradation).
+ */
+export const getUserFlashcardCollections = async (userId) => {
+  if (!FLASHCARD_COLLECTIONS_COLLECTION_ID) return [];
+  try {
+    const result = await databases.listDocuments(
+      DATABASE_ID,
+      FLASHCARD_COLLECTIONS_COLLECTION_ID,
+      [Query.equal('userId', userId), Query.orderAsc('name')]
+    );
+    return result.documents;
+  } catch (err) {
+    console.warn('[flashcardCollections] Could not load collections:', err.message);
+    return [];
+  }
+};
+
+/**
+ * Create a new flashcard collection.
+ */
+export const createFlashcardCollection = async (userId, name, color = '#a855f7', icon = '📚') => {
+  try {
+    return await databases.createDocument(
+      DATABASE_ID,
+      FLASHCARD_COLLECTIONS_COLLECTION_ID,
+      ID.unique(),
+      { userId, name, color, icon, createdAt: new Date().toISOString() }
+    );
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+/**
+ * Rename a flashcard collection.
+ */
+export const updateFlashcardCollection = async (collectionId, data) => {
+  try {
+    return await databases.updateDocument(
+      DATABASE_ID,
+      FLASHCARD_COLLECTIONS_COLLECTION_ID,
+      collectionId,
+      data
+    );
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+/**
+ * Delete a flashcard collection (does NOT delete the cards inside it).
+ */
+export const deleteFlashcardCollection = async (collectionId) => {
+  try {
+    await databases.deleteDocument(
+      DATABASE_ID,
+      FLASHCARD_COLLECTIONS_COLLECTION_ID,
+      collectionId
+    );
+    return { success: true };
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+/**
+ * Move a flashcard to a different collection.
+ */
+export const moveFlashcardToCollection = async (flashcardId, collectionId) => {
+  try {
+    return await databases.updateDocument(
+      DATABASE_ID,
+      FLASHCARDS_COLLECTION_ID,
+      flashcardId,
+      { collectionId: collectionId || null }
+    );
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+/**
+ * Get all flashcards in a specific collection.
+ */
+export const getFlashcardsByCollection = async (userId, collectionId) => {
+  try {
+    const queries = [Query.equal('userId', userId), Query.orderDesc('createdAt')];
+    if (collectionId) queries.push(Query.equal('collectionId', collectionId));
+    const result = await databases.listDocuments(DATABASE_ID, FLASHCARDS_COLLECTION_ID, queries);
+    return result.documents;
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
+
+/**
+ * Delete a single flashcard.
+ */
+export const deleteFlashcard = async (flashcardId) => {
+  try {
+    await databases.deleteDocument(DATABASE_ID, FLASHCARDS_COLLECTION_ID, flashcardId);
+    return { success: true };
+  } catch (err) {
+    throw new Error(err.message);
   }
 };

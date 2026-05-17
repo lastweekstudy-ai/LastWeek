@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { getSharedResources, toggleResourceSharing, downloadResource } from '../appwrite/database';
+import {
+  searchPublicResources,
+  hasUserAddedResource,
+  importSharedPDFResource,
+  importSharedAudioLecture,
+} from '../appwrite/resourceLibrary';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { 
-  SearchIcon, 
-  FilterIcon, 
+import {
+  SearchIcon,
   DownloadIcon,
   BookIcon,
   ClockIcon,
   UserIcon,
-  ShareIcon
+  CheckIcon,
 } from '../components/Icons';
 import '../styles/ResourceLibrary.css';
 
@@ -23,6 +27,8 @@ const ResourceLibrary = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedFileType, setSelectedFileType] = useState('all');
+  // Per-card import state: { [resourceId]: 'importing' | 'done' | 'error' }
+  const [importState, setImportState] = useState({});
 
   const categories = [
     'all',
@@ -40,9 +46,10 @@ const ResourceLibrary = () => {
   const fileTypes = [
     { value: 'all', label: 'All Types' },
     { value: 'pdf', label: 'PDF' },
+    { value: 'audio', label: 'Audio Lectures' },
     { value: 'image', label: 'Images' },
     { value: 'text', label: 'Text Files' },
-    { value: 'word', label: 'Word Docs' }
+    { value: 'word', label: 'Word Docs' },
   ];
 
   useEffect(() => {
@@ -60,9 +67,23 @@ const ResourceLibrary = () => {
   const loadResources = async () => {
     try {
       setLoading(true);
-      const sharedResources = await getSharedResources();
-      setResources(sharedResources);
-      setFilteredResources(sharedResources);
+      const sharedResources = await searchPublicResources('', 100);
+
+      // ✅ Check which resources the user has already added — run all checks in parallel
+      const resourcesWithStatus = await Promise.all(
+        sharedResources.map(async (resource) => {
+          const resourceType = resource.resourceType || 'pdf';
+          const alreadyAdded = await hasUserAddedResource(user.$id, resource.$id, resourceType);
+          return {
+            ...resource,
+            alreadyAdded,
+            addCount: resource.addCount || 0,
+          };
+        })
+      );
+
+      setResources(resourcesWithStatus);
+      setFilteredResources(resourcesWithStatus);
     } catch (error) {
       console.error('Failed to load resources:', error);
     } finally {
@@ -73,26 +94,29 @@ const ResourceLibrary = () => {
   const filterResources = () => {
     let filtered = [...resources];
 
-    // Search filter
+    // Search filter — check fileName, title (audio), aiTitle, description
     if (searchQuery) {
-      filtered = filtered.filter(resource =>
-        resource.fileName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        resource.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        resource.description?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(resource => {
+        const name = (resource.fileName || resource.title || '').toLowerCase();
+        const aiTitle = (resource.aiTitle || '').toLowerCase();
+        const subject = (resource.subject || '').toLowerCase();
+        const description = (resource.description || '').toLowerCase();
+        return name.includes(q) || aiTitle.includes(q) || subject.includes(q) || description.includes(q);
+      });
     }
 
     // Category filter
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(resource => 
-        resource.category === selectedCategory
-      );
+      filtered = filtered.filter(resource => resource.category === selectedCategory);
     }
 
-    // File type filter
+    // File type filter — audio resources have no fileType, handle gracefully
     if (selectedFileType !== 'all') {
       filtered = filtered.filter(resource => {
-        const type = resource.fileType.toLowerCase();
+        if (selectedFileType === 'audio') return resource.resourceType === 'audio';
+        if (resource.resourceType === 'audio') return false; // audio doesn't match pdf/image/text/word
+        const type = (resource.fileType || resource.tags || '').toLowerCase();
         if (selectedFileType === 'pdf') return type.includes('pdf');
         if (selectedFileType === 'image') return type.includes('image');
         if (selectedFileType === 'text') return type.includes('text');
@@ -105,23 +129,40 @@ const ResourceLibrary = () => {
   };
 
   const handleUseResource = async (resource) => {
+    if (importState[resource.$id]) return; // already importing or done
+
+    setImportState(prev => ({ ...prev, [resource.$id]: 'importing' }));
     try {
-      // Navigate to mode selector with resource data
-      navigate('/mode-select', { 
-        state: { 
-          sharedResource: resource 
-        } 
-      });
-    } catch (error) {
-      console.error('Failed to use resource:', error);
+      if (resource.resourceType === 'audio') {
+        // Audio: import without a session — user picks session later
+        // Pass null sessionId; the import function handles it gracefully
+        await importSharedAudioLecture(resource.$id, user.$id, null);
+      } else {
+        await importSharedPDFResource(resource.$id, user.$id, null);
+      }
+      setImportState(prev => ({ ...prev, [resource.$id]: 'done' }));
+      // Update the local resource list so the button flips to "Already Added"
+      setResources(prev =>
+        prev.map(r => r.$id === resource.$id ? { ...r, alreadyAdded: true, addCount: (r.addCount || 0) + 1 } : r)
+      );
+    } catch (err) {
+      console.error('Failed to import resource:', err);
+      setImportState(prev => ({ ...prev, [resource.$id]: 'error' }));
+      // Reset error state after 3 s so user can retry
+      setTimeout(() => setImportState(prev => {
+        const next = { ...prev };
+        delete next[resource.$id];
+        return next;
+      }), 3000);
     }
   };
 
-  const getFileIcon = (fileType) => {
-    if (fileType.includes('pdf')) return '📄';
-    if (fileType.includes('image')) return '🖼️';
-    if (fileType.includes('word') || fileType.includes('document')) return '📝';
-    if (fileType.includes('text')) return '📃';
+  const getFileIcon = (typeOrTags) => {
+    const t = (typeOrTags || '').toLowerCase();
+    if (t.includes('pdf')) return '📄';
+    if (t.includes('image')) return '🖼️';
+    if (t.includes('word') || t.includes('document')) return '📝';
+    if (t.includes('text')) return '📃';
     return '📎';
   };
 
@@ -237,15 +278,22 @@ const ResourceLibrary = () => {
             {filteredResources.map((resource) => (
               <div key={resource.$id} className="resource-card">
                 <div className="resource-header">
-                  <span className="file-icon-large">{getFileIcon(resource.fileType)}</span>
+                  <span className="file-icon-large">
+                    {resource.resourceType === 'audio' ? '🎙️' : getFileIcon(resource.tags || resource.fileType || '')}
+                  </span>
                   {resource.category && (
                     <span className="category-badge">{resource.category}</span>
+                  )}
+                  {resource.resourceType === 'audio' && (
+                    <span className="category-badge audio-badge">Audio</span>
                   )}
                 </div>
 
                 <div className="resource-body">
-                  <h3 className="resource-title">{resource.fileName}</h3>
-                  
+                  <h3 className="resource-title">
+                    {resource.aiTitle || resource.fileName || resource.title || 'Untitled'}
+                  </h3>
+
                   {resource.description && (
                     <p className="resource-description">{resource.description}</p>
                   )}
@@ -257,29 +305,60 @@ const ResourceLibrary = () => {
                     </div>
                     <div className="meta-item">
                       <ClockIcon size={14} />
-                      <span>{formatDate(resource.uploadedAt)}</span>
+                      <span>{formatDate(resource.uploadedAt || resource.createdAt)}</span>
                     </div>
-                    <div className="meta-item">
-                      <span className="file-size">{formatFileSize(resource.fileSize)}</span>
-                    </div>
+                    {resource.fileSize > 0 && (
+                      <div className="meta-item">
+                        <span className="file-size">{formatFileSize(resource.fileSize)}</span>
+                      </div>
+                    )}
+                    {resource.resourceType === 'audio' && resource.duration > 0 && (
+                      <div className="meta-item">
+                        <span>🕐 {Math.floor(resource.duration / 60)}:{String(resource.duration % 60).padStart(2, '0')} min</span>
+                      </div>
+                    )}
                   </div>
 
-                  {resource.usageCount > 0 && (
-                    <div className="usage-stats">
-                      <ShareIcon size={14} />
-                      <span>Used by {resource.usageCount} student{resource.usageCount !== 1 ? 's' : ''}</span>
+                  {/* ✅ Add count — how many students added this resource */}
+                  {resource.addCount > 0 && (
+                    <div className="usage-stats add-count">
+                      <DownloadIcon size={14} />
+                      <span>Added by {resource.addCount} student{resource.addCount !== 1 ? 's' : ''}</span>
                     </div>
                   )}
                 </div>
 
                 <div className="resource-footer">
-                  <button
-                    className="btn btn-primary btn-block"
-                    onClick={() => handleUseResource(resource)}
-                  >
-                    <DownloadIcon size={16} />
-                    Use This Resource
-                  </button>
+                  {resource.alreadyAdded || importState[resource.$id] === 'done' ? (
+                    <button className="btn btn-success btn-block" disabled>
+                      <CheckIcon size={16} />
+                      Added to Library
+                    </button>
+                  ) : importState[resource.$id] === 'error' ? (
+                    <button
+                      className="btn btn-error btn-block"
+                      onClick={() => handleUseResource(resource)}
+                    >
+                      Failed — Retry
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-primary btn-block"
+                      onClick={() => handleUseResource(resource)}
+                      disabled={importState[resource.$id] === 'importing'}
+                    >
+                      {importState[resource.$id] === 'importing' ? (
+                        <>
+                          <span className="btn-spinner" /> Adding…
+                        </>
+                      ) : (
+                        <>
+                          <DownloadIcon size={16} />
+                          Add to My Library
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

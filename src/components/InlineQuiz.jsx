@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import EnhancedMessageFormatter from './EnhancedMessageFormatter';
 import '../styles/InlineQuiz.css';
 
@@ -6,6 +6,7 @@ import '../styles/InlineQuiz.css';
  * InlineQuiz — renders a single MCQ question with clickable options.
  *
  * Props:
+ *   messageId       {string}   Unique ID of the parent message (for persistence)
  *   questionNumber  {number}   e.g. 1
  *   totalQuestions  {number}   e.g. 5
  *   questionText    {string}   markdown/math question body
@@ -16,6 +17,7 @@ import '../styles/InlineQuiz.css';
  *   sessionScore    {object}   { correct, total } accumulated so far
  */
 const InlineQuiz = ({
+  messageId,
   questionNumber,
   totalQuestions,
   questionText,
@@ -25,13 +27,47 @@ const InlineQuiz = ({
   isLast,
   sessionScore,
 }) => {
-  const [selected, setSelected]   = useState(null); // label string
-  const [revealed, setRevealed]   = useState(false);
+  // Build a stable localStorage key from messageId + question number
+  const storageKey = messageId
+    ? `mcq_answer_${messageId}_q${questionNumber}`
+    : null;
+
+  // Restore saved answer from localStorage on mount
+  const getSavedAnswer = () => {
+    if (!storageKey) return null;
+    try {
+      const saved = localStorage.getItem(storageKey);
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const savedAnswer = getSavedAnswer();
+
+  const [selected, setSelected] = useState(savedAnswer?.label ?? null);
+  const [revealed, setRevealed] = useState(savedAnswer !== null);
+
+  // If we restored a saved answer, fire onAnswer so parent score is correct
+  useEffect(() => {
+    if (savedAnswer !== null) {
+      onAnswer?.({ label: savedAnswer.label, isCorrect: savedAnswer.isCorrect, restored: true });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSelect = (opt) => {
     if (revealed) return;
     setSelected(opt.label);
     setRevealed(true);
+    // Persist to localStorage so answer survives page refresh
+    if (storageKey) {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify({ label: opt.label, isCorrect: opt.isCorrect }));
+      } catch {
+        // localStorage full or unavailable — non-fatal
+      }
+    }
     onAnswer?.({ label: opt.label, isCorrect: opt.isCorrect });
   };
 

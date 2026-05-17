@@ -1,227 +1,199 @@
-# LastWeek - Your Ultimate Study Companion
+# LastWeek — AI-Powered Study Platform
 
-> Transform the way you study. Master any subject with intelligent, adaptive learning modes.
-
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen.svg)](https://nodejs.org/)
-[![React](https://img.shields.io/badge/react-18.0+-blue.svg)](https://react.dev/)
-
-## 🎯 What is LastWeek?
-
-LastWeek is a comprehensive study platform designed to help students prepare for exams through multiple intelligent learning modes, advanced resource management, and AI-powered study assistance. Whether you're preparing for a final exam or mastering a new subject, LastWeek adapts to your learning style.
-
-## ✨ Key Features
-
-### 📚 Multiple Study Modes
-- **Mental Model**: Build deep conceptual understanding
-- **Active Recall**: Test memory and strengthen retrieval
-- **Spaced Repetition**: Optimize long-term retention
-- **Exam Prep**: Focused exam preparation with scheduling
-- **Focus Breakdown**: Deep dive into specific topics
-
-### 📄 Advanced PDF Features
-- **Smart Upload**: Drag-and-drop PDFs up to 100MB
-- **Text Extraction**: Automatic OCR for scanned documents
-- **Touch Highlighting**: Drag-to-highlight on mobile and tablet
-- **Color-Coded Highlights**: 6 colors (yellow, green, blue, pink, orange, purple)
-- **Bookmarks & Notes**: Mark important pages and add annotations
-- **Bottom Sheet Sidebar**: Easy access to highlights on mobile
-- **Progress Tracking**: Remember reading position across sessions
-- **Full-Text Search**: Search within and across documents
-
-### 🎙️ Audio Processing
-- **Live Recording**: Record lectures directly in browser
-- **Automatic Transcription**: Convert audio to text
-- **Smart Notes**: AI-generated structured notes
-- **Playback Controls**: Speed control, seeking, bookmarks
-- **Session Organization**: Link audio to study sessions
-
-### 🧠 AI-Powered Features
-- **Contextual Chat**: Ask questions about your study material
-- **Quiz Generation**: Auto-generated quizzes from content
-- **Flashcard Creation**: Spaced repetition cards
-- **Content Analysis**: Automatic concept extraction
-- **Real-Time Streaming**: Watch answers appear instantly
-
-### 📊 Study Tools
-- **Pomodoro Timer**: Time management
-- **Flashcards**: Spaced repetition system
-- **Quizzes**: Self-assessment
-- **Highlighting & Notes**: Annotation tools
-- **Progress Tracking**: Analytics and insights
-
-### 🤝 Collaboration
-- **Share Resources**: Help other students
-- **Import Resources**: Learn from shared materials
-- **Privacy Control**: Your notes stay private
-- **Community Learning**: Build together
-
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 16+
-- npm or yarn
-- Appwrite account
-- Cloudflare R2 account
-
-### Installation
-
-```bash
-# Clone repository
-git clone https://github.com/yourusername/lastweek.git
-cd lastweek
-
-# Install dependencies
-npm install
-
-# Create .env file (see docs/SETUP.md for details)
-cp .env.example .env
-
-# Start development server
-npm run dev
-```
-
-Visit `http://localhost:5173` in your browser.
-
-### Build for Production
-
-```bash
-npm run build
-npm run preview
-```
-
-## 📖 Documentation
-
-- **[docs/SETUP.md](./docs/SETUP.md)** - Installation and configuration guide
-- **[docs/TUTORIAL.md](./docs/TUTORIAL.md)** - Complete user tutorial
-- **[docs/FEATURES.md](./docs/FEATURES.md)** - Detailed feature documentation
-- **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** - Technical architecture
-- **[docs/API.md](./docs/API.md)** - API reference
-- **[docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md)** - Common issues and solutions
-
-## 🏗️ Architecture
-
-```
-Frontend (React + Vite)
-    ↓
-Appwrite Backend (Database + Auth)
-    ↓
-Cloudflare R2 (File Storage)
-    ↓
-External APIs (Transcription, Processing)
-```
-
-### Tech Stack
-- **Frontend**: React 18, Vite, CSS3
-- **Backend**: Appwrite
-- **Storage**: Cloudflare R2
-- **APIs**: Gemini, DeepSeek
-- **Deployment**: Vercel
-
-## 📁 Project Structure
-
-```
-lastweek/
-├── src/
-│   ├── appwrite/          # Backend integration
-│   ├── components/        # React components
-│   ├── context/           # State management
-│   ├── hooks/             # Custom hooks
-│   ├── pages/             # Page components
-│   ├── styles/            # CSS files
-│   └── utils/             # Utility functions
-├── docs/                  # Documentation
-├── public/                # Static assets
-└── package.json           # Dependencies
-```
-
-## 🎓 Study Modes Explained
-
-### Mental Model Mode
-Build deep understanding of concepts through structured breakdowns and visual diagrams.
-
-### Active Recall Mode
-Test your memory with auto-generated quizzes and flashcards.
-
-### Spaced Repetition Mode
-Optimize retention through intelligent scheduling of reviews.
-
-### Exam Prep Mode
-Focused preparation with AI-generated study schedules and mock exams.
-
-### Focus Breakdown Mode
-Deep dive into specific topics with comprehensive analysis.
-
-## 🔐 Security
-
-- Secure authentication via Appwrite
-- Session-based access control
-- Private resource scoping
-- Encrypted file storage
-- Environment variable protection
-
-## 📊 Performance
-
-- Code splitting for faster loads
-- Lazy loading of components
-- Optimized PDF processing
-- Efficient database queries
-- Browser caching
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🆘 Support
-
-- **Documentation**: [Read the docs](./docs/)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/lastweek/issues)
-- **Email**: support@lastweek.com
-
-## 🙏 Acknowledgments
-
-- Built with React and Vite
-- Powered by Appwrite
-- Storage by Cloudflare R2
-- Special thanks to all contributors
-
-## 📈 Roadmap
-
-- [ ] Mobile app (React Native)
-- [ ] Offline support
-- [ ] Collaborative study sessions
-- [ ] Video lecture support
-- [ ] Advanced analytics
-- [ ] LMS integration
-- [ ] Real-time collaboration
-
-## 💡 Tips for Success
-
-1. **Organize by Session**: Create separate sessions for different subjects
-2. **Use All Modes**: Combine modes for better learning
-3. **Regular Review**: Study consistently using spaced repetition
-4. **Share Resources**: Help others by sharing useful materials
-5. **Track Progress**: Monitor your improvement regularly
-
-## 🎯 Getting Started
-
-1. **[Setup](./docs/SETUP.md)** - Install and configure
-2. **[Tutorial](./docs/TUTORIAL.md)** - Learn how to use
-3. **[Features](./docs/FEATURES.md)** - Explore all features
-4. **[Architecture](./docs/ARCHITECTURE.md)** - Understand the system
+> Master any subject in one week. AI tutoring, spaced-repetition flashcards, exam planning, language learning, audio lectures, and PDF study tools — all in one app.
 
 ---
 
-**Ready to transform your studying?** Start with the [Setup Guide](./docs/SETUP.md) today!
+## Quick Start
 
-Made with ❤️ for students everywhere.
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # production build → dist/
+```
+
+Copy `.env.example` → `.env` and fill in your keys (see `INFRASTRUCTURE.md`).
+
+---
+
+## What It Does
+
+LastWeek is a React + Vite SPA backed by Appwrite (auth + database + storage), three AI providers (DeepSeek, Groq, Gemini), and Cloudflare R2 for audio storage.
+
+### 5 Study Modes
+| Mode | Description |
+|---|---|
+| Mental Model | Concept-first teaching with analogies and visual aids |
+| Active Recall | Socratic questioning and spaced-repetition quizzes |
+| Focus Breakdown | Pomodoro-integrated deep-dive sessions |
+| Collaborative Scholar | Debate and peer-review with historical personas |
+| Creative Synthesis | Mind maps, storytelling, and project-based learning |
+
+### Other Features
+- **Exam Planner** — create an exam plan, auto-schedule topics by deadline, track progress
+- **Language Learning** — structured roadmap, lessons, practice, SRS flashcards
+- **Audio Lectures** — upload audio → AI generates lecture notes + transcript + highlights
+- **PDF Study** — upload PDFs, highlight, annotate, ask AI questions about content
+- **Flashcard Library** — all AI-generated flashcards saved with spaced-repetition scheduling
+- **Inline MCQs** — multiple-choice questions in chat, answers persist across refreshes
+- **Charts & Diagrams** — bar/line/pie/area charts (Recharts), Mermaid diagrams, SVG figures
+- **TTS** — Gemini-powered text-to-speech via Appwrite function
+
+---
+
+## Project Structure
+
+```
+src/
+├── appwrite/          # Appwrite SDK wrappers (database, auth, storage, exam planner, etc.)
+├── components/        # Shared UI components
+│   ├── ChatInterface.jsx
+│   ├── EnhancedMessageFormatter.jsx   # Renders markdown, charts, flashcards, MCQs
+│   ├── ChartRenderer.jsx              # Recharts wrapper
+│   ├── InlineFlashcard.jsx
+│   ├── InlineQuiz.jsx
+│   ├── AudioLectureViewer.jsx
+│   ├── PDFLibrary.jsx
+│   └── ...
+├── context/           # React context (Auth, Session, Theme)
+├── hooks/             # Custom hooks (useSession, usePerformanceTracking, etc.)
+├── pages/
+│   ├── modes/         # MentalModel, ActiveRecall, FocusBreakdown, CollaborativeScholar, CreativeSynthesis
+│   ├── ExamSession.jsx
+│   ├── ExamPlanner.jsx
+│   ├── FlashcardLibrary.jsx
+│   ├── LanguageLearning.jsx
+│   └── ...
+├── services/          # AI provider clients (DeepSeek, Groq, Gemini)
+├── styles/            # CSS files per component/page
+├── tts/               # TTS service
+└── utils/
+    ├── promptBuilder.js    # All AI system prompts
+    ├── chartFixer.js       # Auto-fix malformed AI chart output
+    ├── spacedRepetition.js
+    └── ...
+appwrite-functions/
+├── geminiTTS/         # Appwrite function: Gemini TTS
+└── processYoutube/    # Appwrite function: YouTube transcript extraction
+```
+
+---
+
+## AI System
+
+### Providers (tried in order, first success wins)
+1. **DeepSeek** (`VITE_DEEPSEEK_API_KEY`) — primary, best instruction-following
+2. **Groq** (`VITE_GROQ_API_KEY`) — fast fallback, llama-3.3-70b
+3. **Gemini** (`VITE_GEMINI_API_KEY`) — final fallback
+
+### Chart Format
+AI must output charts as:
+```
+[CHART:bar:Title]
+[{"name":"Category","value":85},{"name":"Category2","value":92}]
+[/CHART]
+```
+Types: `bar`, `line`, `pie`, `area`. The `chartFixer.js` utility auto-detects and repairs malformed chart output from the AI.
+
+### Flashcard Format
+```
+**FRONT OF CARD**
+[question]
+
+---
+
+**BACK OF CARD**
+[answer]
+
+---
+
+**How confident were you?**
+1 - Not at all | 2 - Somewhat | 3 - Fully confident
+
+===
+
+**FRONT OF CARD**
+[next card...]
+```
+Cards separated by `===`. All cards in one response.
+
+### MCQ Format
+```
+[MCQ]
+Q: Question text
+A) Option A
+B) Option B
+C) Option C
+D) Option D
+CORRECT: B
+EXPLANATION: Optional explanation
+[/MCQ]
+```
+
+---
+
+## Appwrite Collections
+
+| Collection ID | Purpose |
+|---|---|
+| `sessions` | Study sessions |
+| `messages` | Chat messages |
+| `flashcards` | Saved flashcards with SRS data |
+| `flashcard_collections` | User-created flashcard folders |
+| `user_profiles` | User settings and stats |
+| `file_attachments` | PDF/file metadata |
+| `pdf_resources` | PDF study resources |
+| `pdf_notes` | PDF annotations |
+| `pdf_highlights` | PDF highlights |
+| `study_schedule` | Spaced repetition schedule |
+| `session_context` | Student assessment data |
+| `exam_plans` | Exam planner data |
+| `youtube_studies` | YouTube study sessions |
+| `audio_lectures` | Audio lecture metadata + notes |
+| `tts_cache_metadata` | TTS audio cache |
+| `tts_usage` | TTS usage tracking |
+| `lang_users` | Language learning user data |
+| `lang_roadmaps` | Language learning roadmaps |
+| `lang_lessons` | Language lessons |
+| `lang_lesson_attempts` | Lesson attempt history |
+| `lang_practice_sessions` | Practice session data |
+| `lang_flashcard_reviews` | Language flashcard SRS |
+| `lang_conversation_sessions` | Conversation practice |
+| `lang_user_points` | Gamification points |
+| `lang_srs_items` | SRS items for language |
+
+### Appwrite Functions
+| Function ID | Purpose |
+|---|---|
+| `6a085d370023ba29cc6c` | Gemini TTS — converts text to speech |
+| `6a00e9fc000241b4faca` | processYoutube — extracts YouTube transcripts |
+
+### Storage Bucket
+- `6995f259001c9af55009` — PDF and file uploads
+
+---
+
+## Spaced Repetition
+
+Confidence ratings map to next review intervals:
+- `1` (Hard) → 1 day
+- `2` (Okay) → 3 days  
+- `3` (Easy) → 7 days
+
+Implemented in `src/utils/spacedRepetition.js`. Flashcard library shows "Due Today" badge when `nextReviewAt <= now`.
+
+---
+
+## Environment Variables
+
+See `INFRASTRUCTURE.md` for the full list with descriptions and cost analysis.
+
+---
+
+## Known Behaviours
+
+- **Chart fixer** (`chartFixer.js`) only runs on responses shorter than 2000 chars that contain chart keywords. It will not touch lecture notes or long documents.
+- **MCQ answers** persist in `localStorage` keyed by `mcq_answer_{messageId}_q{n}`.
+- **Flashcards** are saved to Appwrite on every rating (Hard/Okay/Easy).
+- **Audio lectures** are stored in Cloudflare R2; metadata in Appwrite `audio_lectures` collection.
+- The `ExamSession` page uses `es-*` CSS classes (defined in `src/styles/ExamSession.css`).

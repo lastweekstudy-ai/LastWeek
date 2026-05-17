@@ -45,9 +45,9 @@ const Dashboard = () => {
     try {
       setLoading(true);
       
-      // Load sessions first (most important)
+      // Load sessions — exam_prep sessions are excluded (they live in /exam-session, not /session)
       const userSessions = await getUserSessions(user.$id);
-      setSessions(userSessions);
+      setSessions(userSessions.filter(s => s.mode !== 'exam_prep'));
       
       // Load flashcards in background (less critical)
       getDueFlashcards(user.$id)

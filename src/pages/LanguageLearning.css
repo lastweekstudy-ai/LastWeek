@@ -105,6 +105,7 @@
   border-radius: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  color: var(--color-text-primary, #f1f5f9); /* prevent browser default black on buttons */
 }
 
 .language-card:hover {
@@ -369,6 +370,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   text-align: left;
+  color: var(--color-text-primary, #f1f5f9); /* prevent browser default black on buttons */
 }
 
 .btn-learn:hover,

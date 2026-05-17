@@ -16,6 +16,8 @@ const MermaidDiagram = ({ chart, title }) => {
 
     const render = async () => {
       try {
+        console.log('[MermaidDiagram] Starting render, chart:', chart.substring(0, 100));
+        
         // Lazy-load mermaid so it doesn't bloat the initial bundle
         const mermaid = (await import('mermaid')).default;
 
@@ -42,16 +44,34 @@ const MermaidDiagram = ({ chart, title }) => {
         });
 
         const id = `mermaid-${Math.random().toString(36).slice(2)}`;
+        console.log('[MermaidDiagram] Rendering with ID:', id);
+        
         const { svg } = await mermaid.render(id, chart.trim());
+        
+        console.log('[MermaidDiagram] Render successful, SVG length:', svg.length);
 
         if (!cancelled && containerRef.current) {
           containerRef.current.innerHTML = svg;
           // Make SVG responsive
           const svgEl = containerRef.current.querySelector('svg');
           if (svgEl) {
+            console.log('[MermaidDiagram] SVG element found, original dimensions:', {
+              width: svgEl.getAttribute('width'),
+              height: svgEl.getAttribute('height'),
+              viewBox: svgEl.getAttribute('viewBox')
+            });
+            
             svgEl.style.maxWidth = '100%';
             svgEl.style.height = 'auto';
+            svgEl.style.display = 'block';
+            svgEl.style.margin = '0 auto';
+            
+            // Keep viewBox but remove fixed width
             svgEl.removeAttribute('width');
+            
+            console.log('[MermaidDiagram] SVG styled and ready');
+          } else {
+            console.warn('[MermaidDiagram] No SVG element found in rendered output');
           }
           setRendered(true);
           setError(null);

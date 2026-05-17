@@ -9,42 +9,66 @@ import {
 const COLORS = ['#a855f7', '#9333ea', '#7e22ce', '#6b21a8', '#581c87', '#3b0764'];
 
 const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
-  if (!data || data.length === 0) return null;
+  // Debug logging
+  console.log('[ChartRenderer] Received:', { type, data, title, dataType: typeof data });
+  
+  if (!data || data.length === 0) {
+    return (
+      <div style={{
+        margin: '1.5rem 0',
+        padding: '1.5rem',
+        backgroundColor: 'var(--color-bg-secondary)',
+        borderRadius: '8px',
+        border: '2px dashed var(--color-border)',
+        textAlign: 'center',
+        color: 'var(--color-text-muted)'
+      }}>
+        <p>⚠️ Chart Error: No data provided</p>
+        <p style={{ fontSize: '0.875rem', marginTop: '0.5rem' }}>
+          Expected format: {`[{"name":"Category","value":number}]`}
+        </p>
+        <p style={{ fontSize: '0.75rem', marginTop: '0.5rem', color: 'var(--color-text-muted)' }}>
+          Debug: data={JSON.stringify(data)}, type={type}
+        </p>
+      </div>
+    );
+  }
 
   const renderChart = () => {
     switch (type) {
       case 'bar':
       case 'column':
+        // DEBUG: Try without ResponsiveContainer first
         return (
-          <ResponsiveContainer width="100%" height={height}>
-            <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+          <div style={{ width: '100%', height: height, overflow: 'auto' }}>
+            <BarChart width={600} height={height} data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis 
                 dataKey={xKey || 'name'} 
-                stroke="var(--color-text-secondary)"
+                stroke="#6b7280"
                 style={{ fontSize: '0.875rem' }}
               />
               <YAxis 
-                stroke="var(--color-text-secondary)"
+                stroke="#6b7280"
                 style={{ fontSize: '0.875rem' }}
               />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: 'var(--color-bg-secondary)',
-                  border: '1px solid var(--color-border)',
+                  backgroundColor: '#f9fafb',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px',
-                  color: 'var(--color-text-primary)'
+                  color: '#1f2937'
                 }}
               />
               <Legend 
                 wrapperStyle={{ 
-                  color: 'var(--color-text-secondary)',
+                  color: '#6b7280',
                   fontSize: '0.875rem'
                 }}
               />
               <Bar dataKey={yKey || 'value'} fill="#a855f7" radius={[8, 8, 0, 0]} />
             </BarChart>
-          </ResponsiveContainer>
+          </div>
         );
 
       case 'stacked':
@@ -87,29 +111,29 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
 
       case 'line':
         return (
-          <ResponsiveContainer width="100%" height={height}>
-            <LineChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+          <div style={{ width: '100%', height: height, overflow: 'auto' }}>
+            <LineChart width={600} height={height} data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis 
                 dataKey={xKey || 'name'} 
-                stroke="var(--color-text-secondary)"
+                stroke="#6b7280"
                 style={{ fontSize: '0.875rem' }}
               />
               <YAxis 
-                stroke="var(--color-text-secondary)"
+                stroke="#6b7280"
                 style={{ fontSize: '0.875rem' }}
               />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: 'var(--color-bg-secondary)',
-                  border: '1px solid var(--color-border)',
+                  backgroundColor: '#f9fafb',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px',
-                  color: 'var(--color-text-primary)'
+                  color: '#1f2937'
                 }}
               />
               <Legend 
                 wrapperStyle={{ 
-                  color: 'var(--color-text-secondary)',
+                  color: '#6b7280',
                   fontSize: '0.875rem'
                 }}
               />
@@ -122,7 +146,7 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
                 activeDot={{ r: 7 }}
               />
             </LineChart>
-          </ResponsiveContainer>
+          </div>
         );
 
       case 'scatter':
@@ -162,8 +186,8 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
       case 'pie':
       case 'donut':
         return (
-          <ResponsiveContainer width="100%" height={height}>
-            <PieChart>
+          <div style={{ width: '100%', height: height, overflow: 'auto', display: 'flex', justifyContent: 'center' }}>
+            <PieChart width={Math.min(600, height)} height={height}>
               <Pie
                 data={data}
                 cx="50%"
@@ -181,41 +205,41 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
               </Pie>
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: 'var(--color-bg-secondary)',
-                  border: '1px solid var(--color-border)',
+                  backgroundColor: '#f9fafb',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px',
-                  color: 'var(--color-text-primary)'
+                  color: '#1f2937'
                 }}
               />
             </PieChart>
-          </ResponsiveContainer>
+          </div>
         );
 
       case 'area':
         return (
-          <ResponsiveContainer width="100%" height={height}>
-            <AreaChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+          <div style={{ width: '100%', height: height, overflow: 'auto' }}>
+            <AreaChart width={600} height={height} data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis 
                 dataKey={xKey || 'name'} 
-                stroke="var(--color-text-secondary)"
+                stroke="#6b7280"
                 style={{ fontSize: '0.875rem' }}
               />
               <YAxis 
-                stroke="var(--color-text-secondary)"
+                stroke="#6b7280"
                 style={{ fontSize: '0.875rem' }}
               />
               <Tooltip 
                 contentStyle={{ 
-                  backgroundColor: 'var(--color-bg-secondary)',
-                  border: '1px solid var(--color-border)',
+                  backgroundColor: '#f9fafb',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '8px',
-                  color: 'var(--color-text-primary)'
+                  color: '#1f2937'
                 }}
               />
               <Legend 
                 wrapperStyle={{ 
-                  color: 'var(--color-text-secondary)',
+                  color: '#6b7280',
                   fontSize: '0.875rem'
                 }}
               />
@@ -227,7 +251,7 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
                 fillOpacity={0.3}
               />
             </AreaChart>
-          </ResponsiveContainer>
+          </div>
         );
 
       case 'radar':
@@ -274,7 +298,8 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
       padding: '1.5rem',
       backgroundColor: 'var(--color-bg-secondary)',
       borderRadius: '8px',
-      boxShadow: 'var(--shadow-sm)'
+      boxShadow: 'var(--shadow-sm)',
+      minHeight: height + 80
     }}>
       {title && (
         <h4 style={{ 
@@ -286,7 +311,13 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
           {title}
         </h4>
       )}
-      {renderChart()}
+      <div style={{ 
+        width: '100%', 
+        height: height,
+        overflow: 'auto'
+      }}>
+        {renderChart()}
+      </div>
     </div>
   );
 };

@@ -31,6 +31,7 @@ import LanguageLearningLesson from './pages/LanguageLearningLesson';
 import LanguageLearningLessons from './pages/LanguageLearningLessons';
 import LanguageLearningPractice from './pages/LanguageLearningPractice';
 import TTSDemo from './pages/TTSDemo';
+import FlashcardLibrary from './pages/FlashcardLibrary';
 import './styles/global.css';
 import './styles/ModePage.css';
 import './styles/ErrorBoundary.css';
@@ -254,6 +255,17 @@ function App() {
                     <TTSDemo />
                   </ProtectedRoute>
                 } 
+              />
+
+              {/* Flashcard Library */}
+              <Route
+                path="/flashcards"
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <FlashcardLibrary />
+                  </ProtectedRoute>
+                }
               />
               
               {/* Session routes */}

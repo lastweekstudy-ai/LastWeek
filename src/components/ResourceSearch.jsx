@@ -1,19 +1,21 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { searchPublicResources, importSharedPDFResource, importSharedAudioLecture, expandSearchTerms } from '../appwrite/resourceLibrary';
+import { searchPublicResources, importSharedPDFResource, importSharedAudioLecture, expandSearchTerms, hasUserAddedResource } from '../appwrite/resourceLibrary';
 import '../styles/ResourceSearch.css';
 
 /**
  * ResourceSearch — search the shared resource library and import resources.
  * Shows PDFs, images, and audio lectures from all users.
  * Importing only copies the processed output (text, notes, transcript).
+ * Imported resources are marked — they cannot be re-shared by the importer.
  */
 const ResourceSearch = ({ userId, sessionId, onImported, onClose }) => {
-  const [query,      setQuery]      = useState('');
-  const [results,    setResults]    = useState([]);
-  const [loading,    setLoading]    = useState(false);
-  const [importing,  setImporting]  = useState(null); // resource $id being imported
-  const [imported,   setImported]   = useState(new Set());
-  const [error,      setError]      = useState('');
+  const [query,         setQuery]         = useState('');
+  const [results,       setResults]       = useState([]);
+  const [loading,       setLoading]       = useState(false);
+  const [importing,     setImporting]     = useState(null); // resource $id being imported
+  const [imported,      setImported]      = useState(new Set()); // added this session
+  const [alreadyAdded,  setAlreadyAdded]  = useState(new Set()); // added in a previous session
+  const [error,         setError]         = useState('');
   const [expandedTerms, setExpandedTerms] = useState([]);
   const debounceRef = useRef(null);
 
@@ -25,13 +27,24 @@ const ResourceSearch = ({ userId, sessionId, onImported, onClose }) => {
       const terms = expandSearchTerms(q);
       setExpandedTerms(terms.filter(t => t !== q.toLowerCase()));
       const res = await searchPublicResources(q, 30);
+
+      // Check which ones the user has already added in a previous session
+      const alreadyAddedIds = new Set();
+      await Promise.all(
+        res.map(async (resource) => {
+          const resourceType = resource.resourceType || 'pdf';
+          const added = await hasUserAddedResource(userId, resource.$id, resourceType);
+          if (added) alreadyAddedIds.add(resource.$id);
+        })
+      );
+      setAlreadyAdded(alreadyAddedIds);
       setResults(res);
     } catch (err) {
       setError('Search failed. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [userId]);
 
   const handleQueryChange = (e) => {
     const q = e.target.value;
@@ -42,10 +55,13 @@ const ResourceSearch = ({ userId, sessionId, onImported, onClose }) => {
 
   const handleImport = async (resource) => {
     if (!userId || !sessionId) return;
+    // Guard: don't import if already added
+    if (imported.has(resource.$id) || alreadyAdded.has(resource.$id)) return;
+
     setImporting(resource.$id);
     try {
       if (resource.resourceType === 'audio') {
-        await importSharedAudioLecture(resource.$id, userId, sessionId); // ← Pass sessionId
+        await importSharedAudioLecture(resource.$id, userId, sessionId);
       } else {
         await importSharedPDFResource(resource.$id, userId, sessionId);
       }
@@ -153,14 +169,21 @@ const ResourceSearch = ({ userId, sessionId, onImported, onClose }) => {
                   {resource.resourceType === 'audio' && resource.duration > 0 && (
                     <span>{Math.floor(resource.duration / 60)}:{String(resource.duration % 60).padStart(2, '0')} min</span>
                   )}
+                  {/* ✅ addCount badge */}
+                  {(resource.addCount || 0) > 0 && (
+                    <span className="rs-add-count">📥 {resource.addCount} added</span>
+                  )}
                 </div>
                 {getPreview(resource) && (
                   <p className="rs-result-preview">{getPreview(resource)}…</p>
                 )}
               </div>
               <div className="rs-result-action">
+                {/* ✅ Three states: added this session / added previously / not added */}
                 {imported.has(resource.$id) ? (
                   <span className="rs-imported-badge">✓ Added</span>
+                ) : alreadyAdded.has(resource.$id) ? (
+                  <span className="rs-imported-badge rs-already-badge" title="Already in your library">✓ In Library</span>
                 ) : (
                   <button
                     className="rs-import-btn"

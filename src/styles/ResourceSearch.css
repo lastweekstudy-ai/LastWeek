@@ -240,6 +240,22 @@
   white-space: nowrap;
 }
 
+/* "In Library" state — already added in a previous session */
+.rs-already-badge {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+}
+
+/* addCount badge in search results */
+.rs-add-count {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg-tertiary);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
 /* Footer */
 .rs-footer {
   padding: 0.75rem 1.5rem;

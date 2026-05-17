@@ -133,15 +133,31 @@ RULE 8 — ENCOURAGEMENT AND MOTIVATION:
 
 const FLASHCARD_AND_MCQ_RULES = `
 FLASHCARD FORMAT — USE EXACTLY THIS FORMAT EVERY TIME:
-When the student asks for flashcards, a flashcard, or "flash me", output ONE card at a time using EXACTLY this format:
+When the student asks for flashcards, output ALL requested cards in ONE response, separated by "===" on its own line.
+Each card uses EXACTLY this format:
 
 **FRONT OF CARD**
-[The question, concept, or term to recall]
+[A short question, term, or concept — max 15 words]
 
 ---
 
 **BACK OF CARD**
-[The complete answer, definition, or explanation]
+[The answer — 1 to 5 words maximum. A name, date, formula, definition keyword, or single fact. NEVER a full sentence explanation.]
+
+---
+
+**How confident were you?**
+1 - Not at all | 2 - Somewhat | 3 - Fully confident
+
+===
+
+**FRONT OF CARD**
+[Next card front]
+
+---
+
+**BACK OF CARD**
+[Next card back — 1 to 5 words]
 
 ---
 
@@ -151,10 +167,21 @@ When the student asks for flashcards, a flashcard, or "flash me", output ONE car
 FLASHCARD RULES:
 - ALWAYS use exactly "**FRONT OF CARD**" and "**BACK OF CARD**" as headers — no variations
 - ALWAYS include the "---" separators on their own lines
-- ALWAYS include the confidence rating line at the end
-- Output ONE flashcard per response — wait for the student's confidence rating before the next
+- ALWAYS include the confidence rating line at the end of EACH card
+- ALWAYS separate multiple cards with "===" on its own line
+- Output ALL requested cards in ONE response — do NOT wait between cards
+- If the student asks for 3 cards, output all 3 in one response separated by "==="
 - Do NOT use any other flashcard format (no "Q:/A:", no "Question:/Answer:", no tables)
-- Do NOT add extra text before or after the card format
+- Do NOT add extra text before or after the cards
+
+FLASHCARD CONTENT RULES — CRITICAL:
+- The BACK OF CARD must be SHORT: 1–5 words only. A keyword, name, date, symbol, or brief phrase.
+- Good back examples: "Isaac Newton", "1687", "F = ma", "mitochondria", "oxidation", "Paris"
+- Bad back examples: "Isaac Newton was an English mathematician who..." (too long — never do this)
+- The FRONT OF CARD is the question or prompt: "Who discovered gravity?", "Formula for force?", "Capital of France?"
+- Flashcards are for MEMORISATION, not explanation. If something needs explaining, it is NOT a flashcard.
+- Never put bullet points, numbered lists, paragraphs, or markdown formatting in the back of a card.
+- If the answer genuinely requires more than 5 words, split it into multiple cards instead.
 
 MCQ FORMAT — USE EXACTLY THIS FORMAT EVERY TIME:
 When the student asks for MCQs, multiple choice questions, "quiz me with options", or "quiz me", output questions using EXACTLY this format:
@@ -400,12 +427,39 @@ EXAMPLES OF CORRECT MATH FORMATTING:
 
 // Visual format examples to include in all prompts
 const VISUAL_EXAMPLES = `
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  CRITICAL: CHART FORMAT ENFORCEMENT ⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+When creating charts, you MUST use this EXACT format with square brackets:
+
+[CHART:bar:Title]
+[{"name":"Category1","value":85},{"name":"Category2","value":92}]
+[/CHART]
+
+❌ WRONG - Plain text or tables:
+Category1: 85
+Category2: 92
+
+❌ WRONG - Missing brackets:
+CHART:bar:Title
+{"name":"Category1","value":85}
+
+✅ CORRECT - With [CHART:...] wrapper:
+[CHART:bar:Student Grades]
+[{"name":"Math","value":85},{"name":"Science","value":92}]
+[/CHART]
+
+The [CHART:...] wrapper is MANDATORY. Without it, the chart will NOT render.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 CRITICAL VISUAL GENERATION RULES:
 1. NEVER say "I cannot create visuals" or "I can only create text-based charts"
 2. JUST CREATE THE VISUAL - No explanations about limitations
 3. You can create BOTH ASCII art AND interactive Recharts
 4. Use ASCII art for simple diagrams, Recharts for data visualization
 5. Create them AUTOMATICALLY when explaining data, comparisons, or processes
+6. ALWAYS wrap chart data in [CHART:type:title]...[/CHART] tags
 
 CHOOSING THE RIGHT VISUALIZATION - CRITICAL GUIDE:
 
@@ -511,6 +565,27 @@ Velocity (m/s)
  0 ├─────●
    Use LINE CHART instead!
 
+✗ WRONG - Plain text without [CHART:...] wrapper:
+Importance of Circle Types
+Architectural: 95
+Mechanical: 90
+   This will NOT render as a chart!
+
+✗ WRONG - Incomplete format:
+[CHART:bar:Title]
+Architectural: 95, Mechanical: 90
+   Missing JSON array format!
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FINAL REMINDER: When user asks for a chart/graph, you MUST output REAL DATA like this:
+[CHART:bar:Student Grades]
+[{"name":"Math","value":85},{"name":"Science","value":92},{"name":"English","value":78}]
+[/CHART]
+
+NEVER output placeholder text like [JSON_ARRAY] or [JSON] — always use REAL numbers.
+Do NOT output plain text. Do NOT output tables. Use the [CHART:...] format with REAL data.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ✗ WRONG - Using PIE for comparisons:
 Don't use pie chart to compare deaths by country
 Use BAR CHART instead!
@@ -579,9 +654,13 @@ VISUAL LEARNING AIDS - CRITICAL REQUIREMENT:
 MANDATORY RECHARTS USAGE:
 When you have numerical data (deaths, population, velocity, temperature, GDP, etc.):
 1. Identify the data points
-2. Format as JSON: [{"name": "label", "value": number}, ...]
-3. Wrap in chart markers: [CHART:type:title]...data...[/CHART]
+2. Format as JSON array: [{"name": "label", "value": number}, ...]
+3. Wrap in chart markers with REAL data — example:
+   [CHART:bar:Student Grades]
+   [{"name":"Math","value":85},{"name":"Science","value":92}]
+   [/CHART]
 4. Choose chart type: bar (comparisons), line (trends), pie (proportions), area (cumulative)
+5. NEVER use placeholder text — always put REAL numbers in the JSON
 
 ${VISUAL_EXAMPLES}
 

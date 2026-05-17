@@ -70,6 +70,22 @@
   color: var(--color-text-primary);
   font-size: 0.9375rem;
   line-height: 1.6;
+  /* Hard cap — prevents long AI answers from breaking the card layout */
+  max-height: 160px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Scrollbar inside card body — subtle */
+.inline-flashcard-body::-webkit-scrollbar {
+  width: 4px;
+}
+.inline-flashcard-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.inline-flashcard-body::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
 }
 
 /* Let markdown content inside cards render properly */

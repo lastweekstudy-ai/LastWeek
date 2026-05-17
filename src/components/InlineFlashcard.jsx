@@ -8,32 +8,34 @@ import '../styles/Flashcard.css';
  * Props:
  *   front    {string}   Markdown/math content for the front face
  *   back     {string}   Markdown/math content for the back face
- *   onRate   {function} Called with 1 | 2 | 3 when user rates confidence
+ *   onRate   {function} Called with (score: 1|2|3, front: string, back: string)
+ *   saved    {bool}     If true, shows "Saved ✓" badge (card already in library)
  */
-const InlineFlashcard = ({ front, back, onRate }) => {
+const InlineFlashcard = ({ front, back, onRate, saved = false }) => {
   const [flipped, setFlipped] = useState(false);
   const [rated, setRated]     = useState(false);
   const frontRef = useRef(null);
   const backRef  = useRef(null);
   const [sceneHeight, setSceneHeight] = useState('auto');
 
-  // After render, set the scene height to the taller of the two faces
-  // so the absolutely-positioned back face doesn't collapse the container.
+  // After render, set the scene height to the taller of the two faces,
+  // capped at 280px so long AI answers can't blow out the card.
   useEffect(() => {
     const measure = () => {
       const fh = frontRef.current?.scrollHeight || 0;
       const bh = backRef.current?.scrollHeight  || 0;
-      setSceneHeight(Math.max(fh, bh, 120) + 'px');
+      const natural = Math.max(fh, bh, 120);
+      setSceneHeight(Math.min(natural, 280) + 'px');
     };
     measure();
-    // Re-measure if fonts / KaTeX load late
     const t = setTimeout(measure, 400);
     return () => clearTimeout(t);
   }, [front, back]);
 
   const handleRate = (score) => {
     setRated(true);
-    onRate?.(score);
+    // Pass front and back content so the parent can save the card with correct content
+    onRate?.(score, front, back);
   };
 
   return (
@@ -90,7 +92,7 @@ const InlineFlashcard = ({ front, back, onRate }) => {
         {rated && (
           <div className="inline-flashcard-confidence">
             <p style={{ color: 'var(--color-success, #10b981)', fontWeight: 600 }}>
-              ✓ Response recorded
+              ✓ Saved to your flashcard library
             </p>
           </div>
         )}

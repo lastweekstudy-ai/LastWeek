@@ -107,19 +107,23 @@ const PDFLibrary = ({
       const audioResources = audioLectures.map(lecture => ({
         $id: lecture.$id,
         fileName: lecture.title,
-        fileSize: 0, // Audio size not tracked in display
+        fileSize: 0,
         tags: 'audio/lecture',
         pageCount: 0,
         currentPage: 0,
         lastAccessedAt: lecture.updatedAt || lecture.createdAt,
         resourceType: 'audio',
-        isPublic: lecture.isPublic || false, // ← Include isPublic for share button
+        isPublic: lecture.isPublic || false,
+        // ✅ Pass through import-tracking fields so share button is hidden for imported resources
+        isImported: lecture.isImported || false,
+        originalLectureId: lecture.originalLectureId || null,
+        addCount: lecture.addCount || 0,
         audioData: {
           audioUrl: lecture.audioUrl,
           transcript: lecture.transcript,
           lectureNotes: lecture.lectureNotes,
-          duration: lecture.duration
-        }
+          duration: lecture.duration,
+        },
       }));
       
       // Merge and sort by last accessed
@@ -325,32 +329,41 @@ const PDFLibrary = ({
                         >
                           {resource.resourceType === 'audio' ? 'Study' : 'View'}
                         </button>
-                        <button
-                          className={`pdf-action-btn ${resource.isPublic ? 'share-active' : ''}`}
-                          onClick={async () => {
-                            try {
-                              if (resource.resourceType === 'audio') {
-                                // Handle audio sharing
-                                if (resource.isPublic) {
-                                  await makeAudioLecturePrivate(resource.$id);
+                        {/* Only show share button for original (non-imported) resources */}
+                        {!resource.isImported && !resource.originalResourceId && !resource.originalLectureId && (
+                          <button
+                            className={`pdf-action-btn ${resource.isPublic ? 'share-active' : ''}`}
+                            onClick={async () => {
+                              try {
+                                if (resource.resourceType === 'audio') {
+                                  // Handle audio sharing
+                                  if (resource.isPublic) {
+                                    await makeAudioLecturePrivate(resource.$id);
+                                  } else {
+                                    await makeAudioLecturePublic(resource.$id);
+                                  }
                                 } else {
-                                  await makeAudioLecturePublic(resource.$id);
+                                  // Handle PDF sharing
+                                  if (resource.isPublic) {
+                                    await makeResourcePrivate(resource.$id);
+                                  } else {
+                                    await makeResourcePublic(resource.$id, resource.aiTitle || resource.fileName);
+                                  }
                                 }
-                              } else {
-                                // Handle PDF sharing
-                                if (resource.isPublic) {
-                                  await makeResourcePrivate(resource.$id);
-                                } else {
-                                  await makeResourcePublic(resource.$id, resource.aiTitle || resource.fileName);
-                                }
-                              }
-                              loadResources();
-                            } catch (e) { console.error(e); }
-                          }}
-                          title={resource.isPublic ? 'Remove from shared library' : 'Share to library'}
-                        >
-                          {resource.isPublic ? '🌐 Shared' : '🔒 Share'}
-                        </button>
+                                loadResources();
+                              } catch (e) { console.error(e); }
+                            }}
+                            title={resource.isPublic ? 'Remove from shared library' : 'Share to library'}
+                          >
+                            {resource.isPublic ? '🌐 Shared' : '🔒 Share'}
+                          </button>
+                        )}
+                        {/* Show "Imported" badge for imported resources */}
+                        {(resource.isImported || resource.originalResourceId || resource.originalLectureId) && (
+                          <span className="imported-badge" title="This resource was imported from the shared library">
+                            📥 Imported
+                          </span>
+                        )}
                       </div>
                     </div>
                   ))}
