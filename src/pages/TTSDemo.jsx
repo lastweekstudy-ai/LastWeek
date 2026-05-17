@@ -15,7 +15,7 @@ const TTSDemo = () => {
     userId: user?.$id || 'demo-user',
   });
 
-  const [text, setText] = useState('Hello! This is a test of the Gemini TTS system.');
+  const [text, setText] = useState('Hello! This is a test of the text-to-speech system.');
   const [selectedVoice, setSelectedVoice] = useState(VOICES.KORE);
   const [selectedStyle, setSelectedStyle] = useState('');
   const [quota, setQuota] = useState(null);
@@ -75,9 +75,9 @@ const TTSDemo = () => {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <h1>🎤 Gemini TTS Demo</h1>
+      <h1>🎤 Text-to-Speech Demo</h1>
       <p style={{ color: 'var(--color-text-muted)' }}>
-        Test all features of the Gemini TTS system
+        Test the text-to-speech system
       </p>
 
       {/* Error Display */}

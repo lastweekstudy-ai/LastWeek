@@ -599,7 +599,7 @@ const Landing = () => {
               <h3><SettingsIcon size={24} /> Settings & Customization</h3>
               <ul>
                 <li><strong>Theme:</strong> Toggle between light and dark mode</li>
-                <li><strong>AI Model:</strong> Choose between different AI models (DeepSeek, Gemini)</li>
+                <li><strong>AI Model:</strong> Choose your preferred AI assistant style</li>
                 <li><strong>Notifications:</strong> Set reminders for spaced repetition reviews</li>
                 <li><strong>Storage:</strong> Monitor storage usage and manage files</li>
                 <li><strong>Keyboard Shortcuts:</strong> Customize shortcuts for faster workflow</li>
@@ -649,7 +649,7 @@ const Landing = () => {
               <h3>❓ Frequently Asked Questions</h3>
               
               <p><strong>Q: How much does it cost?</strong></p>
-              <p>A: The platform requires API keys for AI services (DeepSeek, Gemini). You'll need to provide your own API keys and pay for usage directly to the AI providers.</p>
+              <p>A: LastWeek offers free and paid plans. See our pricing page for details.</p>
               
               <p><strong>Q: What file types are supported?</strong></p>
               <p>A: PDF, PNG, JPG, TXT, and HTML files up to 100MB each.</p>

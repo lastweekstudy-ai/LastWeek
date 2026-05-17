@@ -15,7 +15,7 @@ const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
 async function transcribeWithFallback(audioFile, onProgress) {
   // Try Groq Whisper first (fastest, most accurate for transcription)
   try {
-    onProgress?.('Transcribing audio with Groq Whisper...');
+    onProgress?.('Transcribing audio...');
     const transcript = await transcribeAudio(audioFile);
     if (transcript && transcript.length > 50) {
       console.log('[Whisper] Transcription success, length:', transcript.length);
@@ -28,7 +28,7 @@ async function transcribeWithFallback(audioFile, onProgress) {
 
   // Fallback: Gemini multimodal (sends audio as base64 inline_data)
   try {
-    onProgress?.('Transcribing audio with Gemini AI...');
+    onProgress?.('Transcribing audio...');
     const base64data = await fileToBase64(audioFile);
     const mimeType = audioFile.type === 'audio/mpeg' ? 'audio/mp3' : audioFile.type;
 
@@ -79,7 +79,7 @@ export const processAudioLecture = async (audioFile, userId, sessionId, onProgre
     const transcript = await transcribeWithFallback(audioFile, onProgress);
 
     // Step 3: Process transcript with DeepSeek to create structured lecture notes
-    onProgress?.('Creating structured lecture notes with DeepSeek...');
+    onProgress?.('Creating structured lecture notes...');
     
     const lectureResponse = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',

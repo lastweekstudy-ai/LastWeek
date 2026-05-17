@@ -45,7 +45,7 @@ const TTSHelpModal = ({ isOpen, onClose, targetLanguage }) => {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
           <h2 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <span>🔊</span>
-            <span>Gemini TTS Information</span>
+            <span>Text-to-Speech Information</span>
           </h2>
           <button
             onClick={onClose}

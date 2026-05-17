@@ -1006,7 +1006,7 @@ Return JSON:
             [`writing_${idx}`]: { 
               score: 0, 
               feedback: err.message.includes('quota') || err.message.includes('limit: 0')
-                ? 'Gemini API quota exhausted. Go to https://aistudio.google.com/app/apikey and create a new key in a new Google Cloud project, then update VITE_GEMINI_API_KEY in your .env file.'
+                ? 'Speech processing quota reached. Please try again later.'
                 : `Error: ${err.message}`,
               mistakes: [], 
               corrections: [], 
