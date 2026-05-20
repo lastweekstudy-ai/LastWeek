@@ -18,8 +18,8 @@ const Hero = () => {
         </div>
 
         <h1 className="hero-title">
-          Study Smarter,<br />
-          <span className="text-gradient">Not Harder</span>
+          Study SMARTER,<br />
+          <span className="text-gradient">Not HARDER</span>
         </h1>
 
         <p className="hero-subtitle">
