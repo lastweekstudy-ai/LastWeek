@@ -44,7 +44,7 @@ const Hero = () => {
             <div className="stat-label">Modes</div>
           </div>
           <div className="stat-item">
-            <div className="stat-number">PDF/Audio</div>
+            <div className="stat-number">PDF&Audio</div>
             <div className="stat-label">Processed Notes</div>
           </div>
           <div className="stat-item">
