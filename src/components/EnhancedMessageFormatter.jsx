@@ -29,23 +29,13 @@ const FLASHCARD_SET_REGEX = /\*\*FRONT OF CARD\*\*([\s\S]*?)(?=\n===\n|\n={3,}\n
  * Returns { cards: [{front, back}], prefix, suffix } if found.
  */
 const extractFlashcards = (text) => {
-  // Count how many FRONT OF CARD markers exist — that's how many cards we expect
   const frontCount = (text.match(/\*\*FRONT OF CARD\*\*/gi) || []).length;
-  console.log('[extractFlashcards] Found', frontCount, 'FRONT OF CARD markers in text');
-
   if (frontCount === 0) return null;
 
-  // Split on "===" separator to get individual card blocks
-  // Also handle cards that aren't separated by === (some AI responses skip it)
   let cardBlocks = text.split(/\n={3,}\n/);
-  console.log('[extractFlashcards] Split into', cardBlocks.length, 'blocks on "==="');
 
-  // If we have more FRONT markers than blocks, the AI may have used a different separator
-  // Try splitting on the FRONT OF CARD marker itself
   if (frontCount > cardBlocks.length) {
-    console.log('[extractFlashcards] More fronts than blocks — trying alternate split');
     cardBlocks = text.split(/(?=\*\*FRONT OF CARD\*\*)/i).filter(b => b.trim());
-    console.log('[extractFlashcards] Alternate split gave', cardBlocks.length, 'blocks');
   }
 
   const cards = [];
@@ -56,21 +46,13 @@ const extractFlashcards = (text) => {
     const block = cardBlocks[i];
     const match = block.match(FLASHCARD_REGEX);
     if (match) {
-      console.log('[extractFlashcards] Block', i, 'matched — front:', match[1].trim().substring(0, 60));
       if (firstMatchIndex === null) {
         firstMatchIndex = text.indexOf(block);
       }
       cards.push({ front: match[1].trim(), back: match[2].trim() });
       lastMatchEnd = text.indexOf(block) + block.length;
-    } else {
-      // Block has FRONT OF CARD but regex didn't match — log the block for debugging
-      if (block.includes('FRONT OF CARD')) {
-        console.warn('[extractFlashcards] Block', i, 'has FRONT OF CARD but regex failed. Block preview:', block.substring(0, 200));
-      }
     }
   }
-
-  console.log('[extractFlashcards] Extracted', cards.length, 'of', frontCount, 'expected cards');
 
   if (cards.length === 0) return null;
 
@@ -343,23 +325,49 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
 
   // ── Pre-process content to fix malformed charts ───────────────────────────
   const processedContent = processAIResponse(content);
-  console.log('[EnhancedMessageFormatter] Original content length:', content.length);
-  console.log('[EnhancedMessageFormatter] Processed content length:', processedContent.length);
-  if (content !== processedContent) {
-    console.log('[EnhancedMessageFormatter] Content was modified by chart fixer');
+
+  // ── Detect both flashcards AND MCQs ───────────────────────────────────────
+  const flashcardData = extractFlashcards(processedContent);
+  const mcqData       = extractMCQs(processedContent);
+
+  const hasFlashcards = flashcardData && flashcardData.cards.length > 0;
+  const hasMCQs       = mcqData && mcqData.questions.length > 0;
+
+  // ── Mixed response: both flashcards AND MCQs in one message ───────────────
+  // Render MCQs first (they appear before flashcards in the raw text),
+  // then flashcards. Both are fully interactive.
+  if (hasFlashcards && hasMCQs) {
+    return (
+      <div className="enhanced-message">
+        {/* Any text before the first MCQ block */}
+        {mcqData.prefix && (
+          <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
+            {mcqData.prefix}
+          </ReactMarkdown>
+        )}
+
+        {/* All MCQ questions — interactive */}
+        <MCQRenderer
+          messageId={messageId}
+          prefix=""
+          questions={mcqData.questions}
+          suffix=""
+          onMCQAnswer={onMCQAnswer}
+        />
+
+        {/* All flashcards — interactive */}
+        <FlashcardSetRenderer
+          cards={flashcardData.cards}
+          prefix={flashcardData.prefix}
+          suffix={flashcardData.suffix}
+          onFlashcardRate={onFlashcardRate}
+        />
+      </div>
+    );
   }
 
-  // ── Flashcard detection ────────────────────────────────────────────────────
-  const flashcardData = extractFlashcards(processedContent);
-  
-  // Debug: Log if we asked for flashcards but didn't get the right format
-  if (processedContent.toLowerCase().includes('flashcard') && (!flashcardData || flashcardData.cards.length === 0)) {
-    console.warn('[EnhancedMessageFormatter] Content mentions flashcard but none were extracted');
-    console.log('[EnhancedMessageFormatter] Content preview:', processedContent.substring(0, 500));
-  }
-  
-  if (flashcardData && flashcardData.cards.length > 0) {
-    console.log('[EnhancedMessageFormatter] Rendering', flashcardData.cards.length, 'flashcards');
+  // ── Flashcards only ────────────────────────────────────────────────────────
+  if (hasFlashcards) {
     return (
       <FlashcardSetRenderer
         cards={flashcardData.cards}
@@ -370,9 +378,8 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
     );
   }
 
-  // ── MCQ detection ──────────────────────────────────────────────────────────
-  const mcqData = extractMCQs(processedContent);
-  if (mcqData) {
+  // ── MCQs only ─────────────────────────────────────────────────────────────
+  if (hasMCQs) {
     return (
       <MCQRenderer
         messageId={messageId}
@@ -394,12 +401,8 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
   );
   let match;
 
-  console.log('[EnhancedMessageFormatter] Processing content:', processedContent.substring(0, 200) + '...');
-  console.log('[EnhancedMessageFormatter] Looking for charts with regex:', CHART_REGEX);
-
   while ((match = combinedRegex.exec(processedContent)) !== null) {
     const fullMatch = match[0];
-    console.log('[EnhancedMessageFormatter] Found match:', fullMatch.substring(0, 100) + '...');
 
     if (match.index > lastIndex) {
       segments.push({ kind: 'text', value: processedContent.slice(lastIndex, match.index) });
@@ -411,15 +414,8 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
 
     if (isChart) {
       const [, type, title, dataStr] = match;
-      console.log('[EnhancedMessageFormatter] Chart found:', { type, title, dataStr: dataStr.substring(0, 100) });
       let data = null;
-      try { 
-        data = JSON.parse(dataStr.trim()); 
-        console.log('[EnhancedMessageFormatter] Parsed chart data:', data);
-      } catch (e) {
-        console.error('[EnhancedMessageFormatter] Failed to parse chart data:', e.message);
-        console.error('[EnhancedMessageFormatter] Raw data string:', dataStr);
-      }
+      try { data = JSON.parse(dataStr.trim()); } catch { /* malformed chart data */ }
       segments.push({ kind: 'chart', type, title, data });
     } else if (isFigure) {
       // groups: [5]=optional title, [6]=svg content  (or [4],[5] depending on order)

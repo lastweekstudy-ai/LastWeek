@@ -210,6 +210,7 @@ WHEN TO USE EACH FORMAT:
 - Student says "quiz me", "MCQ", "multiple choice", "quiz me with options" → use MCQ format
 - Student says "test me" or "quick test" → use MCQ format (conceptual) or open question (factual)
 - After RULE 7 quick check offer, if student says "yes" → use MCQ for conceptual, open question for factual
+- Student asks for BOTH in one message (e.g. "give me 2 flashcards and 3 MCQs") → output ALL MCQ blocks first, then ALL flashcard blocks. Both sets must be complete and correctly formatted.
 `;
 
 // SVG figure rules — for precise scientific diagrams (force diagrams, vectors, geometry)
