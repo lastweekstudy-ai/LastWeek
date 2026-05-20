@@ -40,16 +40,16 @@ const Hero = () => {
 
         <div className="hero-stats">
           <div className="stat-item">
-            <div className="stat-number">2,500+</div>
-            <div className="stat-label">Active Learners</div>
+            <div className="stat-number">5</div>
+            <div className="stat-label">Modes</div>
           </div>
           <div className="stat-item">
-            <div className="stat-number">15K+</div>
-            <div className="stat-label">Study Sessions</div>
+            <div className="stat-number">PDF/Audio</div>
+            <div className="stat-label">Processed Notes</div>
           </div>
           <div className="stat-item">
-            <div className="stat-number">98.5%</div>
-            <div className="stat-label">Satisfaction</div>
+            <div className="stat-number">Ai Accuracy</div>
+            <div className="stat-label">In every click</div>
           </div>
           <div className="stat-item">
             <div className="stat-number">4.8/5</div>
