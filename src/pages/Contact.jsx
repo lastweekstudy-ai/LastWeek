@@ -59,20 +59,20 @@ const Contact = () => {
           <div className="contact-info">
             <div className="info-section">
               <h3>Email</h3>
-              <p><a href="mailto:support@lastweek.com">support@lastweek.com</a></p>
-              <p>For general inquiries and support requests</p>
+              <p><a href="mailto:contact@lastweekai.study">contact@lastweekai.study</a></p>
+              <p>For general inquiries, support, and feedback</p>
+            </div>
+
+            <div className="info-section">
+              <h3>Social Media</h3>
+              <p><a href="https://x.com/LastWeek_AI" target="_blank" rel="noopener noreferrer">Twitter / X: @LastWeek_AI</a></p>
+              <p><a href="https://www.linkedin.com/company/lastweekstudy-ai/" target="_blank" rel="noopener noreferrer">LinkedIn: LastWeek Study AI</a></p>
             </div>
 
             <div className="info-section">
               <h3>Business Inquiries</h3>
-              <p><a href="mailto:business@lastweek.com">business@lastweek.com</a></p>
+              <p><a href="mailto:contact@lastweekai.study">contact@lastweekai.study</a></p>
               <p>For partnerships, integrations, and enterprise solutions</p>
-            </div>
-
-            <div className="info-section">
-              <h3>Feedback</h3>
-              <p><a href="mailto:feedback@lastweek.com">feedback@lastweek.com</a></p>
-              <p>Share your ideas and suggestions for improvement</p>
             </div>
 
             <div className="info-section">
@@ -152,19 +152,19 @@ const Contact = () => {
           <div className="faq-list">
             <div className="faq-item">
               <h3>How can I report a bug?</h3>
-              <p>Please email us at support@lastweek.com with details about the bug, including screenshots if possible. We take all bug reports seriously and will investigate promptly.</p>
+              <p>Please email us at contact@lastweekai.study with details about the bug, including screenshots if possible. We take all bug reports seriously and will investigate promptly.</p>
             </div>
             <div className="faq-item">
               <h3>Can I request a new feature?</h3>
-              <p>Absolutely! We love hearing feature requests from our users. Send your ideas to feedback@lastweek.com. We review all suggestions and prioritize based on user demand and impact.</p>
+              <p>Absolutely! We love hearing feature requests from our users. Send your ideas to contact@lastweekai.study or reach out on <a href="https://x.com/LastWeek_AI" target="_blank" rel="noopener noreferrer">X (@LastWeek_AI)</a>. We review all suggestions and prioritize based on user demand and impact.</p>
             </div>
             <div className="faq-item">
               <h3>How do I delete my account?</h3>
-              <p>You can delete your account from your account settings. If you need assistance, contact support@lastweek.com and we'll help you through the process.</p>
+              <p>You can delete your account from your account settings. If you need assistance, contact contact@lastweekai.study and we'll help you through the process.</p>
             </div>
             <div className="faq-item">
               <h3>Is there a phone number I can call?</h3>
-              <p>Currently, we support contact through email. We're working on adding phone support in the future. For urgent matters, please email support@lastweek.com and mark it as urgent.</p>
+              <p>Currently, we support contact through email and social media. For urgent matters, please email contact@lastweekai.study and mark it as urgent.</p>
             </div>
           </div>
         </div>

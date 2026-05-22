@@ -10,7 +10,7 @@ const Footer = () => {
   const footerLinks = {
     Product: [
       { label: 'Features', href: '#features' },
-      { label: 'Pricing', href: '#pricing' },
+      { label: 'Pricing', href: '/pricing' },
       { label: 'FAQ', href: '#faq' },
       { label: 'Documentation', href: '/docs' },
     ],
@@ -23,14 +23,14 @@ const Footer = () => {
     Legal: [
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms of Service', href: '/terms' },
-      { label: 'Security', href: '#' },
-      { label: 'Cookies', href: '#' },
+      { label: 'Refund Policy', href: '/refund-policy' },
+      { label: 'Cookies', href: '/cookies' },
     ],
     Social: [
-      { label: 'Twitter', href: '#', icon: 'external' },
-      { label: 'GitHub', href: '#', icon: 'external' },
+      { label: 'Twitter / X', href: 'https://x.com/LastWeek_AI', icon: 'external' },
+      { label: 'LinkedIn', href: 'https://www.linkedin.com/company/lastweekstudy-ai/', icon: 'external' },
       { label: 'Discord', href: '#', icon: 'external' },
-      { label: 'LinkedIn', href: '#', icon: 'external' },
+      { label: 'Email', href: 'mailto:contact@lastweekai.study', icon: 'external' },
     ],
   };
 

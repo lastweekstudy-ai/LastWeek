@@ -30,3 +30,4 @@ dist-ssr
 
 # Appwrite function environment files (contain secrets)
 appwrite-functions/**/.env
+nul

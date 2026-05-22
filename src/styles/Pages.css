@@ -414,3 +414,184 @@
     font-size: 0.95rem;
   }
 }
+
+
+/* Pricing Page */
+.pricing-page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.pricing-page-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 2rem;
+  position: relative;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.pricing-page-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--purple-primary);
+}
+
+.pricing-page-card.highlighted {
+  border-color: var(--purple-bright);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.05));
+}
+
+.pricing-page-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--purple-bright);
+  color: white;
+  padding: 0.25rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.pricing-page-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.pricing-page-amount {
+  margin-bottom: 0.75rem;
+}
+
+.pricing-page-price {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--purple-bright);
+}
+
+.pricing-page-period {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.pricing-page-description {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.pricing-page-features h4 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.pricing-page-feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.pricing-page-feature .feature-check {
+  color: #10b981;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.pricing-page-feature .feature-x {
+  color: #ef4444;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.pricing-page-feature.limitation span:last-child {
+  color: var(--text-muted);
+}
+
+/* FAQ Items */
+.faq-item {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.faq-item:last-child {
+  border-bottom: none;
+}
+
+.faq-item h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-white);
+}
+
+.faq-item p {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.faq-item a {
+  color: var(--purple-bright);
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .pricing-page-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Cookie Policy Table */
+.cookie-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+.cookie-table th,
+.cookie-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.cookie-table th {
+  background: rgba(139, 92, 246, 0.1);
+  color: var(--text-white);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.cookie-table td {
+  color: var(--text-muted);
+}
+
+.cookie-table code {
+  background: rgba(139, 92, 246, 0.15);
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--purple-bright);
+}
+
+@media (max-width: 768px) {
+  .cookie-table {
+    font-size: 0.8rem;
+  }
+  
+  .cookie-table th,
+  .cookie-table td {
+    padding: 0.5rem;
+  }
+}

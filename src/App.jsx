@@ -13,6 +13,9 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import Pricing from './pages/Pricing';
+import RefundPolicy from './pages/RefundPolicy';
+import CookiePolicy from './pages/CookiePolicy';
 import Auth from './pages/Auth';
 import Dashboard from './pages/DashboardEnhanced';
 import ModeSelector from './pages/ModeSelector';
@@ -131,6 +134,9 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/docs" element={<DocsPage />} />
               <Route path="/docs/:slug" element={<DocsPage />} />

@@ -50,9 +50,9 @@ const Privacy = () => {
           <p>
             When you access our platform, we automatically collect certain information about your device and usage patterns. This includes your IP address, browser type, operating system, pages visited, time spent on pages, and referring URLs. We use this information to improve our services and understand how users interact with our platform.
           </p>
-          <h3>2.3 Cookies and Tracking Technologies</h3>
+          <h3>2.3 Cookies and Local Storage</h3>
           <p>
-            We use cookies and similar tracking technologies to enhance your experience. These help us remember your preferences, understand your usage patterns, and provide personalized content. You can control cookie settings through your browser, though some features may not work properly if cookies are disabled.
+            We use only strictly necessary cookies for authentication (keeping you logged in) and payment processing (via Paddle). We do not use any analytics, advertising, or third-party tracking cookies. We also use your browser's localStorage to remember preferences like your theme choice and panel layout — this data never leaves your device. For full details, see our <Link to="/cookies">Cookie Policy</Link>.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ const Privacy = () => {
         <div className="page-section">
           <h2>5. Data Retention</h2>
           <p>
-            We retain your personal information for as long as necessary to provide our services and fulfill the purposes outlined in this policy. You can request deletion of your account and associated data at any time by contacting us at support@lastweek.com. Upon deletion, we will remove your personal information from our active databases, though we may retain certain information for legal compliance and fraud prevention purposes.
+            We retain your personal information for as long as necessary to provide our services and fulfill the purposes outlined in this policy. You can request deletion of your account and associated data at any time by contacting us at contact@lastweekai.study. Upon deletion, we will remove your personal information from our active databases, though we may retain certain information for legal compliance and fraud prevention purposes.
           </p>
         </div>
 
@@ -116,14 +116,14 @@ const Privacy = () => {
             <li><strong>Right to Data Portability:</strong> You can request a copy of your data in a portable format.</li>
           </ul>
           <p>
-            To exercise any of these rights, please contact us at privacy@lastweek.com with your request and proof of identity.
+            To exercise any of these rights, please contact us at contact@lastweekai.study with your request and proof of identity.
           </p>
         </div>
 
         <div className="page-section">
           <h2>8. Children's Privacy</h2>
           <p>
-            LastWeek is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware that we have collected information from a child under 13, we will take steps to delete such information and terminate the child's account. If you believe we have collected information from a child under 13, please contact us immediately at privacy@lastweek.com.
+            LastWeek is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware that we have collected information from a child under 13, we will take steps to delete such information and terminate the child's account. If you believe we have collected information from a child under 13, please contact us immediately at contact@lastweekai.study.
           </p>
         </div>
 
@@ -154,8 +154,9 @@ const Privacy = () => {
             If you have questions about this Privacy Policy or our privacy practices, please contact us at:
           </p>
           <p>
-            <strong>Email:</strong> privacy@lastweek.com<br/>
-            <strong>Address:</strong> LastWeek, Inc., Privacy Department<br/>
+            <strong>Email:</strong> contact@lastweekai.study<br/>
+            <strong>Twitter / X:</strong> <a href="https://x.com/LastWeek_AI">@LastWeek_AI</a><br/>
+            <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/company/lastweekstudy-ai/">LastWeek Study AI</a><br/>
             <strong>Response Time:</strong> We will respond to privacy inquiries within 30 days.
           </p>
         </div>

@@ -155,13 +155,29 @@ const Terms = () => {
         </div>
 
         <div className="page-section">
-          <h2>15. Contact Information</h2>
+          <h2>15. Subscription and Payments</h2>
+          <p>
+            LastWeek offers subscription-based plans processed through Paddle (Paddle.com Market Limited), our Merchant of Record. By subscribing to a paid plan, you agree to the following:
+          </p>
+          <ul>
+            <li><strong>Billing:</strong> Subscriptions are billed on a recurring monthly basis. Your payment method will be charged automatically at the start of each billing cycle.</li>
+            <li><strong>Free Trial:</strong> Paid plans include a 14-day free trial. You will not be charged until the trial period ends. You may cancel at any time during the trial without being charged.</li>
+            <li><strong>Price Changes:</strong> We reserve the right to change subscription prices. Existing subscribers will be notified at least 30 days before any price increase takes effect.</li>
+            <li><strong>Cancellation:</strong> You may cancel your subscription at any time from your account settings. Access continues until the end of your current billing period.</li>
+            <li><strong>Refunds:</strong> Refunds are handled according to our <Link to="/refund-policy">Refund Policy</Link>.</li>
+            <li><strong>Taxes:</strong> Paddle handles all applicable sales tax, VAT, and other transaction taxes on our behalf.</li>
+          </ul>
+        </div>
+
+        <div className="page-section">
+          <h2>16. Contact Information</h2>
           <p>
             If you have any questions about these Terms of Service, please contact us at:
           </p>
           <p>
-            <strong>Email:</strong> legal@lastweek.com<br/>
-            <strong>Address:</strong> LastWeek, Inc., Legal Department<br/>
+            <strong>Email:</strong> contact@lastweekai.study<br/>
+            <strong>Twitter / X:</strong> <a href="https://x.com/LastWeek_AI">@LastWeek_AI</a><br/>
+            <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/company/lastweekstudy-ai/">LastWeek Study AI</a><br/>
             <strong>Response Time:</strong> We will respond to legal inquiries within 30 days.
           </p>
         </div>
