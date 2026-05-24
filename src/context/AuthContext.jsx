@@ -47,9 +47,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (email, password, name) => {
+  const register = async (email, password, name, profileData = {}) => {
     try {
-      const newUser = await registerUser(email, password, name);
+      const newUser = await registerUser(email, password, name, profileData);
       setUser(newUser);
       setIsGuest(false);
       
@@ -95,7 +95,8 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
-    loginGuest
+    loginGuest,
+    refreshUser: checkAuth, // expose so components can re-fetch user after webhook
   };
 
   return (

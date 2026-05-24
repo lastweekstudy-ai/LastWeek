@@ -26,8 +26,7 @@ const Navbar = () => {
       <div className="navbar-container">
         {/* Logo */}
         <Link to="/" className="navbar-logo">
-          <BrandLogo variant="icon" width={32} height={32} priority={true} />
-          <span className="navbar-brand-text">LastWeek</span>
+          <img src="/logos/lastweek_main_logo.png" alt="LastWeek" style={{ height: '36px', objectFit: 'contain' }} />
         </Link>
 
         {/* Desktop Navigation */}

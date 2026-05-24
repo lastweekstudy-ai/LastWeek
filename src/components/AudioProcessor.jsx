@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { processAudioLecture } from '../appwrite/audioLecture';
+import { getMonthlyUsage, incrementUsage } from '../appwrite/usageTracking';
+import { getPlanLimits } from '../config/planLimits';
+import { getUserSubscription, isSubscriptionActive } from '../appwrite/subscription';
 import '../styles/AudioProcessor.css';
 
 /**
@@ -102,6 +105,33 @@ const AudioProcessor = ({ userId, sessionId, onClose, onLectureCreated }) => {
       return;
     }
 
+    // ── Check audio upload limit ───────────────────────────────────────────────
+    if (userId) {
+      try {
+        const [subscription, usage] = await Promise.all([
+          getUserSubscription(userId),
+          getMonthlyUsage(userId),
+        ]);
+        const activeSub = subscription && isSubscriptionActive(subscription) ? subscription : null;
+        const planId = activeSub?.plan || 'free';
+        const limits = getPlanLimits(planId);
+
+        if ((usage.audiosUploaded || 0) >= limits.audios) {
+          setError(`You've reached your ${limits.audios} audio upload limit this month. Upgrade to upload more.`);
+          return;
+        }
+
+        const maxSizeBytes = limits.audioMaxSizeMB * 1024 * 1024;
+        if (audioFile.size > maxSizeBytes) {
+          setError(`Your plan allows audio files up to ${limits.audioMaxSizeMB}MB. This file is ${(audioFile.size / 1024 / 1024).toFixed(1)}MB. Upgrade for larger files.`);
+          return;
+        }
+      } catch (e) {
+        console.warn('[AudioProcessor] Could not check limits:', e.message);
+        // Non-fatal — continue
+      }
+    }
+
     setProcessing(true);
     setError('');
     setProgress('Uploading audio...');
@@ -121,6 +151,8 @@ const AudioProcessor = ({ userId, sessionId, onClose, onLectureCreated }) => {
       });
 
       console.log('[Audio] Success:', result);
+      // Record audio upload usage
+      if (userId) incrementUsage(userId, 'audiosUploaded').catch(() => {});
       setProgress('Lecture created successfully!');
       setTimeout(() => {
         if (onLectureCreated) {

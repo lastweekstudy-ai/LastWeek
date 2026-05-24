@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useSession from '../hooks/useSession';
+import useUsageLimits from '../hooks/useUsageLimits';
+import UsageLimitModal from '../components/UsageLimitModal';
 import { 
   MentalModelIcon, 
   ActiveRecallIcon, 
@@ -15,11 +17,13 @@ const ModeSelector = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { startSession } = useSession();
+  const { canDo, recordUsage, planName } = useUsageLimits();
   
   const [selectedMode, setSelectedMode] = useState(null);
   const [subject, setSubject] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [limitBlocked, setLimitBlocked] = useState(null);
 
   const modes = [
     {
@@ -89,6 +93,14 @@ const ModeSelector = () => {
       setError('Please select a mode and enter a subject');
       return;
     }
+
+    // Check session limit before creating
+    const sessionCheck = canDo('sessions');
+    if (!sessionCheck.allowed) {
+      setLimitBlocked({ action: 'sessions', current: sessionCheck.current, limit: sessionCheck.limit, planName });
+      return;
+    }
+
     setLoading(true);
     setError('');
     try {
@@ -97,6 +109,8 @@ const ModeSelector = () => {
         subject.trim(),
         `${selectedMode.name} - ${subject.trim()}`
       );
+      // Record session creation
+      recordUsage('sessions');
       navigate(`/session/${session.$id}`);
     } catch (err) {
       setError(err.message);
@@ -186,6 +200,15 @@ const ModeSelector = () => {
           )}
         </div>
       </div>
+
+      <UsageLimitModal
+        isOpen={!!limitBlocked}
+        onClose={() => setLimitBlocked(null)}
+        action={limitBlocked?.action}
+        current={limitBlocked?.current}
+        limit={limitBlocked?.limit}
+        planName={limitBlocked?.planName}
+      />
     </div>
   );
 };

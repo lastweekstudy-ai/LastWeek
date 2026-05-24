@@ -9,6 +9,8 @@ import SessionSearch from '../components/SessionSearch';
 import BulkActions from '../components/BulkActions';
 import StudyStatistics from '../components/StudyStatistics';
 import LoadingSpinner from '../components/LoadingSpinner';
+import UpgradeButton from '../components/UpgradeButton';
+import UsageWidget from '../components/UsageWidget';
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { exportSessions, exportSession, exportSessionAsMarkdown } from '../utils/exportImport';
 import { 
@@ -206,6 +208,7 @@ const DashboardEnhanced = () => {
             </p>
           </div>
           <div className="header-actions">
+            <UpgradeButton navigateToPricing={true} label="Upgrade" />
             <button
               className="btn btn-secondary"
               onClick={() => setShowStats(!showStats)}
@@ -231,6 +234,13 @@ const DashboardEnhanced = () => {
         {error && (
           <div className="error-message">
             {error}
+          </div>
+        )}
+
+        {/* Live usage widget */}
+        {!isGuest && (
+          <div style={{ marginBottom: '1.5rem' }}>
+            <UsageWidget />
           </div>
         )}
 

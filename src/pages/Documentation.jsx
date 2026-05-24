@@ -494,7 +494,7 @@ const Documentation = () => {
         <div className="nav-container">
           <div className="nav-logo" onClick={() => navigate('/')}>
             <span className="logo-emoji">📚</span>
-            <span>LastWeek</span>
+            <img src="/logos/lastweek_main_logo.png" alt="LastWeek" style={{ height: "36px", objectFit: "contain" }} />
           </div>
           
           <div className="nav-menu">

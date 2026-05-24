@@ -5,6 +5,7 @@ import { SessionProvider } from './context/SessionContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import useSession from './hooks/useSession';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import useUsageLimits from './hooks/useUsageLimits';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
 import MigrationHelper from './components/MigrationHelper';
@@ -56,6 +57,17 @@ const ProtectedRoute = ({ children }) => {
   }
   
   return user ? children : <Navigate to="/auth" replace />;
+};
+
+// Language Learning Guard — blocks free-tier users
+const LanguageLearningGuard = ({ children }) => {
+  const { canDo, loading } = useUsageLimits();
+  if (loading) return <div className="loading-state"><p>Loading...</p></div>;
+  const check = canDo('languageLearning');
+  if (!check.allowed) {
+    return <Navigate to="/pricing" replace />;
+  }
+  return children;
 };
 
 // Session Route Component - determines which mode page to render
@@ -207,8 +219,10 @@ function App() {
                 path="/language-learning" 
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <LanguageLearning />
+                    <LanguageLearningGuard>
+                      <Navbar />
+                      <LanguageLearning />
+                    </LanguageLearningGuard>
                   </ProtectedRoute>
                 } 
               />
@@ -217,8 +231,10 @@ function App() {
                 path="/language-learning/lessons" 
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <LanguageLearningLessons />
+                    <LanguageLearningGuard>
+                      <Navbar />
+                      <LanguageLearningLessons />
+                    </LanguageLearningGuard>
                   </ProtectedRoute>
                 } 
               />
@@ -227,7 +243,9 @@ function App() {
                 path="/language-learning/lessons/:moduleId/:stageId" 
                 element={
                   <ProtectedRoute>
-                    <LanguageLearningLesson />
+                    <LanguageLearningGuard>
+                      <LanguageLearningLesson />
+                    </LanguageLearningGuard>
                   </ProtectedRoute>
                 } 
               />
@@ -236,8 +254,10 @@ function App() {
                 path="/language-learning/practice" 
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <LanguageLearningPractice />
+                    <LanguageLearningGuard>
+                      <Navbar />
+                      <LanguageLearningPractice />
+                    </LanguageLearningGuard>
                   </ProtectedRoute>
                 } 
               />
@@ -246,8 +266,10 @@ function App() {
                 path="/language-learning/continue" 
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <LanguageLearning />
+                    <LanguageLearningGuard>
+                      <Navbar />
+                      <LanguageLearning />
+                    </LanguageLearningGuard>
                   </ProtectedRoute>
                 } 
               />
@@ -270,6 +292,17 @@ function App() {
                   <ProtectedRoute>
                     <Navbar />
                     <FlashcardLibrary />
+                  </ProtectedRoute>
+                }
+              />
+
+              {/* Pricing page */}
+              <Route
+                path="/pricing"
+                element={
+                  <ProtectedRoute>
+                    <Navbar />
+                    <Pricing />
                   </ProtectedRoute>
                 }
               />

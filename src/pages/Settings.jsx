@@ -3,6 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { account } from '../appwrite/config';
 import { SettingsIcon, UserIcon, KeyboardIcon, TrashIcon } from '../components/Icons';
+import UpgradeButton from '../components/UpgradeButton';
+import UsageWidget from '../components/UsageWidget';
+import useUsageLimits from '../hooks/useUsageLimits';
+import { formatLimit } from '../config/planLimits';
 import '../styles/Settings.css';
 
 const Settings = () => {
@@ -11,6 +15,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('account');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const { plan, planName, limits, usage } = useUsageLimits();
 
   // Account settings state
   const [name, setName] = useState(user?.name || '');
@@ -152,6 +157,13 @@ const Settings = () => {
               Account
             </button>
             <button
+              className={`settings-tab ${activeTab === 'subscription' ? 'active' : ''}`}
+              onClick={() => setActiveTab('subscription')}
+            >
+              ⭐
+              Subscription
+            </button>
+            <button
               className={`settings-tab ${activeTab === 'shortcuts' ? 'active' : ''}`}
               onClick={() => setActiveTab('shortcuts')}
             >
@@ -263,6 +275,88 @@ const Settings = () => {
                     {loading ? 'Changing...' : 'Change Password'}
                   </button>
                 </form>
+              </div>
+            )}
+
+            {activeTab === 'subscription' && (
+              <div className="settings-section">
+                <h2>Subscription & Usage</h2>
+                <p className="settings-description">Your current plan and monthly usage</p>
+
+                {/* Current plan badge */}
+                <div style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '1rem', borderRadius: '10px', marginBottom: '1.5rem',
+                  backgroundColor: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.2)',
+                }}>
+                  <div>
+                    <p style={{ margin: 0, fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>
+                      {planName} Plan
+                    </p>
+                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
+                      Resets on the 1st of each month
+                    </p>
+                  </div>
+                  {plan === 'free' ? (
+                    <UpgradeButton label="Upgrade" />
+                  ) : (
+                    <span style={{
+                      padding: '0.35rem 0.85rem', borderRadius: '999px',
+                      backgroundColor: 'rgba(16,185,129,0.1)', color: '#10b981',
+                      fontSize: '0.8rem', fontWeight: 700,
+                    }}>Active ✓</span>
+                  )}
+                </div>
+
+                {/* Live usage widget */}
+                <UsageWidget />
+
+                {/* Full limits table */}
+                <div style={{ marginTop: '1.5rem' }}>
+                  <h3 style={{ marginBottom: '0.75rem', fontSize: '0.9rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    Plan Limits
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {[
+                      { label: 'Sessions / month', value: formatLimit(limits.sessions) },
+                      { label: 'AI Messages / month', value: formatLimit(limits.messages) },
+                      { label: 'PDF Uploads / month', value: formatLimit(limits.pdfs) },
+                      { label: 'Max PDF size', value: `${limits.pdfMaxSizeMB} MB` },
+                      { label: 'Audio Uploads / month', value: formatLimit(limits.audios) },
+                      { label: 'Max Audio size', value: `${limits.audioMaxSizeMB} MB` },
+                      { label: 'Flashcards / month', value: formatLimit(limits.flashcards) },
+                      { label: 'MCQs / month', value: formatLimit(limits.mcqs) },
+                      { label: 'Exam Plans (active)', value: formatLimit(limits.examPlans) },
+                      { label: 'Language Learning', value: limits.languageLearning ? '✅ Included' : '❌ Not included' },
+                      { label: 'Storage', value: limits.storageMB >= 1024 ? `${limits.storageMB / 1024} GB` : `${limits.storageMB} MB` },
+                    ].map(({ label, value }) => (
+                      <div key={label} style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        padding: '0.5rem 0.75rem', borderRadius: '6px',
+                        backgroundColor: 'var(--color-bg-tertiary)',
+                        fontSize: '0.875rem',
+                      }}>
+                        <span style={{ color: 'var(--color-text-secondary)' }}>{label}</span>
+                        <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {plan === 'free' && (
+                  <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+                    <button
+                      onClick={() => navigate('/pricing')}
+                      style={{
+                        padding: '0.65rem 1.5rem', borderRadius: '8px', border: 'none',
+                        backgroundColor: '#a855f7', color: 'white', cursor: 'pointer',
+                        fontWeight: 600, fontSize: '0.9rem',
+                      }}
+                    >
+                      See All Plans →
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

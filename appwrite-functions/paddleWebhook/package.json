@@ -1,0 +1,10 @@
+{
+  "name": "paddle-webhook",
+  "version": "1.0.0",
+  "description": "Paddle Billing webhook handler — upgrades/downgrades Appwrite user labels",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {
+    "node-appwrite": "^13.0.0"
+  }
+}

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSession as useSessionContext } from '../context/SessionContext';
 import useDeepSeek from '../hooks/useDeepSeek';
 import useMobileViewport from '../hooks/useMobileViewport';
+import useUsageLimits from '../hooks/useUsageLimits';
 import { buildContextMessages } from '../utils/contextManager';
 import {
   getUserExamPlans,
@@ -16,6 +17,7 @@ import ChatInterface from '../components/ChatInterface';
 import PDFLibrary from '../components/PDFLibrary';
 import PomodoroTimer from '../components/PomodoroTimer';
 import usePerformanceTracking from '../hooks/usePerformanceTracking';
+import UsageLimitModal from '../components/UsageLimitModal';
 import '../styles/ExamSession.css';
 
 /**
@@ -40,7 +42,10 @@ const ExamSession = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAnalysing] = useState(false);
   const [showResources, setShowResources] = useState(false);
+  const [limitBlocked, setLimitBlocked] = useState(null);
   const openingFiredRef = useRef(false);
+  
+  const { canDo, recordUsage, planName } = useUsageLimits();
   
   // Mobile viewport handling
   const { isMobile } = useMobileViewport();
@@ -131,6 +136,13 @@ const ExamSession = () => {
   const sendMessage = async (userDisplayMessage, aiContextMessage = null) => {
     if (!plan || !topic || !sessionCtx.activeSession) return;
 
+    // Check message limit before sending
+    const msgCheck = canDo('messages');
+    if (!msgCheck.allowed) {
+      setLimitBlocked({ action: 'messages', current: msgCheck.current, limit: msgCheck.limit, planName });
+      return;
+    }
+
     const systemPrompt = buildExamSessionPrompt(plan, topic.name, topicIdx);
     const msgForAI = aiContextMessage || userDisplayMessage;
 
@@ -149,6 +161,8 @@ const ExamSession = () => {
           return await askStream(systemPrompt, contextualMessages, onChunk);
         }
       );
+      // Record message usage after success
+      recordUsage('messages');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -310,6 +324,15 @@ const ExamSession = () => {
           />
         )}
       </div>
+
+      <UsageLimitModal
+        isOpen={!!limitBlocked}
+        onClose={() => setLimitBlocked(null)}
+        action={limitBlocked?.action}
+        current={limitBlocked?.current}
+        limit={limitBlocked?.limit}
+        planName={limitBlocked?.planName}
+      />
     </div>
   );
 };

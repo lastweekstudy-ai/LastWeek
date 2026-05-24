@@ -12,7 +12,7 @@ const Terms = () => {
       <nav className="page-navbar">
         <div className="navbar-container">
           <Link to="/" className="navbar-logo">
-            <span>LastWeek</span>
+            <img src="/logos/lastweek_main_logo.png" alt="LastWeek" style={{ height: "36px", objectFit: "contain" }} />
           </Link>
           <div className="navbar-links">
             <Link to="/">Home</Link>
@@ -156,16 +156,30 @@ const Terms = () => {
 
         <div className="page-section">
           <h2>15. Subscription and Payments</h2>
+
           <p>
             LastWeek offers subscription-based plans processed through Paddle (Paddle.com Market Limited), our Merchant of Record. By subscribing to a paid plan, you agree to the following:
           </p>
+
+          <h3 style={{ marginTop: '1rem', marginBottom: '0.5rem', fontSize: '1rem' }}>Available Plans</h3>
+          <ul>
+            <li><strong>Free:</strong> 5 sessions/month, 500 AI messages/month, 3 PDFs, 1 audio upload. No credit card required.</li>
+            <li><strong>Pro ($9.99/month):</strong> 30 sessions/month, 3,000 AI messages/month, 20 PDFs, 10 audio uploads, language learning, 3 exam plans.</li>
+            <li><strong>Plus ($14.99/month):</strong> 100 sessions/month, 7,000 AI messages/month, 60 PDFs, 30 audio uploads, language learning, 10 exam plans.</li>
+            <li><strong>Pro+ ($19.99/month):</strong> Unlimited sessions, unlimited AI messages, unlimited PDFs and audio uploads, language learning, unlimited exam plans.</li>
+          </ul>
+
+          <h3 style={{ marginTop: '1rem', marginBottom: '0.5rem', fontSize: '1rem' }}>Billing Terms</h3>
           <ul>
             <li><strong>Billing:</strong> Subscriptions are billed on a recurring monthly basis. Your payment method will be charged automatically at the start of each billing cycle.</li>
-            <li><strong>Free Trial:</strong> Paid plans include a 14-day free trial. You will not be charged until the trial period ends. You may cancel at any time during the trial without being charged.</li>
+            <li><strong>Annual Billing:</strong> Annual plans are billed once per year at a 25% discount compared to monthly pricing.</li>
+            <li><strong>Usage Limits:</strong> All monthly usage limits (sessions, messages, uploads) reset on the 1st of each calendar month.</li>
             <li><strong>Price Changes:</strong> We reserve the right to change subscription prices. Existing subscribers will be notified at least 30 days before any price increase takes effect.</li>
-            <li><strong>Cancellation:</strong> You may cancel your subscription at any time from your account settings. Access continues until the end of your current billing period.</li>
+            <li><strong>Cancellation:</strong> You may cancel your subscription at any time from your account settings. Access to paid features continues until the end of your current billing period.</li>
+            <li><strong>Downgrade:</strong> Upon cancellation or non-payment, your account automatically reverts to the Free tier. Your data and sessions are preserved.</li>
             <li><strong>Refunds:</strong> Refunds are handled according to our <Link to="/refund-policy">Refund Policy</Link>.</li>
             <li><strong>Taxes:</strong> Paddle handles all applicable sales tax, VAT, and other transaction taxes on our behalf.</li>
+            <li><strong>Age Requirement:</strong> You must be at least 13 years old to create an account or make a purchase on LastWeek.</li>
           </ul>
         </div>
 

@@ -274,7 +274,7 @@ const Navbar = ({ isSessionPage = false }) => {
             {/* Left: brand + session info */}
             <div className="navbar-left">
               <div className="navbar-brand" onClick={() => navigate('/dashboard')}>
-                <img src="/logos/lastweek_text_logo.png" alt="LastWeek" className="navbar-logo" />
+                <img src="/logos/lastweek_main_logo.png" alt="LastWeek" className="navbar-logo" />
               </div>
 
               {isOnSessionPage && activeSession && (

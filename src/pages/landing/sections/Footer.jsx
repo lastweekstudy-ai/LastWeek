@@ -41,8 +41,7 @@ const Footer = () => {
           {/* Brand Section */}
           <div className="footer-section footer-brand">
             <Link to="/" className="footer-logo">
-              <BrandLogo variant="icon" width={40} height={40} />
-              <span>LastWeek</span>
+              <img src="/logos/lastweek_text_logo.png" alt="LastWeek" style={{ height: '34px', objectFit: 'contain' }} />
             </Link>
             <p className="footer-tagline">
               AI-powered learning platform for students who refuse to let time constraints limit their potential.

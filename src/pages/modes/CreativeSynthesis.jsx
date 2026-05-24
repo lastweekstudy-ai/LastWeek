@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import useSession from '../../hooks/useSession';
+import useSessionWithLimits from '../../hooks/useSessionWithLimits';
+import UsageLimitModal from '../../components/UsageLimitModal';
 import useSessionAssessment from '../../hooks/useSessionAssessment';
 import useSessionSummary from '../../hooks/useSessionSummary';
 import usePerformanceTracking from '../../hooks/usePerformanceTracking';
@@ -31,8 +32,11 @@ const CreativeSynthesis = () => {
     loadSession, 
     sendMessageWithAI,
     switchMode,
-    generateAndSaveSummary
-  } = useSession();
+    generateAndSaveSummary,
+    limitBlocked,
+    clearLimitBlock,
+    usageLimits,
+  } = useSessionWithLimits();
 
   const [currentMode, setCurrentMode] = useState('mindmap');
   const [userNotes, setUserNotes] = useState('');
@@ -352,6 +356,15 @@ const CreativeSynthesis = () => {
           subject={activeSession.subject || 'General'}
         />
       )}
+
+      <UsageLimitModal
+        isOpen={!!limitBlocked}
+        onClose={clearLimitBlock}
+        action={limitBlocked?.action}
+        current={limitBlocked?.current}
+        limit={limitBlocked?.limit}
+        planName={limitBlocked?.planName}
+      />
     </div>
   );
 };

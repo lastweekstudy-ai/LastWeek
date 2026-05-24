@@ -66,7 +66,7 @@ const DocsPage = () => {
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none', color: '#FFFFFF' }}>
             <BrandLogo variant="icon" width={32} height={32} />
-            <span style={{ fontWeight: 700, fontSize: '1.25rem' }}>LastWeek Docs</span>
+            <img src="/logos/lastweek_text_logo.png" alt="LastWeek" style={{ height: '30px', objectFit: 'contain', display: 'inline-block', verticalAlign: 'middle' }} /> <span style={{ fontWeight: 700, fontSize: '1.25rem' }}>Docs</span>
           </Link>
         </div>
       </div>

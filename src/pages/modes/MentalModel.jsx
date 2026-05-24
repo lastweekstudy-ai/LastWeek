@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import useSession from '../../hooks/useSession';
+import useSessionWithLimits from '../../hooks/useSessionWithLimits';
 import useSessionAssessment from '../../hooks/useSessionAssessment';
 import useSessionSummary from '../../hooks/useSessionSummary';
 import usePerformanceTracking from '../../hooks/usePerformanceTracking';
@@ -9,6 +9,7 @@ import useMobileViewport from '../../hooks/useMobileViewport';
 import ChatInterface from '../../components/ChatInterface';
 import PDFLibrary from '../../components/PDFLibrary';
 import SessionAssessment from '../../components/SessionAssessment';
+import UsageLimitModal from '../../components/UsageLimitModal';
 import { 
   MentalModelIcon, 
   BookIcon,
@@ -33,8 +34,11 @@ const MentalModel = () => {
     loadSession, 
     sendMessageWithAI,
     switchMode,
-    generateAndSaveSummary
-  } = useSession();
+    generateAndSaveSummary,
+    limitBlocked,
+    clearLimitBlock,
+    usageLimits,
+  } = useSessionWithLimits();
 
   const [analogiesUsed, setAnalogiesUsed] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -270,6 +274,15 @@ const MentalModel = () => {
           subject={activeSession.subject || 'General'}
         />
       )}
+
+      <UsageLimitModal
+        isOpen={!!limitBlocked}
+        onClose={clearLimitBlock}
+        action={limitBlocked?.action}
+        current={limitBlocked?.current}
+        limit={limitBlocked?.limit}
+        planName={limitBlocked?.planName}
+      />
     </div>
   );
 };

@@ -9,6 +9,8 @@ import {
   generateSchedule,
   daysUntilExam,
 } from '../appwrite/examPlanner';
+import useUsageLimits from '../hooks/useUsageLimits';
+import UsageLimitModal from '../components/UsageLimitModal';
 import '../styles/ExamPlanner.css';
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
@@ -261,6 +263,8 @@ const ExamPlanner = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState('');
+  const [limitBlocked, setLimitBlocked] = useState(null);
+  const { canDo, planName } = useUsageLimits();
 
   useEffect(() => {
     if (!user) { navigate('/auth'); return; }
@@ -282,6 +286,18 @@ const ExamPlanner = () => {
   const handleCreated = (plan) => {
     setPlans(prev => [...prev, plan]);
     setShowForm(false);
+  };
+
+  const handleNewPlan = () => {
+    // Count only active (not past) plans
+    const activePlans = plans.filter(p => daysUntilExam(p.examDate) >= 0);
+    const check = canDo('examPlans');
+    // Use active plan count vs limit
+    if (activePlans.length >= (check.limit === Infinity ? Infinity : check.limit)) {
+      setLimitBlocked({ action: 'examPlans', current: activePlans.length, limit: check.limit, planName });
+      return;
+    }
+    setShowForm(true);
   };
 
   const handleTopicToggle = async (plan, topicIndex) => {
@@ -325,7 +341,7 @@ const ExamPlanner = () => {
             <h1 className="ep-title">Exam Planner</h1>
             <p className="ep-subtitle">Set your exam date, list your topics, and get a day-by-day study plan.</p>
           </div>
-          <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+          <button className="btn btn-primary" onClick={handleNewPlan}>
             <PlusIcon /> New Exam Plan
           </button>
         </div>
@@ -350,7 +366,7 @@ const ExamPlanner = () => {
             <div className="ep-empty-icon">📅</div>
             <h3>No exam plans yet</h3>
             <p>Create your first plan to get a personalized study schedule.</p>
-            <button className="btn btn-primary" onClick={() => setShowForm(true)}>
+            <button className="btn btn-primary" onClick={handleNewPlan}>
               <PlusIcon /> Create Exam Plan
             </button>
           </div>
@@ -388,6 +404,15 @@ const ExamPlanner = () => {
           </div>
         )}
       </div>
+
+      <UsageLimitModal
+        isOpen={!!limitBlocked}
+        onClose={() => setLimitBlocked(null)}
+        action={limitBlocked?.action}
+        current={limitBlocked?.current}
+        limit={limitBlocked?.limit}
+        planName={limitBlocked?.planName}
+      />
     </div>
   );
 };

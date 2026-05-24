@@ -1,11 +1,24 @@
 import { account } from './config';
 import { ID } from 'appwrite';
 
-export const registerUser = async (email, password, name) => {
+export const registerUser = async (email, password, name, profileData = {}) => {
   try {
     const user = await account.create(ID.unique(), email, password, name);
     // Auto-login after registration
     await account.createEmailPasswordSession(email, password);
+
+    // Store profile preferences (dateOfBirth, consent timestamps)
+    // These are saved via account.updatePrefs which stores arbitrary JSON on the user
+    if (profileData && Object.keys(profileData).length > 0) {
+      await account.updatePrefs({
+        dateOfBirth: profileData.dateOfBirth || null,
+        agreedTermsAt: profileData.agreedTermsAt || null,
+        agreedPrivacyAt: profileData.agreedPrivacyAt || null,
+        agreedDataCollectionAt: profileData.agreedDataCollectionAt || null,
+        signupCompletedAt: new Date().toISOString(),
+      });
+    }
+
     return user;
   } catch (error) {
     throw new Error(error.message);
@@ -35,6 +48,23 @@ export const getCurrentUser = async () => {
     return user;
   } catch (error) {
     return null;
+  }
+};
+
+export const getUserPrefs = async () => {
+  try {
+    const prefs = await account.getPrefs();
+    return prefs;
+  } catch (error) {
+    return {};
+  }
+};
+
+export const updateUserPrefs = async (prefs) => {
+  try {
+    return await account.updatePrefs(prefs);
+  } catch (error) {
+    throw new Error(error.message);
   }
 };
 

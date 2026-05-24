@@ -11,7 +11,7 @@ const CookiePolicy = () => {
       <nav className="page-navbar">
         <div className="navbar-container">
           <Link to="/" className="navbar-logo">
-            <span>LastWeek</span>
+            <img src="/logos/lastweek_main_logo.png" alt="LastWeek" style={{ height: "36px", objectFit: "contain" }} />
           </Link>
           <div className="navbar-links">
             <Link to="/">Home</Link>

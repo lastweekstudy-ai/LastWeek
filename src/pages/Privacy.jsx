@@ -12,7 +12,7 @@ const Privacy = () => {
       <nav className="page-navbar">
         <div className="navbar-container">
           <Link to="/" className="navbar-logo">
-            <span>LastWeek</span>
+            <img src="/logos/lastweek_main_logo.png" alt="LastWeek" style={{ height: "36px", objectFit: "contain" }} />
           </Link>
           <div className="navbar-links">
             <Link to="/">Home</Link>
@@ -39,20 +39,34 @@ const Privacy = () => {
 
         <div className="page-section">
           <h2>2. Information We Collect</h2>
+
           <p>
             We collect information in various ways, including information you provide directly, information collected automatically, and information from third parties.
           </p>
+
           <h3>2.1 Information You Provide</h3>
           <p>
-            When you create an account, we collect your name, email address, and password. When you use our services, we collect information about your study sessions, resources you upload, notes you create, and your learning progress. This information is essential for providing personalized learning experiences.
+            When you create an account, we collect your name, email address, password, and date of birth (used for age verification — we do not allow users under 13). When you use our services, we collect:
           </p>
+          <ul>
+            <li><strong>Study sessions and messages:</strong> Your conversations with the AI tutor, stored to enable you to resume sessions and review past conversations.</li>
+            <li><strong>Uploaded files:</strong> PDFs, audio lectures, and other files you upload for AI processing. Files are stored in Appwrite Storage (PDFs) or Cloudflare R2 (audio).</li>
+            <li><strong>Flashcards and MCQ answers:</strong> Cards you create or receive from AI, and quiz answers, stored for spaced-repetition scheduling.</li>
+            <li><strong>Language learning progress:</strong> Lesson completions, flashcard reviews, pronunciation attempts, and points.</li>
+            <li><strong>Usage data:</strong> Monthly counts of sessions, messages, uploads, and other actions for subscription limit enforcement.</li>
+            <li><strong>Consent timestamps:</strong> When you agreed to our Terms of Service, Privacy Policy, and data collection practices (stored in your account preferences).</li>
+            <li><strong>Subscription data:</strong> Plan, billing status, and payment history (processed by Paddle — we do not store payment card details).</li>
+          </ul>
+
           <h3>2.2 Automatically Collected Information</h3>
           <p>
             When you access our platform, we automatically collect certain information about your device and usage patterns. This includes your IP address, browser type, operating system, pages visited, time spent on pages, and referring URLs. We use this information to improve our services and understand how users interact with our platform.
           </p>
+
           <h3>2.3 Cookies and Local Storage</h3>
           <p>
-            We use only strictly necessary cookies for authentication (keeping you logged in) and payment processing (via Paddle). We do not use any analytics, advertising, or third-party tracking cookies. We also use your browser's localStorage to remember preferences like your theme choice and panel layout — this data never leaves your device. For full details, see our <Link to="/cookies">Cookie Policy</Link>.
+            We use browser localStorage to persist your theme preference (dark/light), MCQ quiz answers (so they survive page refreshes), and session state. We do not use third-party advertising cookies.
+            We use only strictly necessary cookies for authentication (keeping you logged in) and payment processing (via Paddle). We do not use any analytics, advertising, or third-party tracking cookies. For full details, see our <Link to="/cookies">Cookie Policy</Link>.
           </p>
         </div>
 
