@@ -340,14 +340,10 @@ function App() {
                 }
               />
 
-              {/* Pre-Registration page */}
+              {/* Pre-Registration page - PUBLIC (no login required) */}
               <Route
                 path="/pre-register"
-                element={
-                  <ProtectedRoute>
-                    <PreRegistration />
-                  </ProtectedRoute>
-                }
+                element={<PreRegistration />}
               />
               
               {/* Admin Routes */}
