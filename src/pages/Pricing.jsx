@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import UpgradeButton from '../components/UpgradeButton';
-import useUsageLimits from '../hooks/useUsageLimits';
+import useCombinedLimits from '../hooks/useCombinedLimits';
 import { PLANS, formatLimit } from '../config/planLimits';
+import { getAdminSettings } from '../appwrite/admin';
 
 const CHECK = '✅';
 const CROSS = '❌';
@@ -25,23 +26,56 @@ const FEATURES = [
 ];
 
 const PADDLE_PRICES = {
-  pro: import.meta.env.VITE_PADDLE_PRO_PLAN_PRICE_ID,
-  plus: import.meta.env.VITE_PADDLE_PLUS_PLAN_PRICE_ID,
-  proplus: import.meta.env.VITE_PADDLE_PRO_PLUS_PRICE_ID,
+  pro: import.meta.env.VITE_PADDLE_PRO_PRICE_ID,
+  plus: import.meta.env.VITE_PADDLE_PLUS_PRICE_ID,
+  proplus: import.meta.env.VITE_PADDLE_PROPLUS_PRICE_ID,
 };
 
 const Pricing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { plan: currentPlan } = useUsageLimits();
+  const { plan: currentPlan, isTestingMode } = useCombinedLimits();
   const [billing, setBilling] = useState('monthly');
+  const [adminSettings, setAdminSettings] = useState(null);
+  const [loadingSettings, setLoadingSettings] = useState(true);
+
+  useEffect(() => {
+    loadAdminSettings();
+  }, []);
+
+  const loadAdminSettings = async () => {
+    try {
+      const settings = await getAdminSettings();
+      setAdminSettings(settings);
+    } catch (err) {
+      console.error('Failed to load admin settings:', err);
+    } finally {
+      setLoadingSettings(false);
+    }
+  };
+
+  // Determine which plans to show based on admin settings
+  const getPlanVisibility = (planId) => {
+    if (!adminSettings) return true;
+    const planMap = {
+      free: adminSettings.freePlanActive,
+      pro: adminSettings.proPlanActive,
+      plus: adminSettings.plusPlanActive,
+      proplus: adminSettings.proPlusPlanActive,
+    };
+    return planMap[planId] !== false;
+  };
+
+  // Check if pre-reg mode is active
+  const isPreRegMode = adminSettings?.preRegActive;
+  const paymentsActive = adminSettings?.paymentsActive;
 
   const tiers = [
     { id: 'free', highlight: false },
     { id: 'pro', highlight: true, badge: 'Most Popular' },
     { id: 'plus', highlight: false },
     { id: 'proplus', highlight: false, badge: 'Best Value' },
-  ];
+  ].filter(t => getPlanVisibility(t.id));
 
   const annualDiscount = 0.25; // 25% off annual
   const getPrice = (plan) => {
@@ -57,6 +91,46 @@ const Pricing = () => {
       padding: '3rem 1rem',
     }}>
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+
+        {/* Pre-Registration Banner */}
+        {isPreRegMode && (
+          <div style={{
+            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+            border: '1px solid #a855f7',
+            borderRadius: '12px',
+            padding: '1rem 1.5rem',
+            marginBottom: '2rem',
+            textAlign: 'center',
+          }}>
+            <h3 style={{ color: '#a855f7', margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
+              🎉 Pre-Registration Now Open!
+            </h3>
+            <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
+              Pay $5 now and get <strong>Plus free for 1 year</strong> (a $180 value!). 
+              Plus, get a unique promo code — for every 10 friends who join, earn 6 more months free!
+            </p>
+          </div>
+        )}
+
+        {/* Daily Free Slots Banner */}
+        {!paymentsActive && adminSettings?.dailyFreeSlotsActive && (
+          <div style={{
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            border: '1px solid #10b981',
+            borderRadius: '12px',
+            padding: '1rem 1.5rem',
+            marginBottom: '2rem',
+            textAlign: 'center',
+          }}>
+            <h3 style={{ color: '#10b981', margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
+              🎁 Free Testing Available Today!
+            </h3>
+            <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
+              Try all features for free! Leave a review and get added to our pre-registration list with 
+              <strong> 1 year of Plus free</strong>. Limited slots daily.
+            </p>
+          </div>
+        )}
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
@@ -75,16 +149,23 @@ const Pricing = () => {
 
           {/* Billing toggle */}
           <div style={{ display: 'inline-flex', backgroundColor: 'var(--color-bg-secondary)', borderRadius: '999px', padding: '4px', border: '1px solid var(--color-border)' }}>
-            {['monthly', 'annual'].map(b => (
-              <button key={b} onClick={() => setBilling(b)} style={{
-                padding: '0.4rem 1rem', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600,
-                backgroundColor: billing === b ? '#a855f7' : 'transparent',
-                color: billing === b ? 'white' : 'var(--color-text-muted)',
-                transition: 'all 0.2s',
-              }}>
-                {b === 'monthly' ? 'Monthly' : 'Annual (–25%)'}
-              </button>
-            ))}
+            <button onClick={() => setBilling('monthly')} style={{
+              padding: '0.4rem 1rem', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600,
+              backgroundColor: '#a855f7',
+              color: 'white',
+              transition: 'all 0.2s',
+            }}>
+              Monthly
+            </button>
+            <button disabled style={{
+              padding: '0.4rem 1rem', borderRadius: '999px', border: 'none', cursor: 'not-allowed', fontSize: '0.85rem', fontWeight: 600,
+              backgroundColor: 'transparent',
+              color: 'var(--color-text-muted)',
+              opacity: 0.5,
+              transition: 'all 0.2s',
+            }}>
+              Annual (Coming Soon)
+            </button>
           </div>
         </div>
 
@@ -161,12 +242,45 @@ const Pricing = () => {
                     ✓ Current Plan
                   </div>
                 ) : id === 'free' ? (
-                  <button onClick={() => navigate('/dashboard')} style={{
-                    width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--color-border)',
-                    backgroundColor: 'transparent', color: 'var(--color-text-primary)', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
+                  !paymentsActive && adminSettings?.dailyFreeSlotsActive ? (
+                    <button onClick={() => navigate('/auth?freeSlot=true')} style={{
+                      width: '100%', padding: '0.6rem', borderRadius: '8px', border: 'none',
+                      backgroundColor: '#10b981', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
+                    }}>
+                      Try Free Today
+                    </button>
+                  ) : (
+                    <button onClick={() => navigate('/dashboard')} style={{
+                      width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--color-border)',
+                      backgroundColor: 'transparent', color: 'var(--color-text-primary)', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
+                    }}>
+                      Continue Free
+                    </button>
+                  )
+                ) : isPreRegMode ? (
+                  // Pre-reg mode: show pre-reg button instead of normal pricing
+                  id === 'plus' ? (
+                    <button onClick={() => navigate('/auth?preReg=true')} style={{
+                      width: '100%', padding: '0.6rem', borderRadius: '8px', border: 'none',
+                      backgroundColor: '#a855f7', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
+                    }}>
+                      Pre-Register ($5)
+                    </button>
+                  ) : (
+                    <div style={{
+                      width: '100%', padding: '0.6rem', borderRadius: '8px', textAlign: 'center',
+                      backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-muted)', fontWeight: 600, fontSize: '0.9rem',
+                    }}>
+                      Coming Soon
+                    </div>
+                  )
+                ) : !paymentsActive ? (
+                  <div style={{
+                    width: '100%', padding: '0.6rem', borderRadius: '8px', textAlign: 'center',
+                    backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-muted)', fontWeight: 600, fontSize: '0.9rem',
                   }}>
-                    Continue Free
-                  </button>
+                    Coming Soon
+                  </div>
                 ) : priceId ? (
                   <UpgradeButton priceId={priceId} label={`Upgrade to ${plan.name}`} />
                 ) : (

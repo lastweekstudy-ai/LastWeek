@@ -9,6 +9,8 @@ import YoutubeStudyPanel from './YoutubeStudyPanel';
 import AudioProcessor from './AudioProcessor';
 import AudioLectureViewer from './AudioLectureViewer';
 import ResourceSearch from './ResourceSearch';
+import useCombinedLimits from '../hooks/useCombinedLimits';
+import { formatLimit } from '../config/planLimits';
 import '../styles/PDFLibrary.css';
 
 const PDFLibrary = ({ 
@@ -33,6 +35,9 @@ const PDFLibrary = ({
   const [showAudioProcessor, setShowAudioProcessor] = useState(false);
   const [showResourceSearch, setShowResourceSearch] = useState(false);
   
+  // Usage limits
+  const { planName, limits, usage, loading: limitsLoading, isTestingMode } = useCombinedLimits();
+
   // Study time tracking
   const studyStartTime = useRef(null);
   const lastActivityTime = useRef(null);
@@ -280,6 +285,35 @@ const PDFLibrary = ({
                 🔍 Library
               </button>
             </div>
+
+            {/* Usage limits notice */}
+            {!limitsLoading && usage && limits && (
+              <div style={{
+                display: 'flex', gap: '0.75rem', padding: '0.5rem 0.75rem',
+                fontSize: '0.72rem', color: 'var(--color-text-muted)',
+                borderBottom: '1px solid var(--color-border)',
+                flexWrap: 'wrap', alignItems: 'center',
+              }}>
+                <span style={{
+                  padding: '0.15rem 0.5rem', borderRadius: '999px',
+                  backgroundColor: 'rgba(168,85,247,0.1)', color: '#a855f7',
+                  fontWeight: 700, fontSize: '0.68rem',
+                }}>{planName}</span>
+                <span>
+                  📄 PDFs: <strong style={{ color: (usage.pdfsUploaded || 0) >= limits.pdfs ? '#ef4444' : 'var(--color-text-secondary)' }}>
+                    {usage.pdfsUploaded || 0}/{formatLimit(limits.pdfs)}
+                  </strong>
+                  {limits.pdfs !== Infinity && ` (max ${limits.pdfMaxSizeMB}MB each)`}
+                </span>
+                <span>
+                  🎙️ Audio: <strong style={{ color: (usage.audiosUploaded || 0) >= limits.audios ? '#ef4444' : 'var(--color-text-secondary)' }}>
+                    {usage.audiosUploaded || 0}/{formatLimit(limits.audios)}
+                  </strong>
+                  {limits.audios !== Infinity && ` (max ${limits.audioMaxSizeMB}MB each)`}
+                </span>
+                <span style={{ color: '#10b981' }}>📥 Library imports: Free</span>
+              </div>
+            )}
 
             <div className="pdf-library-content">
               {loading ? (

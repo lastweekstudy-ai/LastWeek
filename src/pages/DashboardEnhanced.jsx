@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getUserSessions, getDueFlashcards, getUserFlashcards, getUserStorageUsage, deleteSession } from '../appwrite/database';
 import { getUserExamPlans, daysUntilExam, getTodayTopics } from '../appwrite/examPlanner';
+import { getTestingUsageDoc } from '../appwrite/admin';
 import StorageIndicator from '../components/StorageIndicator';
 import SessionActions from '../components/SessionActions';
 import SessionSearch from '../components/SessionSearch';
@@ -11,6 +12,9 @@ import StudyStatistics from '../components/StudyStatistics';
 import LoadingSpinner from '../components/LoadingSpinner';
 import UpgradeButton from '../components/UpgradeButton';
 import UsageWidget from '../components/UsageWidget';
+import TestingReviewPrompt from '../components/TestingReviewPrompt';
+import TestingUserWidget from '../components/TestingUserWidget';
+import PreRegStatus from '../components/PreRegStatus';
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { exportSessions, exportSession, exportSessionAsMarkdown } from '../utils/exportImport';
 import { 
@@ -46,6 +50,9 @@ const DashboardEnhanced = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showStats, setShowStats] = useState(false);
+  const [isTestingMode, setIsTestingMode] = useState(false);
+  const [hasSubmittedReview, setHasSubmittedReview] = useState(false);
+  const [testingUsage, setTestingUsage] = useState(null);
 
   // Keyboard shortcuts
   useKeyboardShortcuts([
@@ -70,6 +77,24 @@ const DashboardEnhanced = () => {
       const userSessions = await getUserSessions(user.$id);
       setSessions(userSessions);
       setFilteredSessions(userSessions);
+      
+      // Check if user is in testing mode
+      const testingDoc = await getTestingUsageDoc(user.$id);
+      if (testingDoc && !testingDoc.addedToPreReg) {
+        setIsTestingMode(true);
+        setHasSubmittedReview(testingDoc.hasReviewed || false);
+        setTestingUsage({
+          sessions: testingDoc.sessions || 0,
+          pdfs: testingDoc.pdfs || 0,
+          audios: testingDoc.audios || 0,
+          messages: testingDoc.messages || 0,
+          flashcards: testingDoc.flashcards || 0,
+          mcqs: testingDoc.mcqs || 0,
+          examPlans: testingDoc.examPlans || 0,
+          languageLearningSessions: testingDoc.languageLearningSessions || 0,
+          libraryImports: testingDoc.libraryImports || 0,
+        });
+      }
       
       // Load flashcards and message counts in parallel
       const [dueCards, allCards, storageUsage, examData] = await Promise.allSettled([
@@ -237,11 +262,30 @@ const DashboardEnhanced = () => {
           </div>
         )}
 
-        {/* Live usage widget */}
-        {!isGuest && (
-          <div style={{ marginBottom: '1.5rem' }}>
-            <UsageWidget />
-          </div>
+        {/* Testing mode widget */}
+        {isTestingMode ? (
+          <>
+            <TestingUserWidget usage={testingUsage} />
+            {!hasSubmittedReview && (
+              <TestingReviewPrompt 
+                onSubmitSuccess={() => {
+                  setHasSubmittedReview(true);
+                  setIsTestingMode(false);
+                }}
+              />
+            )}
+          </>
+        ) : (
+          <>
+            {/* Pre-registration status for reviewers */}
+            <PreRegStatus />
+            {/* Live usage widget for normal users */}
+            {!isGuest && (
+              <div style={{ marginBottom: '1.5rem' }}>
+                <UsageWidget />
+              </div>
+            )}
+          </>
         )}
 
         {showStats && (

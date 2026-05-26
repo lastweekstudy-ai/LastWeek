@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { getAdminSettings } from '../../../appwrite/admin';
+import SlotRefreshCountdown from '../../../components/SlotRefreshCountdown';
 import '../landing.css';
 
 const CHECK = (
@@ -24,6 +26,7 @@ const plans = [
     highlighted: false,
     cta: 'Get Started Free',
     ctaLink: '/auth',
+    planKey: 'free',
     features: [
       { text: '5 sessions / month', included: true },
       { text: '500 AI messages / month', included: true },
@@ -46,6 +49,7 @@ const plans = [
     highlighted: true,
     cta: 'Start Pro',
     ctaLink: '/auth',
+    planKey: 'pro',
     features: [
       { text: '30 sessions / month', included: true },
       { text: '3,000 AI messages / month', included: true },
@@ -68,6 +72,7 @@ const plans = [
     highlighted: false,
     cta: 'Start Plus',
     ctaLink: '/auth',
+    planKey: 'plus',
     features: [
       { text: '100 sessions / month', included: true },
       { text: '7,000 AI messages / month', included: true },
@@ -90,6 +95,7 @@ const plans = [
     highlighted: false,
     cta: 'Start Pro+',
     ctaLink: '/auth',
+    planKey: 'proplus',
     features: [
       { text: 'Unlimited sessions', included: true },
       { text: 'Unlimited AI messages', included: true },
@@ -106,55 +112,241 @@ const plans = [
 ];
 
 const Pricing = () => {
+  const [adminSettings, setAdminSettings] = useState(null);
+
+  useEffect(() => {
+    loadAdminSettings();
+  }, []);
+
+  const loadAdminSettings = async () => {
+    try {
+      const settings = await getAdminSettings();
+      setAdminSettings(settings);
+    } catch (err) {
+      console.error('Failed to load admin settings:', err);
+    }
+  };
+
+  // Determine if pre-reg mode is active
+  const isPreRegMode = adminSettings?.preRegActive;
+  const paymentsActive = adminSettings?.paymentsActive;
+  const dailyFreeSlotsActive = adminSettings?.dailyFreeSlotsActive;
+
+  // Get plan visibility
+  const getPlanVisibility = (planKey) => {
+    if (!adminSettings) return true;
+    const planMap = {
+      free: adminSettings.freePlanActive,
+      pro: adminSettings.proPlanActive,
+      plus: adminSettings.plusPlanActive,
+      proplus: adminSettings.proPlusPlanActive,
+    };
+    return planMap[planKey] !== false;
+  };
+
+  // Filter visible plans
+  const visiblePlans = plans.filter(p => getPlanVisibility(p.planKey));
+
+  // Get CTA for a plan based on admin settings
+  const getCTA = (plan) => {
+    if (isPreRegMode) {
+      if (plan.planKey === 'plus') {
+        return { text: 'Pre-Register ($5)', link: '/pre-register' };
+      }
+      return { text: 'Coming Soon', link: null, disabled: true };
+    }
+    if (!paymentsActive) {
+      if (plan.planKey === 'free' && dailyFreeSlotsActive) {
+        return { text: 'Try Free Today', link: '/auth?freeSlot=true' };
+      }
+      return { text: 'Coming Soon', link: null, disabled: true };
+    }
+    return { text: plan.cta, link: plan.ctaLink };
+  };
+
   return (
     <section id="pricing" className="pricing">
       <div className="container">
         <h2 className="section-title">Simple, Transparent Pricing</h2>
         <p className="section-subtitle">
-          Start free. Upgrade when you need more. All plans include unlimited text-to-speech and library imports.
+          {isPreRegMode 
+            ? '🎉 Pre-Registration is now open! Get Plus free for 1 year!'
+            : 'Start free. Upgrade when you need more. All plans include unlimited text-to-speech and library imports.'}
         </p>
+
+        {/* Pre-Registration Banner */}
+        {isPreRegMode && (
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+            border: '1px solid rgba(168, 85, 247, 0.5)',
+            borderRadius: '16px',
+            padding: '2rem',
+            marginBottom: '2rem',
+          }}>
+            <h3 style={{ color: '#a855f7', margin: '0 0 0.5rem', fontSize: '1.25rem', textAlign: 'center' }}>
+              🎉 Pre-Registration Now Open!
+            </h3>
+            <p style={{ color: 'var(--text-secondary, #a1a1aa)', margin: '0 0 1.5rem', fontSize: '0.95rem', textAlign: 'center' }}>
+              Two ways to get <strong style={{ color: '#a855f7' }}>Plus free for 1 year</strong> (a $180 value!)
+            </p>
+
+            {/* Two Options Grid */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: '1rem',
+            }}>
+              {/* Option 1: Pay $5 */}
+              <div style={{
+                backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                borderRadius: '12px',
+                padding: '1.25rem',
+                border: '1px solid rgba(168, 85, 247, 0.3)',
+              }}>
+                <h4 style={{ color: '#a855f7', margin: '0 0 0.5rem', fontSize: '1rem' }}>
+                  💳 Pay $5 Now
+                </h4>
+                <p style={{ color: 'var(--text-secondary, #a1a1aa)', margin: '0 0 1rem', fontSize: '0.85rem' }}>
+                  One-time payment. Get your promo code instantly. Every 10 friends who join = +6 months free!
+                </p>
+                <Link
+                  to="/pre-register"
+                  style={{
+                    display: 'block',
+                    textAlign: 'center',
+                    padding: '0.75rem',
+                    borderRadius: '8px',
+                    backgroundColor: '#a855f7',
+                    color: 'white',
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                    fontSize: '0.9rem',
+                  }}
+                >
+                  Pre-Register Now
+                </Link>
+              </div>
+
+              {/* Option 2: Free Testing Slot */}
+              {adminSettings?.dailyFreeSlotsActive && (
+                <div style={{
+                  backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                  borderRadius: '12px',
+                  padding: '1.25rem',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                }}>
+                  <h4 style={{ color: '#10b981', margin: '0 0 0.5rem', fontSize: '1rem' }}>
+                    🎁 Free Testing Slot
+                  </h4>
+                  <p style={{ color: 'var(--text-secondary, #a1a1aa)', margin: '0 0 0.75rem', fontSize: '0.85rem' }}>
+                    <strong style={{ color: '#10b981' }}>{adminSettings?.dailyFreeSlotCount ?? 10}</strong> slots available daily.
+                    Test ALL features once. Leave a review and get Plus free for 1 year!
+                  </p>
+                  <Link
+                    to="/auth?freeSlot=true"
+                    style={{
+                      display: 'block',
+                      textAlign: 'center',
+                      padding: '0.75rem',
+                      borderRadius: '8px',
+                      border: '1px solid #10b981',
+                      backgroundColor: 'transparent',
+                      color: '#10b981',
+                      textDecoration: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.9rem',
+                      marginBottom: '0.75rem',
+                    }}
+                  >
+                    Claim Free Slot
+                  </Link>
+                  <SlotRefreshCountdown />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Daily Free Slots Banner */}
+        {!paymentsActive && dailyFreeSlotsActive && (
+          <div style={{
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%)',
+            border: '1px solid rgba(16, 185, 129, 0.5)',
+            borderRadius: '16px',
+            padding: '1.5rem 2rem',
+            marginBottom: '2rem',
+            textAlign: 'center',
+          }}>
+            <h3 style={{ color: '#10b981', margin: '0 0 0.5rem', fontSize: '1.25rem' }}>
+              🎁 Free Testing Available Today!
+            </h3>
+            <p style={{ color: 'var(--text-secondary, #a1a1aa)', margin: 0, fontSize: '0.95rem' }}>
+              Try all features for free! Leave a review and get added to our pre-registration list with{' '}
+              <strong style={{ color: '#10b981' }}>1 year of Plus free</strong>. Limited slots daily.
+            </p>
+          </div>
+        )}
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+          gridTemplateColumns: `repeat(auto-fit, minmax(240px, 1fr))`,
           gap: '1.5rem',
           marginBottom: '2rem',
         }}>
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`pricing-card ${plan.highlighted ? 'highlighted' : ''}`}
-              style={{ display: 'flex', flexDirection: 'column' }}
-            >
-              {plan.badge && <div className="pricing-badge">{plan.badge}</div>}
-
-              <h3 className="pricing-name">{plan.name}</h3>
-              <div className="pricing-amount">
-                <span className="price">{plan.price}</span>
-                <span className="period">{plan.period}</span>
-              </div>
-              <p className="pricing-description">{plan.description}</p>
-
-              <Link
-                to={plan.ctaLink}
-                className={`btn ${plan.highlighted ? 'btn-primary' : 'btn-secondary'}`}
-                style={{ width: '100%', justifyContent: 'center', marginBottom: '1.5rem' }}
+          {visiblePlans.map((plan) => {
+            const cta = getCTA(plan);
+            return (
+              <div
+                key={plan.name}
+                className={`pricing-card ${plan.highlighted ? 'highlighted' : ''}`}
+                style={{ display: 'flex', flexDirection: 'column' }}
               >
-                {plan.cta}
-              </Link>
+                {plan.badge && <div className="pricing-badge">{plan.badge}</div>}
 
-              <div className="pricing-features" style={{ flex: 1 }}>
-                {plan.features.map((feature, i) => (
-                  <div key={i} className="pricing-feature">
-                    {feature.included ? CHECK : CROSS}
-                    <span style={{ color: feature.included ? 'var(--text-muted, #a1a1aa)' : '#4b5563', textDecoration: feature.included ? 'none' : 'line-through' }}>
-                      {feature.text}
-                    </span>
+                <h3 className="pricing-name">{plan.name}</h3>
+                <div className="pricing-amount">
+                  <span className="price">{plan.price}</span>
+                  <span className="period">{plan.period}</span>
+                </div>
+                <p className="pricing-description">{plan.description}</p>
+
+                {cta.disabled ? (
+                  <div
+                    className={`btn ${plan.highlighted ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ 
+                      width: '100%', 
+                      justifyContent: 'center', 
+                      marginBottom: '1.5rem',
+                      opacity: 0.5,
+                      cursor: 'not-allowed',
+                      textAlign: 'center',
+                    }}
+                  >
+                    {cta.text}
                   </div>
-                ))}
+                ) : (
+                  <Link
+                    to={cta.link}
+                    className={`btn ${plan.highlighted ? 'btn-primary' : 'btn-secondary'}`}
+                    style={{ width: '100%', justifyContent: 'center', marginBottom: '1.5rem' }}
+                  >
+                    {cta.text}
+                  </Link>
+                )}
+
+                <div className="pricing-features" style={{ flex: 1 }}>
+                  {plan.features.map((feature, i) => (
+                    <div key={i} className="pricing-feature">
+                      {feature.included ? CHECK : CROSS}
+                      <span style={{ color: feature.included ? 'var(--text-muted, #a1a1aa)' : '#4b5563', textDecoration: feature.included ? 'none' : 'line-through' }}>
+                        {feature.text}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <p className="pricing-note" style={{ textAlign: 'center', color: 'var(--text-muted, #a1a1aa)', fontSize: '0.875rem' }}>

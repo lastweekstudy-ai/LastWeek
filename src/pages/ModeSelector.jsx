@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import useSession from '../hooks/useSession';
-import useUsageLimits from '../hooks/useUsageLimits';
+import useCombinedLimits from '../hooks/useCombinedLimits';
 import UsageLimitModal from '../components/UsageLimitModal';
 import { 
   MentalModelIcon, 
@@ -17,7 +17,7 @@ const ModeSelector = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { startSession } = useSession();
-  const { canDo, recordUsage, planName } = useUsageLimits();
+  const { canDo, recordUsage, planName, isTestingMode } = useCombinedLimits();
   
   const [selectedMode, setSelectedMode] = useState(null);
   const [subject, setSubject] = useState('');

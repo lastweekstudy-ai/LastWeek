@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
 import { useAuth } from '../context/AuthContext';
-import useUsageLimits from '../hooks/useUsageLimits';
+import useCombinedLimits from '../hooks/useCombinedLimits';
 
 /**
  * UpgradeButton
@@ -23,7 +23,7 @@ const UpgradeButton = ({
 }) => {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
-  const { plan, planName, refresh: refreshLimits } = useUsageLimits();
+  const { plan, planName, refresh: refreshLimits, isTestingMode } = useCombinedLimits();
   const [paddle, setPaddle] = useState(null);
   const [loading, setLoading] = useState(false);
   const [paid, setPaid] = useState(false);

@@ -112,24 +112,50 @@ export const processAudioLecture = async (audioFile, userId, sessionId, onProgre
 - Bullet points for key information
 - Examples and explanations
 - Important definitions highlighted
-- When the lecture describes a diagram, figure, graph, geometric shape, process flow, or anything visual — embed an SVG figure using this exact format:
+- When the lecture describes a diagram, figure, graph, geometric shape, process flow, or anything visual — embed an SVG figure using the EXACT format below]
 
-[FIGURE:Title of figure]
-<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;background:#1e1e2e;border-radius:8px;padding:8px">
-  <!-- draw the figure here using SVG elements: rect, circle, line, path, text, etc. -->
-  <!-- Use light colors (#e2e8f0, #94a3b8) for shapes and white for text labels -->
-  <!-- Keep it clean, educational, and clearly labeled -->
+SVG FIGURE RULES — FOLLOW EXACTLY:
+When creating any visual figure, use this format:
+
+[FIGURE:Descriptive Title]
+<svg viewBox="0 0 500 400" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;background:#1a1b2e;border-radius:12px">
+  <!-- CRITICAL: All content must be inside a 20% padding zone -->
+  <!-- Drawing area: x=50 to x=450, y=40 to y=360 (20% inset from edges) -->
+  <!-- NEVER place elements at x<50, x>450, y<40, or y>360 -->
+  
+  <!-- Use these colors: -->
+  <!-- Shapes/lines: #a78bfa (purple), #60a5fa (blue), #34d399 (green), #f87171 (red) -->
+  <!-- Text labels: #e2e8f0 (light gray) -->
+  <!-- Axes/borders: #475569 (dark gray) -->
+  <!-- Fill areas: use 0.2 opacity versions of the above colors -->
+  
+  <!-- Text: font-family="sans-serif", font-size 13-16px, fill="#e2e8f0" -->
+  <!-- Lines: stroke-width 2-3px -->
+  <!-- Arrowheads: define in <defs> section -->
 </svg>
 [/FIGURE]
 
-Examples of when to add figures:
+SVG QUALITY RULES:
+1. ALWAYS use viewBox="0 0 500 400" for consistent sizing
+2. ALWAYS keep 20% padding — nothing touches the edges (min x=50, max x=450, min y=40, max y=360)
+3. ALWAYS label everything — every shape, axis, arrow, and data point must have a text label
+4. ALWAYS use the dark background (#1a1b2e) with light-colored elements
+5. For geometric figures: draw accurate angles, label all sides and angles with values from the lecture
+6. For graphs: draw proper axes with tick marks, label axes, plot data points accurately
+7. For process flows: use rounded rectangles connected by arrows, label each step
+8. For force/vector diagrams: use arrows with proper direction and magnitude labels
+9. Make figures LARGE and CLEAR — use the full drawing area (50-450 x, 40-360 y)
+10. Include a title text at the top of the SVG (y=30, centered, font-size 16, bold)
+
+WHEN TO ADD FIGURES:
 - Geometric shapes or trigonometry → draw the triangle/circle with labeled angles/sides
-- Graphs or functions → draw axes with the curve
-- Process flows or cycles → draw boxes with arrows
+- Graphs or functions → draw axes with the curve plotted accurately
+- Process flows or cycles → draw boxes with arrows showing the flow
 - Anatomical or structural diagrams → draw the structure with labels
-- Physics diagrams (forces, circuits) → draw the diagram
+- Physics diagrams (forces, circuits, motion) → draw with proper vectors
 - Any time the lecturer says "imagine", "picture this", "as you can see", "draw a..."
-]
+- Comparisons or rankings → draw a bar chart or comparison diagram
+- Timelines → draw a horizontal timeline with labeled events
 
 ## Summary
 [Concise summary of main takeaways]
@@ -140,7 +166,7 @@ Examples of when to add figures:
 Transcript:
 ${transcript}
 
-Format the output in clean Markdown. Embed SVG figures inline where appropriate as described above.`
+Format the output in clean Markdown. Embed SVG figures inline where appropriate using the [FIGURE:title]...[/FIGURE] format described above. Make figures accurate to the lecture content — use actual numbers, labels, and relationships mentioned by the lecturer.`
           }
         ],
         max_tokens: 8000,

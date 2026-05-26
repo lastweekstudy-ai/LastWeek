@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import useUsageLimits from '../hooks/useUsageLimits';
+import useCombinedLimits from '../hooks/useCombinedLimits';
 import { formatLimit } from '../config/planLimits';
 
 /**
@@ -9,7 +9,7 @@ import { formatLimit } from '../config/planLimits';
  */
 const UsageWidget = () => {
   const navigate = useNavigate();
-  const { plan, planName, limits, usage, loading } = useUsageLimits();
+  const { plan, planName, limits, usage, loading, isTestingMode } = useCombinedLimits();
 
   if (loading || !usage) return null;
 

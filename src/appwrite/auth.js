@@ -4,6 +4,8 @@ import { ID } from 'appwrite';
 export const registerUser = async (email, password, name, profileData = {}) => {
   try {
     const user = await account.create(ID.unique(), email, password, name);
+    console.log('[auth] User created:', user);
+    
     // Auto-login after registration
     await account.createEmailPasswordSession(email, password);
 
@@ -19,7 +21,11 @@ export const registerUser = async (email, password, name, profileData = {}) => {
       });
     }
 
-    return user;
+    // Get the full user object after login to ensure we have all properties
+    const fullUser = await account.get();
+    console.log('[auth] Full user after login:', fullUser);
+    
+    return fullUser;
   } catch (error) {
     throw new Error(error.message);
   }

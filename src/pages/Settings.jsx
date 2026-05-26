@@ -5,7 +5,7 @@ import { account } from '../appwrite/config';
 import { SettingsIcon, UserIcon, KeyboardIcon, TrashIcon } from '../components/Icons';
 import UpgradeButton from '../components/UpgradeButton';
 import UsageWidget from '../components/UsageWidget';
-import useUsageLimits from '../hooks/useUsageLimits';
+import useCombinedLimits from '../hooks/useCombinedLimits';
 import { formatLimit } from '../config/planLimits';
 import '../styles/Settings.css';
 
@@ -15,7 +15,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('account');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-  const { plan, planName, limits, usage } = useUsageLimits();
+  const { plan, planName, limits, usage, isTestingMode } = useCombinedLimits();
 
   // Account settings state
   const [name, setName] = useState(user?.name || '');

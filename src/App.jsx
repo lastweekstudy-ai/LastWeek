@@ -5,7 +5,7 @@ import { SessionProvider } from './context/SessionContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import useSession from './hooks/useSession';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
-import useUsageLimits from './hooks/useUsageLimits';
+import useCombinedLimits from './hooks/useCombinedLimits';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
 import MigrationHelper from './components/MigrationHelper';
@@ -36,6 +36,17 @@ import LanguageLearningLessons from './pages/LanguageLearningLessons';
 import LanguageLearningPractice from './pages/LanguageLearningPractice';
 import TTSDemo from './pages/TTSDemo';
 import FlashcardLibrary from './pages/FlashcardLibrary';
+import PreRegistration from './pages/PreRegistration';
+
+// Admin Panel
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/Dashboard';
+import AdminPreReg from './pages/admin/PreRegUsers';
+import AdminDailySlots from './pages/admin/DailySlots';
+import AdminReviews from './pages/admin/Reviews';
+import AdminSettings from './pages/admin/Settings';
+import AdminTestingUsers from './pages/admin/TestingUsers';
+
 import './styles/global.css';
 import './styles/ModePage.css';
 import './styles/ErrorBoundary.css';
@@ -59,14 +70,37 @@ const ProtectedRoute = ({ children }) => {
   return user ? children : <Navigate to="/auth" replace />;
 };
 
-// Language Learning Guard — blocks free-tier users
+// Language Learning Guard — blocks free-tier users (but allows testing users)
 const LanguageLearningGuard = ({ children }) => {
-  const { canDo, loading } = useUsageLimits();
+  const { canDo, loading, isTestingMode } = useCombinedLimits();
   if (loading) return <div className="loading-state"><p>Loading...</p></div>;
+  
+  // Testing users get limited access
+  if (isTestingMode) {
+    return children;
+  }
+  
   const check = canDo('languageLearning');
   if (!check.allowed) {
     return <Navigate to="/pricing" replace />;
   }
+  return children;
+};
+
+// Admin Route Guard — only allows users with 'admin' label
+const AdminRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) {
+    return <div className="loading-state"><p>Loading...</p></div>;
+  }
+  
+  const isAdmin = user?.labels?.includes('admin');
+  
+  if (!user || !isAdmin) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
   return children;
 };
 
@@ -146,7 +180,6 @@ function App() {
               <Route path="/contact" element={<Contact />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route path="/pricing" element={<Pricing />} />
               <Route path="/refund-policy" element={<RefundPolicy />} />
               <Route path="/cookies" element={<CookiePolicy />} />
               <Route path="/auth" element={<Auth />} />
@@ -306,6 +339,33 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
+              {/* Pre-Registration page */}
+              <Route
+                path="/pre-register"
+                element={
+                  <ProtectedRoute>
+                    <PreRegistration />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Admin Routes */}
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminLayout />
+                  </AdminRoute>
+                }
+              >
+                <Route index element={<AdminDashboard />} />
+                <Route path="testing-users" element={<AdminTestingUsers />} />
+                <Route path="pre-reg" element={<AdminPreReg />} />
+                <Route path="daily-slots" element={<AdminDailySlots />} />
+                <Route path="reviews" element={<AdminReviews />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
               
               {/* Session routes */}
               <Route 

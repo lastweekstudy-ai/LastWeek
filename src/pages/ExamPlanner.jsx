@@ -9,7 +9,7 @@ import {
   generateSchedule,
   daysUntilExam,
 } from '../appwrite/examPlanner';
-import useUsageLimits from '../hooks/useUsageLimits';
+import useCombinedLimits from '../hooks/useCombinedLimits';
 import UsageLimitModal from '../components/UsageLimitModal';
 import '../styles/ExamPlanner.css';
 
@@ -264,7 +264,7 @@ const ExamPlanner = () => {
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState('');
   const [limitBlocked, setLimitBlocked] = useState(null);
-  const { canDo, planName } = useUsageLimits();
+  const { canDo, planName, isTestingMode } = useCombinedLimits();
 
   useEffect(() => {
     if (!user) { navigate('/auth'); return; }

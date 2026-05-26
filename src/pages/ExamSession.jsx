@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useSession as useSessionContext } from '../context/SessionContext';
 import useDeepSeek from '../hooks/useDeepSeek';
 import useMobileViewport from '../hooks/useMobileViewport';
-import useUsageLimits from '../hooks/useUsageLimits';
+import useCombinedLimits from '../hooks/useCombinedLimits';
 import { buildContextMessages } from '../utils/contextManager';
 import {
   getUserExamPlans,
@@ -45,7 +45,7 @@ const ExamSession = () => {
   const [limitBlocked, setLimitBlocked] = useState(null);
   const openingFiredRef = useRef(false);
   
-  const { canDo, recordUsage, planName } = useUsageLimits();
+  const { canDo, recordUsage, planName, isTestingMode } = useCombinedLimits();
   
   // Mobile viewport handling
   const { isMobile } = useMobileViewport();
