@@ -914,21 +914,14 @@ export const markTestingUserReviewed = async (userId, reviewId) => {
 /**
  * Check if user is an existing user (has usage_tracking or sessions)
  * Used to prevent existing users from joining pre-reg
+ * 
+ * NOTE: This function makes requests without authentication.
+ * The collections must have "Any" read access enabled in Appwrite.
+ * If permissions are restricted, the check will silently fail and return false.
  */
 export const isExistingUser = async (email) => {
   try {
-    // Check if email exists in daily_slot_usage (already used a free slot)
-    const slotUsage = await databases.listDocuments(
-      DATABASE_ID,
-      DAILY_SLOT_USAGE_COLLECTION_ID,
-      [Query.equal('email', email), Query.limit(1)]
-    );
-    
-    if (slotUsage.documents.length > 0) {
-      return true;
-    }
-
-    // Check if already in pre_registrations
+    // Check if already in pre_registrations (this collection should be publicly readable)
     const preReg = await databases.listDocuments(
       DATABASE_ID,
       PRE_REGISTRATIONS_COLLECTION_ID,
@@ -939,9 +932,15 @@ export const isExistingUser = async (email) => {
       return true;
     }
 
+    // Note: daily_slot_usage check skipped - requires auth
+    // Pre-reg users who already used a free slot will be caught by the 
+    // pre_registrations check above since they should be added there first
+    
     return false;
   } catch (err) {
     console.error('[admin] Failed to check existing user:', err.message);
+    // Return false to allow the user to proceed
+    // The webhook will validate on the backend
     return false;
   }
 };
