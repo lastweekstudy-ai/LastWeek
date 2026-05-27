@@ -371,60 +371,103 @@ const PreRegistration = () => {
           </ul>
         </div>
 
-        {/* Payment Temporarily Disabled Notice */}
-        <div style={{
-          backgroundColor: 'rgba(245, 158, 11, 0.1)',
-          border: '1px solid #f59e0b',
-          borderRadius: '8px',
-          padding: '1rem',
-          marginBottom: '1.5rem',
-          textAlign: 'center',
-        }}>
-          <p style={{ color: '#f59e0b', margin: 0, fontSize: '0.95rem', fontWeight: 600 }}>
-            ⚠️ Payments Temporarily Unavailable
-          </p>
-          <p style={{ color: 'var(--color-text-secondary)', margin: '0.5rem 0 0', fontSize: '0.85rem' }}>
-            We're currently resolving an issue with our payment provider. Please check back soon or try our free trial!
-          </p>
+        {/* Form */}
+        <div style={{ marginBottom: '1.5rem' }}>
+          <label style={{
+            display: 'block',
+            color: 'var(--color-text-secondary)',
+            marginBottom: '0.5rem',
+            fontSize: '0.9rem',
+          }}>
+            Your Name
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleInputChange}
+            placeholder="Enter your name"
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '8px',
+              border: '1px solid var(--color-border)',
+              backgroundColor: 'var(--color-bg-primary)',
+              color: 'var(--color-text-primary)',
+              fontSize: '1rem',
+              marginBottom: '1rem',
+            }}
+          />
+          
+          <label style={{
+            display: 'block',
+            color: 'var(--color-text-secondary)',
+            marginBottom: '0.5rem',
+            fontSize: '0.9rem',
+          }}>
+            Email Address
+          </label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+            placeholder="Enter your email"
+            style={{
+              width: '100%',
+              padding: '0.75rem 1rem',
+              borderRadius: '8px',
+              border: '1px solid var(--color-border)',
+              backgroundColor: 'var(--color-bg-primary)',
+              color: 'var(--color-text-primary)',
+              fontSize: '1rem',
+            }}
+          />
         </div>
 
-        {/* Try Free Trial Button */}
+        {/* Error message */}
+        {formError && (
+          <p style={{ color: '#ef4444', fontSize: '0.85rem', marginBottom: '1rem', margin: 0 }}>
+            {formError}
+          </p>
+        )}
+
+        {/* Pay Button */}
         <button
-          onClick={() => navigate('/auth?freeSlot=true')}
+          onClick={handlePayment}
+          disabled={loading}
           style={{
             width: '100%',
             padding: '1rem',
             borderRadius: '8px',
             border: 'none',
-            backgroundColor: '#10b981',
+            backgroundColor: loading ? '#6b7280' : '#a855f7',
             color: 'white',
-            cursor: 'pointer',
+            cursor: loading ? 'wait' : 'pointer',
             fontWeight: 600,
             fontSize: '1rem',
             marginBottom: '1rem',
           }}
         >
-          🎁 Try Free Trial Instead
+          {loading ? 'Processing...' : 'Pay $5 & Pre-Register'}
         </button>
 
-        {/* Disabled Pay Button */}
-        <button
-          disabled
-          style={{
-            width: '100%',
-            padding: '1rem',
-            borderRadius: '8px',
-            border: 'none',
-            backgroundColor: '#4b5563',
-            color: '#9ca3af',
-            cursor: 'not-allowed',
-            fontWeight: 600,
-            fontSize: '1rem',
-            opacity: 0.6,
-          }}
-        >
-          Pay $5 & Pre-Register (Coming Soon)
-        </button>
+        {/* Free trial option */}
+        <div style={{ textAlign: 'center' }}>
+          <button
+            onClick={() => navigate('/auth?freeSlot=true')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#10b981',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              textDecoration: 'underline',
+            }}
+          >
+            🎁 Or try free trial (leave a review)
+          </button>
+        </div>
 
         <p style={{
           color: 'var(--color-text-muted)',
