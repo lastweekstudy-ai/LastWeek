@@ -365,6 +365,7 @@ export const createReview = async (data) => {
       ID.unique(),
       {
         userId: data.userId,
+        userName: data.userName || 'Anonymous',
         preRegId: data.preRegId || null,
         rating: data.rating,
         title: data.title,

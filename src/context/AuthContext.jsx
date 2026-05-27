@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
         setIsGuest(currentUser.labels?.includes('guest') || false);
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      // Expected when no session exists - not an error
     } finally {
       setLoading(false);
     }

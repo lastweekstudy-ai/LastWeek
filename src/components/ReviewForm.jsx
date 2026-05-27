@@ -34,6 +34,7 @@ const ReviewForm = ({ userId, email, name, onSubmitted, onClose }) => {
       // Create the review
       const review = await createReview({
         userId,
+        userName: name || 'Anonymous',
         rating,
         title: title.trim(),
         content: content.trim(),

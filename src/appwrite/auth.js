@@ -53,6 +53,8 @@ export const getCurrentUser = async () => {
     const user = await account.get();
     return user;
   } catch (error) {
+    // Expected when no session exists (e.g., on landing page)
+    // Return null silently - this is not an error condition
     return null;
   }
 };
