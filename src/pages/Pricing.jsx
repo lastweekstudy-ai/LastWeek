@@ -54,6 +54,61 @@ const Pricing = () => {
     }
   };
 
+  // Show loading skeleton while fetching admin settings
+  if (loadingSettings) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--color-bg-primary)',
+        padding: '3rem 1rem',
+      }}>
+        <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          {/* Loading skeleton */}
+          <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+            <div style={{ 
+              width: '200px', 
+              height: '28px', 
+              backgroundColor: 'var(--color-bg-secondary)', 
+              borderRadius: '8px',
+              margin: '0 auto 1rem',
+              animation: 'pulse 2s infinite',
+            }} />
+            <div style={{ 
+              width: '300px', 
+              height: '18px', 
+              backgroundColor: 'var(--color-bg-secondary)', 
+              borderRadius: '4px',
+              margin: '0 auto',
+              animation: 'pulse 2s infinite',
+            }} />
+          </div>
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
+            gap: '1rem' 
+          }}>
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} style={{
+                backgroundColor: 'var(--color-bg-secondary)',
+                borderRadius: '16px',
+                padding: '1.5rem',
+                border: '1px solid var(--color-border)',
+                height: '350px',
+                animation: 'pulse 2s infinite',
+              }} />
+            ))}
+          </div>
+        </div>
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   // Determine which plans to show based on admin settings
   const getPlanVisibility = (planId) => {
     if (!adminSettings) return true;
@@ -69,6 +124,9 @@ const Pricing = () => {
   // Check if pre-reg mode is active
   const isPreRegMode = adminSettings?.preRegActive;
   const paymentsActive = adminSettings?.paymentsActive;
+  
+  // TEMPORARY: Payments disabled until Paddle resolves 403 issue
+  const paymentsTemporarilyDisabled = true;
 
   const tiers = [
     { id: 'free', highlight: false },
@@ -108,6 +166,26 @@ const Pricing = () => {
             <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
               Pay $5 now and get <strong>Plus free for 1 year</strong> (a $180 value!). 
               Plus, get a unique promo code — for every 10 friends who join, earn 6 more months free!
+            </p>
+          </div>
+        )}
+
+        {/* Payment Temporarily Unavailable Banner */}
+        {paymentsTemporarilyDisabled && (
+          <div style={{
+            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+            border: '1px solid #f59e0b',
+            borderRadius: '12px',
+            padding: '1rem 1.5rem',
+            marginBottom: '2rem',
+            textAlign: 'center',
+          }}>
+            <h3 style={{ color: '#f59e0b', margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
+              ⚠️ Payments Temporarily Unavailable
+            </h3>
+            <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
+              We're currently resolving an issue with our payment provider. 
+              In the meantime, you can still <strong>try our free trial</strong> — no payment required!
             </p>
           </div>
         )}
@@ -260,12 +338,21 @@ const Pricing = () => {
                 ) : isPreRegMode ? (
                   // Pre-reg mode: show pre-reg button instead of normal pricing
                   id === 'plus' ? (
-                    <button onClick={() => navigate('/auth?preReg=true')} style={{
-                      width: '100%', padding: '0.6rem', borderRadius: '8px', border: 'none',
-                      backgroundColor: '#a855f7', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
-                    }}>
-                      Pre-Register ($5)
-                    </button>
+                    paymentsTemporarilyDisabled ? (
+                      <button disabled style={{
+                        width: '100%', padding: '0.6rem', borderRadius: '8px', border: 'none',
+                        backgroundColor: '#4b5563', color: '#9ca3af', cursor: 'not-allowed', fontWeight: 600, fontSize: '0.9rem', opacity: 0.6,
+                      }}>
+                        Pre-Register ($5) - Coming Soon
+                      </button>
+                    ) : (
+                      <button onClick={() => navigate('/auth?preReg=true')} style={{
+                        width: '100%', padding: '0.6rem', borderRadius: '8px', border: 'none',
+                        backgroundColor: '#a855f7', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
+                      }}>
+                        Pre-Register ($5)
+                      </button>
+                    )
                   ) : (
                     <div style={{
                       width: '100%', padding: '0.6rem', borderRadius: '8px', textAlign: 'center',
@@ -274,7 +361,7 @@ const Pricing = () => {
                       Coming Soon
                     </div>
                   )
-                ) : !paymentsActive ? (
+                ) : !paymentsActive || paymentsTemporarilyDisabled ? (
                   <div style={{
                     width: '100%', padding: '0.6rem', borderRadius: '8px', textAlign: 'center',
                     backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-muted)', fontWeight: 600, fontSize: '0.9rem',

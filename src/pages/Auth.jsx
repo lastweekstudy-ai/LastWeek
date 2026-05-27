@@ -284,6 +284,53 @@ const Auth = () => {
   // The pre-reg blocking screen should only show when user tries to SIGN UP, not login
   const isPreRegBlocked = false; // Never block - we show pre-reg info in signup form instead
 
+  // Show loading state while fetching admin settings
+  if (!adminSettings) {
+    return (
+      <div className="auth">
+        <button className="home-button" onClick={() => navigate('/')} title="Back to Home">
+          ← Home
+        </button>
+        <div className="container">
+          <div className="auth-container">
+            <div className="auth-header" style={{ textAlign: 'center' }}>
+              <div style={{ 
+                width: '100px', 
+                height: '100px', 
+                backgroundColor: 'var(--color-bg-secondary)', 
+                borderRadius: '16px',
+                margin: '0 auto 16px',
+                animation: 'pulse 2s infinite',
+              }} />
+              <div style={{ 
+                width: '200px', 
+                height: '28px', 
+                backgroundColor: 'var(--color-bg-secondary)', 
+                borderRadius: '8px',
+                margin: '0 auto 1rem',
+                animation: 'pulse 2s infinite',
+              }} />
+              <div style={{ 
+                width: '250px', 
+                height: '18px', 
+                backgroundColor: 'var(--color-bg-secondary)', 
+                borderRadius: '4px',
+                margin: '0 auto',
+                animation: 'pulse 2s infinite',
+              }} />
+            </div>
+          </div>
+        </div>
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
   return (
     <div className="auth">
       <button className="home-button" onClick={() => navigate('/')} title="Back to Home">

@@ -5,15 +5,14 @@ import { createPDFResource } from '../appwrite/pdfResources';
 import useGemini from '../hooks/useGemini';
 import { extractTextFromPDF, isPDFProcessable, extractText } from '../utils/pdfProcessor';
 import { transcribeAudio } from '../services/aiProvider';
-import { getMonthlyUsage, incrementUsage } from '../appwrite/usageTracking';
-import { getPlanLimits, getUserPlan } from '../config/planLimits';
-import { getUserSubscription, isSubscriptionActive } from '../appwrite/subscription';
+import useCombinedLimits from '../hooks/useCombinedLimits';
 
 const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessionId = null, studyMode = 'mental_model', subject = 'General', onLimitReached = null }) => {
   const [processing, setProcessing] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [progressText, setProgressText] = useState('');
   const { processImage, processDocument } = useGemini();
+  const { canDo, limits, usage, isTestingMode, recordUsage } = useCombinedLimits();
 
   const supportedTypes = {
     'application/pdf': 'PDF',
@@ -38,45 +37,32 @@ const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessio
   const processFile = async (file) => {
     if (!file) return;
 
-    // ── Usage limit check for uploads ─────────────────────────────────────────
-    if (userId) {
-      try {
-        const [subscription, usage] = await Promise.all([
-          getUserSubscription(userId),
-          getMonthlyUsage(userId),
-        ]);
-        const activeSub = subscription && isSubscriptionActive(subscription) ? subscription : null;
-        // Determine plan from subscription or labels (labels not available here, default to free if no sub)
-        const planId = activeSub?.plan || 'free';
-        const limits = getPlanLimits(planId);
+    // ── Usage limit check for uploads using combined limits hook ─────────────────────────────────────────
+    // This properly handles testing mode, user labels, and subscriptions
+    const isAudioFile = file.type.startsWith('audio/') || file.name.match(/\.(mp3|wav|m4a|ogg|flac|webm|aac)$/i);
+    const isPdfFile = file.type === 'application/pdf' || file.name.endsWith('.pdf');
 
-        const isAudioFile = file.type.startsWith('audio/') || file.name.match(/\.(mp3|wav|m4a|ogg|flac|webm|aac)$/i);
-        const isPdfFile = file.type === 'application/pdf' || file.name.endsWith('.pdf');
-
-        if (isAudioFile) {
-          const maxSizeBytes = limits.audioMaxSizeMB * 1024 * 1024;
-          if (file.size > maxSizeBytes) {
-            onLimitReached?.({ action: 'audios', reason: 'size', limitMB: limits.audioMaxSizeMB });
-            return;
-          }
-          if ((usage.audiosUploaded || 0) >= limits.audios) {
-            onLimitReached?.({ action: 'audios', current: usage.audiosUploaded || 0, limit: limits.audios });
-            return;
-          }
-        } else if (isPdfFile) {
-          const maxSizeBytes = limits.pdfMaxSizeMB * 1024 * 1024;
-          if (file.size > maxSizeBytes) {
-            onLimitReached?.({ action: 'pdfs', reason: 'size', limitMB: limits.pdfMaxSizeMB });
-            return;
-          }
-          if ((usage.pdfsUploaded || 0) >= limits.pdfs) {
-            onLimitReached?.({ action: 'pdfs', current: usage.pdfsUploaded || 0, limit: limits.pdfs });
-            return;
-          }
-        }
-      } catch (e) {
-        console.warn('[FileAttachment] Could not check upload limits:', e.message);
-        // Non-fatal — allow upload if limit check fails
+    if (isAudioFile) {
+      const maxSizeBytes = limits.audioMaxSizeMB * 1024 * 1024;
+      if (file.size > maxSizeBytes) {
+        onLimitReached?.({ action: 'audios', reason: 'size', limitMB: limits.audioMaxSizeMB });
+        return;
+      }
+      const audioCheck = canDo('audios');
+      if (!audioCheck.allowed) {
+        onLimitReached?.({ action: 'audios', current: audioCheck.current, limit: audioCheck.limit });
+        return;
+      }
+    } else if (isPdfFile) {
+      const maxSizeBytes = limits.pdfMaxSizeMB * 1024 * 1024;
+      if (file.size > maxSizeBytes) {
+        onLimitReached?.({ action: 'pdfs', reason: 'size', limitMB: limits.pdfMaxSizeMB });
+        return;
+      }
+      const pdfCheck = canDo('pdfs');
+      if (!pdfCheck.allowed) {
+        onLimitReached?.({ action: 'pdfs', current: pdfCheck.current, limit: pdfCheck.limit });
+        return;
       }
     }
 
@@ -102,8 +88,8 @@ const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessio
             
             content = `[Audio transcribed: ${file.name}]\n\nTranscription:\n${transcript}\n\nThe audio has been transcribed. I can now help you study this content.`;
 
-            // Record audio upload usage
-            if (userId) incrementUsage(userId, 'audiosUploaded').catch(() => {});
+            // Record audio upload usage using combined limits hook
+            recordUsage('audios').catch(() => {});
           } catch (audioError) {
             setProgressText('');
             console.error('Audio transcription failed:', audioError);
@@ -249,8 +235,8 @@ This file type requires manual content extraction. Please:
               fileType
             );
 
-            // Record PDF upload usage
-            if (userId) incrementUsage(userId, 'pdfsUploaded').catch(() => {});
+            // Record PDF upload usage using combined limits hook
+            recordUsage('pdfs').catch(() => {});
           } catch (resourceError) {
             console.error('Failed to create resource:', resourceError.message);
           }

@@ -113,6 +113,7 @@ const plans = [
 
 const Pricing = () => {
   const [adminSettings, setAdminSettings] = useState(null);
+  const [loadingSettings, setLoadingSettings] = useState(true);
 
   useEffect(() => {
     loadAdminSettings();
@@ -124,8 +125,57 @@ const Pricing = () => {
       setAdminSettings(settings);
     } catch (err) {
       console.error('Failed to load admin settings:', err);
+    } finally {
+      setLoadingSettings(false);
     }
   };
+
+  // Show loading skeleton while fetching admin settings
+  if (loadingSettings) {
+    return (
+      <section id="pricing" className="pricing">
+        <div className="container">
+          <div style={{ 
+            width: '300px', 
+            height: '32px', 
+            backgroundColor: 'var(--color-bg-secondary)', 
+            borderRadius: '8px',
+            margin: '0 auto 1rem',
+            animation: 'pulse 2s infinite',
+          }} />
+          <div style={{ 
+            width: '400px', 
+            height: '20px', 
+            backgroundColor: 'var(--color-bg-secondary)', 
+            borderRadius: '4px',
+            margin: '0 auto 2rem',
+            animation: 'pulse 2s infinite',
+          }} />
+          <div style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
+            gap: '1.5rem' 
+          }}>
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} style={{
+                backgroundColor: 'var(--color-bg-secondary)',
+                borderRadius: '16px',
+                padding: '1.5rem',
+                height: '400px',
+                animation: 'pulse 2s infinite',
+              }} />
+            ))}
+          </div>
+        </div>
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+        `}</style>
+      </section>
+    );
+  }
 
   // Determine if pre-reg mode is active
   const isPreRegMode = adminSettings?.preRegActive;

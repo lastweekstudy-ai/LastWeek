@@ -145,7 +145,61 @@ const PreRegistration = () => {
   };
 
   // Pre-reg mode not active
-  if (adminSettings && !adminSettings.preRegActive) {
+  // Show loading state while fetching settings
+  if (!adminSettings) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: 'var(--color-bg-primary)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem',
+      }}>
+        <div style={{
+          backgroundColor: 'var(--color-bg-secondary)',
+          borderRadius: '16px',
+          border: '1px solid var(--color-border)',
+          padding: '2.5rem',
+          maxWidth: '500px',
+          width: '100%',
+        }}>
+          <div style={{ 
+            width: '100%', 
+            height: '100px', 
+            backgroundColor: 'var(--color-bg-tertiary)', 
+            borderRadius: '12px',
+            marginBottom: '1.5rem',
+            animation: 'pulse 2s infinite',
+          }} />
+          <div style={{ 
+            width: '60%', 
+            height: '32px', 
+            backgroundColor: 'var(--color-bg-tertiary)', 
+            borderRadius: '8px',
+            margin: '0 auto 1rem',
+            animation: 'pulse 2s infinite',
+          }} />
+          <div style={{ 
+            width: '80%', 
+            height: '18px', 
+            backgroundColor: 'var(--color-bg-tertiary)', 
+            borderRadius: '4px',
+            margin: '0 auto',
+            animation: 'pulse 2s infinite',
+          }} />
+        </div>
+        <style>{`
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  if (!adminSettings.preRegActive) {
     return (
       <div style={{
         minHeight: '100vh',
@@ -317,117 +371,59 @@ const PreRegistration = () => {
           </ul>
         </div>
 
-        {/* Form */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <div className="form-group" style={{ marginBottom: '1rem' }}>
-            <label style={{ 
-              display: 'block', 
-              color: 'var(--color-text-secondary)', 
-              marginBottom: '0.5rem',
-              fontSize: '0.85rem',
-            }}>
-              Your Name *
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleInputChange}
-              placeholder="Enter your full name"
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                borderRadius: '8px',
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-primary)',
-                color: 'var(--color-text-primary)',
-                fontSize: '0.9rem',
-              }}
-            />
-          </div>
-
-          <div className="form-group">
-            <label style={{ 
-              display: 'block', 
-              color: 'var(--color-text-secondary)', 
-              marginBottom: '0.5rem',
-              fontSize: '0.85rem',
-            }}>
-              Email Address *
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="you@example.com"
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                borderRadius: '8px',
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-primary)',
-                color: 'var(--color-text-primary)',
-                fontSize: '0.9rem',
-              }}
-            />
-            <small style={{ 
-              display: 'block', 
-              color: 'var(--color-text-muted)', 
-              marginTop: '0.25rem',
-              fontSize: '0.75rem',
-            }}>
-              We'll send your promo code to this email
-            </small>
-          </div>
-
-          {formError && (
-            <div style={{
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid #ef4444',
-              borderRadius: '8px',
-              padding: '0.75rem',
-              color: '#ef4444',
-              fontSize: '0.85rem',
-              marginBottom: '1rem',
-            }}>
-              {formError}
-            </div>
-          )}
+        {/* Payment Temporarily Disabled Notice */}
+        <div style={{
+          backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          border: '1px solid #f59e0b',
+          borderRadius: '8px',
+          padding: '1rem',
+          marginBottom: '1.5rem',
+          textAlign: 'center',
+        }}>
+          <p style={{ color: '#f59e0b', margin: 0, fontSize: '0.95rem', fontWeight: 600 }}>
+            ⚠️ Payments Temporarily Unavailable
+          </p>
+          <p style={{ color: 'var(--color-text-secondary)', margin: '0.5rem 0 0', fontSize: '0.85rem' }}>
+            We're currently resolving an issue with our payment provider. Please check back soon or try our free trial!
+          </p>
         </div>
 
-        {error && (
-          <div style={{
-            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid #ef4444',
-            borderRadius: '8px',
-            padding: '0.75rem',
-            marginBottom: '1rem',
-            color: '#ef4444',
-            fontSize: '0.85rem',
-          }}>
-            {error}
-          </div>
-        )}
-
-        {/* Pay Button */}
+        {/* Try Free Trial Button */}
         <button
-          onClick={handlePayment}
-          disabled={loading || !paddle}
+          onClick={() => navigate('/auth?freeSlot=true')}
           style={{
             width: '100%',
             padding: '1rem',
             borderRadius: '8px',
             border: 'none',
-            backgroundColor: '#a855f7',
+            backgroundColor: '#10b981',
             color: 'white',
-            cursor: loading || !paddle ? 'not-allowed' : 'pointer',
+            cursor: 'pointer',
             fontWeight: 600,
             fontSize: '1rem',
-            opacity: loading || !paddle ? 0.6 : 1,
+            marginBottom: '1rem',
           }}
         >
-          {loading ? 'Opening Checkout...' : !paddle ? 'Loading Payment...' : 'Pay $5 & Pre-Register'}
+          🎁 Try Free Trial Instead
+        </button>
+
+        {/* Disabled Pay Button */}
+        <button
+          disabled
+          style={{
+            width: '100%',
+            padding: '1rem',
+            borderRadius: '8px',
+            border: 'none',
+            backgroundColor: '#4b5563',
+            color: '#9ca3af',
+            cursor: 'not-allowed',
+            fontWeight: 600,
+            fontSize: '1rem',
+            opacity: 0.6,
+          }}
+        >
+          Pay $5 & Pre-Register (Coming Soon)
         </button>
 
         <p style={{

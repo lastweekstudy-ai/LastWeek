@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { processAudioLecture } from '../appwrite/audioLecture';
 import { getMonthlyUsage, incrementUsage } from '../appwrite/usageTracking';
-import { getPlanLimits } from '../config/planLimits';
+import { getPlanLimits, getUserPlan } from '../config/planLimits';
 import { getUserSubscription, isSubscriptionActive } from '../appwrite/subscription';
+import { useAuth } from '../context/AuthContext';
+import useCombinedLimits from '../hooks/useCombinedLimits';
 import '../styles/AudioProcessor.css';
 
 /**
@@ -10,6 +12,8 @@ import '../styles/AudioProcessor.css';
  * Creates a lecture document that behaves like a PDF resource
  */
 const AudioProcessor = ({ userId, sessionId, onClose, onLectureCreated }) => {
+  const { user } = useAuth();
+  const { canDo, limits, usage, isTestingMode, recordUsage } = useCombinedLimits();
   const [mode, setMode] = useState('upload'); // 'upload' or 'record'
   const [audioFile, setAudioFile] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
@@ -105,31 +109,19 @@ const AudioProcessor = ({ userId, sessionId, onClose, onLectureCreated }) => {
       return;
     }
 
-    // ── Check audio upload limit ───────────────────────────────────────────────
-    if (userId) {
-      try {
-        const [subscription, usage] = await Promise.all([
-          getUserSubscription(userId),
-          getMonthlyUsage(userId),
-        ]);
-        const activeSub = subscription && isSubscriptionActive(subscription) ? subscription : null;
-        const planId = activeSub?.plan || 'free';
-        const limits = getPlanLimits(planId);
+    // ── Check audio upload limit using combined limits hook ───────────────────────────────────────────────
+    // This properly handles testing mode, user labels, and subscriptions
+    const audioCheck = canDo('audios');
+    if (!audioCheck.allowed) {
+      setError(`You've reached your audio upload limit${isTestingMode ? '' : ' this month'}. ${audioCheck.remaining === 0 ? 'Upgrade to upload more.' : ''}`);
+      return;
+    }
 
-        if ((usage.audiosUploaded || 0) >= limits.audios) {
-          setError(`You've reached your ${limits.audios} audio upload limit this month. Upgrade to upload more.`);
-          return;
-        }
-
-        const maxSizeBytes = limits.audioMaxSizeMB * 1024 * 1024;
-        if (audioFile.size > maxSizeBytes) {
-          setError(`Your plan allows audio files up to ${limits.audioMaxSizeMB}MB. This file is ${(audioFile.size / 1024 / 1024).toFixed(1)}MB. Upgrade for larger files.`);
-          return;
-        }
-      } catch (e) {
-        console.warn('[AudioProcessor] Could not check limits:', e.message);
-        // Non-fatal — continue
-      }
+    // Check file size against plan limits
+    const maxSizeBytes = limits.audioMaxSizeMB * 1024 * 1024;
+    if (audioFile.size > maxSizeBytes) {
+      setError(`Your plan allows audio files up to ${limits.audioMaxSizeMB}MB. This file is ${(audioFile.size / 1024 / 1024).toFixed(1)}MB. Upgrade for larger files.`);
+      return;
     }
 
     setProcessing(true);
@@ -151,8 +143,8 @@ const AudioProcessor = ({ userId, sessionId, onClose, onLectureCreated }) => {
       });
 
       console.log('[Audio] Success:', result);
-      // Record audio upload usage
-      if (userId) incrementUsage(userId, 'audiosUploaded').catch(() => {});
+      // Record audio upload usage using combined limits hook
+      if (userId) recordUsage('audios').catch(() => {});
       setProgress('Lecture created successfully!');
       setTimeout(() => {
         if (onLectureCreated) {
