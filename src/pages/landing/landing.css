@@ -207,6 +207,8 @@ body {
   padding: 4rem 2rem;
   position: relative;
   overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .hero-background {
@@ -252,8 +254,11 @@ body {
   position: relative;
   z-index: 1;
   max-width: 800px;
+  width: 100%;
   text-align: center;
   animation: fadeInUp 0.8s ease-out;
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 .hero-logo-container {
@@ -364,6 +369,11 @@ body {
   padding: 1.5rem;
   border-radius: 16px;
   animation: fadeInDown 0.6s ease-out;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  word-wrap: break-word;
 }
 
 .hero-prereg-banner {
@@ -379,6 +389,9 @@ body {
 .prereg-banner-content,
 .freetier-banner-content {
   text-align: center;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .prereg-badge {
@@ -779,6 +792,14 @@ body {
 /* ===== RESPONSIVE ===== */
 /* Tablet/Medium Screens */
 @media (max-width: 1024px) {
+  .hero {
+    padding: 3rem 1.5rem;
+  }
+
+  .hero-content {
+    padding: 0 0.5rem;
+  }
+
   .hero-title {
     font-size: 3rem;
   }
@@ -791,13 +812,27 @@ body {
     grid-template-columns: repeat(4, 1fr);
     gap: 1.25rem;
   }
+
+  .hero-prereg-banner,
+  .hero-freetier-banner {
+    padding: 1.25rem;
+  }
 }
 
 /* Small Tablets/Large Phones */
 @media (max-width: 768px) {
+  .hero {
+    padding: 2rem 1rem;
+  }
+
+  .hero-content {
+    padding: 0;
+  }
+
   .hero-title {
     font-size: 2.5rem;
     line-height: 1.2;
+    word-wrap: break-word;
   }
 
   .hero-subtitle {
@@ -808,11 +843,14 @@ body {
   .hero-buttons {
     flex-direction: column;
     width: 100%;
+    gap: 0.75rem;
   }
 
   .btn {
     width: 100%;
     justify-content: center;
+    white-space: normal;
+    padding: 0.75rem 1rem;
   }
 
   .section-title {
@@ -830,60 +868,77 @@ body {
 
   .stat-label {
     font-size: 0.8rem;
+    white-space: nowrap;
   }
 
   /* Banner Mobile Styles */
   .hero-prereg-banner,
   .hero-freetier-banner {
-    padding: 1.25rem;
+    padding: 1rem;
     margin-bottom: 1.5rem;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .prereg-title,
   .freetier-title {
     font-size: 1.1rem;
+    word-wrap: break-word;
   }
 
   .prereg-subtitle,
   .freetier-subtitle {
     font-size: 0.85rem;
+    word-wrap: break-word;
+    line-height: 1.4;
   }
 
   .prereg-actions {
     flex-direction: column;
     gap: 0.5rem;
+    width: 100%;
   }
 
   .btn-sm {
     width: 100%;
     padding: 0.7rem 1rem;
+    white-space: normal;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
 
   .navbar-container {
-    padding: 0 1rem;
+    padding: 0 0.75rem;
   }
 
   .hero {
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
     min-height: auto;
   }
 
+  .hero-content {
+    padding: 0;
+    max-width: 100%;
+  }
+
   .hero-title {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
     line-height: 1.2;
     margin-bottom: 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .hero-subtitle {
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     line-height: 1.5;
     margin-bottom: 1.5rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .section-title {
@@ -900,12 +955,13 @@ body {
 
   .hero-stats {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    gap: 0.5rem;
     padding: 1rem 0;
+    margin: 1rem 0;
   }
 
   .stat-item {
-    padding: 1rem 0.5rem;
+    padding: 0.75rem 0.5rem;
   }
 
   .stat-number {
@@ -913,42 +969,56 @@ body {
   }
 
   .stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    white-space: normal;
+    line-height: 1.2;
   }
 
   /* Banner Mobile Styles - Extra Small Screens */
   .hero-prereg-banner,
   .hero-freetier-banner {
-    padding: 1rem;
-    margin-bottom: 1.25rem;
+    padding: 0.875rem;
+    margin-bottom: 1rem;
+    margin-left: 0;
+    margin-right: 0;
+    border-radius: 12px;
   }
 
   .prereg-badge,
   .freetier-badge {
-    font-size: 0.7rem;
-    padding: 0.3rem 0.7rem;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+    margin-bottom: 0.5rem;
   }
 
   .prereg-title,
   .freetier-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin-bottom: 0.5rem;
+    line-height: 1.3;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .prereg-subtitle,
   .freetier-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     line-height: 1.4;
     margin-bottom: 0.75rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .prereg-actions {
     gap: 0.5rem;
+    width: 100%;
   }
 
   .btn-sm {
-    padding: 0.65rem 0.85rem;
-    font-size: 0.8rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.75rem;
+    white-space: normal;
+    line-height: 1.3;
   }
 
   .hero-buttons {
@@ -957,12 +1027,18 @@ body {
   }
 
   .btn {
-    padding: 0.75rem 1.25rem;
-    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    white-space: normal;
+    line-height: 1.3;
   }
 
   .hero-logo-container {
     margin-bottom: 1.5rem;
+  }
+
+  .hero-logo-container img {
+    max-width: 150px;
   }
 }
 
