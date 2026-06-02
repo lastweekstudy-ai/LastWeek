@@ -6,63 +6,23 @@ import { transcribeAudio, callGeminiText, callDeepSeek } from '../services/aiPro
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const AUDIO_LECTURES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_AUDIO_LECTURES_COLLECTION_ID || 'audio_lectures';
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
-
 /**
- * Transcribe audio with Groq Whisper first, fall back to Gemini inline_data if Groq fails.
+ * Transcribe audio with Groq Whisper (via secure proxy)
  */
-async function transcribeWithFallback(audioFile, onProgress) {
-  // Try Groq Whisper first (fastest, most accurate for transcription)
+async function transcribeWithSecureProxy(audioFile, onProgress) {
   try {
     onProgress?.('Transcribing audio...');
     const transcript = await transcribeAudio(audioFile);
-    if (transcript && transcript.length > 50) {
-      console.log('[Whisper] Transcription success, length:', transcript.length);
-      return transcript;
+    
+    if (!transcript || transcript.length < 50) {
+      throw new Error('Transcript too short or empty');
     }
-    throw new Error('Transcript too short');
-  } catch (groqError) {
-    console.warn('[Whisper] Failed, falling back to Gemini:', groqError.message);
-  }
-
-  // Fallback: Gemini multimodal (sends audio as base64 inline_data)
-  try {
-    onProgress?.('Transcribing audio...');
-    const base64data = await fileToBase64(audioFile);
-    const mimeType = audioFile.type === 'audio/mpeg' ? 'audio/mp3' : audioFile.type;
-
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { inline_data: { mime_type: mimeType, data: base64data } },
-              { text: 'Transcribe this audio lecture accurately. Include all spoken content, maintaining the structure and flow of the lecture.' },
-            ],
-          }],
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `Gemini error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const transcript = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!transcript || transcript.length < 100) {
-      throw new Error('Gemini transcript too short or empty');
-    }
-    console.log('[Gemini] Transcription fallback success, length:', transcript.length);
+    
+    console.log('[Whisper] Transcription success, length:', transcript.length);
     return transcript;
-  } catch (geminiError) {
-    console.error('[Gemini] Transcription fallback also failed:', geminiError.message);
-    throw new Error(`Audio transcription failed. Groq: rate limit or file issue. Gemini: ${geminiError.message}`);
+  } catch (error) {
+    console.error('[Whisper] Transcription failed:', error.message);
+    throw new Error(`Audio transcription failed: ${error.message}`);
   }
 }
 
@@ -75,28 +35,14 @@ export const processAudioLecture = async (audioFile, userId, sessionId, onProgre
     onProgress?.('Uploading audio to cloud storage...');
     const { fileId, url: audioUrl } = await uploadAudioToR2(audioFile, userId);
 
-    // Step 2: Transcribe (Groq Whisper → Gemini fallback)
-    const transcript = await transcribeWithFallback(audioFile, onProgress);
+    // Step 2: Transcribe (Groq Whisper via secure proxy)
+    const transcript = await transcribeWithSecureProxy(audioFile, onProgress);
 
     // Step 3: Process transcript with DeepSeek to create structured lecture notes
     onProgress?.('Creating structured lecture notes...');
     
-    const lectureResponse = await fetch('https://api.deepseek.com/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert educational content creator. Convert lecture transcripts into well-structured, comprehensive study notes.'
-          },
-          {
-            role: 'user',
-            content: `Convert this lecture transcript into structured study notes with the following format:
+    const systemPrompt = 'You are an expert educational content creator. Convert lecture transcripts into well-structured, comprehensive study notes.';
+    const userPrompt = `Convert this lecture transcript into structured study notes with the following format:
 
 # [Lecture Title - infer from content]
 
@@ -158,24 +104,11 @@ WHEN TO ADD FIGURES:
 Transcript:
 ${transcript}
 
-Format the output in clean Markdown. Embed SVG figures inline where appropriate using the [FIGURE:title]...[/FIGURE] format. Make figures accurate to the lecture — use actual numbers, labels, and relationships mentioned by the lecturer.`
-          }
-        ],
-        max_tokens: 8000,
-        temperature: 0.7
-      })
-    });
+Format the output in clean Markdown. Embed SVG figures inline where appropriate using the [FIGURE:title]...[/FIGURE] format. Make figures accurate to the lecture — use actual numbers, labels, and relationships mentioned by the lecturer.`;
 
-    if (!lectureResponse.ok) {
-      const errBody = await lectureResponse.json().catch(() => ({}));
-      console.error('[DeepSeek] Error body:', errBody);
-      throw new Error('Failed to process lecture notes');
-    }
-
-    const deepseekData = await lectureResponse.json();
-    console.log('[DeepSeek] Response received, notes length:', 
-      deepseekData.choices?.[0]?.message?.content?.length, 'chars');
-    const lectureNotes = deepseekData.choices?.[0]?.message?.content;
+    const lectureNotes = await callDeepSeek(systemPrompt, [
+      { role: 'user', content: userPrompt }
+    ]);
 
     if (!lectureNotes) {
       throw new Error('Failed to generate lecture notes');
@@ -392,20 +325,4 @@ export const makeAudioLecturePrivate = async (lectureId) => {
     console.error('Failed to make audio lecture private:', error);
     throw error;
   }
-};
-
-/**
- * Helper: Convert file to base64
- */
-const fileToBase64 = (file) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      // Remove data:audio/...;base64, prefix
-      const base64 = reader.result.split(',')[1];
-      resolve(base64);
-    };
-    reader.onerror = reject;
-  });
 };
