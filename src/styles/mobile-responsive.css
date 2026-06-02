@@ -832,8 +832,8 @@ body {
   }
 
   .alv-mobile-tab.active {
-    color: var(--accent, #c084fc);
-    border-bottom-color: var(--accent, #c084fc);
+    color: var(--accent, var(--color-accent-light));
+    border-bottom-color: var(--accent, var(--color-accent-light));
   }
 
   /* Body: full width, single panel visible */

@@ -92,7 +92,7 @@ const ReviewForm = ({ userId, email, name, onSubmitted, onClose }) => {
           Thank You for Your Review!
         </h3>
         <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 1rem' }}>
-          You've been added to our pre-registration list and get <strong style={{ color: '#a855f7' }}>Plus free for 1 year</strong>!
+          You've been added to our pre-registration list and get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong>!
         </p>
         
         {promoCode && (
@@ -121,7 +121,7 @@ const ReviewForm = ({ userId, email, name, onSubmitted, onClose }) => {
               <code style={{
                 fontSize: '1.5rem',
                 fontWeight: 700,
-                color: '#a855f7',
+                color: 'var(--color-accent)',
                 letterSpacing: '2px',
               }}>
                 {promoCode}
@@ -170,7 +170,7 @@ const ReviewForm = ({ userId, email, name, onSubmitted, onClose }) => {
         📝 Leave a Review
       </h3>
       <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 1.5rem', fontSize: '0.85rem' }}>
-        Share your experience and get <strong style={{ color: '#a855f7' }}>Plus free for 1 year</strong>!
+        Share your experience and get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong>!
       </p>
 
       <form onSubmit={handleSubmit}>

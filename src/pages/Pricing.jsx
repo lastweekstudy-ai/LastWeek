@@ -150,14 +150,14 @@ const Pricing = () => {
         {/* Pre-Registration Banner */}
         {isPreRegMode && (
           <div style={{
-            backgroundColor: 'rgba(168, 85, 247, 0.1)',
-            border: '1px solid #a855f7',
+            backgroundColor: 'rgba(var(--color-accent-rgb), 0.1)',
+            border: '1px solid var(--color-accent)',
             borderRadius: '12px',
             padding: '1rem 1.5rem',
             marginBottom: '2rem',
             textAlign: 'center',
           }}>
-            <h3 style={{ color: '#a855f7', margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
+            <h3 style={{ color: 'var(--color-accent)', margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
               🎉 Pre-Registration Now Open!
             </h3>
             <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
@@ -206,7 +206,7 @@ const Pricing = () => {
           <div style={{ display: 'inline-flex', backgroundColor: 'var(--color-bg-secondary)', borderRadius: '999px', padding: '4px', border: '1px solid var(--color-border)' }}>
             <button onClick={() => setBilling('monthly')} style={{
               padding: '0.4rem 1rem', borderRadius: '999px', border: 'none', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600,
-              backgroundColor: '#a855f7',
+              backgroundColor: 'var(--color-accent)',
               color: 'white',
               transition: 'all 0.2s',
             }}>
@@ -236,14 +236,14 @@ const Pricing = () => {
                 backgroundColor: 'var(--color-bg-secondary)',
                 borderRadius: '16px',
                 padding: '1.5rem',
-                border: highlight ? '2px solid #a855f7' : '1px solid var(--color-border)',
+                border: highlight ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
                 position: 'relative',
-                boxShadow: highlight ? '0 0 30px rgba(168,85,247,0.15)' : 'none',
+                boxShadow: highlight ? '0 0 30px rgba(var(--color-accent-rgb),0.15)' : 'none',
               }}>
                 {badge && (
                   <span style={{
                     position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)',
-                    backgroundColor: '#a855f7', color: 'white', fontSize: '0.72rem', fontWeight: 700,
+                    backgroundColor: 'var(--color-accent)', color: 'white', fontSize: '0.72rem', fontWeight: 700,
                     padding: '0.2rem 0.75rem', borderRadius: '999px', whiteSpace: 'nowrap',
                   }}>{badge}</span>
                 )}
@@ -292,7 +292,7 @@ const Pricing = () => {
                 {isCurrent ? (
                   <div style={{
                     width: '100%', padding: '0.6rem', borderRadius: '8px', textAlign: 'center',
-                    backgroundColor: 'rgba(168,85,247,0.1)', color: '#a855f7', fontWeight: 600, fontSize: '0.9rem',
+                    backgroundColor: 'rgba(var(--color-accent-rgb),0.1)', color: 'var(--color-accent)', fontWeight: 600, fontSize: '0.9rem',
                   }}>
                     ✓ Current Plan
                   </div>
@@ -317,7 +317,7 @@ const Pricing = () => {
                   id === 'plus' ? (
                     <button onClick={() => navigate('/auth?preReg=true')} style={{
                       width: '100%', padding: '0.6rem', borderRadius: '8px', border: 'none',
-                      backgroundColor: '#a855f7', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
+                      backgroundColor: 'var(--color-accent)', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
                     }}>
                       Pre-Register ($5)
                     </button>
@@ -341,7 +341,7 @@ const Pricing = () => {
                 ) : (
                   <button disabled style={{
                     width: '100%', padding: '0.6rem', borderRadius: '8px', border: 'none',
-                    backgroundColor: '#a855f7', color: 'white', cursor: 'not-allowed', fontWeight: 600, fontSize: '0.9rem', opacity: 0.6,
+                    backgroundColor: 'var(--color-accent)', color: 'white', cursor: 'not-allowed', fontWeight: 600, fontSize: '0.9rem', opacity: 0.6,
                   }}>
                     Coming Soon
                   </button>
@@ -358,7 +358,7 @@ const Pricing = () => {
               <tr style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
                 <th style={{ padding: '1rem', textAlign: 'left', color: 'var(--color-text-secondary)', fontWeight: 600 }}>Feature</th>
                 {tiers.map(({ id }) => (
-                  <th key={id} style={{ padding: '1rem', textAlign: 'center', color: currentPlan === id ? '#a855f7' : 'var(--color-text-primary)', fontWeight: 700 }}>
+                  <th key={id} style={{ padding: '1rem', textAlign: 'center', color: currentPlan === id ? 'var(--color-accent)' : 'var(--color-text-primary)', fontWeight: 700 }}>
                     {PLANS[id].name}
                   </th>
                 ))}
@@ -388,7 +388,7 @@ const Pricing = () => {
 
         {/* FAQ */}
         <div style={{ marginTop: '3rem', textAlign: 'center', color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-          <p>Questions? <a href="/contact" style={{ color: '#a855f7' }}>Contact us</a> — we reply within 24 hours.</p>
+          <p>Questions? <a href="/contact" style={{ color: 'var(--color-accent)' }}>Contact us</a> — we reply within 24 hours.</p>
           <p>All plans include browser TTS (text-to-speech) at no extra cost.</p>
           <p>Library imports are free for all plans — no processing cost.</p>
         </div>

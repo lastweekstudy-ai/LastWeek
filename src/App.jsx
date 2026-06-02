@@ -34,9 +34,9 @@ import LanguageLearning from './pages/LanguageLearning';
 import LanguageLearningLesson from './pages/LanguageLearningLesson';
 import LanguageLearningLessons from './pages/LanguageLearningLessons';
 import LanguageLearningPractice from './pages/LanguageLearningPractice';
-import TTSDemo from './pages/TTSDemo';
 import FlashcardLibrary from './pages/FlashcardLibrary';
 import PreRegistration from './pages/PreRegistration';
+import SecureAITest from './components/SecureAITest';
 
 // Admin Panel
 import AdminLayout from './pages/admin/AdminLayout';
@@ -109,12 +109,19 @@ const SessionRoute = () => {
   const { sessionId } = useParams();
   const navigate = useNavigate();
   const { activeSession, loadSession, messages } = useSession();
-  const { toggleTheme } = useTheme();
+  const { color, changeColor, availableColors } = useTheme();
   const [sessionLoaded, setSessionLoaded] = useState(false);
+  
+  // Cycle through color themes
+  const cycleColorTheme = () => {
+    const currentIndex = availableColors.indexOf(color);
+    const nextIndex = (currentIndex + 1) % availableColors.length;
+    changeColor(availableColors[nextIndex]);
+  };
   
   // Global keyboard shortcuts
   useKeyboardShortcuts([
-    { key: 't', ctrl: true, shift: true, callback: toggleTheme },
+    { key: 't', ctrl: true, shift: true, callback: cycleColorTheme },
   ]);
   
   React.useEffect(() => {
@@ -186,6 +193,7 @@ function App() {
               <Route path="/docs" element={<DocsPage />} />
               <Route path="/docs/:slug" element={<DocsPage />} />
               <Route path="/docs/:slug/:sectionId" element={<DocsPage />} />
+              <Route path="/test-ai" element={<SecureAITest />} />
               
               {/* Protected routes */}
               <Route 
@@ -307,17 +315,6 @@ function App() {
                 } 
               />
               
-              {/* TTS Demo Route */}
-              <Route 
-                path="/tts-demo" 
-                element={
-                  <ProtectedRoute>
-                    <Navbar />
-                    <TTSDemo />
-                  </ProtectedRoute>
-                } 
-              />
-
               {/* Flashcard Library */}
               <Route
                 path="/flashcards"

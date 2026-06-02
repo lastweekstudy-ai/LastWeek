@@ -66,7 +66,7 @@ const TestingUsers = () => {
             padding: '0.5rem 1rem',
             borderRadius: '6px',
             border: 'none',
-            backgroundColor: '#a855f7',
+            backgroundColor: 'var(--color-accent)',
             color: 'white',
             cursor: 'pointer',
           }}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import useUsageLimits from './useUsageLimits';
 import useTestingLimits from './useTestingLimits';
@@ -6,9 +6,9 @@ import { getTestingUsageDoc } from '../appwrite/admin';
 
 /**
  * useCombinedLimits — Hook that handles both normal limits and testing limits.
- * 
+ *
  * Automatically detects if user is in testing mode and uses the appropriate limits.
- * 
+ *
  * Returns:
  *   isTestingMode  — true if user is in testing mode
  *   plan           — current plan ID (or 'testing')
@@ -24,32 +24,32 @@ const useCombinedLimits = () => {
   const { user } = useAuth();
   const [isTestingMode, setIsTestingMode] = useState(false);
   const [checkingMode, setCheckingMode] = useState(true);
-  
+  // Prevent duplicate checks for the same user ID
+  const checkedUserRef = useRef(null);
+
   const normalLimits = useUsageLimits();
   const testingLimits = useTestingLimits();
 
-  // Check if user is in testing mode
+  // Check if user is in testing mode — runs once per user ID change
   useEffect(() => {
     const checkMode = async () => {
       if (!user?.$id) {
         setCheckingMode(false);
         setIsTestingMode(false);
+        checkedUserRef.current = null;
         return;
       }
 
-      // Always re-check on mount/refresh - don't use ref guard
+      // Skip if we already checked this user ID
+      if (checkedUserRef.current === user.$id) {
+        return;
+      }
+      checkedUserRef.current = user.$id;
       setCheckingMode(true);
 
       try {
-        console.log('[useCombinedLimits] Checking mode for user:', user.$id);
         const testingDoc = await getTestingUsageDoc(user.$id);
-        console.log('[useCombinedLimits] Testing doc result:', testingDoc);
-        
-        // User is in testing mode if they have a testing doc and haven't been added to pre-reg yet
-        console.log('[useCombinedLimits] testingDoc exists:', testingDoc !== null);
-        console.log('[useCombinedLimits] addedToPreReg:', testingDoc?.addedToPreReg);
         const isTesting = testingDoc !== null && testingDoc.addedToPreReg !== true;
-        console.log('[useCombinedLimits] isTestingMode:', isTesting);
         setIsTestingMode(isTesting);
       } catch (err) {
         console.error('[useCombinedLimits] Failed to check mode:', err.message);
@@ -60,30 +60,22 @@ const useCombinedLimits = () => {
     };
 
     checkMode();
-  }, [user?.$id]); // Re-run when user ID changes
+  }, [user?.$id]);
 
   // Determine which hook to use
   const activeHook = isTestingMode ? testingLimits : normalLimits;
 
-  /**
-   * Check if the user can perform an action.
-   */
   const canDo = useCallback((action) => {
-    console.log('[useCombinedLimits] canDo called:', { action, isTestingMode, loading: checkingMode || normalLimits.loading || testingLimits.loading });
     return activeHook.canDo(action);
-  }, [activeHook, isTestingMode, checkingMode, normalLimits.loading, testingLimits.loading]);
+  }, [activeHook]);
 
-  /**
-   * Record that an action was performed.
-   */
   const recordUsage = useCallback(async (action, amount = 1) => {
     return activeHook.recordUsage(action, amount);
   }, [activeHook]);
 
-  /**
-   * Refresh usage data.
-   */
   const refresh = useCallback(() => {
+    // Reset the check guard so the next call re-checks testing mode too
+    checkedUserRef.current = null;
     if (isTestingMode) {
       testingLimits.refresh();
     } else {
@@ -92,14 +84,6 @@ const useCombinedLimits = () => {
   }, [isTestingMode, testingLimits, normalLimits]);
 
   const loading = checkingMode || normalLimits.loading || testingLimits.loading;
-  
-  console.log('[useCombinedLimits] Current state:', {
-    isTestingMode,
-    checkingMode,
-    normalLimitsLoading: normalLimits.loading,
-    testingLimitsLoading: testingLimits.loading,
-    loading
-  });
 
   return {
     isTestingMode,
@@ -116,8 +100,8 @@ const useCombinedLimits = () => {
     setHasSubmittedReview: testingLimits.setHasSubmittedReview,
     getFeatureName: testingLimits.getFeatureName,
     getFeatureDescription: testingLimits.getFeatureDescription,
-    formatLimit: isTestingMode 
-      ? (limit) => testingLimits.formatTestingLimit?.(limit) ?? limit 
+    formatLimit: isTestingMode
+      ? (limit) => testingLimits.formatTestingLimit?.(limit) ?? limit
       : normalLimits.formatLimit,
   };
 };

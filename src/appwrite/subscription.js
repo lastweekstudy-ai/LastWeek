@@ -120,7 +120,7 @@ export const getSubscriptionDisplayInfo = (subscription) => {
     return {
       plan: subscription.plan,
       label: subscription.plan === 'max' ? '🚀 Max' : '⭐ Pro',
-      color: '#a855f7',
+      color: 'var(--color-accent)',
       active: true,
       daysLeft,
     };

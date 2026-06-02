@@ -6,7 +6,7 @@ import {
   ScatterChart, Scatter, ComposedChart
 } from 'recharts';
 
-const COLORS = ['#a855f7', '#9333ea', '#7e22ce', '#6b21a8', '#581c87', '#3b0764'];
+const COLORS = ['var(--color-accent)', 'var(--color-accent-hover)', '#7e22ce', '#6b21a8', '#581c87', '#3b0764'];
 
 const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
   // Debug logging
@@ -66,7 +66,7 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
                   fontSize: '0.875rem'
                 }}
               />
-              <Bar dataKey={yKey || 'value'} fill="#a855f7" radius={[8, 8, 0, 0]} />
+              <Bar dataKey={yKey || 'value'} fill="var(--color-accent)" radius={[8, 8, 0, 0]} />
             </BarChart>
           </div>
         );
@@ -140,9 +140,9 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
               <Line 
                 type="monotone" 
                 dataKey={yKey || 'value'} 
-                stroke="#a855f7" 
+                stroke="var(--color-accent)" 
                 strokeWidth={3}
-                dot={{ fill: '#a855f7', r: 5 }}
+                dot={{ fill: 'var(--color-accent)', r: 5 }}
                 activeDot={{ r: 7 }}
               />
             </LineChart>
@@ -178,7 +178,7 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
                 }}
               />
               <Legend />
-              <Scatter name="Data Points" data={data} fill="#a855f7" />
+              <Scatter name="Data Points" data={data} fill="var(--color-accent)" />
             </ScatterChart>
           </ResponsiveContainer>
         );
@@ -246,8 +246,8 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
               <Area 
                 type="monotone" 
                 dataKey={yKey || 'value'} 
-                stroke="#a855f7" 
-                fill="#a855f7"
+                stroke="var(--color-accent)" 
+                fill="var(--color-accent)"
                 fillOpacity={0.3}
               />
             </AreaChart>
@@ -271,8 +271,8 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
               <Radar 
                 name="Values" 
                 dataKey={yKey || 'value'} 
-                stroke="#a855f7" 
-                fill="#a855f7" 
+                stroke="var(--color-accent)" 
+                fill="var(--color-accent)" 
                 fillOpacity={0.6} 
               />
               <Tooltip 

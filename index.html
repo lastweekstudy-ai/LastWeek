@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark" data-color="purple">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/logos/lastweek_main_logo.ico" />
@@ -11,6 +11,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="theme-color" content="#000000" />
     <title>LastWeek - Master Any Subject in One Week</title>
+    <!-- Apply saved color theme before React loads to prevent flash -->
+    <script>
+      (function() {
+        var validColors = ['purple', 'orange', 'green', 'brown', 'blue'];
+        var saved = localStorage.getItem('lastweek-color');
+        var color = (saved && validColors.indexOf(saved) !== -1) ? saved : 'purple';
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.setAttribute('data-color', color);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

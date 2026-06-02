@@ -14,15 +14,19 @@ const Hero = () => {
   }, []);
 
   const loadData = async () => {
-    try {
-      const [settings, publishedReviews] = await Promise.all([
-        getAdminSettings(),
-        getPublishedReviews(50) // Get up to 50 approved reviews
-      ]);
-      setAdminSettings(settings);
-      setReviews(publishedReviews);
-    } catch (err) {
-      // Silently fail - landing page should still render
+    // These collections require "Any" read permission in Appwrite to work on the
+    // public landing page (no user session). If they return 401, fail silently —
+    // the landing page renders fine without this data.
+    const [settings, publishedReviews] = await Promise.allSettled([
+      getAdminSettings(),
+      getPublishedReviews(50),
+    ]);
+
+    if (settings.status === 'fulfilled') {
+      setAdminSettings(settings.value);
+    }
+    if (publishedReviews.status === 'fulfilled') {
+      setReviews(publishedReviews.value);
     }
   };
 

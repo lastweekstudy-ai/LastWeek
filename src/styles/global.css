@@ -20,17 +20,14 @@
   --transition-slow: 0.3s ease;
 }
 
-/* Dark Theme - Pitch Black with Purple Accents */
-[data-theme="dark"] {
+/* Dark Theme - Always Dark, Color Accent Variants */
+
+/* Base dark theme (shared across all color variants) */
+:root {
   --color-bg-primary: #000000;
   --color-bg-secondary: #0a0a0a;
   --color-bg-tertiary: #141414;
   --color-bg-hover: #1a1a1a;
-  
-  --color-accent: #a855f7;
-  --color-accent-hover: #9333ea;
-  --color-accent-light: #c084fc;
-  --color-accent-dark: #7e22ce;
   
   --color-text-primary: #ffffff;
   --color-text-secondary: #d1d5db;
@@ -38,12 +35,21 @@
   
   --color-border: #262626;
   --color-border-light: #404040;
-  --color-border-accent: #581c87;
   
   --color-success: #10b981;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
   --color-info: #3b82f6;
+}
+
+/* Purple Theme (default) */
+[data-color="purple"] {
+  --color-accent: #a855f7;
+  --color-accent-hover: #9333ea;
+  --color-accent-light: #c084fc;
+  --color-accent-dark: #7e22ce;
+  --color-border-accent: #581c87;
+  --color-accent-rgb: 168, 85, 247;
   
   --shadow-sm: 0 1px 2px 0 rgba(168, 85, 247, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(168, 85, 247, 0.1);
@@ -51,35 +57,64 @@
   --shadow-glow: 0 0 20px rgba(168, 85, 247, 0.3);
 }
 
-/* Light Theme - Clean White with Purple Touches */
-[data-theme="light"] {
-  --color-bg-primary: #ffffff;
-  --color-bg-secondary: #f9fafb;
-  --color-bg-tertiary: #f3f4f6;
-  --color-bg-hover: #e5e7eb;
+/* Orange Theme */
+[data-color="orange"] {
+  --color-accent: #fb923c;
+  --color-accent-hover: #f97316;
+  --color-accent-light: #fdba74;
+  --color-accent-dark: #ea580c;
+  --color-border-accent: #9a3412;
+  --color-accent-rgb: 251, 146, 60;
   
-  --color-accent: #9333ea;
-  --color-accent-hover: #7e22ce;
-  --color-accent-light: #a855f7;
-  --color-accent-dark: #6b21a8;
+  --shadow-sm: 0 1px 2px 0 rgba(251, 146, 60, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(251, 146, 60, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(251, 146, 60, 0.15);
+  --shadow-glow: 0 0 20px rgba(251, 146, 60, 0.3);
+}
+
+/* Green Theme */
+[data-color="green"] {
+  --color-accent: #34d399;
+  --color-accent-hover: #10b981;
+  --color-accent-light: #6ee7b7;
+  --color-accent-dark: #059669;
+  --color-border-accent: #065f46;
+  --color-accent-rgb: 52, 211, 153;
   
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-text-muted: #6b7280;
+  --shadow-sm: 0 1px 2px 0 rgba(52, 211, 153, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(52, 211, 153, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(52, 211, 153, 0.15);
+  --shadow-glow: 0 0 20px rgba(52, 211, 153, 0.3);
+}
+
+/* Brown Theme */
+[data-color="brown"] {
+  --color-accent: #d97706;
+  --color-accent-hover: #b45309;
+  --color-accent-light: #fbbf24;
+  --color-accent-dark: #92400e;
+  --color-border-accent: #78350f;
+  --color-accent-rgb: 217, 119, 6;
   
-  --color-border: #e5e7eb;
-  --color-border-light: #d1d5db;
-  --color-border-accent: #c084fc;
+  --shadow-sm: 0 1px 2px 0 rgba(217, 119, 6, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(217, 119, 6, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(217, 119, 6, 0.15);
+  --shadow-glow: 0 0 20px rgba(217, 119, 6, 0.3);
+}
+
+/* Blue Theme */
+[data-color="blue"] {
+  --color-accent: #60a5fa;
+  --color-accent-hover: #3b82f6;
+  --color-accent-light: #93c5fd;
+  --color-accent-dark: #2563eb;
+  --color-border-accent: #1e40af;
+  --color-accent-rgb: 96, 165, 250;
   
-  --color-success: #059669;
-  --color-warning: #d97706;
-  --color-error: #dc2626;
-  --color-info: #2563eb;
-  
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 20px rgba(147, 51, 234, 0.2);
+  --shadow-sm: 0 1px 2px 0 rgba(96, 165, 250, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(96, 165, 250, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(96, 165, 250, 0.15);
+  --shadow-glow: 0 0 20px rgba(96, 165, 250, 0.3);
 }
 
 html, body {
@@ -465,22 +500,12 @@ p {
   border-radius: 2px;
 }
 
-/* Make KaTeX colours respect the theme */
-[data-theme="dark"] .katex {
+/* Make KaTeX colours respect the dark theme */
+.katex {
   color: #e8e8f0;
 }
-[data-theme="dark"] .katex-display {
-  background: rgba(168, 85, 247, 0.04);
-  border-left: 3px solid var(--color-accent);
-  border-radius: 0 6px 6px 0;
-  padding-left: 1rem;
-}
-
-[data-theme="light"] .katex {
-  color: #1a1a2e;
-}
-[data-theme="light"] .katex-display {
-  background: rgba(99, 102, 241, 0.05);
+.katex-display {
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.04);
   border-left: 3px solid var(--color-accent);
   border-radius: 0 6px 6px 0;
   padding-left: 1rem;

@@ -314,7 +314,7 @@ const Settings = () => {
                     <div style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                       padding: '1rem', borderRadius: '10px', marginBottom: '1.5rem',
-                      backgroundColor: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.2)',
+                      backgroundColor: 'rgba(var(--color-accent-rgb),0.06)', border: '1px solid rgba(var(--color-accent-rgb),0.2)',
                     }}>
                       <div>
                         <p style={{ margin: 0, fontWeight: 700, fontSize: '1rem', color: 'var(--color-text-primary)' }}>
@@ -376,7 +376,7 @@ const Settings = () => {
                           onClick={() => navigate('/pricing')}
                           style={{
                             padding: '0.65rem 1.5rem', borderRadius: '8px', border: 'none',
-                            backgroundColor: '#a855f7', color: 'white', cursor: 'pointer',
+                            backgroundColor: 'var(--color-accent)', color: 'white', cursor: 'pointer',
                             fontWeight: 600, fontSize: '0.9rem',
                           }}
                         >

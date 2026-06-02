@@ -357,13 +357,13 @@ const Auth = () => {
               </div>
 
               <div style={{
-                background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
-                border: '1px solid rgba(168, 85, 247, 0.5)',
+                background: 'linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+                border: '1px solid rgba(var(--color-accent-rgb), 0.5)',
                 borderRadius: '12px',
                 padding: '1.5rem',
                 marginBottom: '1.5rem',
               }}>
-                <h3 style={{ color: '#a855f7', margin: '0 0 1rem', fontSize: '1.1rem', textAlign: 'center' }}>
+                <h3 style={{ color: 'var(--color-accent)', margin: '0 0 1rem', fontSize: '1.1rem', textAlign: 'center' }}>
                   Two Ways to Join
                 </h3>
 
@@ -378,7 +378,7 @@ const Auth = () => {
                     💳 Pay $5 Now
                   </h4>
                   <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 0.75rem', fontSize: '0.85rem' }}>
-                    Get <strong style={{ color: '#a855f7' }}>Plus free for 1 year</strong> (a $180 value!) 
+                    Get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong> (a $180 value!) 
                     + unique promo code. Every 10 friends who join = +6 months free!
                   </p>
                   <button
@@ -388,7 +388,7 @@ const Auth = () => {
                       padding: '0.6rem',
                       borderRadius: '6px',
                       border: 'none',
-                      backgroundColor: '#a855f7',
+                      backgroundColor: 'var(--color-accent)',
                       color: 'white',
                       cursor: 'pointer',
                       fontWeight: 600,
@@ -472,7 +472,7 @@ const Auth = () => {
                     style={{
                       background: 'none',
                       border: 'none',
-                      color: '#a855f7',
+                      color: 'var(--color-accent)',
                       cursor: 'pointer',
                       textDecoration: 'underline',
                       fontSize: '0.85rem',

@@ -3,12 +3,12 @@
 :root {
   --bg-dark: #0A0A0A;
   --bg-secondary: #121212;
-  --purple-primary: #8B5CF6;
-  --purple-bright: #A855F7;
+  --purple-primary: var(--color-accent);
+  --purple-bright: var(--color-accent-light);
   --text-white: #FFFFFF;
   --text-muted: #A1A1AA;
-  --border-color: rgba(139, 92, 246, 0.2);
-  --glow-color: rgba(139, 92, 246, 0.35);
+  --border-color: rgba(var(--color-accent-rgb, 168, 85, 247), 0.2);
+  --glow-color: rgba(var(--color-accent-rgb, 168, 85, 247), 0.35);
 }
 
 * {
@@ -330,7 +330,7 @@ body {
 
 .btn-secondary:hover {
   border-color: var(--purple-bright);
-  background: rgba(168, 85, 247, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   transform: translateY(-3px);
 }
 
@@ -367,8 +367,8 @@ body {
 }
 
 .hero-prereg-banner {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
-  border: 1px solid rgba(168, 85, 247, 0.5);
+  background: linear-gradient(135deg, rgba(var(--color-accent-rgb, 168, 85, 247), 0.15) 0%, rgba(99, 102, 241, 0.15) 100%);
+  border: 1px solid rgba(var(--color-accent-rgb, 168, 85, 247), 0.5);
 }
 
 .hero-freetier-banner {
@@ -385,8 +385,8 @@ body {
   display: inline-block;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
-  background: rgba(168, 85, 247, 0.3);
-  color: #a855f7;
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.3);
+  color: var(--color-accent);
   font-size: 0.75rem;
   font-weight: 700;
   margin-bottom: 0.75rem;
@@ -410,7 +410,7 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.prereg-title { color: #a855f7; }
+.prereg-title { color: var(--color-accent); }
 .freetier-title { color: #10b981; }
 
 .prereg-subtitle,
@@ -420,7 +420,7 @@ body {
   margin-bottom: 1rem;
 }
 
-.prereg-subtitle strong { color: #a855f7; }
+.prereg-subtitle strong { color: var(--color-accent); }
 .freetier-subtitle strong { color: #10b981; }
 
 .prereg-actions {
@@ -442,7 +442,7 @@ body {
 }
 
 .btn-outline:hover {
-  background: rgba(168, 85, 247, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   border-color: var(--purple-bright);
 }
 
@@ -462,7 +462,7 @@ body {
   padding: 2rem 0;
   border-top: 1px solid var(--border-color);
   width: 100%;
-  background: linear-gradient(180deg, transparent 0%, rgba(139, 92, 246, 0.03) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(var(--color-accent-rgb, 168, 85, 247), 0.03) 100%);
 }
 
 .reviews-scroll-header {
@@ -601,7 +601,7 @@ body {
 /* ===== FEATURES SECTION ===== */
 .features {
   padding: 6rem 0;
-  background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(var(--color-accent-rgb, 168, 85, 247), 0.05) 0%, transparent 100%);
 }
 
 /* ===== HOW IT WORKS SECTION ===== */
@@ -653,7 +653,7 @@ body {
 .step-icon {
   width: 60px;
   height: 60px;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -734,7 +734,7 @@ body {
 .feature-icon {
   width: 60px;
   height: 60px;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -857,7 +857,7 @@ body {
 /* ===== TESTIMONIALS SECTION ===== */
 .testimonials {
   padding: 6rem 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(139, 92, 246, 0.05) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(var(--color-accent-rgb, 168, 85, 247), 0.05) 100%);
 }
 
 .testimonials-grid {
@@ -965,7 +965,7 @@ body {
 
 .pricing-card.highlighted {
   border-color: var(--purple-bright);
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   transform: scale(1.05);
 }
 
@@ -1046,7 +1046,7 @@ body {
 /* ===== FAQ SECTION ===== */
 .faq {
   padding: 6rem 0;
-  background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(var(--color-accent-rgb, 168, 85, 247), 0.05) 0%, transparent 100%);
 }
 
 .faq-container {
@@ -1109,7 +1109,7 @@ body {
 /* ===== FINAL CTA SECTION ===== */
 .final-cta {
   padding: 6rem 2rem;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+  background: linear-gradient(135deg, rgba(var(--color-accent-rgb, 168, 85, 247), 0.15) 0%, rgba(var(--color-accent-rgb, 168, 85, 247), 0.1) 100%);
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
 }
@@ -1394,7 +1394,7 @@ body {
 .pricing-docs-link:hover,
 .hero-docs-link .docs-link:hover {
   color: var(--purple-primary);
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   transform: translateX(2px);
 }
 

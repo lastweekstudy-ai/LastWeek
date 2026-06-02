@@ -152,7 +152,7 @@ const Reviews = () => {
           padding: '1rem',
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#a855f7' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-accent)' }}>
             {publishedCount}
           </div>
           <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
@@ -175,7 +175,7 @@ const Reviews = () => {
               padding: '0.5rem 1rem',
               borderRadius: '6px',
               border: filter === f ? 'none' : '1px solid var(--color-border)',
-              backgroundColor: filter === f ? '#a855f7' : 'var(--color-bg-secondary)',
+              backgroundColor: filter === f ? 'var(--color-accent)' : 'var(--color-bg-secondary)',
               color: filter === f ? 'white' : 'var(--color-text-primary)',
               cursor: 'pointer',
               fontWeight: 500,
@@ -252,7 +252,7 @@ const Reviews = () => {
                     padding: '0.25rem 0.5rem',
                     borderRadius: '4px',
                     fontSize: '0.75rem',
-                    backgroundColor: review.isPublished ? '#a855f7' : 'var(--color-bg-tertiary)',
+                    backgroundColor: review.isPublished ? 'var(--color-accent)' : 'var(--color-bg-tertiary)',
                     color: review.isPublished ? 'white' : 'var(--color-text-muted)',
                   }}>
                     {review.isPublished ? 'Published' : 'Unpublished'}

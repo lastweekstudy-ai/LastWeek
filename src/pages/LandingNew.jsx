@@ -48,7 +48,7 @@ const LandingNew = () => {
       icon: '🤝',
       title: 'Community Learning',
       description: 'Share resources with other students, import shared materials, and build together while keeping your notes private.',
-      color: '#8b5cf6'
+      color: 'var(--color-accent)'
     }
   ];
 

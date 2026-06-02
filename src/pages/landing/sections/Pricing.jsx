@@ -227,17 +227,17 @@ const Pricing = () => {
         {/* Pre-Registration Banner */}
         {isPreRegMode && (
           <div style={{
-            background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
-            border: '1px solid rgba(168, 85, 247, 0.5)',
+            background: 'linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.15) 0%, rgba(59, 130, 246, 0.15) 100%)',
+            border: '1px solid rgba(var(--color-accent-rgb), 0.5)',
             borderRadius: '16px',
             padding: '2rem',
             marginBottom: '2rem',
           }}>
-            <h3 style={{ color: '#a855f7', margin: '0 0 0.5rem', fontSize: '1.25rem', textAlign: 'center' }}>
+            <h3 style={{ color: 'var(--color-accent)', margin: '0 0 0.5rem', fontSize: '1.25rem', textAlign: 'center' }}>
               🎉 Pre-Registration Now Open!
             </h3>
             <p style={{ color: 'var(--text-secondary, #a1a1aa)', margin: '0 0 1.5rem', fontSize: '0.95rem', textAlign: 'center' }}>
-              Two ways to get <strong style={{ color: '#a855f7' }}>Plus free for 1 year</strong> (a $180 value!)
+              Two ways to get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong> (a $180 value!)
             </p>
 
             {/* Two Options Grid */}
@@ -248,12 +248,12 @@ const Pricing = () => {
             }}>
               {/* Option 1: Pay $5 */}
               <div style={{
-                backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                backgroundColor: 'rgba(var(--color-accent-rgb), 0.1)',
                 borderRadius: '12px',
                 padding: '1.25rem',
-                border: '1px solid rgba(168, 85, 247, 0.3)',
+                border: '1px solid rgba(var(--color-accent-rgb), 0.3)',
               }}>
-                <h4 style={{ color: '#a855f7', margin: '0 0 0.5rem', fontSize: '1rem' }}>
+                <h4 style={{ color: 'var(--color-accent)', margin: '0 0 0.5rem', fontSize: '1rem' }}>
                   💳 Pay $5 Now
                 </h4>
                 <p style={{ color: 'var(--text-secondary, #a1a1aa)', margin: '0 0 1rem', fontSize: '0.85rem' }}>
@@ -266,7 +266,7 @@ const Pricing = () => {
                     textAlign: 'center',
                     padding: '0.75rem',
                     borderRadius: '8px',
-                    backgroundColor: '#a855f7',
+                    backgroundColor: 'var(--color-accent)',
                     color: 'white',
                     textDecoration: 'none',
                     fontWeight: 600,

@@ -32,3 +32,27 @@ appwrite_f.env
 # Appwrite function environment files (contain secrets)
 appwrite-functions/**/.env
 nul
+.vercel
+.env*
+
+# Private API keys (never commit)
+.ACTUAL_API_KEYS_PRIVATE.txt
+**/ACTUAL_API_KEYS*.txt
+
+# Documentation files with sensitive configuration
+START_HERE.md
+AI_SECURITY_SUMMARY.md
+IMPLEMENTATION_COMPLETE.md
+MIGRATION_COMPLETE.md
+CLEANUP_SUMMARY.md
+DEPLOYMENT_CHECKLIST.md
+PRODUCTION_READINESS.md
+DEPLOYMENT_STEPS.md
+PADDLE_WEBHOOK_STATUS.md
+GIT_PUSH_FIX.md
+ALL_DEPLOYMENT_FILES.md
+appwrite-functions/aiProxyUniversal/QUICKSTART.md
+appwrite-functions/aiProxyUniversal/COMPLETE_DEPLOYMENT_GUIDE.md
+appwrite-functions/aiProxyUniversal/DEPLOYMENT.md
+appwrite-functions/aiProxyUniversal/SETTINGS_CONFIGURATION.md
+docs/SECURE_AI_MIGRATION.md

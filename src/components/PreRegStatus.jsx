@@ -105,7 +105,7 @@ const PreRegStatus = () => {
                 <code style={{
                   fontSize: '1.25rem',
                   fontWeight: 700,
-                  color: '#a855f7',
+                  color: 'var(--color-accent)',
                   letterSpacing: '2px',
                 }}>
                   {preReg.promoCode}
@@ -163,7 +163,7 @@ const PreRegStatus = () => {
                   <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
                     Bonus months earned:
                   </span>
-                  <span style={{ color: '#a855f7', fontWeight: 600, fontSize: '1rem' }}>
+                  <span style={{ color: 'var(--color-accent)', fontWeight: 600, fontSize: '1rem' }}>
                     +{preReg.bonusMonthsEarned} months
                   </span>
                 </div>
@@ -178,8 +178,8 @@ const PreRegStatus = () => {
   // Still waiting for conversion (pre-reg active)
   return (
     <div style={{
-      background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%)',
-      border: '1px solid rgba(168, 85, 247, 0.5)',
+      background: 'linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.15) 0%, rgba(16, 185, 129, 0.1) 100%)',
+      border: '1px solid rgba(var(--color-accent-rgb), 0.5)',
       borderRadius: '16px',
       padding: '1.5rem',
       marginBottom: '1.5rem',
@@ -187,7 +187,7 @@ const PreRegStatus = () => {
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem' }}>
         <div style={{ fontSize: '2.5rem' }}>🎉</div>
         <div style={{ flex: 1 }}>
-          <h3 style={{ color: '#a855f7', margin: '0 0 0.5rem', fontSize: '1.2rem' }}>
+          <h3 style={{ color: 'var(--color-accent)', margin: '0 0 0.5rem', fontSize: '1.2rem' }}>
             You're Pre-Registered!
           </h3>
           <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 1rem', fontSize: '0.9rem' }}>
@@ -219,7 +219,7 @@ const PreRegStatus = () => {
               <code style={{
                 fontSize: '1.25rem',
                 fontWeight: 700,
-                color: '#a855f7',
+                color: 'var(--color-accent)',
                 letterSpacing: '2px',
               }}>
                 {preReg.promoCode}
@@ -301,7 +301,7 @@ const PreRegStatus = () => {
           <div style={{
             marginTop: '1rem',
             padding: '0.75rem',
-            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+            backgroundColor: 'rgba(var(--color-accent-rgb), 0.1)',
             borderRadius: '8px',
           }}>
             <div style={{
@@ -312,7 +312,7 @@ const PreRegStatus = () => {
               <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
                 Referrals so far:
               </span>
-              <span style={{ color: '#a855f7', fontWeight: 600, fontSize: '1rem' }}>
+              <span style={{ color: 'var(--color-accent)', fontWeight: 600, fontSize: '1rem' }}>
                 {preReg.promoCodeUses || 0} / 10
               </span>
             </div>

@@ -3,11 +3,11 @@
 :root {
   --bg-dark: #0A0A0A;
   --bg-secondary: #121212;
-  --purple-primary: #8B5CF6;
-  --purple-bright: #A855F7;
+  --purple-primary: var(--color-accent);
+  --purple-bright: var(--color-accent-light);
   --text-white: #FFFFFF;
   --text-muted: #A1A1AA;
-  --border-color: rgba(139, 92, 246, 0.2);
+  --border-color: rgba(var(--color-accent-rgb, 168, 85, 247), 0.2);
 }
 
 * {
@@ -107,7 +107,7 @@
 
 .btn-primary:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 40px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 15px 40px rgba(var(--color-accent-rgb), 0.4);
 }
 
 .btn-secondary {
@@ -118,7 +118,7 @@
 
 .btn-secondary:hover {
   border-color: var(--purple-bright);
-  background: rgba(168, 85, 247, 0.1);
+  background: rgba(var(--color-accent-rgb), 0.1);
   transform: translateY(-3px);
 }
 
@@ -156,7 +156,7 @@
 /* Features Section */
 .features-section {
   padding: 6rem 0;
-  background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(var(--color-accent-rgb), 0.05) 0%, transparent 100%);
 }
 
 .section-title {
@@ -191,13 +191,13 @@
 .feature-card:hover {
   border-color: var(--purple-bright);
   transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(168, 85, 247, 0.2);
+  box-shadow: 0 20px 40px rgba(var(--color-accent-rgb), 0.2);
 }
 
 .feature-icon-wrapper {
   width: 60px;
   height: 60px;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb), 0.1);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -244,7 +244,7 @@
 
 .mode-card-detailed.expanded {
   border-color: var(--purple-bright);
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb), 0.1);
 }
 
 .mode-header {
@@ -258,7 +258,7 @@
 .mode-icon {
   width: 60px;
   height: 60px;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb), 0.1);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -337,7 +337,7 @@
 .mode-expand-btn {
   width: 100%;
   padding: 0.75rem;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb), 0.1);
   border: 1px solid var(--border-color);
   color: var(--purple-bright);
   border-radius: 8px;
@@ -348,14 +348,14 @@
 }
 
 .mode-expand-btn:hover {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(var(--color-accent-rgb), 0.2);
   border-color: var(--purple-bright);
 }
 
 /* Tips Section */
 .tips-section {
   padding: 6rem 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(139, 92, 246, 0.05) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(var(--color-accent-rgb), 0.05) 100%);
 }
 
 .tips-grid {
@@ -414,7 +414,7 @@
 .cta-section {
   padding: 6rem 2rem;
   text-align: center;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.1) 0%, rgba(var(--color-accent-rgb), 0.05) 100%);
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
 }
@@ -553,7 +553,7 @@
 }
 
 .mode-doc {
-  background: rgba(139, 92, 246, 0.05);
+  background: rgba(var(--color-accent-rgb), 0.05);
   border-left: 3px solid var(--purple-bright);
   padding: 1rem;
   margin-bottom: 1rem;
@@ -652,7 +652,7 @@
 }
 
 .docs-content::-webkit-scrollbar-track {
-  background: rgba(139, 92, 246, 0.05);
+  background: rgba(var(--color-accent-rgb), 0.05);
   border-radius: 10px;
 }
 

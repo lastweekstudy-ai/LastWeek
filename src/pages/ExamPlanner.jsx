@@ -411,6 +411,8 @@ const ExamPlanner = () => {
         action={limitBlocked?.action}
         current={limitBlocked?.current}
         limit={limitBlocked?.limit}
+        remaining={limitBlocked?.remaining}
+        requested={limitBlocked?.requested}
         planName={limitBlocked?.planName}
       />
     </div>

@@ -51,8 +51,13 @@ export const getAdminSettings = async () => {
     );
     return doc;
   } catch (err) {
-    console.error('[admin] Failed to get admin settings:', err.message);
-    // Return defaults if not found
+    // 401 is expected on the public landing page (no session) — don't log it as an error.
+    // Fix: set Read permission on admin_settings collection to "Any" in Appwrite Console
+    // to allow unauthenticated access from the landing page.
+    if (err.code !== 401 && !err.message?.includes('not accessible in this region')) {
+      console.error('[admin] Failed to get admin settings:', err.message);
+    }
+    // Return defaults so the landing page renders normally
     return {
       preRegActive: false,
       paymentsActive: true,
@@ -349,7 +354,11 @@ export const getPublishedReviews = async (limit = 10) => {
     );
     return result.documents;
   } catch (err) {
-    console.error('[admin] Failed to get published reviews:', err.message);
+    // 401 is expected on the public landing page (no session) — don't log it as an error.
+    // Fix: set Read permission on user_reviews collection to "Any" in Appwrite Console.
+    if (err.code !== 401 && !err.message?.includes('not accessible in this region')) {
+      console.error('[admin] Failed to get published reviews:', err.message);
+    }
     return [];
   }
 };

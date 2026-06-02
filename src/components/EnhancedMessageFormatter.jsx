@@ -279,7 +279,7 @@ const FlashcardSetRenderer = ({ cards, prefix, suffix, onFlashcardRate }) => {
           <span>Card {Math.min(currentIndex + 1, cards.length)} of {cards.length}</span>
           <div style={{ flex: 1, height: '4px', backgroundColor: 'var(--color-border)', borderRadius: '2px' }}>
             <div style={{
-              height: '100%', borderRadius: '2px', backgroundColor: '#a855f7',
+              height: '100%', borderRadius: '2px', backgroundColor: 'var(--color-accent)',
               width: `${((allDone ? cards.length : currentIndex) / cards.length) * 100}%`,
               transition: 'width 0.3s ease',
             }} />

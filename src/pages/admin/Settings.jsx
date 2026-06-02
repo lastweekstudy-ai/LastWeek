@@ -207,7 +207,7 @@ const Settings = () => {
                 padding: '0.5rem 1rem',
                 borderRadius: '6px',
                 border: 'none',
-                backgroundColor: '#a855f7',
+                backgroundColor: 'var(--color-accent)',
                 color: 'white',
                 cursor: 'pointer',
                 fontWeight: 500,
@@ -281,7 +281,7 @@ const Settings = () => {
           <StatusItem 
             label="Mode" 
             value={settings?.preRegActive ? 'Pre-Registration' : 'Commercial'} 
-            color={settings?.preRegActive ? '#a855f7' : '#10b981'}
+            color={settings?.preRegActive ? 'var(--color-accent)' : '#10b981'}
           />
           <StatusItem 
             label="Payments" 

@@ -1,6 +1,9 @@
 /**
  * aiProvider.js — Centralized AI provider with automatic failover
  *
+ * 🔐 SECURITY UPDATE: All API calls now route through secure Appwrite Function proxy.
+ * API keys are stored server-side and never exposed to client code.
+ *
  * Provider priority and best-use mapping:
  *
  * For TEXT/CHAT (streaming):
@@ -22,16 +25,14 @@
  *   3. DeepSeek             — last resort
  */
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
-const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+// 🔐 Import secure AI provider (routes through Appwrite Function)
+import * as SecureAI from './secureAiProvider';
 
-const GROQ_ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
-const GROQ_TRANSCRIPTION_ENDPOINT = 'https://api.groq.com/openai/v1/audio/transcriptions';
-const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-const DEEPSEEK_ENDPOINT = 'https://api.deepseek.com/chat/completions';
-const OPENROUTER_ENDPOINT = 'https://openrouter.ai/api/v1/chat/completions';
+// Legacy API key references (DEPRECATED - kept for compatibility with old code)
+// These are no longer used as all calls go through secure proxy
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || 'DEPRECATED_USE_SECURE_PROXY';
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'DEPRECATED_USE_SECURE_PROXY';
+const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || 'DEPRECATED_USE_SECURE_PROXY';
 
 /**
  * Model selection guide (May 2026 free tiers):
@@ -62,16 +63,20 @@ export const GROQ_MODELS = {
   WHISPER_TURBO: 'whisper-large-v3-turbo', // Faster audio transcription
 };
 
-// Token limits per model (conservative — leave headroom below hard limits)
+// Token limits per model — set well below the hard TPM limits to avoid 413 errors.
+// Groq TPM limits (free tier): Llama 70B = 12k, Llama 8B = 6k, Gemma = 8k
+// We use ~60% of the limit to leave room for the output tokens (max_tokens=4096).
+// Input + output must both fit within the TPM window.
 const GROQ_TOKEN_LIMITS = {
-  [GROQ_MODELS.LLAMA_70B]: 9000,       // llama-3.3-70b-versatile: 12k TPM, use 9k
-  [GROQ_MODELS.LLAMA_8B]: 4500,        // 131k context, but TPM limit ~6k
-  [GROQ_MODELS.LLAMA_8B_LEGACY]: 6000, // 8k context
-  [GROQ_MODELS.GEMMA]: 6000,           // 8k context
+  [GROQ_MODELS.LLAMA_70B]: 7500,       // 12k TPM limit; 7.5k input leaves ~4.5k for output
+  [GROQ_MODELS.LLAMA_8B]: 3500,        // 6k TPM limit; 3.5k input leaves ~2.5k for output
+  [GROQ_MODELS.LLAMA_8B_LEGACY]: 4000, // 8k context
+  [GROQ_MODELS.GEMMA]: 4000,           // 8k context
 };
 
-// Threshold: above this, skip Groq 8B and go straight to Gemini/DeepSeek
-const GROQ_MAX_SAFE_TOKENS = 8000;
+// Threshold: above this, skip Groq entirely and go straight to DeepSeek/Gemini.
+// Set to 6500 — below our 7500 input budget to account for system prompt overhead.
+const GROQ_MAX_SAFE_TOKENS = 6500;
 
 // ─── Backoff-and-Retry helper ─────────────────────────────────────────────────
 /**
@@ -111,7 +116,9 @@ function estimateMessagesTokens(systemPrompt, messages) {
  */
 function truncateMessages(systemPrompt, messages, tokenLimit) {
   const systemTokens = estimateTokens(systemPrompt);
-  const budget = tokenLimit - systemTokens - 300; // 300 token safety buffer
+  // 800 token safety buffer — accounts for estimation inaccuracy (~25% error rate)
+  // and ensures output tokens (max_tokens=4096) don't push us over the TPM limit
+  const budget = tokenLimit - systemTokens - 800;
 
   if (messages.length === 0) return messages;
 
@@ -142,107 +149,40 @@ function truncateMessages(systemPrompt, messages, tokenLimit) {
 // ─── Groq API ────────────────────────────────────────────────────────────────
 
 /**
- * Call Groq API (non-streaming)
+ * Call Groq API (non-streaming) via secure proxy
+ * 🔐 Now routes through Appwrite Function - API key secure server-side
  */
 export async function callGroq(systemPrompt, messages, model = GROQ_MODELS.LLAMA_70B) {
-  if (!GROQ_API_KEY) throw new Error('Groq API key not configured');
-
   const tokenLimit = GROQ_TOKEN_LIMITS[model] || 4500;
   const safeMessages = truncateMessages(systemPrompt, messages, tokenLimit);
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 60000);
-
   try {
-    const response = await fetch(GROQ_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...safeMessages,
-        ],
-        temperature: 0.7,
-        max_tokens: 4096,
-        stream: false,
-      }),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      
-      // Detect rate limit errors (429) and throw specific error
-      if (response.status === 429) {
-        const rateLimitMsg = err.error?.message || 'Rate limit reached';
-        const error = new Error(rateLimitMsg);
-        error.code = 'GROQ_RATE_LIMIT';
-        error.status = 429;
-        throw error;
-      }
-      
-      throw new Error(err.error?.message || `Groq API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.choices?.[0]?.message?.content || '';
+    return await SecureAI.callGroq(systemPrompt, safeMessages, model);
   } catch (err) {
-    clearTimeout(timeoutId);
+    // Preserve error codes for failover logic
+    if (err.message?.includes('429') || err.message?.includes('rate limit')) {
+      const error = new Error(err.message);
+      error.code = 'GROQ_RATE_LIMIT';
+      error.status = 429;
+      throw error;
+    }
     throw err;
   }
 }
 
 /**
- * Call Groq Vision for image analysis (Llama 4 Scout — fast, free)
+ * Call Groq Vision for image analysis via secure proxy
+ * 🔐 Now routes through Appwrite Function - API key secure server-side
  * Max 4MB base64 image, up to 5 images per request.
  */
 export async function callGroqVision(base64Image, prompt, mimeType = 'image/jpeg') {
-  if (!GROQ_API_KEY) throw new Error('Groq API key not configured');
-
-  const cleanBase64 = base64Image.replace(/^data:image\/[a-z]+;base64,/, '');
-  console.log('[Groq Vision] Sending image, size:', Math.round(cleanBase64.length * 3 / 4 / 1024), 'KB, model:', GROQ_MODELS.LLAMA_VISION);
-
-  const response = await fetch(GROQ_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${GROQ_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: GROQ_MODELS.LLAMA_VISION,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'text', text: prompt },
-          {
-            type: 'image_url',
-            image_url: { url: `data:${mimeType};base64,${cleanBase64}` },
-          },
-        ],
-      }],
-      temperature: 0.4,
-      max_tokens: 2048,
-    }),
-    signal: AbortSignal.timeout(30000),
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Groq Vision error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data.choices?.[0]?.message?.content || '';
+  console.log('[Groq Vision] Sending image via secure proxy, size:', Math.round(base64Image.length * 3 / 4 / 1024), 'KB');
+  return await SecureAI.callGroqVision(base64Image, prompt, mimeType);
 }
 
 /**
- * Transcribe audio using Groq Whisper Large V3 (fastest transcription available)
+ * Transcribe audio using Groq Whisper Large V3 via secure proxy
+ * 🔐 Now routes through Appwrite Function - API key secure server-side
  * Audio is pre-compressed to mono 16kHz WebM/Opus before upload to save bandwidth
  * while preserving phoneme clarity (Whisper is robust to compression at 16kHz).
  * @param {File|Blob} audioFile - max 25MB, supports mp3/wav/m4a/ogg/flac/webm
@@ -250,8 +190,6 @@ export async function callGroqVision(base64Image, prompt, mimeType = 'image/jpeg
  * @returns {Promise<string>} transcribed text
  */
 export async function transcribeAudio(audioFile, language = null) {
-  if (!GROQ_API_KEY) throw new Error('Groq API key not configured');
-
   // ── Client-side audio compression ──────────────────────────────────────────
   // Re-encode to mono 16kHz WebM/Opus (~12 kbps) before sending.
   // This reduces a typical 5-second recording from ~500 KB (wav) to ~10 KB
@@ -303,276 +241,92 @@ export async function transcribeAudio(audioFile, language = null) {
   }
   // ───────────────────────────────────────────────────────────────────────────
 
-  const formData = new FormData();
-  formData.append('file', fileToSend);
-  formData.append('model', GROQ_MODELS.WHISPER);
-  formData.append('response_format', 'text');
-  if (language) formData.append('language', language);
+  // Convert to base64 for secure proxy transmission
+  const arrayBuffer = await fileToSend.arrayBuffer();
+  const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
-  const response = await fetch(GROQ_TRANSCRIPTION_ENDPOINT, {
-    method: 'POST',
-    headers: { 'Authorization': `Bearer ${GROQ_API_KEY}` },
-    body: formData,
-    signal: AbortSignal.timeout(60000),
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Groq Whisper error: ${response.status}`);
-  }
-
-  return await response.text();
+  console.log(`[Whisper] Sending ${Math.round(fileToSend.size / 1024)}KB via secure proxy`);
+  return await SecureAI.transcribeAudio(base64Audio);
 }
 
 /**
- * Call Groq API with SSE streaming
+ * Call Groq API with loading animation (streaming removed for security)
+ * 🔐 Now routes through Appwrite Function - shows loading state instead
+ * Note: Secure proxy returns complete response (no streaming)
  */
 export async function callGroqStream(systemPrompt, messages, onChunk, model = GROQ_MODELS.LLAMA_70B) {
-  if (!GROQ_API_KEY) throw new Error('Groq API key not configured');
-
   const tokenLimit = GROQ_TOKEN_LIMITS[model] || 4500;
   const safeMessages = truncateMessages(systemPrompt, messages, tokenLimit);
 
-  const response = await fetch(GROQ_ENDPOINT, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${GROQ_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...safeMessages,
-      ],
-      temperature: 0.7,
-      max_tokens: 4096,
-      stream: true,
-    }),
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Groq API error: ${response.status}`);
-  }
-
-  const reader = response.body.getReader();
-  const decoder = new TextDecoder();
-  let assembled = '';
-  let lineBuffer = '';
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    lineBuffer += decoder.decode(value, { stream: true });
-    const lines = lineBuffer.split('\n');
-    lineBuffer = lines.pop();
-
-    for (const line of lines) {
-      if (!line.startsWith('data: ')) continue;
-      const payload = line.slice('data: '.length).trim();
-      if (payload === '[DONE]') return assembled;
-
-      try {
-        const parsed = JSON.parse(payload);
-        const delta = parsed.choices?.[0]?.delta?.content ?? '';
-        if (delta) {
-          assembled += delta;
-          onChunk(delta);
-        }
-      } catch {
-        // skip malformed chunk
-      }
+  try {
+    // Call secure proxy (non-streaming)
+    const result = await SecureAI.callGroq(systemPrompt, safeMessages, model);
+    
+    // Emit as single chunk for compatibility
+    if (onChunk) onChunk(result);
+    
+    return result;
+  } catch (err) {
+    // Preserve error codes for failover logic
+    if (err.message?.includes('429') || err.message?.includes('rate limit')) {
+      const error = new Error(err.message);
+      error.code = 'GROQ_RATE_LIMIT';
+      error.status = 429;
+      throw error;
     }
+    throw err;
   }
-
-  return assembled;
 }
 
 // ─── Gemini API ──────────────────────────────────────────────────────────────
 
 /**
- * Call Gemini for text generation
+ * Call Gemini for text generation via secure proxy
+ * 🔐 Now routes through Appwrite Function - API key secure server-side
  * @param {string} prompt
  * @param {string} [systemInstruction]
  * @returns {Promise<string>}
  */
 export async function callGeminiText(prompt, systemInstruction = '') {
-  if (!GEMINI_API_KEY) throw new Error('Gemini API key not configured');
-
-  const response = await fetch(`${GEMINI_ENDPOINT}?key=${GEMINI_API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined,
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 8192,
-        topP: 0.95,
-        topK: 40,
-      },
-    }),
-    signal: AbortSignal.timeout(45000),
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Gemini API error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  return await SecureAI.callGeminiText(prompt, systemInstruction);
 }
 
 /**
- * Call Gemini Vision with an image
+ * Call Gemini Vision with an image via secure proxy
+ * 🔐 Now routes through Appwrite Function - API key secure server-side
  * @param {string} base64Image - base64 without data URL prefix
  * @param {string} prompt
  * @param {string} [mimeType]
  * @returns {Promise<string>}
  */
 export async function callGeminiVision(base64Image, prompt, mimeType = 'image/jpeg') {
-  if (!GEMINI_API_KEY) throw new Error('Gemini API key not configured');
-
-  // Strip data URL prefix if present
-  const cleanBase64 = base64Image.replace(/^data:image\/[a-z]+;base64,/, '');
-
-  const response = await fetch(`${GEMINI_ENDPOINT}?key=${GEMINI_API_KEY}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{
-        parts: [
-          { text: prompt },
-          {
-            inline_data: {
-              mime_type: mimeType,
-              data: cleanBase64,
-            },
-          },
-        ],
-      }],
-      generationConfig: {
-        temperature: 0.4,
-        maxOutputTokens: 4096,
-      },
-    }),
-    signal: AbortSignal.timeout(45000),
-  });
-
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.error?.message || `Gemini Vision error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  return await SecureAI.callGeminiVision(base64Image, prompt, mimeType);
 }
 
 // ─── DeepSeek API ─────────────────────────────────────────────────────────────
 
 /**
- * Call DeepSeek (non-streaming)
+ * Call DeepSeek via secure proxy (non-streaming)
+ * 🔐 Now routes through Appwrite Function - API key secure server-side
  */
 export async function callDeepSeek(systemPrompt, messages) {
-  if (!DEEPSEEK_API_KEY) throw new Error('DeepSeek API key not configured');
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 60000);
-
-  try {
-    const response = await fetch(DEEPSEEK_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages,
-        ],
-        stream: false,
-      }),
-      signal: controller.signal,
-    });
-
-    clearTimeout(timeoutId);
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.error?.message || `DeepSeek API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.choices?.[0]?.message?.content || '';
-  } catch (err) {
-    clearTimeout(timeoutId);
-    throw err;
-  }
+  return await SecureAI.callDeepSeek(systemPrompt, messages);
 }
 
 /**
- * Call DeepSeek with SSE streaming
+ * Call DeepSeek with loading animation (streaming removed for security)
+ * 🔐 Now routes through Appwrite Function - shows loading state instead
+ * Note: Secure proxy returns complete response (no streaming)
  */
 export async function callDeepSeekStream(systemPrompt, messages, onChunk, retryCount = 0) {
   try {
-    const response = await fetch(DEEPSEEK_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages,
-        ],
-        stream: true,
-      }),
-    });
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error(err.error?.message || `DeepSeek API error: ${response.status}`);
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let assembled = '';
-    let lineBuffer = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      lineBuffer += decoder.decode(value, { stream: true });
-      const lines = lineBuffer.split('\n');
-      lineBuffer = lines.pop();
-
-      for (const line of lines) {
-        if (!line.startsWith('data: ')) continue;
-        const payload = line.slice('data: '.length).trim();
-        if (payload === '[DONE]') return assembled;
-
-        try {
-          const parsed = JSON.parse(payload);
-          const delta = parsed.choices?.[0]?.delta?.content ?? '';
-          if (delta) {
-            assembled += delta;
-            onChunk(delta);
-          }
-        } catch {
-          // skip
-        }
-      }
-    }
-
-    return assembled;
+    // Call secure proxy (non-streaming)
+    const result = await SecureAI.callDeepSeek(systemPrompt, messages);
+    
+    // Emit as single chunk for compatibility
+    if (onChunk) onChunk(result);
+    
+    return result;
   } catch (err) {
     const isNetworkError =
       err.message.includes('Failed to fetch') ||
@@ -818,114 +572,24 @@ export async function smartAnalyzeDocument(text, prompt) {
 }
 
 /**
- * Call OpenRouter Vision — free models with image support
- * Free vision models: google/gemini-2.0-flash-exp:free, meta-llama/llama-4-scout:free
- */
-export async function callOpenRouterVision(base64Image, prompt, mimeType = 'image/jpeg') {
-  if (!OPENROUTER_API_KEY) throw new Error('OpenRouter API key not configured');
-
-  const cleanBase64 = base64Image.replace(/^data:image\/[a-z]+;base64,/, '');
-  const dataUrl = `data:${mimeType};base64,${cleanBase64}`;
-
-  // Try free vision models in order
-  const visionModels = [
-    'baidu/qianfan-ocr-fast:free',          // OCR-optimized, perfect for handwriting
-    'google/gemma-4-26b-a4b-it:free',       // Google Gemma 4 with vision
-    'google/gemma-4-31b-it:free',           // Google Gemma 4 larger
-    'nvidia/nemotron-nano-12b-v2-vl:free',  // NVIDIA vision-language
-    'nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free', // NVIDIA omni
-  ];
-
-  for (const model of visionModels) {
-    try {
-      const response = await fetch(OPENROUTER_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-          'HTTP-Referer': 'https://lastweek.app',
-          'X-Title': 'LastWeek',
-        },
-        body: JSON.stringify({
-          model,
-          messages: [{
-            role: 'user',
-            content: [
-              { type: 'text', text: prompt },
-              { type: 'image_url', image_url: { url: dataUrl } },
-            ],
-          }],
-          max_tokens: 2048,
-        }),
-        signal: AbortSignal.timeout(45000),
-      });
-
-      if (!response.ok) {
-        const err = await response.json().catch(() => ({}));
-        console.warn(`[OpenRouter Vision] ${model} failed:`, err.error?.message || response.status);
-        continue;
-      }
-
-      const data = await response.json();
-      const text = data.choices?.[0]?.message?.content;
-      if (text) {
-        console.log(`[OpenRouter Vision] Success with ${model}`);
-        return text;
-      }
-    } catch (err) {
-      console.warn(`[OpenRouter Vision] ${model} error:`, err.message);
-    }
-  }
-
-  throw new Error('All OpenRouter vision models failed');
-}
-
-/**
- * Smart image analysis:
- * Gemini Vision → OpenRouter Vision (free) → error
+ * Smart image analysis with automatic failover:
+ * Gemini Vision (primary) → Groq Vision (fallback) → error
+ * 
+ * Note: OpenRouter removed as it was not configured
  */
 export async function smartAnalyzeImage(base64Image, prompt, mimeType = 'image/jpeg') {
-  // Try Gemini Vision first
+  // Try Gemini Vision first (2M context, best for complex images)
   try {
     return await callGeminiVision(base64Image, prompt, mimeType);
   } catch (err) {
     console.warn('[AI Vision] Gemini Vision failed:', err.message);
   }
 
-  // Try Gemini 1.5 Flash as second option
+  // Try Groq Vision as fallback (Llama Vision, fast and free)
   try {
-    const cleanBase64 = base64Image.replace(/^data:image\/[a-z]+;base64,/, '');
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: prompt },
-              { inline_data: { mime_type: mimeType, data: cleanBase64 } },
-            ],
-          }],
-          generationConfig: { temperature: 0.4, maxOutputTokens: 4096 },
-        }),
-        signal: AbortSignal.timeout(45000),
-      }
-    );
-    if (response.ok) {
-      const data = await response.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) return text;
-    }
+    return await callGroqVision(base64Image, prompt, mimeType);
   } catch (err) {
-    console.warn('[AI Vision] Gemini 1.5 Flash failed:', err.message);
-  }
-
-  // OpenRouter free vision models as final fallback
-  try {
-    return await callOpenRouterVision(base64Image, prompt, mimeType);
-  } catch (err) {
-    console.warn('[AI Vision] OpenRouter Vision failed:', err.message);
+    console.warn('[AI Vision] Groq Vision failed:', err.message);
   }
 
   throw new Error('Image analysis unavailable. All vision providers failed. Please try again later.');

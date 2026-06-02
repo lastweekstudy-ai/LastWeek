@@ -60,11 +60,18 @@ const useTestingLimits = () => {
   }, [user]);
 
   useEffect(() => {
+    // Only fetch if we haven't already for this user.
+    // useCombinedLimits also calls getTestingUsageDoc — this ref prevents a second
+    // redundant call from this hook for the same user.
     if (user?.$id && !fetchedRef.current) {
       fetchedRef.current = true;
       loadData();
+    } else if (!user?.$id) {
+      fetchedRef.current = false;
+      setUsage(null);
+      setLoading(false);
     }
-  }, [user, loadData]);
+  }, [user?.$id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Check if the user can perform an action in testing mode.

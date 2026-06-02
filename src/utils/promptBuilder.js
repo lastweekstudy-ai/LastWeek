@@ -215,104 +215,165 @@ WHEN TO USE EACH FORMAT:
 
 // SVG figure rules — for precise scientific diagrams (force diagrams, vectors, geometry)
 const SVG_RULES = `
-SVG FIGURES — FOR PRECISE SCIENTIFIC DIAGRAMS:
-When a student needs a force diagram, vector diagram, geometric figure, circuit diagram, or any diagram requiring exact angles and measurements, you MUST draw it as an SVG figure.
+SVG FIGURES — HIGH-QUALITY SCIENTIFIC DIAGRAMS:
 
-SYNTAX — wrap SVG code in:
-[FIGURE:Figure title here]
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" viewBox="0 0 400 400">
-  ... your SVG elements here ...
+When a student needs any visual diagram — force diagram, vector diagram, geometric figure, circuit, molecular geometry, graph, timeline, anatomy, process flow with precise layout — output it as an SVG figure.
+
+═══════════════════════════════════════════════════════════
+MANDATORY WRAPPER SYNTAX — ALWAYS USE EXACTLY THIS FORMAT:
+═══════════════════════════════════════════════════════════
+[FIGURE:Descriptive Title of the Figure]
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450">
+  ... SVG elements here ...
 </svg>
 [/FIGURE]
 
-SVG DRAWING RULES:
-- Always set xmlns="http://www.w3.org/2000/svg"
-- Use viewBox to define coordinate space (e.g. viewBox="0 0 400 400")
-- Use width and height attributes (typically 300–500px)
-- Use stroke="currentColor" or explicit colors like stroke="#333" for lines
-- Use fill="none" for unfilled shapes
-- Use marker-end for arrowheads (define in <defs>)
-- Use <text> for labels with font-size="14" font-family="sans-serif"
-- Use transform="rotate(angle, cx, cy)" for angled elements
+NEVER omit [FIGURE:...] and [/FIGURE] tags. NEVER output raw SVG without these wrappers.
 
-ARROWHEAD DEFINITION (always include this in <defs> when drawing vectors/forces):
+═══════════════════════════════════════════════════════════
+CANVAS & COORDINATE RULES — FOLLOW EXACTLY:
+═══════════════════════════════════════════════════════════
+1. ALWAYS use viewBox="0 0 600 450" width="600" height="450" — this is the standard canvas
+2. SAFE DRAWING ZONE: x=60 to x=540, y=40 to y=410 — NEVER place any element outside this zone
+3. CENTER of canvas: x=300, y=225 — use this as the origin for centered diagrams
+4. Leave at least 60px margin on all sides — labels get cut off otherwise
+
+═══════════════════════════════════════════════════════════
+COLOR PALETTE — DARK BACKGROUND THEME (MANDATORY):
+═══════════════════════════════════════════════════════════
+Background:    #0f1117  (set as SVG background rect)
+Primary lines: #a78bfa  (purple — main shapes, primary vectors)
+Secondary:     #60a5fa  (blue — secondary elements, axes)
+Accent green:  #34d399  (green — positive values, correct answers)
+Accent red:    #f87171  (red — negative values, forces down/left)
+Accent yellow: #fbbf24  (yellow — highlights, important labels)
+Text labels:   #e2e8f0  (light gray — ALL text must use this)
+Dim lines:     #475569  (dark gray — grid lines, construction lines)
+Fill (light):  use color at 15% opacity for shape fills, e.g. fill="#a78bfa" fill-opacity="0.15"
+
+ALWAYS start every SVG with a background rect:
+<rect width="600" height="450" fill="#0f1117" rx="12"/>
+
+═══════════════════════════════════════════════════════════
+TEXT & LABELS — CRITICAL RULES:
+═══════════════════════════════════════════════════════════
+- ALL text: font-family="system-ui, sans-serif" fill="#e2e8f0"
+- Title text: font-size="15" font-weight="bold" — place at y=28, centered (text-anchor="middle" x="300")
+- Label text: font-size="13" — place near the element it labels, with 8px offset from the element
+- Small text: font-size="11" — for angle labels, subscripts, secondary info
+- EVERY shape, line, arrow, and axis MUST have a text label — no unlabeled elements
+- For math in labels: write plaintext e.g. "F = 14 N" not LaTeX
+
+═══════════════════════════════════════════════════════════
+ARROWHEADS — ALWAYS DEFINE IN <defs>:
+═══════════════════════════════════════════════════════════
 <defs>
-  <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+  <marker id="arr-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+    <polygon points="0 0, 10 3.5, 0 7" fill="#a78bfa"/>
   </marker>
-  <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-    <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+  <marker id="arr-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+    <polygon points="0 0, 10 3.5, 0 7" fill="#60a5fa"/>
   </marker>
-  <marker id="arrow-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-    <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
+  <marker id="arr-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+    <polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/>
+  </marker>
+  <marker id="arr-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+    <polygon points="0 0, 10 3.5, 0 7" fill="#f87171"/>
+  </marker>
+  <marker id="arr-yellow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+    <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24"/>
   </marker>
 </defs>
 
-DRAWING A FORCE/VECTOR ARROW:
-<line x1="200" y1="200" x2="200" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
-<text x="210" y="150" font-size="13" font-family="sans-serif" fill="#333">17 N</text>
+Use marker-end="url(#arr-purple)" on lines/paths for arrows.
 
-DRAWING AN ANGLED FORCE (e.g. 30° above horizontal, pointing right):
-<!-- For a force at 30° above horizontal: dx = length*cos(30°), dy = -length*sin(30°) -->
-<!-- cos(30°)=0.866, sin(30°)=0.5 — so for 80px length: dx=69, dy=-40 -->
-<line x1="200" y1="200" x2="269" y2="160" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
-<text x="275" y="158" font-size="13" font-family="sans-serif" fill="#333">14 N (30°)</text>
+═══════════════════════════════════════════════════════════
+DRAWING SPECIFIC DIAGRAM TYPES:
+═══════════════════════════════════════════════════════════
 
-DRAWING AN ANGLE ARC:
-<path d="M 230 200 A 30 30 0 0 0 226 170" fill="none" stroke="#666" stroke-width="1.5"/>
-<text x="238" y="188" font-size="11" font-family="sans-serif" fill="#666">30°</text>
+FORCE / FREE BODY DIAGRAM:
+- Draw object as rect at center (x=270, y=195, width=60, height=60), fill="#a78bfa" fill-opacity="0.15" stroke="#a78bfa"
+- Each force = a line from object center outward, length proportional to magnitude (10px per N, min 60px)
+- Use color coding: up=green, down=red, right=blue, left=yellow, angled=purple
+- Label each force with value AND direction: "F = 17 N ↑"
+- For angled forces: compute exact dx/dy using cos/sin. e.g. 30° right: dx=length×cos(30°)=length×0.866, dy=-length×sin(30°)=-length×0.5
+- Draw angle arc using <path d="M cx+r,cy A r,r 0 0,0 cx+r×cos(θ),cy-r×sin(θ)"/> where r=25
 
-DRAWING A BOX/OBJECT:
-<rect x="175" y="175" width="50" height="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2" rx="4"/>
-<text x="200" y="205" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#4f46e5">4 kg</text>
+GEOMETRIC FIGURE (triangle, circle, polygon):
+- Draw with precise coordinates calculated from the given measurements
+- Label ALL sides with lengths, ALL angles with degree values
+- Use dashed construction lines for heights, medians, angle bisectors
+- Mark right angles with a small square: <rect x="..." y="..." width="10" height="10" fill="none" stroke="#e2e8f0"/>
 
-COMPLETE FORCE DIAGRAM EXAMPLE (5 forces on a box):
-[FIGURE:Figure 4.1 — Forces on the 4.0 kg box]
-<svg xmlns="http://www.w3.org/2000/svg" width="420" height="380" viewBox="0 0 420 380">
+GRAPH / COORDINATE SYSTEM:
+- Draw x and y axes as lines with arrows: x from (80,370) to (540,370), y from (80,370) to (80,40)
+- Add tick marks every 50px with labels
+- Label axes: "x" at (550,370), "y" at (80,30)
+- Plot curves using <path d="M x0,y0 L x1,y1 ..."/> or <polyline points="..."/>
+- Mark key points with <circle r="4" fill="#fbbf24"/>
+
+CIRCUIT DIAGRAM:
+- Use straight lines for wires (stroke="#60a5fa" stroke-width="2")
+- Draw components as labeled rectangles or standard symbols
+- Label every component with its value (e.g. "R = 10Ω", "V = 5V")
+
+MOLECULAR / BOND ANGLE:
+- Draw atoms as labeled circles: <circle r="20" fill="#a78bfa" fill-opacity="0.3" stroke="#a78bfa"/>
+- Draw bonds as lines between atom centers
+- Label bond angles with arc + degree value
+
+═══════════════════════════════════════════════════════════
+COMPLETE EXAMPLE — Force Diagram (5 forces on 4 kg box):
+═══════════════════════════════════════════════════════════
+[FIGURE:Free Body Diagram — 4.0 kg Box with 5 Forces]
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450">
+  <rect width="600" height="450" fill="#0f1117" rx="12"/>
   <defs>
-    <marker id="arr" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#1e293b"/>
-    </marker>
+    <marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#34d399"/></marker>
+    <marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#f87171"/></marker>
+    <marker id="ab" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#60a5fa"/></marker>
+    <marker id="ay" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#fbbf24"/></marker>
+    <marker id="ap" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#a78bfa"/></marker>
   </defs>
-  <!-- Box -->
-  <rect x="185" y="165" width="50" height="50" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2" rx="3"/>
-  <text x="210" y="196" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#4f46e5">4.0 kg</text>
-  <!-- Up: 17 N -->
-  <line x1="210" y1="165" x2="210" y2="75" stroke="#1e293b" stroke-width="2.5" marker-end="url(#arr)"/>
-  <text x="218" y="118" font-size="13" font-family="sans-serif" fill="#1e293b">17 N</text>
-  <!-- Down: 5 N -->
-  <line x1="210" y1="215" x2="210" y2="305" stroke="#1e293b" stroke-width="2.5" marker-end="url(#arr)"/>
-  <text x="218" y="268" font-size="13" font-family="sans-serif" fill="#1e293b">5.0 N</text>
-  <!-- Left: 11 N -->
-  <line x1="185" y1="190" x2="95" y2="190" stroke="#1e293b" stroke-width="2.5" marker-end="url(#arr)"/>
-  <text x="118" y="182" font-size="13" font-family="sans-serif" fill="#1e293b">11 N</text>
-  <!-- Right at 30°: 14 N — cos30=0.866, sin30=0.5, length=90px → dx=78, dy=-45 -->
-  <line x1="235" y1="190" x2="313" y2="145" stroke="#1e293b" stroke-width="2.5" marker-end="url(#arr)"/>
-  <text x="318" y="143" font-size="13" font-family="sans-serif" fill="#1e293b">14 N</text>
+  <!-- Title -->
+  <text x="300" y="28" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" font-weight="bold" fill="#e2e8f0">Free Body Diagram — 4.0 kg Box</text>
+  <!-- Box at center -->
+  <rect x="270" y="195" width="60" height="60" fill="#a78bfa" fill-opacity="0.15" stroke="#a78bfa" stroke-width="2" rx="4"/>
+  <text x="300" y="230" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#a78bfa">4.0 kg</text>
+  <!-- Up: 17 N (green) — length=170px -->
+  <line x1="300" y1="195" x2="300" y2="25" stroke="#34d399" stroke-width="2.5" marker-end="url(#ag)"/>
+  <text x="315" y="110" font-family="system-ui,sans-serif" font-size="13" fill="#34d399">17 N ↑</text>
+  <!-- Down: 5 N (red) — length=50px -->
+  <line x1="300" y1="255" x2="300" y2="305" stroke="#f87171" stroke-width="2.5" marker-end="url(#ar)"/>
+  <text x="315" y="290" font-family="system-ui,sans-serif" font-size="13" fill="#f87171">5.0 N ↓</text>
+  <!-- Left: 11 N (yellow) — length=110px -->
+  <line x1="270" y1="225" x2="160" y2="225" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#ay)"/>
+  <text x="175" y="215" font-family="system-ui,sans-serif" font-size="13" fill="#fbbf24">11 N ←</text>
+  <!-- Right at 30°: 14 N (purple) — dx=14×10×cos30=121, dy=-14×10×sin30=-70 -->
+  <line x1="330" y1="225" x2="451" y2="155" stroke="#a78bfa" stroke-width="2.5" marker-end="url(#ap)"/>
+  <text x="400" y="175" font-family="system-ui,sans-serif" font-size="13" fill="#a78bfa">14 N 30°</text>
   <!-- Angle arc for 30° -->
-  <path d="M 265 190 A 30 30 0 0 0 261 163" fill="none" stroke="#64748b" stroke-width="1.5"/>
-  <text x="272" y="180" font-size="11" font-family="sans-serif" fill="#64748b">30°</text>
-  <!-- Right: 3 N -->
-  <line x1="235" y1="205" x2="295" y2="205" stroke="#1e293b" stroke-width="2.5" marker-end="url(#arr)"/>
-  <text x="300" y="210" font-size="13" font-family="sans-serif" fill="#1e293b">3.0 N</text>
-  <!-- Origin dot -->
-  <circle cx="210" cy="190" r="3" fill="#1e293b"/>
+  <path d="M 360,225 A 30,30 0 0,0 356,196" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="368" y="215" font-family="system-ui,sans-serif" font-size="11" fill="#a78bfa">30°</text>
+  <!-- Right: 3 N (blue) — length=30px -->
+  <line x1="330" y1="240" x2="360" y2="240" stroke="#60a5fa" stroke-width="2.5" marker-end="url(#ab)"/>
+  <text x="365" y="255" font-family="system-ui,sans-serif" font-size="13" fill="#60a5fa">3.0 N →</text>
+  <!-- Center dot -->
+  <circle cx="300" cy="225" r="3" fill="#e2e8f0"/>
 </svg>
 [/FIGURE]
 
+═══════════════════════════════════════════════════════════
 WHEN TO USE SVG vs OTHER FORMATS:
-- Force diagrams, free body diagrams → SVG [FIGURE]
-- Vector diagrams, resultant vectors → SVG [FIGURE]
-- Geometric figures (triangles, angles, circles with measurements) → SVG [FIGURE]
-- Circuit diagrams → SVG [FIGURE]
-- Molecular geometry (bond angles) → SVG [FIGURE]
-- Projectile motion paths → SVG [FIGURE]
-- Process flows, cycles, taxonomies → Mermaid
-- Numerical data → [CHART:type:title] Recharts
-- Tables → markdown
+═══════════════════════════════════════════════════════════
+→ SVG [FIGURE]: force diagrams, free body diagrams, vectors, geometry, circuits, molecular geometry, projectile paths, anatomy, any diagram needing precise coordinates
+→ Mermaid: flowcharts, process flows, taxonomies, sequence diagrams, state machines
+→ [CHART:type:title]: numerical data (bar, line, pie, area charts)
+→ Markdown table: comparison tables, lookup tables
 
-CRITICAL: When a student asks to "draw", "show", "sketch", or "illustrate" a physics/science figure, ALWAYS use SVG. Never use ASCII art for diagrams that require angles or precise geometry.
+CRITICAL: When asked to "draw", "show", "sketch", "illustrate", or "diagram" anything — ALWAYS use SVG [FIGURE]. Never use ASCII art for anything requiring geometry or precise layout.
 `;
+
 
 // Mermaid diagram rules injected into every prompt
 const MERMAID_RULES = `

@@ -44,9 +44,9 @@ const BrandLogo = ({
           fontSize: variant === 'text' ? '14px' : '12px',
           fontWeight: 700,
           color: '#FFFFFF',
-          backgroundColor: 'rgba(139, 92, 246, 0.1)',
+          backgroundColor: 'rgba(var(--color-accent-rgb), 0.1)',
           borderRadius: '8px',
-          border: '1px solid rgba(139, 92, 246, 0.2)',
+          border: '1px solid rgba(var(--color-accent-rgb), 0.2)',
         }}
       >
         {variant === 'text' ? 'LastWeek' : 'LW'}

@@ -40,7 +40,7 @@
 .search-input:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-bg, rgba(168, 85, 247, 0.15));
+  box-shadow: 0 0 0 3px var(--color-accent-bg, rgba(var(--color-accent-rgb), 0.15));
 }
 
 .search-input::placeholder {
@@ -117,7 +117,7 @@
 .filter-select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-bg, rgba(168, 85, 247, 0.15));
+  box-shadow: 0 0 0 3px var(--color-accent-bg, rgba(var(--color-accent-rgb), 0.15));
 }
 
 /* Active/non-default value — highlight to show a filter is applied */

@@ -75,14 +75,14 @@ const UsageWidget = () => {
           </span>
           <span style={{
             fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem',
-            borderRadius: '999px', backgroundColor: 'rgba(168,85,247,0.1)', color: '#a855f7',
+            borderRadius: '999px', backgroundColor: 'rgba(var(--color-accent-rgb),0.1)', color: 'var(--color-accent)',
           }}>
             {planName}
           </span>
         </div>
         <button
           onClick={() => navigate('/pricing')}
-          style={{ background: 'none', border: 'none', color: '#a855f7', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}
+          style={{ background: 'none', border: 'none', color: 'var(--color-accent)', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}
         >
           Upgrade →
         </button>
@@ -94,7 +94,7 @@ const UsageWidget = () => {
           const pct = Math.min(100, (current / limit) * 100);
           const isNear = pct >= 80;
           const isFull = pct >= 100;
-          const color = isFull ? '#ef4444' : isNear ? '#f59e0b' : '#a855f7';
+          const color = isFull ? '#ef4444' : isNear ? '#f59e0b' : 'var(--color-accent)';
 
           return (
             <div key={label}>

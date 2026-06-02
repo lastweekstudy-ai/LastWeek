@@ -6,7 +6,7 @@
 .navbar {
   background-color: var(--color-bg-secondary);
   border-bottom: var(--border-width) solid var(--color-border);
-  padding: var(--spacing-md) 0;
+  padding: 6px 0;
   position: sticky;
   top: 0;
   z-index: 200;
@@ -16,14 +16,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 /* ── Left side ── */
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
   flex-shrink: 0;
   min-width: 0;
 }
@@ -38,40 +38,53 @@
 .navbar-brand:hover { opacity: 0.8; }
 
 .navbar-logo {
-  height: 48px;
+  height: 34px;
   display: block;
 }
 
 .navbar-session-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   border-left: 1px solid var(--color-border);
-  padding-left: 20px;
+  padding-left: 14px;
   min-width: 0;
 }
 .navbar-session-mode {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--color-text-primary);
   white-space: nowrap;
 }
 .navbar-session-subject {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--color-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  max-width: 160px;
 }
 
 /* ── Desktop actions ── */
-.navbar-actions { display: flex; align-items: center; gap: 12px; }
+.navbar-actions { display: flex; align-items: center; gap: 8px; }
 .navbar-desktop-actions { display: flex; }
 
 .btn-icon {
-  width: 40px; height: 40px; padding: 0;
+  width: 32px; height: 32px; padding: 0;
   display: flex; align-items: center; justify-content: center;
+}
+
+/* Slim ghost buttons in navbar */
+.navbar-desktop-actions .btn.btn-ghost {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  height: 30px;
+  gap: 5px;
+  border-radius: 6px;
+}
+.navbar-desktop-actions .btn.btn-ghost svg {
+  width: 15px;
+  height: 15px;
 }
 
 .mode-switcher {
@@ -79,9 +92,10 @@
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius);
   color: var(--color-text-primary);
-  padding: 6px 12px;
-  font-size: 0.875rem;
+  padding: 4px 10px;
+  font-size: 0.8rem;
   cursor: pointer;
+  height: 30px;
 }
 
 /* ── Mobile hamburger wrapper ── */
@@ -92,12 +106,12 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 5px;
-  width: 44px; height: 44px;
+  gap: 4px;
+  width: 36px; height: 36px;
   padding: 0;
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: 7px;
   cursor: pointer;
   transition: background 0.15s;
 }
@@ -105,15 +119,15 @@
 
 .hamburger-bar {
   display: block;
-  width: 20px; height: 2px;
+  width: 18px; height: 2px;
   background: var(--color-text-primary);
   border-radius: 2px;
   transition: transform 0.25s ease, opacity 0.25s ease;
   transform-origin: center;
 }
-.navbar-hamburger.open .hamburger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.navbar-hamburger.open .hamburger-bar:nth-child(1) { transform: translateY(6px) rotate(45deg); }
 .navbar-hamburger.open .hamburger-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
-.navbar-hamburger.open .hamburger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.navbar-hamburger.open .hamburger-bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
 /* ============================================================
    DRAWER — full-screen slide-in panel
@@ -243,7 +257,7 @@
 }
 .nm-item--active {
   color: var(--color-accent) !important;
-  background: var(--color-accent-bg, rgba(168, 85, 247, 0.1)) !important;
+  background: var(--color-accent-bg, rgba(var(--color-accent-rgb, 168, 85, 247), 0.1)) !important;
 }
 .nm-item__icon {
   display: flex;

@@ -37,7 +37,7 @@ export const LANGUAGES = {
 export const STAGES = [
   { id: 'beginner', name: 'Beginner', color: '#10B981' },
   { id: 'elementary', name: 'Elementary', color: '#3B82F6' },
-  { id: 'intermediate', name: 'Intermediate', color: '#8B5CF6' },
+  { id: 'intermediate', name: 'Intermediate', color: 'var(--color-accent)' },
   { id: 'upper_intermediate', name: 'Upper-Intermediate', color: '#F59E0B' },
   { id: 'advanced', name: 'Advanced', color: '#EF4444' },
   { id: 'mastery', name: 'Mastery', color: '#EC4899' },

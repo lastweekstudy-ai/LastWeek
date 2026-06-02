@@ -25,10 +25,10 @@ const MermaidDiagram = ({ chart, title }) => {
           startOnLoad: false,
           theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
           themeVariables: {
-            primaryColor: '#a855f7',
+            primaryColor: 'var(--color-accent)',
             primaryTextColor: 'var(--color-text-primary, #1f2937)',
             primaryBorderColor: '#7e22ce',
-            lineColor: '#9333ea',
+            lineColor: 'var(--color-accent-hover)',
             secondaryColor: 'var(--color-bg-secondary, #f9fafb)',
             tertiaryColor: 'var(--color-bg-tertiary, #f3f4f6)',
             background: 'var(--color-bg-primary, #ffffff)',

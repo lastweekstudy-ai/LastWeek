@@ -90,8 +90,8 @@ const SlotRefreshCountdown = ({ showLabel = true }) => {
           fontFamily: 'monospace', 
           fontSize: '1rem', 
           fontWeight: 600,
-          color: '#a855f7',
-          backgroundColor: 'rgba(168, 85, 247, 0.1)',
+          color: 'var(--color-accent)',
+          backgroundColor: 'rgba(var(--color-accent-rgb), 0.1)',
           padding: '0.25rem 0.5rem',
           borderRadius: '4px',
         }}>

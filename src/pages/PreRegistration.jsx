@@ -229,7 +229,7 @@ const PreRegistration = () => {
               padding: '0.75rem 2rem',
               borderRadius: '8px',
               border: 'none',
-              backgroundColor: '#a855f7',
+              backgroundColor: 'var(--color-accent)',
               color: 'white',
               cursor: 'pointer',
               fontWeight: 600,
@@ -275,7 +275,7 @@ const PreRegistration = () => {
             marginBottom: '1rem',
           }}>
             <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 0.5rem', fontSize: '0.9rem' }}>
-              You'll receive <strong style={{ color: '#a855f7' }}>Plus free for 1 year</strong> when pre-registration ends.
+              You'll receive <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong> when pre-registration ends.
             </p>
             <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.85rem' }}>
               We'll email you at <strong>{formData.email}</strong> with your promo code and instructions.
@@ -290,7 +290,7 @@ const PreRegistration = () => {
               padding: '0.75rem 2rem',
               borderRadius: '8px',
               border: 'none',
-              backgroundColor: '#a855f7',
+              backgroundColor: 'var(--color-accent)',
               color: 'white',
               cursor: 'pointer',
               fontWeight: 600,
@@ -323,13 +323,13 @@ const PreRegistration = () => {
       }}>
         {/* Header */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
+          background: 'linear-gradient(135deg, rgba(var(--color-accent-rgb), 0.2) 0%, rgba(59, 130, 246, 0.2) 100%)',
           borderRadius: '12px',
           padding: '1.5rem',
           marginBottom: '1.5rem',
           textAlign: 'center',
         }}>
-          <h1 style={{ color: '#a855f7', margin: '0 0 0.5rem', fontSize: '1.5rem' }}>
+          <h1 style={{ color: 'var(--color-accent)', margin: '0 0 0.5rem', fontSize: '1.5rem' }}>
             🎉 Pre-Registration
           </h1>
           <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
@@ -363,7 +363,7 @@ const PreRegistration = () => {
             What you get:
           </h4>
           <ul style={{ margin: 0, padding: '0 0 0 1.25rem', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
-            <li style={{ marginBottom: '0.25rem' }}>✅ <strong style={{ color: '#a855f7' }}>Plus plan free for 1 year</strong> (a $180 value)</li>
+            <li style={{ marginBottom: '0.25rem' }}>✅ <strong style={{ color: 'var(--color-accent)' }}>Plus plan free for 1 year</strong> (a $180 value)</li>
             <li style={{ marginBottom: '0.25rem' }}>✅ Unique promo code to share with friends</li>
             <li style={{ marginBottom: '0.25rem' }}>✅ Every 10 signups = +6 months free for you</li>
             <li style={{ marginBottom: '0.25rem' }}>✅ 100 sessions, 7,000 messages/month</li>
@@ -441,7 +441,7 @@ const PreRegistration = () => {
             padding: '1rem',
             borderRadius: '8px',
             border: 'none',
-            backgroundColor: loading ? '#6b7280' : '#a855f7',
+            backgroundColor: loading ? '#6b7280' : 'var(--color-accent)',
             color: 'white',
             cursor: loading ? 'wait' : 'pointer',
             fontWeight: 600,

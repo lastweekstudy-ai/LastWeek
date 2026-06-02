@@ -20,7 +20,7 @@
   width: 48px;
   height: 48px;
   border: 3px solid var(--color-border, #262626);
-  border-top-color: var(--color-accent, #a855f7);
+  border-top-color: var(--color-accent, var(--color-accent));
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -80,7 +80,7 @@
 }
 
 .progress-step:hover:not(:disabled) {
-  border-color: var(--color-accent, #a855f7);
+  border-color: var(--color-accent, var(--color-accent));
   transform: scale(1.1);
 }
 
@@ -90,17 +90,17 @@
 }
 
 .progress-step.completed {
-  background: var(--color-accent, #a855f7);
-  border-color: var(--color-accent, #a855f7);
+  background: var(--color-accent, var(--color-accent));
+  border-color: var(--color-accent, var(--color-accent));
   color: white;
   cursor: pointer;
 }
 
 .progress-step.current {
-  background: var(--color-accent-light, #c084fc);
-  border-color: var(--color-accent-light, #c084fc);
+  background: var(--color-accent-light, var(--color-accent-light));
+  border-color: var(--color-accent-light, var(--color-accent-light));
   color: white;
-  box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 0 12px rgba(var(--color-accent-rgb, 168, 85, 247), 0.4);
 }
 
 /* Content */
@@ -162,13 +162,13 @@
   background: var(--color-bg-secondary, #121212);
   border-radius: 0.5rem;
   margin-bottom: 0.75rem;
-  border-left: 3px solid var(--color-accent, #a855f7);
+  border-left: 3px solid var(--color-accent, var(--color-accent));
 }
 
 .example-number {
   width: 24px;
   height: 24px;
-  background: var(--color-accent, #a855f7);
+  background: var(--color-accent, var(--color-accent));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -200,14 +200,14 @@
 
 .btn-next,
 .btn-submit {
-  background: var(--color-accent, #a855f7);
+  background: var(--color-accent, var(--color-accent));
   color: white;
   border: none;
 }
 
 .btn-next:hover,
 .btn-submit:hover {
-  background: var(--color-accent-hover, #9333ea);
+  background: var(--color-accent-hover, var(--color-accent-hover));
 }
 
 .btn-continue {
@@ -276,12 +276,12 @@
 }
 
 .option-btn:hover:not(:disabled) {
-  border-color: var(--color-accent, #a855f7);
+  border-color: var(--color-accent, var(--color-accent));
 }
 
 .option-btn.selected {
-  border-color: var(--color-accent, #a855f7);
-  background: rgba(168, 85, 247, 0.1);
+  border-color: var(--color-accent, var(--color-accent));
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
 }
 
 .option-btn.correct {

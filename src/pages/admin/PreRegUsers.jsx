@@ -140,12 +140,12 @@ const PreRegUsers = () => {
           </div>
         </div>
         <div style={{
-          backgroundColor: 'rgba(168, 85, 247, 0.1)',
+          backgroundColor: 'rgba(var(--color-accent-rgb), 0.1)',
           borderRadius: '10px',
-          border: '1px solid #a855f7',
+          border: '1px solid var(--color-accent)',
           padding: '1rem',
         }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#a855f7' }}>
+          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-accent)' }}>
             ${owed.value}
           </div>
           <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
@@ -219,7 +219,7 @@ const PreRegUsers = () => {
             padding: '0.5rem 1rem',
             borderRadius: '6px',
             border: 'none',
-            backgroundColor: '#a855f7',
+            backgroundColor: 'var(--color-accent)',
             color: 'white',
             cursor: 'pointer',
             fontWeight: 500,

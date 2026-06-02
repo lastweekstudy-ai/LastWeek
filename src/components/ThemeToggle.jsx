@@ -1,35 +1,69 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import '../styles/ThemeToggle.css';
 
+const COLOR_META = {
+  purple: { name: 'Purple', icon: '🟣' },
+  orange: { name: 'Orange', icon: '🟠' },
+  green:  { name: 'Green',  icon: '🟢' },
+  brown:  { name: 'Brown',  icon: '🟤' },
+  blue:   { name: 'Blue',   icon: '🔵' }
+};
+
 const ThemeToggle = () => {
-  const { theme, toggleTheme } = useTheme();
+  const { color, changeColor, availableColors } = useTheme();
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen]);
+
+  const currentIcon = COLOR_META[color]?.icon ?? '🟣';
 
   return (
-    <button
-      className="theme-toggle"
-      onClick={toggleTheme}
-      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-      title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode (Ctrl+Shift+T)`}
-    >
-      {theme === 'dark' ? (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="5"/>
-          <line x1="12" y1="1" x2="12" y2="3"/>
-          <line x1="12" y1="21" x2="12" y2="23"/>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-          <line x1="1" y1="12" x2="3" y2="12"/>
-          <line x1="21" y1="12" x2="23" y2="12"/>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-        </svg>
-      ) : (
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-        </svg>
+    <div className="theme-toggle-container" ref={dropdownRef}>
+      <button
+        className="theme-toggle"
+        onClick={() => setIsOpen(prev => !prev)}
+        aria-label="Change color theme"
+        title="Change color theme"
+      >
+        <span className="theme-icon">{currentIcon}</span>
+      </button>
+
+      {isOpen && (
+        <div className="theme-dropdown">
+          {availableColors.map((key) => {
+            const meta = COLOR_META[key];
+            return (
+              <button
+                key={key}
+                className={`theme-option ${color === key ? 'active' : ''}`}
+                onClick={() => {
+                  changeColor(key);
+                  setIsOpen(false);
+                }}
+                aria-label={`Switch to ${meta.name} theme`}
+              >
+                <span className="theme-option-icon">{meta.icon}</span>
+                <span className="theme-option-name">{meta.name}</span>
+                {color === key && <span className="theme-option-check">✓</span>}
+              </button>
+            );
+          })}
+        </div>
       )}
-    </button>
+    </div>
   );
 };
 

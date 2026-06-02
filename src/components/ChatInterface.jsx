@@ -476,7 +476,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
         {/* Input Form */}
         <form className="chat-input-form-improved" onSubmit={handleSubmit}>
           <div className="input-toolbar">
-            {/* Action Buttons */}
+            {/* Action Buttons — slim icon+label style */}
             {onSidebarToggle && (
               <button
                 type="button"
@@ -495,7 +495,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
                 onClick={onResourcesToggle}
                 title="Study Resources"
               >
-                📚
+                📚 <span className="toolbar-btn-label">Library</span>
               </button>
             )}
             
@@ -506,7 +506,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
               disabled={isLoading || isUploadingPDF}
               title="Attach file"
             >
-              <AttachmentIcon size={16} />
+              <AttachmentIcon size={13} /> <span className="toolbar-btn-label">File</span>
             </button>
 
             <button
@@ -515,9 +515,8 @@ This ensures I have the complete PDF content with accurate page and line numbers
               onClick={() => setShowMathKeyboard(v => !v)}
               disabled={isLoading || isUploadingPDF}
               title="Math & science symbols"
-              style={{ fontSize: '1rem', fontWeight: 700 }}
             >
-              ∑
+              ∑ <span className="toolbar-btn-label">Math</span>
             </button>
 
             <button
@@ -526,9 +525,8 @@ This ensures I have the complete PDF content with accurate page and line numbers
               onClick={() => setShowFlashcardModal(true)}
               disabled={isLoading || isUploadingPDF}
               title="Create flashcard"
-              style={{ fontSize: '1rem' }}
             >
-              🃏
+              🃏 <span className="toolbar-btn-label">Card</span>
             </button>
             
             {!showQuickActions && (
@@ -539,9 +537,10 @@ This ensures I have the complete PDF content with accurate page and line numbers
                 disabled={isLoading || isUploadingPDF}
                 title="Show quick actions"
               >
-                <QuickActionIcon size={16} />
+                <QuickActionIcon size={13} /> <span className="toolbar-btn-label">Actions</span>
               </button>
-            )}          </div>
+            )}
+          </div>
 
           <div className="chat-input-container-improved">
             <textarea

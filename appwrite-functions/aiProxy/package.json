@@ -1,0 +1,8 @@
+{
+  "name": "ai-proxy",
+  "version": "1.0.0",
+  "description": "Appwrite function — secure AI proxy (DeepSeek test)",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {}
+}

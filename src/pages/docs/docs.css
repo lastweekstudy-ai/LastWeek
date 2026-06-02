@@ -3,12 +3,12 @@
 :root {
   --bg-dark: #0A0A0A;
   --bg-secondary: #121212;
-  --purple-primary: #8B5CF6;
-  --purple-bright: #A855F7;
+  --purple-primary: var(--color-accent);
+  --purple-bright: var(--color-accent-light);
   --text-white: #FFFFFF;
   --text-muted: #A1A1AA;
-  --border-color: rgba(139, 92, 246, 0.2);
-  --glow-color: rgba(139, 92, 246, 0.35);
+  --border-color: rgba(var(--color-accent-rgb, 168, 85, 247), 0.2);
+  --glow-color: rgba(var(--color-accent-rgb, 168, 85, 247), 0.35);
 }
 
 .docs-page {
@@ -19,13 +19,8 @@
   width: 100%;
 }
 
-/* Ensure dark background for docs page */
-[data-theme="light"] .docs-page {
-  background: #000000 !important;
-  color: #FFFFFF !important;
-}
-
-[data-theme="dark"] .docs-page {
+/* Ensure dark background for docs page (always dark mode) */
+.docs-page {
   background: #000000 !important;
   color: #FFFFFF !important;
 }
@@ -80,7 +75,7 @@
 .docs-search {
   width: 100%;
   padding: 0.75rem;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-white);
@@ -119,12 +114,12 @@
 }
 
 .docs-nav-item:hover {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   color: var(--purple-bright);
 }
 
 .docs-nav-item.active {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.2);
   color: var(--purple-bright);
   border-left: 3px solid var(--purple-bright);
   padding-left: calc(0.75rem - 3px);
@@ -225,7 +220,7 @@
 }
 
 .docs-section-content code {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
   font-family: 'Courier New', monospace;
@@ -248,7 +243,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.1);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-white);
@@ -258,7 +253,7 @@
 }
 
 .docs-nav-button:hover {
-  background: rgba(139, 92, 246, 0.2);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.2);
   border-color: var(--purple-bright);
   color: var(--purple-bright);
 }
@@ -271,7 +266,7 @@
 
 /* Table of Contents */
 .docs-toc {
-  background: rgba(139, 92, 246, 0.05);
+  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.05);
   border-left: 3px solid var(--purple-bright);
   padding: 1.5rem;
   border-radius: 8px;

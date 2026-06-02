@@ -67,10 +67,10 @@ const AdminLayout = () => {
                 alignItems: 'center',
                 gap: '0.75rem',
                 padding: '0.75rem 1.5rem',
-                color: isActive ? '#a855f7' : 'var(--color-text-secondary)',
+                color: isActive ? 'var(--color-accent)' : 'var(--color-text-secondary)',
                 textDecoration: 'none',
-                backgroundColor: isActive ? 'rgba(168, 85, 247, 0.1)' : 'transparent',
-                borderLeft: isActive ? '3px solid #a855f7' : '3px solid transparent',
+                backgroundColor: isActive ? 'rgba(var(--color-accent-rgb), 0.1)' : 'transparent',
+                borderLeft: isActive ? '3px solid var(--color-accent)' : '3px solid transparent',
                 fontWeight: isActive ? 600 : 400,
                 transition: 'all 0.2s',
               })}

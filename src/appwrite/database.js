@@ -523,7 +523,7 @@ export const getUserFlashcardCollections = async (userId) => {
 /**
  * Create a new flashcard collection.
  */
-export const createFlashcardCollection = async (userId, name, color = '#a855f7', icon = '📚') => {
+export const createFlashcardCollection = async (userId, name, color = 'var(--color-accent)', icon = '📚') => {
   try {
     return await databases.createDocument(
       DATABASE_ID,

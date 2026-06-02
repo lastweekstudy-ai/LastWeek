@@ -5,7 +5,6 @@ import { getFileURL } from '../appwrite/storage';
 import StudyInterface from './StudyInterface';
 import ResourceViewer from './ResourceViewer';
 import PDFNoteEditor from './PDFNoteEditor';
-import YoutubeStudyPanel from './YoutubeStudyPanel';
 import AudioProcessor from './AudioProcessor';
 import AudioLectureViewer from './AudioLectureViewer';
 import ResourceSearch from './ResourceSearch';
@@ -226,7 +225,6 @@ const PDFLibrary = ({
           <button className="close-btn" onClick={onClose} title="Close">✕</button>
         </div>
 
-        {/* Tab switcher - YouTube tab hidden for now */}
         <div className="pdf-lib-tabs">
           <button
             className={`pdf-lib-tab ${activeLibTab === 'files' ? 'active' : ''}`}
@@ -234,21 +232,7 @@ const PDFLibrary = ({
           >
             📄 Files
           </button>
-          {/* YouTube tab temporarily disabled - uncomment when transcript fetching is solved
-          <button
-            className={`pdf-lib-tab ${activeLibTab === 'youtube' ? 'active' : ''}`}
-            onClick={() => setActiveLibTab('youtube')}
-          >
-            ▶ YouTube
-          </button>
-          */}
         </div>
-
-        {/* YouTube tab - kept for future use
-        {activeLibTab === 'youtube' && (
-          <YoutubeStudyPanel userId={userId} onSendMessage={onSendMessage} />
-        )}
-        */}
 
         {/* Files tab */}
         {activeLibTab === 'files' && (
@@ -296,7 +280,7 @@ const PDFLibrary = ({
               }}>
                 <span style={{
                   padding: '0.15rem 0.5rem', borderRadius: '999px',
-                  backgroundColor: 'rgba(168,85,247,0.1)', color: '#a855f7',
+                  backgroundColor: 'rgba(var(--color-accent-rgb),0.1)', color: 'var(--color-accent)',
                   fontWeight: 700, fontSize: '0.68rem',
                 }}>{planName}</span>
                 <span>

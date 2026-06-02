@@ -10,33 +10,34 @@ export const useTheme = () => {
   return context;
 };
 
+const AVAILABLE_COLORS = ['purple', 'orange', 'green', 'brown', 'blue'];
+
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(() => {
-    // Check localStorage first, then system preference
-    const savedTheme = localStorage.getItem('lastweek-theme');
-    if (savedTheme) return savedTheme;
-    
-    // Check system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-      return 'light';
+  const [color, setColor] = useState(() => {
+    // Check localStorage first, default to purple
+    const savedColor = localStorage.getItem('lastweek-color');
+    if (savedColor && AVAILABLE_COLORS.includes(savedColor)) {
+      return savedColor;
     }
-    return 'dark';
+    return 'purple';
   });
 
   useEffect(() => {
-    // Apply theme to document
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('lastweek-theme', theme);
-  }, [theme]);
+    // Apply color to document (always dark mode)
+    document.documentElement.setAttribute('data-color', color);
+    localStorage.setItem('lastweek-color', color);
+  }, [color]);
 
-  const toggleTheme = () => {
-    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  const changeColor = (newColor) => {
+    if (AVAILABLE_COLORS.includes(newColor)) {
+      setColor(newColor);
+    }
   };
 
   const value = {
-    theme,
-    toggleTheme,
-    isDark: theme === 'dark'
+    color,
+    changeColor,
+    availableColors: AVAILABLE_COLORS
   };
 
   return (

@@ -57,7 +57,7 @@ const DocsPage = () => {
       {/* Header */}
       <div style={{
         background: 'rgba(18, 18, 18, 0.95)',
-        borderBottom: '1px solid rgba(139, 92, 246, 0.2)',
+        borderBottom: '1px solid rgba(var(--color-accent-rgb), 0.2)',
         padding: '1rem 2rem',
         position: 'sticky',
         top: 0,

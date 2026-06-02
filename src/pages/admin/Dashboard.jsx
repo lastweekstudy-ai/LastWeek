@@ -255,7 +255,7 @@ const Dashboard = () => {
                   padding: '0.5rem 1rem',
                   borderRadius: '6px',
                   border: 'none',
-                  backgroundColor: saveSuccess === 'dailyFreeSlotCount' ? '#10b981' : '#a855f7',
+                  backgroundColor: saveSuccess === 'dailyFreeSlotCount' ? '#10b981' : 'var(--color-accent)',
                   color: 'white',
                   cursor: saving === 'dailyFreeSlotCount' ? 'wait' : 'pointer',
                   fontWeight: 500,
@@ -318,7 +318,7 @@ const Dashboard = () => {
         <div style={{
           backgroundColor: 'var(--color-bg-secondary)',
           borderRadius: '12px',
-          border: '1px solid rgba(168, 85, 247, 0.5)',
+          border: '1px solid rgba(var(--color-accent-rgb), 0.5)',
           padding: '1.5rem',
           marginTop: '2rem',
         }}>
@@ -337,7 +337,7 @@ const Dashboard = () => {
               padding: '0.75rem 1.5rem',
               borderRadius: '8px',
               border: 'none',
-              backgroundColor: completingPreReg ? 'var(--color-text-muted)' : '#a855f7',
+              backgroundColor: completingPreReg ? 'var(--color-text-muted)' : 'var(--color-accent)',
               color: 'white',
               cursor: completingPreReg ? 'not-allowed' : 'pointer',
               fontWeight: 600,
@@ -404,7 +404,7 @@ const Dashboard = () => {
             padding: '0.75rem 1.5rem',
             borderRadius: '8px',
             border: 'none',
-            backgroundColor: '#a855f7',
+            backgroundColor: 'var(--color-accent)',
             color: 'white',
             cursor: 'pointer',
             fontWeight: 500,
@@ -457,7 +457,7 @@ const ToggleRow = ({ label, description, checked, onChange, loading }) => (
     </div>
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
       {loading && (
-        <span style={{ fontSize: '0.75rem', color: '#a855f7' }}>Saving...</span>
+        <span style={{ fontSize: '0.75rem', color: 'var(--color-accent)' }}>Saving...</span>
       )}
       <button
         onClick={onChange}

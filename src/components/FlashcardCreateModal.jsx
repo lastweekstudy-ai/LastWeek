@@ -279,7 +279,7 @@ const FlashcardCreateModal = ({
             style={{
               padding: '0.6rem 1.5rem', borderRadius: '8px',
               border: 'none',
-              backgroundColor: saving ? '#9ca3af' : '#a855f7',
+              backgroundColor: saving ? '#9ca3af' : 'var(--color-accent)',
               color: 'white',
               cursor: saving ? 'not-allowed' : 'pointer',
               fontSize: '0.9rem', fontWeight: 600,

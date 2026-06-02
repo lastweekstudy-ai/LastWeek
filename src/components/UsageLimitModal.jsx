@@ -7,14 +7,16 @@ import { formatLimit } from '../config/planLimits';
  * Displays what they've used, what the limit is, and a CTA to upgrade.
  *
  * Props:
- *   isOpen    {boolean}
- *   onClose   {function}
- *   action    {string}   — what they tried to do ('sessions', 'messages', 'pdfs', etc.)
- *   current   {number}   — how many they've used this month
- *   limit     {number}   — their plan's limit
- *   planName  {string}   — their current plan name
+ *   isOpen     {boolean}
+ *   onClose    {function}
+ *   action     {string}   — 'sessions', 'messages', 'pdfs', 'flashcards', 'mcqs', etc.
+ *   current    {number}   — how many used this month
+ *   limit      {number}   — plan limit
+ *   remaining  {number}   — how many left (optional)
+ *   requested  {number}   — how many they tried to generate (optional)
+ *   planName   {string}   — current plan name
  */
-const UsageLimitModal = ({ isOpen, onClose, action, current, limit, planName }) => {
+const UsageLimitModal = ({ isOpen, onClose, action, current, limit, remaining, requested, planName }) => {
   const navigate = useNavigate();
 
   if (!isOpen) return null;
@@ -33,6 +35,34 @@ const UsageLimitModal = ({ isOpen, onClose, action, current, limit, planName }) 
 
   const label = actionLabels[action] || action;
   const isFeatureLocked = action === 'languageLearning';
+
+  // Determine which message to show
+  const isPartialBlock = requested > 0 && remaining > 0 && requested > remaining;
+  const isFullBlock = !remaining || remaining <= 0;
+
+  const getDescription = () => {
+    if (isFeatureLocked) {
+      return <>{`Language Learning is available on `}<strong>Pro</strong>{` and above.`}</>;
+    }
+    if (isPartialBlock) {
+      return (
+        <>
+          You asked for <strong>{requested} {label}</strong> but only have{' '}
+          <strong>{remaining}</strong> left this month on the <strong>{planName}</strong> plan.
+          <br /><br />
+          Ask for <strong>{remaining} or fewer</strong>, or upgrade for more.
+        </>
+      );
+    }
+    return (
+      <>
+        You've used <strong>{current}</strong> of your <strong>{formatLimit(limit)}</strong> monthly{' '}
+        {label} on the <strong>{planName}</strong> plan.
+        <br />
+        Upgrade to get more.
+      </>
+    );
+  };
 
   return (
     <div
@@ -58,7 +88,7 @@ const UsageLimitModal = ({ isOpen, onClose, action, current, limit, planName }) 
       >
         {/* Icon */}
         <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>
-          {isFeatureLocked ? '🔒' : '⚡'}
+          {isFeatureLocked ? '🔒' : isPartialBlock ? '⚠️' : '⚡'}
         </div>
 
         {/* Title */}
@@ -68,7 +98,11 @@ const UsageLimitModal = ({ isOpen, onClose, action, current, limit, planName }) 
           fontWeight: 700,
           color: 'var(--color-text-primary)',
         }}>
-          {isFeatureLocked ? 'Feature Locked' : 'Monthly Limit Reached'}
+          {isFeatureLocked
+            ? 'Feature Locked'
+            : isPartialBlock
+            ? 'Not Enough Remaining'
+            : 'Monthly Limit Reached'}
         </h2>
 
         {/* Description */}
@@ -76,20 +110,12 @@ const UsageLimitModal = ({ isOpen, onClose, action, current, limit, planName }) 
           margin: '0 0 1.5rem',
           fontSize: '0.9rem',
           color: 'var(--color-text-secondary)',
-          lineHeight: 1.5,
+          lineHeight: 1.6,
         }}>
-          {isFeatureLocked ? (
-            <>Language Learning is available on <strong>Pro</strong> and above.</>
-          ) : (
-            <>
-              You've used <strong>{current}</strong> of your <strong>{formatLimit(limit)}</strong> monthly {label} on the <strong>{planName}</strong> plan.
-              <br />
-              Upgrade to get more.
-            </>
-          )}
+          {getDescription()}
         </p>
 
-        {/* Usage bar (only for countable limits) */}
+        {/* Usage bar */}
         {!isFeatureLocked && limit !== Infinity && (
           <div style={{ marginBottom: '1.5rem' }}>
             <div style={{
@@ -100,13 +126,15 @@ const UsageLimitModal = ({ isOpen, onClose, action, current, limit, planName }) 
             }}>
               <div style={{
                 height: '100%',
-                width: '100%',
-                backgroundColor: '#ef4444',
+                width: `${Math.min(100, (current / limit) * 100)}%`,
+                backgroundColor: isFullBlock ? '#ef4444' : '#f59e0b',
                 borderRadius: '4px',
+                transition: 'width 0.3s ease',
               }} />
             </div>
             <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.4rem' }}>
               {current} / {formatLimit(limit)} used this month
+              {remaining > 0 && ` · ${remaining} remaining`}
             </p>
           </div>
         )}
@@ -133,7 +161,7 @@ const UsageLimitModal = ({ isOpen, onClose, action, current, limit, planName }) 
               padding: '0.6rem 1.25rem',
               borderRadius: '8px',
               border: 'none',
-              backgroundColor: '#a855f7',
+              backgroundColor: 'var(--color-accent)',
               color: 'white',
               cursor: 'pointer',
               fontWeight: 600,

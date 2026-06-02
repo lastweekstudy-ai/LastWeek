@@ -139,8 +139,28 @@ const ExamSession = () => {
     // Check message limit before sending
     const msgCheck = canDo('messages');
     if (!msgCheck.allowed) {
-      setLimitBlocked({ action: 'messages', current: msgCheck.current, limit: msgCheck.limit, planName });
+      setLimitBlocked({ action: 'messages', current: msgCheck.current, limit: msgCheck.limit, remaining: msgCheck.remaining, planName });
       return;
+    }
+
+    // Pre-flight: flashcard request
+    const isFlashcardReq = /flashcard|flash card|flash me|create.*card|make.*card/i.test(userDisplayMessage || '');
+    const isMCQReq = /\bmcq\b|multiple.?choice|quiz me|test me|quiz question/i.test(userDisplayMessage || '');
+    const requestedCount = (() => { const m = (userDisplayMessage || '').match(/\b(\d+)\b/); return m ? Math.min(parseInt(m[1], 10), 50) : 1; })();
+
+    if (isFlashcardReq) {
+      const fcCheck = canDo('flashcards');
+      if (fcCheck.limit !== Infinity && (!fcCheck.allowed || requestedCount > fcCheck.remaining)) {
+        setLimitBlocked({ action: 'flashcards', current: fcCheck.current, limit: fcCheck.limit, remaining: fcCheck.remaining, requested: requestedCount, planName });
+        return;
+      }
+    }
+    if (isMCQReq) {
+      const mcqCheck = canDo('mcqs');
+      if (mcqCheck.limit !== Infinity && (!mcqCheck.allowed || requestedCount > mcqCheck.remaining)) {
+        setLimitBlocked({ action: 'mcqs', current: mcqCheck.current, limit: mcqCheck.limit, remaining: mcqCheck.remaining, requested: requestedCount, planName });
+        return;
+      }
     }
 
     const systemPrompt = buildExamSessionPrompt(plan, topic.name, topicIdx);
@@ -155,14 +175,23 @@ const ExamSession = () => {
 
     setIsStreaming(true);
     try {
-      await sessionCtx.sendMessageStreaming(
+      const result = await sessionCtx.sendMessageStreaming(
         userDisplayMessage,
         async (onChunk) => {
           return await askStream(systemPrompt, contextualMessages, onChunk);
         }
       );
-      // Record message usage after success
+      // Record message usage
       recordUsage('messages');
+
+      // Count flashcards/MCQs generated in the response
+      const responseText = result?.content || '';
+      if (responseText) {
+        const fcCount = (responseText.match(/\*\*FRONT OF CARD\*\*/gi) || []).length;
+        if (fcCount > 0) recordUsage('flashcards', fcCount);
+        const mcqCount = (responseText.match(/\[MCQ\]/gi) || []).length;
+        if (mcqCount > 0) recordUsage('mcqs', mcqCount);
+      }
     } catch (err) {
       setError(err.message);
     } finally {

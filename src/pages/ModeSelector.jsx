@@ -63,8 +63,8 @@ const ModeSelector = () => {
       emoji: '🎓',
       tagline: 'Debate & peer review',
       description: 'Critical thinking, essay writing, different perspectives',
-      color: '#8b5cf6',
-      bg: 'rgba(139,92,246,0.08)',
+      color: 'var(--color-accent)',
+      bg: 'rgba(var(--color-accent-rgb),0.08)',
     },
     {
       id: 'creative_synthesis',
@@ -207,6 +207,8 @@ const ModeSelector = () => {
         action={limitBlocked?.action}
         current={limitBlocked?.current}
         limit={limitBlocked?.limit}
+        remaining={limitBlocked?.remaining}
+        requested={limitBlocked?.requested}
         planName={limitBlocked?.planName}
       />
     </div>

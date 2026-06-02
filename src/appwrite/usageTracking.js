@@ -92,14 +92,19 @@ export const incrementUsage = async (userId, field, amount = 1) => {
     if (!usage.$id) return usage; // couldn't create doc — fail silently
 
     const currentValue = usage[field] || 0;
+    const updatePayload = { [field]: currentValue + amount };
+
+    // Only include updatedAt if the field already exists on the document
+    // (avoids 500 errors if the attribute wasn't added to the Appwrite schema)
+    if ('updatedAt' in usage) {
+      updatePayload.updatedAt = new Date().toISOString();
+    }
+
     const updated = await databases.updateDocument(
       DATABASE_ID,
       USAGE_COLLECTION_ID,
       usage.$id,
-      {
-        [field]: currentValue + amount,
-        updatedAt: new Date().toISOString(),
-      }
+      updatePayload
     );
     return updated;
   } catch (err) {
@@ -116,14 +121,16 @@ export const updateStorageUsage = async (userId, totalBytes) => {
     const usage = await getMonthlyUsage(userId);
     if (!usage.$id) return;
 
+    const updatePayload = { storageUsedBytes: totalBytes };
+    if ('updatedAt' in usage) {
+      updatePayload.updatedAt = new Date().toISOString();
+    }
+
     await databases.updateDocument(
       DATABASE_ID,
       USAGE_COLLECTION_ID,
       usage.$id,
-      {
-        storageUsedBytes: totalBytes,
-        updatedAt: new Date().toISOString(),
-      }
+      updatePayload
     );
   } catch (err) {
     console.error('[usageTracking] Failed to update storage:', err.message);

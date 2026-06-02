@@ -176,7 +176,7 @@ const FlashcardLibrary = () => {
           {/* Progress bar */}
           <div style={{ height: '4px', backgroundColor: 'var(--color-border)', borderRadius: '2px', marginBottom: '2rem' }}>
             <div style={{
-              height: '100%', borderRadius: '2px', backgroundColor: '#a855f7',
+              height: '100%', borderRadius: '2px', backgroundColor: 'var(--color-accent)',
               width: `${((reviewIndex) / reviewQueue.length) * 100}%`,
               transition: 'width 0.3s ease',
             }} />
@@ -216,7 +216,7 @@ const FlashcardLibrary = () => {
                 onClick={() => { setSelectedCollection('due'); startReview(); }}
                 style={{
                   padding: '0.6rem 1.25rem', borderRadius: '8px', border: 'none',
-                  backgroundColor: '#a855f7', color: 'white',
+                  backgroundColor: 'var(--color-accent)', color: 'white',
                   cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
                 }}
               >
@@ -264,8 +264,8 @@ const FlashcardLibrary = () => {
                   style={{
                     width: '100%', textAlign: 'left', padding: '0.65rem 1rem',
                     border: 'none', cursor: 'pointer',
-                    backgroundColor: selectedCollection === item.id ? 'rgba(168,85,247,0.1)' : 'transparent',
-                    color: selectedCollection === item.id ? '#a855f7' : 'var(--color-text-primary)',
+                    backgroundColor: selectedCollection === item.id ? 'rgba(var(--color-accent-rgb),0.1)' : 'transparent',
+                    color: selectedCollection === item.id ? 'var(--color-accent)' : 'var(--color-text-primary)',
                     fontWeight: selectedCollection === item.id ? 600 : 400,
                     fontSize: '0.9rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                   }}
@@ -285,8 +285,8 @@ const FlashcardLibrary = () => {
                       style={{
                         flex: 1, textAlign: 'left', padding: '0.65rem 1rem',
                         border: 'none', cursor: 'pointer',
-                        backgroundColor: selectedCollection === col.$id ? 'rgba(168,85,247,0.1)' : 'transparent',
-                        color: selectedCollection === col.$id ? '#a855f7' : 'var(--color-text-primary)',
+                        backgroundColor: selectedCollection === col.$id ? 'rgba(var(--color-accent-rgb),0.1)' : 'transparent',
+                        color: selectedCollection === col.$id ? 'var(--color-accent)' : 'var(--color-text-primary)',
                         fontWeight: selectedCollection === col.$id ? 600 : 400,
                         fontSize: '0.9rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                       }}
@@ -323,7 +323,7 @@ const FlashcardLibrary = () => {
                         color: 'var(--color-text-primary)', fontSize: '0.85rem',
                       }}
                     />
-                    <button onClick={handleCreateCollection} style={{ padding: '0.4rem 0.6rem', borderRadius: '6px', border: 'none', backgroundColor: '#a855f7', color: 'white', cursor: 'pointer', fontSize: '0.8rem' }}>✓</button>
+                    <button onClick={handleCreateCollection} style={{ padding: '0.4rem 0.6rem', borderRadius: '6px', border: 'none', backgroundColor: 'var(--color-accent)', color: 'white', cursor: 'pointer', fontSize: '0.8rem' }}>✓</button>
                     <button onClick={() => { setShowNewCollectionInput(false); setNewCollectionName(''); }} style={{ padding: '0.4rem 0.5rem', borderRadius: '6px', border: 'none', backgroundColor: 'transparent', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '0.8rem' }}>✕</button>
                   </div>
                 ) : (
@@ -343,8 +343,8 @@ const FlashcardLibrary = () => {
                 onClick={startReview}
                 style={{
                   width: '100%', marginTop: '0.75rem', padding: '0.65rem',
-                  borderRadius: '8px', border: '1px solid #a855f7',
-                  backgroundColor: 'transparent', color: '#a855f7',
+                  borderRadius: '8px', border: '1px solid var(--color-accent)',
+                  backgroundColor: 'transparent', color: 'var(--color-accent)',
                   cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
                 }}
               >
@@ -391,7 +391,7 @@ const FlashcardLibrary = () => {
                   onClick={() => setShowCreateModal(true)}
                   style={{
                     padding: '0.6rem 1.25rem', borderRadius: '8px', border: 'none',
-                    backgroundColor: '#a855f7', color: 'white',
+                    backgroundColor: 'var(--color-accent)', color: 'white',
                     cursor: 'pointer', fontWeight: 600,
                   }}
                 >
@@ -409,7 +409,7 @@ const FlashcardLibrary = () => {
                       style={{
                         backgroundColor: 'var(--color-bg-secondary)',
                         borderRadius: '10px',
-                        border: `1px solid ${isDue ? '#a855f7' : 'var(--color-border)'}`,
+                        border: `1px solid ${isDue ? 'var(--color-accent)' : 'var(--color-border)'}`,
                         padding: '1rem',
                         position: 'relative',
                       }}
@@ -418,7 +418,7 @@ const FlashcardLibrary = () => {
                       {isDue && (
                         <span style={{
                           position: 'absolute', top: '0.6rem', right: '0.6rem',
-                          backgroundColor: '#a855f7', color: 'white',
+                          backgroundColor: 'var(--color-accent)', color: 'white',
                           fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem',
                           borderRadius: '999px',
                         }}>
