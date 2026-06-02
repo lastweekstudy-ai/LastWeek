@@ -63,26 +63,25 @@ const Auth = () => {
 
   // Check if we're in pre-reg mode and handle flows
   useEffect(() => {
-    const checkPreRegMode = async () => {
-      if (adminSettings?.preRegActive) {
-        // Check if user is trying to claim a free slot
-        if (searchParams.get('freeSlot') === 'true' && adminSettings.dailyFreeSlotsActive) {
-          setCheckingSlot(true);
-          const available = await checkDailySlotAvailability();
-          if (available) {
-            const remaining = await getRemainingSlotsToday();
-            setRemainingSlots(remaining);
-            setShowFreeSlotFlow(true);
-            setIsLogin(false); // Switch to signup mode
-          } else {
-            setError('All free testing slots for today have been taken. Please try again tomorrow!');
-          }
-          setCheckingSlot(false);
+    const checkFreeSlotFlow = async () => {
+      // Check if user is trying to claim a free slot
+      if (searchParams.get('freeSlot') === 'true' && adminSettings?.dailyFreeSlotsActive) {
+        setCheckingSlot(true);
+        const available = await checkDailySlotAvailability();
+        if (available) {
+          const remaining = await getRemainingSlotsToday();
+          setRemainingSlots(remaining);
+          setShowFreeSlotFlow(true);
+          setIsLogin(false); // Switch to signup mode
+        } else {
+          setError('All free testing slots for today have been taken. Please try again tomorrow!');
         }
+        setCheckingSlot(false);
       }
     };
+    
     if (adminSettings) {
-      checkPreRegMode();
+      checkFreeSlotFlow();
     }
   }, [searchParams, adminSettings]);
 
