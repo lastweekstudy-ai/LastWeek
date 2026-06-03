@@ -253,14 +253,21 @@ export const getUserStorageUsage = async (userId) => {
 };
 
 // Messages CRUD
+import { 
+  needsChunking, 
+  createChunkedMessage, 
+  getSessionMessagesWithChunks 
+} from './messageChunking';
+
 export const createMessage = async (sessionId, userId, role, content) => {
   try {
-    // Truncate content if it's too long (fallback safety)
-    const maxLength = 1000000; // 1MB in characters (approximate)
-    const truncatedContent = content.length > maxLength 
-      ? content.substring(0, maxLength - 100) + "\n\n[Content truncated due to length limit]"
-      : content;
-
+    // Check if content needs chunking (>800KB)
+    if (needsChunking(content)) {
+      console.log('[database.js] Large message detected, using chunked storage');
+      return await createChunkedMessage(sessionId, userId, role, content);
+    }
+    
+    // Regular message (< 800KB)
     const message = await databases.createDocument(
       DATABASE_ID,
       MESSAGES_COLLECTION_ID,
@@ -269,7 +276,9 @@ export const createMessage = async (sessionId, userId, role, content) => {
         sessionId,
         userId,
         role,
-        content: truncatedContent,
+        content,
+        isChunked: false,
+        totalChunks: 1,
         createdAt: new Date().toISOString()
       }
     );
@@ -282,10 +291,15 @@ export const createMessage = async (sessionId, userId, role, content) => {
       throw new Error('Network connection error. Please check your internet connection and try again.');
     }
     
-    // If it's a content length error, try with truncated content
-    if (error.message.includes('length') || error.message.includes('size')) {
-      const shortContent = content.substring(0, 15000) + "\n\n[Response truncated - content too long for database]";
+    // If regular save fails due to size, force chunking as fallback
+    if (error.message.includes('length') || error.message.includes('size') || error.message.includes('413')) {
+      console.warn('[database.js] Message save failed, forcing chunked storage');
       try {
+        return await createChunkedMessage(sessionId, userId, role, content);
+      } catch (chunkError) {
+        // Last resort: aggressive truncation
+        console.error('[database.js] Chunking also failed, truncating aggressively');
+        const shortContent = content.substring(0, 15000) + "\n\n[Response truncated - content too long for database]";
         const message = await databases.createDocument(
           DATABASE_ID,
           MESSAGES_COLLECTION_ID,
@@ -299,8 +313,6 @@ export const createMessage = async (sessionId, userId, role, content) => {
           }
         );
         return message;
-      } catch (retryError) {
-        throw new Error(`Failed to save message: ${retryError.message}`);
       }
     }
     throw new Error(error.message);
@@ -309,16 +321,8 @@ export const createMessage = async (sessionId, userId, role, content) => {
 
 export const getSessionMessages = async (sessionId) => {
   try {
-    const messages = await databases.listDocuments(
-      DATABASE_ID,
-      MESSAGES_COLLECTION_ID,
-      [
-        Query.equal('sessionId', sessionId),
-        Query.orderAsc('createdAt'),
-        Query.limit(1000)
-      ]
-    );
-    return messages.documents;
+    // Use chunked message retrieval (automatically handles both chunked and non-chunked messages)
+    return await getSessionMessagesWithChunks(sessionId);
   } catch (error) {
     console.error('getSessionMessages error:', error);
     throw new Error(error.message);
