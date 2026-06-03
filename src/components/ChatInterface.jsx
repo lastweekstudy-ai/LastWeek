@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import '../styles/ChatInterface.css';
 import LoadingDots from './LoadingDots';
+import AITypingAnimation from './AITypingAnimation';
 import FileAttachment from './FileAttachment';
 import QuickActions from './QuickActions';
 import EnhancedMessageFormatter from './EnhancedMessageFormatter';
@@ -374,8 +375,9 @@ This ensures I have the complete PDF content with accurate page and line numbers
               </div>
               <div className="message-bubble">
                 <div className="message-text-improved">
-                  <LoadingDots />
-                  {isAnalysing && <span style={{ marginLeft: '8px', fontSize: '0.875rem', color: 'var(--color-text-muted)' }}>Analysing…</span>}
+                  <AITypingAnimation 
+                    message={isAnalysing ? "Analysing document..." : isStreaming ? "Generating response..." : "Thinking..."} 
+                  />
                 </div>
               </div>
             </div>

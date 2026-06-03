@@ -333,110 +333,9 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
   const hasFlashcards = flashcardData && flashcardData.cards.length > 0;
   const hasMCQs       = mcqData && mcqData.questions.length > 0;
 
-  // ── Mixed response: both flashcards AND MCQs in one message ───────────────
-  // Render MCQs first (they appear before flashcards in the raw text),
-  // then flashcards. Both are fully interactive.
-  if (hasFlashcards && hasMCQs) {
-    return (
-      <div className="enhanced-message">
-        {/* Any text before the first MCQ block */}
-        {mcqData.prefix && (
-          <ReactMarkdown remarkPlugins={[remarkGfm, remarkMath]} rehypePlugins={[rehypeKatex]}>
-            {mcqData.prefix}
-          </ReactMarkdown>
-        )}
-
-        {/* All MCQ questions — interactive */}
-        <MCQRenderer
-          messageId={messageId}
-          prefix=""
-          questions={mcqData.questions}
-          suffix=""
-          onMCQAnswer={onMCQAnswer}
-        />
-
-        {/* All flashcards — interactive */}
-        <FlashcardSetRenderer
-          cards={flashcardData.cards}
-          prefix={flashcardData.prefix}
-          suffix={flashcardData.suffix}
-          onFlashcardRate={onFlashcardRate}
-        />
-      </div>
-    );
-  }
-
-  // ── Flashcards only ────────────────────────────────────────────────────────
-  if (hasFlashcards) {
-    return (
-      <FlashcardSetRenderer
-        cards={flashcardData.cards}
-        prefix={flashcardData.prefix}
-        suffix={flashcardData.suffix}
-        onFlashcardRate={onFlashcardRate}
-      />
-    );
-  }
-
-  // ── MCQs only ─────────────────────────────────────────────────────────────
-  if (hasMCQs) {
-    return (
-      <MCQRenderer
-        messageId={messageId}
-        prefix={mcqData.prefix}
-        questions={mcqData.questions}
-        suffix={mcqData.suffix}
-        onMCQAnswer={onMCQAnswer}
-      />
-    );
-  }
-
-  // ── Step 1: split content into chart/mermaid/figure blocks and text segments
-  const segments = [];
-  let lastIndex = 0;
-
-  const combinedRegex = new RegExp(
-    `(?:${CHART_REGEX.source})|(?:${MERMAID_REGEX.source})|(?:${FIGURE_REGEX.source})`,
-    'gi'
-  );
-  let match;
-
-  while ((match = combinedRegex.exec(processedContent)) !== null) {
-    const fullMatch = match[0];
-
-    if (match.index > lastIndex) {
-      segments.push({ kind: 'text', value: processedContent.slice(lastIndex, match.index) });
-    }
-
-    const isChart = match[1] && ['bar', 'line', 'pie', 'area'].includes(match[1]);
-    const isMermaid = !isChart && match[4] !== undefined && match[5] === undefined;
-    const isFigure = match[5] !== undefined || (!isChart && !isMermaid && fullMatch.startsWith('[FIGURE'));
-
-    if (isChart) {
-      const [, type, title, dataStr] = match;
-      let data = null;
-      try { data = JSON.parse(dataStr.trim()); } catch { /* malformed chart data */ }
-      segments.push({ kind: 'chart', type, title, data });
-    } else if (isFigure) {
-      // groups: [5]=optional title, [6]=svg content  (or [4],[5] depending on order)
-      // Find the SVG content — it's the last non-undefined group
-      const figTitle = match[5] || '';
-      const svgContent = match[6] || '';
-      segments.push({ kind: 'figure', title: figTitle.trim(), svgContent });
-    } else {
-      // Mermaid — group [4] is the diagram body
-      segments.push({ kind: 'mermaid', chart: match[4] });
-    }
-
-    lastIndex = match.index + fullMatch.length;
-  }
-
-  // Remaining text after last chart (or all text if no charts)
-  if (lastIndex < processedContent.length) {
-    segments.push({ kind: 'text', value: processedContent.slice(lastIndex) });
-  }
-
-  // ── Step 2: normalise math delimiters in text segments ────────────────────
+  // ── Define helper functions BEFORE using them ─────────────────────────────
+  
+  // Normalise math delimiters in text
   const normaliseMath = (text) => {
     let t = text;
     // \[ ... \]  →  $$ ... $$
@@ -448,7 +347,7 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
     return t;
   };
 
-  // ── Shared markdown component overrides ───────────────────────────────────
+  // Markdown component overrides
   const markdownComponents = {
     table: ({ node, ...props }) => (
       <div style={{ overflowX: 'auto', margin: '1rem 0' }}>
@@ -510,6 +409,257 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
     )
   };
 
+  // Helper function to parse content (including FIGURE blocks) into segments
+  const parseContentSegments = (content) => {
+    if (!content || !content.trim()) return [];
+    
+    const segments = [];
+    let lastIndex = 0;
+
+    // Create fresh regex instances with correct group indices
+    const chartRe = /\[CHART:(bar|line|pie|area):([^\]]+)\]([\s\S]*?)\[\\?\/CHART\]/gi;
+    const mermaidRe = /```mermaid\n([\s\S]*?)```/gi;
+    const figureRe = /\[FIGURE(?::([^\]]*))?\]([\s\S]*?)\[\/FIGURE\]/gi;
+    
+    // Find all matches first
+    const allMatches = [];
+    
+    let match;
+    while ((match = chartRe.exec(content)) !== null) {
+      allMatches.push({
+        index: match.index,
+        length: match[0].length,
+        type: 'chart',
+        chartType: match[1],
+        title: match[2],
+        dataStr: match[3]
+      });
+    }
+    
+    while ((match = mermaidRe.exec(content)) !== null) {
+      allMatches.push({
+        index: match.index,
+        length: match[0].length,
+        type: 'mermaid',
+        chart: match[1]
+      });
+    }
+    
+    while ((match = figureRe.exec(content)) !== null) {
+      allMatches.push({
+        index: match.index,
+        length: match[0].length,
+        type: 'figure',
+        title: (match[1] || '').trim(),
+        svgContent: (match[2] || '').trim()
+      });
+    }
+    
+    // Sort by position
+    allMatches.sort((a, b) => a.index - b.index);
+    
+    // Build segments
+    allMatches.forEach((m) => {
+      if (m.index > lastIndex) {
+        segments.push({ kind: 'text', value: content.slice(lastIndex, m.index) });
+      }
+      
+      if (m.type === 'chart') {
+        let data = null;
+        try { data = JSON.parse(m.dataStr.trim()); } catch { /* malformed */ }
+        segments.push({ kind: 'chart', type: m.chartType, title: m.title, data });
+      } else if (m.type === 'figure') {
+        console.log('[parseContentSegments] FIGURE found:', m.title);
+        segments.push({ kind: 'figure', title: m.title, svgContent: m.svgContent });
+      } else if (m.type === 'mermaid') {
+        segments.push({ kind: 'mermaid', chart: m.chart });
+      }
+      
+      lastIndex = m.index + m.length;
+    });
+
+    if (lastIndex < content.length) {
+      segments.push({ kind: 'text', value: content.slice(lastIndex) });
+    }
+
+    return segments;
+  };
+
+  // Helper to render segments
+  const renderSegments = (segments, markdownComponents) => {
+    return segments.map((seg, i) => {
+      if (seg.kind === 'chart') {
+        if (!seg.data || seg.data.length === 0) return null;
+        return (
+          <ChartRenderer
+            key={`chart-${i}`}
+            type={seg.type}
+            title={seg.title}
+            data={seg.data}
+          />
+        );
+      }
+
+      if (seg.kind === 'mermaid') {
+        return (
+          <MermaidDiagram
+            key={`mermaid-${i}`}
+            chart={seg.chart}
+          />
+        );
+      }
+
+      if (seg.kind === 'figure') {
+        return (
+          <SVGFigure
+            key={`figure-${i}`}
+            svgContent={seg.svgContent}
+            title={seg.title}
+          />
+        );
+      }
+
+      const normalised = normaliseMath(seg.value);
+      if (!normalised.trim()) return null;
+
+      return (
+        <ReactMarkdown
+          key={`text-${i}`}
+          remarkPlugins={[remarkGfm, remarkMath]}
+          rehypePlugins={[rehypeKatex]}
+          components={markdownComponents}
+        >
+          {normalised}
+        </ReactMarkdown>
+      );
+    });
+  };
+
+  // ── Mixed response: both flashcards AND MCQs in one message ───────────────
+  if (hasFlashcards && hasMCQs) {
+    const prefixSegments = parseContentSegments(mcqData.prefix);
+    
+    return (
+      <div className="enhanced-message">
+        {/* Parse prefix for figures/charts */}
+        {renderSegments(prefixSegments, markdownComponents)}
+
+        {/* All MCQ questions — interactive */}
+        <MCQRenderer
+          messageId={messageId}
+          prefix=""
+          questions={mcqData.questions}
+          suffix=""
+          onMCQAnswer={onMCQAnswer}
+        />
+
+        {/* All flashcards — interactive */}
+        <FlashcardSetRenderer
+          cards={flashcardData.cards}
+          prefix={flashcardData.prefix}
+          suffix={flashcardData.suffix}
+          onFlashcardRate={onFlashcardRate}
+        />
+      </div>
+    );
+  }
+
+  // ── Flashcards only ────────────────────────────────────────────────────────
+  if (hasFlashcards) {
+    const prefixSegments = parseContentSegments(flashcardData.prefix);
+    const suffixSegments = parseContentSegments(flashcardData.suffix);
+    
+    return (
+      <div className="enhanced-message">
+        {renderSegments(prefixSegments, markdownComponents)}
+        <FlashcardSetRenderer
+          cards={flashcardData.cards}
+          prefix=""
+          suffix=""
+          onFlashcardRate={onFlashcardRate}
+        />
+        {renderSegments(suffixSegments, markdownComponents)}
+      </div>
+    );
+  }
+
+  // ── MCQs only ─────────────────────────────────────────────────────────────
+  if (hasMCQs) {
+    const prefixSegments = parseContentSegments(mcqData.prefix);
+    const suffixSegments = parseContentSegments(mcqData.suffix);
+    
+    return (
+      <div className="enhanced-message">
+        {renderSegments(prefixSegments, markdownComponents)}
+        <MCQRenderer
+          messageId={messageId}
+          prefix=""
+          questions={mcqData.questions}
+          suffix=""
+          onMCQAnswer={onMCQAnswer}
+        />
+        {renderSegments(suffixSegments, markdownComponents)}
+      </div>
+    );
+  }
+
+  // ── Step 1: split content into chart/mermaid/figure blocks and text segments
+  const segments = [];
+  let lastIndex = 0;
+
+  const combinedRegex = new RegExp(
+    `(?:${CHART_REGEX.source})|(?:${MERMAID_REGEX.source})|(?:${FIGURE_REGEX.source})`,
+    'gi'
+  );
+  let match;
+
+  while ((match = combinedRegex.exec(processedContent)) !== null) {
+    const fullMatch = match[0];
+
+    if (match.index > lastIndex) {
+      segments.push({ kind: 'text', value: processedContent.slice(lastIndex, match.index) });
+    }
+
+    const isChart = match[1] && ['bar', 'line', 'pie', 'area'].includes(match[1]);
+    const isMermaid = !isChart && match[4] !== undefined && match[5] === undefined;
+    const isFigure = match[5] !== undefined || (!isChart && !isMermaid && fullMatch.startsWith('[FIGURE'));
+
+    if (isChart) {
+      const [, type, title, dataStr] = match;
+      let data = null;
+      try { data = JSON.parse(dataStr.trim()); } catch { /* malformed chart data */ }
+      segments.push({ kind: 'chart', type, title, data });
+    } else if (isFigure) {
+      // FIGURE has 2 groups: (title) and (svg content)
+      // In combined regex: CHART has 3 groups [1,2,3], MERMAID has 1 group [4]
+      // So FIGURE groups start at [5,6]
+      const figTitle = match[5] || '';
+      const svgContent = (match[6] || '').trim(); // Trim whitespace including newlines
+      console.log('[EnhancedMessageFormatter] FIGURE detected');
+      console.log('  Title:', figTitle);
+      console.log('  SVG length:', svgContent?.length);
+      console.log('  SVG starts with:', svgContent?.substring(0, 50));
+      segments.push({ kind: 'figure', title: figTitle.trim(), svgContent });
+    } else {
+      // Mermaid — group [4] is the diagram body
+      segments.push({ kind: 'mermaid', chart: match[4] });
+    }
+
+    lastIndex = match.index + fullMatch.length;
+  }
+
+  // Remaining text after last chart (or all text if no charts)
+  if (lastIndex < processedContent.length) {
+    segments.push({ kind: 'text', value: processedContent.slice(lastIndex) });
+  }
+
+  console.log('[EnhancedMessageFormatter] Total segments:', segments.length);
+  console.log('[EnhancedMessageFormatter] Segment types:', segments.map(s => s.kind).join(', '));
+  segments.forEach((seg, i) => {
+    if (seg.kind === 'text' && seg.value.includes('[FIGURE')) {
+      console.warn(`⚠️ Segment ${i} (text) still contains [FIGURE tag!`, seg.value.substring(0, 100));
+    }
+  });
   // ── Step 3: render segments in order ──────────────────────────────────────
   return (
     <div className="enhanced-message">

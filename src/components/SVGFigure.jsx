@@ -52,9 +52,20 @@ const SVGFigure = ({ svgContent, title }) => {
 
   // ── Render ────────────────────────────────────────────────────────────────
   useEffect(() => {
-    if (!containerRef.current || !svgContent) return;
+    if (!containerRef.current || !svgContent) {
+      console.log('[SVGFigure] Skipping render - no container or content');
+      return;
+    }
     const clean = sanitise(svgContent);
-    if (!clean.trim()) return;
+    if (!clean.trim()) {
+      console.log('[SVGFigure] Skipping render - empty after sanitization');
+      return;
+    }
+
+    console.log('[SVGFigure] Attempting to render');
+    console.log('  Title:', title);
+    console.log('  Content length:', clean.length);
+    console.log('  Content preview:', clean.substring(0, 100));
 
     try {
       containerRef.current.innerHTML = '';
@@ -71,9 +82,11 @@ const SVGFigure = ({ svgContent, title }) => {
         .replace(/<svg[^>]*>/i, '')
         .replace(/<\/svg>\s*$/i, '');
       draw.svg(inner);
+      console.log('[SVGFigure] ✅ Render successful');
       setError(null);
     } catch (err) {
-      console.error('[SVGFigure] Render error:', err);
+      console.error('[SVGFigure] ❌ Render error:', err);
+      console.error('[SVGFigure] Error details:', err.message, err.stack);
       setError('Could not render figure');
       if (containerRef.current) containerRef.current.innerHTML = sanitise(svgContent);
     }

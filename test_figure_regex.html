@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FIGURE Regex Test</title>
+</head>
+<body>
+    <h1>Testing FIGURE Regex Parsing</h1>
+    <pre id="output"></pre>
+
+    <script>
+        const CHART_REGEX = /\[CHART:(bar|line|pie|area):([^\]]+)\]([\s\S]*?)\[\\?\/CHART\]/gi;
+        const MERMAID_REGEX = /```mermaid\n([\s\S]*?)```/gi;
+        const FIGURE_REGEX = /\[FIGURE(?::([^\]]*))?\]([\s\S]*?)\[\/FIGURE\]/gi;
+
+        const testContent = `
+Some text before
+
+[FIGURE:Graph of All Three Equations from the PDF]
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450">
+  <rect width="600" height="450" fill="#0f1117"/>
+</svg>
+[/FIGURE]
+
+Some text after
+`;
+
+        const output = document.getElementById('output');
+        let log = '';
+
+        // Test individual regex
+        log += '=== Testing FIGURE_REGEX alone ===\n';
+        const figMatch = FIGURE_REGEX.exec(testContent);
+        if (figMatch) {
+            log += `Full match: ${figMatch[0].substring(0, 50)}...\n`;
+            log += `Group 0 (full): ${figMatch[0].length} chars\n`;
+            log += `Group 1 (title): "${figMatch[1]}"\n`;
+            log += `Group 2 (svg): ${figMatch[2] ? figMatch[2].substring(0, 50) + '...' : 'undefined'}\n`;
+        } else {
+            log += 'NO MATCH\n';
+        }
+
+        // Test combined regex
+        log += '\n=== Testing Combined Regex ===\n';
+        const combinedRegex = new RegExp(
+            `(?:${CHART_REGEX.source})|(?:${MERMAID_REGEX.source})|(?:${FIGURE_REGEX.source})`,
+            'gi'
+        );
+        
+        const combMatch = combinedRegex.exec(testContent);
+        if (combMatch) {
+            log += `Full match: ${combMatch[0].substring(0, 50)}...\n`;
+            for (let i = 0; i < combMatch.length; i++) {
+                if (combMatch[i] !== undefined) {
+                    const val = combMatch[i].length > 50 ? combMatch[i].substring(0, 50) + '...' : combMatch[i];
+                    log += `Group ${i}: "${val}"\n`;
+                }
+            }
+        } else {
+            log += 'NO MATCH\n';
+        }
+
+        output.textContent = log;
+    </script>
+</body>
+</html>

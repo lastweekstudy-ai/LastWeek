@@ -64,7 +64,7 @@ const Auth = () => {
   // Check if we're in pre-reg mode and handle flows
   useEffect(() => {
     const checkFreeSlotFlow = async () => {
-      // Check if user is trying to claim a free slot
+      // If freeSlot param is set, immediately show free slot flow (skip login screen)
       if (searchParams.get('freeSlot') === 'true' && adminSettings?.dailyFreeSlotsActive) {
         setCheckingSlot(true);
         const available = await checkDailySlotAvailability();
@@ -280,8 +280,12 @@ const Auth = () => {
   const maxDobString = maxDobDate.toISOString().split('T')[0];
 
   // In pre-reg mode, existing users can LOGIN (not blocked), but new signups are blocked
-  // The pre-reg blocking screen should only show when user tries to SIGN UP, not login
-  const isPreRegBlocked = false; // Never block - we show pre-reg info in signup form instead
+  // Free signup is only available when BOTH pre-reg AND free slots are inactive
+  // Show blocking screen if:
+  // 1. User is trying to signup (not login)
+  // 2. AND (pre-reg is active OR free slots are active)
+  // 3. AND user hasn't clicked into the free slot flow
+  const shouldShowBlockingScreen = !isLogin && !showFreeSlotFlow && (adminSettings?.preRegActive || adminSettings?.dailyFreeSlotsActive);
 
   // Show loading state while fetching admin settings
   if (!adminSettings) {
@@ -338,8 +342,8 @@ const Auth = () => {
       <div className="container">
         <div className="auth-container">
           
-          {/* ── Pre-Registration Mode Info (shown to new users trying to sign up) ─────────────────────────────────────── */}
-          {adminSettings?.preRegActive && !isLogin && !showFreeSlotFlow ? (
+          {/* ── Registration Blocking Screen (when pre-reg OR free slots are active) ─────────────────────────────────────── */}
+          {shouldShowBlockingScreen ? (
             <>
               <div className="auth-header">
                 <img
@@ -349,9 +353,14 @@ const Auth = () => {
                   onClick={() => navigate('/')}
                   style={{ height: '100px', cursor: 'pointer', marginBottom: '16px' }}
                 />
-                <h2 className="auth-title">🎉 Pre-Registration Open</h2>
+                <h2 className="auth-title">
+                  {adminSettings?.preRegActive ? '🎉 Pre-Registration Open' : '🎁 Free Testing Available'}
+                </h2>
                 <p className="auth-subtitle">
-                  We're currently in pre-registration mode. Sign up is limited.
+                  {adminSettings?.preRegActive 
+                    ? 'Regular signups are temporarily closed. Join via pre-registration or free slot!'
+                    : 'Regular signups are temporarily closed while we offer free testing slots!'
+                  }
                 </p>
               </div>
 
@@ -363,43 +372,45 @@ const Auth = () => {
                 marginBottom: '1.5rem',
               }}>
                 <h3 style={{ color: 'var(--color-accent)', margin: '0 0 1rem', fontSize: '1.1rem', textAlign: 'center' }}>
-                  Two Ways to Join
+                  {adminSettings?.preRegActive && adminSettings?.dailyFreeSlotsActive ? 'Two Ways to Join' : 'How to Join'}
                 </h3>
 
-                {/* Option 1: Pay $5 */}
-                <div style={{
-                  backgroundColor: 'var(--color-bg-primary)',
-                  borderRadius: '8px',
-                  padding: '1rem',
-                  marginBottom: '1rem',
-                }}>
-                  <h4 style={{ color: 'var(--color-text-primary)', margin: '0 0 0.5rem', fontSize: '0.95rem' }}>
-                    💳 Pay $5 Now
-                  </h4>
-                  <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 0.75rem', fontSize: '0.85rem' }}>
-                    Get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong> (a $180 value!) 
-                    + unique promo code. Every 10 friends who join = +6 months free!
-                  </p>
-                  <button
-                    onClick={() => navigate('/pre-register')}
-                    style={{
-                      width: '100%',
-                      padding: '0.6rem',
-                      borderRadius: '6px',
-                      border: 'none',
-                      backgroundColor: 'var(--color-accent)',
-                      color: 'white',
-                      cursor: 'pointer',
-                      fontWeight: 600,
-                      fontSize: '0.9rem',
-                    }}
-                  >
-                    Pre-Register Now
-                  </button>
-                </div>
+                {/* Option 1: Pay $5 (only if pre-reg active) */}
+                {adminSettings?.preRegActive && (
+                  <div style={{
+                    backgroundColor: 'var(--color-bg-primary)',
+                    borderRadius: '8px',
+                    padding: '1rem',
+                    marginBottom: adminSettings?.dailyFreeSlotsActive ? '1rem' : '0',
+                  }}>
+                    <h4 style={{ color: 'var(--color-text-primary)', margin: '0 0 0.5rem', fontSize: '0.95rem' }}>
+                      💳 Pay $5 Now
+                    </h4>
+                    <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 0.75rem', fontSize: '0.85rem' }}>
+                      Get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong> (a $180 value!) 
+                      + unique promo code. Every 10 friends who join = +6 months free!
+                    </p>
+                    <button
+                      onClick={() => navigate('/pre-register')}
+                      style={{
+                        width: '100%',
+                        padding: '0.6rem',
+                        borderRadius: '6px',
+                        border: 'none',
+                        backgroundColor: 'var(--color-accent)',
+                        color: 'white',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        fontSize: '0.9rem',
+                      }}
+                    >
+                      Pre-Register Now
+                    </button>
+                  </div>
+                )}
 
-                {/* Option 2: Free Testing Slot */}
-                {adminSettings?.dailyFreeSlotsActive ? (
+                {/* Option 2: Free Testing Slot (only if daily slots active) */}
+                {adminSettings?.dailyFreeSlotsActive && (
                   <div style={{
                     backgroundColor: 'var(--color-bg-primary)',
                     borderRadius: '8px',
@@ -444,7 +455,10 @@ const Auth = () => {
                       </div>
                     )}
                   </div>
-                ) : (
+                )}
+
+                {/* No options available message */}
+                {!adminSettings?.preRegActive && !adminSettings?.dailyFreeSlotsActive && (
                   <div style={{
                     backgroundColor: 'var(--color-bg-primary)',
                     borderRadius: '8px',
@@ -452,7 +466,7 @@ const Auth = () => {
                     textAlign: 'center',
                   }}>
                     <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.85rem' }}>
-                      Free testing slots are currently not available.
+                      No special offers available at the moment.
                     </p>
                   </div>
                 )}
@@ -688,13 +702,7 @@ const Auth = () => {
             <span>or</span>
           </div>
 
-          <button
-            className="btn btn-secondary auth-guest"
-            onClick={handleGuestLogin}
-            disabled={loading}
-          >
-            Continue as Guest
-          </button>
+          {/* Guest mode permanently disabled */}
 
           <div className="auth-footer">
             <p>

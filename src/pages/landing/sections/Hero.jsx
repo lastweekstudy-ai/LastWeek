@@ -2,24 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BrandLogo from '../../../components/shared/BrandLogo';
 import { PixelIcon } from '../../../components/shared/pixel-art/PixelIcons';
-import { getAdminSettings, getPublishedReviews } from '../../../appwrite/admin';
+import { getAdminSettings, getPublishedReviews, getRemainingSlotsToday } from '../../../appwrite/admin';
 import '../landing.css';
 
 const Hero = () => {
   const [adminSettings, setAdminSettings] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const [remainingSlots, setRemainingSlots] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    // These collections require "Any" read permission in Appwrite to work on the
-    // public landing page (no user session). If they return 401, fail silently —
-    // the landing page renders fine without this data.
-    const [settings, publishedReviews] = await Promise.allSettled([
+    setLoading(true);
+    
+    // Load all data in parallel for faster initial load
+    const [settings, publishedReviews, slots] = await Promise.allSettled([
       getAdminSettings(),
       getPublishedReviews(50),
+      getRemainingSlotsToday(),
     ]);
 
     if (settings.status === 'fulfilled') {
@@ -28,11 +31,16 @@ const Hero = () => {
     if (publishedReviews.status === 'fulfilled') {
       setReviews(publishedReviews.value);
     }
+    if (slots.status === 'fulfilled') {
+      setRemainingSlots(slots.value);
+    }
+    
+    setLoading(false);
   };
 
   const isPreRegMode = adminSettings?.preRegActive;
   const dailyFreeSlotsActive = adminSettings?.dailyFreeSlotsActive;
-  const remainingSlots = adminSettings?.dailyFreeSlotCount || 10;
+  const displaySlots = remainingSlots !== null ? remainingSlots : (adminSettings?.dailyFreeSlotCount || 10);
 
   return (
     <section className="hero">
@@ -72,7 +80,13 @@ const Hero = () => {
               <span className="freetier-badge">🎁 FREE TRIAL</span>
               <h3 className="freetier-title">Test All Features Free Today!</h3>
               <p className="freetier-subtitle">
-                <strong>{remainingSlots}</strong> slots remaining. Leave a review → Get Plus free for 1 year!
+                {loading ? (
+                  <span>Loading slots...</span>
+                ) : (
+                  <>
+                    <strong>{displaySlots}</strong> of <strong>{adminSettings?.dailyFreeSlotCount || 10}</strong> slots remaining today. Leave a review → Get Plus free for 1 year!
+                  </>
+                )}
               </p>
               <Link to="/auth?freeSlot=true" className="btn btn-success btn-sm">
                 Claim Your Free Slot
