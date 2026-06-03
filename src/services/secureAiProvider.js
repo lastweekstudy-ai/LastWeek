@@ -57,7 +57,7 @@ export async function callDeepSeek(systemPrompt, messages, model = 'deepseek-cha
     messages,
     model,
     temperature: 0.7,
-    maxTokens: 4096,
+    maxTokens: 16000, // Increased from 4096 to support large responses with multiple SVGs
   });
   return response.content;
 }
@@ -76,7 +76,7 @@ export async function callDeepSeekSimple(prompt, systemPrompt = '') {
     prompt,
     model: 'deepseek-chat',
     temperature: 0.7,
-    maxTokens: 4096,
+    maxTokens: 16000, // Increased from 4096 to support large responses with multiple SVGs
   });
   return response.content;
 }
@@ -140,7 +140,7 @@ export async function callGroq(systemPrompt, messages, model = 'llama-3.1-70b-ve
     messages,
     model,
     temperature: 0.7,
-    maxTokens: 4500,
+    maxTokens: 8000, // Increased from 4500 to support larger responses
   });
   return response.content;
 }
