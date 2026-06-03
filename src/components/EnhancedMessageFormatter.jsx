@@ -604,54 +604,8 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
   }
 
   // ── Step 1: split content into chart/mermaid/figure blocks and text segments
-  const segments = [];
-  let lastIndex = 0;
-
-  const combinedRegex = new RegExp(
-    `(?:${CHART_REGEX.source})|(?:${MERMAID_REGEX.source})|(?:${FIGURE_REGEX.source})`,
-    'gi'
-  );
-  let match;
-
-  while ((match = combinedRegex.exec(processedContent)) !== null) {
-    const fullMatch = match[0];
-
-    if (match.index > lastIndex) {
-      segments.push({ kind: 'text', value: processedContent.slice(lastIndex, match.index) });
-    }
-
-    const isChart = match[1] && ['bar', 'line', 'pie', 'area'].includes(match[1]);
-    const isMermaid = !isChart && match[4] !== undefined && match[5] === undefined;
-    const isFigure = match[5] !== undefined || (!isChart && !isMermaid && fullMatch.startsWith('[FIGURE'));
-
-    if (isChart) {
-      const [, type, title, dataStr] = match;
-      let data = null;
-      try { data = JSON.parse(dataStr.trim()); } catch { /* malformed chart data */ }
-      segments.push({ kind: 'chart', type, title, data });
-    } else if (isFigure) {
-      // FIGURE has 2 groups: (title) and (svg content)
-      // In combined regex: CHART has 3 groups [1,2,3], MERMAID has 1 group [4]
-      // So FIGURE groups start at [5,6]
-      const figTitle = match[5] || '';
-      const svgContent = (match[6] || '').trim(); // Trim whitespace including newlines
-      console.log('[EnhancedMessageFormatter] FIGURE detected');
-      console.log('  Title:', figTitle);
-      console.log('  SVG length:', svgContent?.length);
-      console.log('  SVG starts with:', svgContent?.substring(0, 50));
-      segments.push({ kind: 'figure', title: figTitle.trim(), svgContent });
-    } else {
-      // Mermaid — group [4] is the diagram body
-      segments.push({ kind: 'mermaid', chart: match[4] });
-    }
-
-    lastIndex = match.index + fullMatch.length;
-  }
-
-  // Remaining text after last chart (or all text if no charts)
-  if (lastIndex < processedContent.length) {
-    segments.push({ kind: 'text', value: processedContent.slice(lastIndex) });
-  }
+  // Use the same parseContentSegments function that works for flashcard/MCQ prefix/suffix
+  const segments = parseContentSegments(processedContent);
 
   console.log('[EnhancedMessageFormatter] Total segments:', segments.length);
   console.log('[EnhancedMessageFormatter] Segment types:', segments.map(s => s.kind).join(', '));
