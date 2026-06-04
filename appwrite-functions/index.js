@@ -79,7 +79,6 @@ export default async ({ req, res, log, error }) => {
   }
 
   log(`[aiProxy] ${provider} ${action} request`);
-  log(`[aiProxy] Version: v3 - 2024-06-04`);
 
   // ── Route to provider handlers ─────────────────────────────────────────────
   try {
@@ -163,7 +162,7 @@ async function handleGemini(params, { log, error }) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
 
-  const { action, systemPrompt, messages, prompt, image, mimeType, model = 'gemini-2.5-flash' } = params;
+  const { action, systemPrompt, messages, prompt, image, mimeType, model = 'gemini-1.5-flash-latest' } = params;
 
   const endpoint = `${ENDPOINTS.gemini}/${model}:generateContent?key=${apiKey}`;
 

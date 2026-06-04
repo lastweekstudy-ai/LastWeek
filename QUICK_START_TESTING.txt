@@ -1,0 +1,58 @@
+========================================
+  QUICK START: Test Chunking Fix
+========================================
+
+THE ISSUE:
+  Your dev server is running OLD CODE (before chunking was added)
+  Browser has cached old JavaScript bundle
+  Result: Chunking code never executes
+
+THE FIX (3 Steps):
+  
+1. STOP DEV SERVER
+   - Press Ctrl+C in terminal running npm run dev
+   OR
+   - Run: taskkill /F /IM node.exe
+
+2. START DEV SERVER
+   - Run: npm run dev
+   - Wait for "ready in XXX ms" message
+
+3. HARD REFRESH BROWSER
+   - Press Ctrl+Shift+R (NOT just F5)
+   - This clears cached JavaScript
+
+========================================
+
+TEST IT:
+  Ask AI: "Explain PDF with 6 SVG graphs + 10 MCQs + 20 flashcards"
+
+EXPECTED CONSOLE LOGS:
+  [database.js] Large message detected, using chunked storage
+  [MessageChunking] Split content into 2 chunks (1.5MB total)
+  [MessageChunking] Created parent message...
+
+IF YOU SEE THOSE LOGS = ✅ SUCCESS!
+
+IF NOT:
+  - Server still has old code
+  - Go back to step 1
+  - Kill ALL node processes: taskkill /F /IM node.exe
+  - Start completely fresh
+
+========================================
+
+VERIFY IN APPWRITE:
+  1. Go to Messages collection
+  2. Find latest message
+  3. Check: isChunked should be "true"
+  4. Check: totalChunks should be 2+
+  5. Look for child docs with role "assistant_chunk"
+
+========================================
+
+FULL GUIDE: See RESTART_AND_TEST.md
+TROUBLESHOOTING: See CHUNKING_TEST_GUIDE.md
+BATCH SCRIPT: Run restart_dev.bat
+
+========================================

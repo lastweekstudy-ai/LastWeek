@@ -1,117 +1,121 @@
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║        FIGURE PARSING FIX - READY TO TEST                    ║
+║        ASYNC EXECUTION WORKING - NEED DETAILED ERROR LOGS    ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
 
-THE REAL ISSUE ✅
-It wasn't chunking - it was FIGURE parsing broken in EnhancedMessageFormatter
+✅ GOOD NEWS: Async polling is WORKING!
+- No more 30-second timeout
+- Execution completed after 36 seconds
+- Polling system functional
 
-THE FIX ✅
-Changed line 607 to use the working parseContentSegments() function
+❌ PROBLEM: Appwrite Functions are FAILING
+- Most executions: status=failed immediately
+- One DeepSeek execution: completed but returned error
+- Need to see WHAT the error is
 
-BUILD STATUS ✅
-Success (5.23s, 0 errors)
+🔧 FIX APPLIED: Enhanced error logging
+- Now logs: status.errors, status.stderr, status.responseBody
+- Will show detailed error messages from Appwrite Function
 
 ╔══════════════════════════════════════════════════════════════╗
-║  DO THESE 3 THINGS NOW:                                      ║
+║  DO THIS NOW:                                                ║
 ╚══════════════════════════════════════════════════════════════╝
 
 1️⃣  STOP DEV SERVER
-   → Press Ctrl+C in terminal running "npm run dev"
-   OR
    → Run: taskkill /F /IM node.exe
 
 2️⃣  START DEV SERVER FRESH  
-   → Run: npm run dev
+   → Run: cmd /c npm run dev
    → Wait for "VITE ready in XXX ms"
 
-3️⃣  HARD REFRESH BROWSER
-   → Press Ctrl+Shift+R (NOT just F5)
-   → This clears cached JavaScript
+3️⃣  TEST AND CHECK CONSOLE
+   → Open new incognito window
+   → Try sending AI request
+   → CHECK CONSOLE for detailed error logs
 
 ╔══════════════════════════════════════════════════════════════╗
-║  TEST IT:                                                    ║
+║  WHAT TO LOOK FOR IN CONSOLE:                                ║
 ╚══════════════════════════════════════════════════════════════╝
 
-Ask AI (same request as before):
-  "Explain PDF with 6 SVG graphs + 10 MCQs + 20 flashcards"
+After AI request fails, look for:
+
+✅ SUCCESS CASE:
+[SecureAI] Starting async execution...
+[SecureAI] Execution started: xxx, polling for completion...
+[SecureAI] Poll 1/90: status=waiting
+[SecureAI] Poll 18/90: status=completed
+[SecureAI] ✅ Execution completed successfully
+
+❌ FAILURE CASE - NOW WITH DETAILS:
+[SecureAI] Poll 1/90: status=failed
+[SecureAI] ❌ Execution failed
+[SecureAI] Status errors: <--- IMPORTANT!
+[SecureAI] Status stderr: <--- IMPORTANT!
+[SecureAI] Status responseBody: <--- IMPORTANT!
 
 ╔══════════════════════════════════════════════════════════════╗
-║  EXPECTED RESULTS:                                           ║
+║  POSSIBLE ISSUES:                                            ║
 ╚══════════════════════════════════════════════════════════════╝
 
-✅ All SVG graphs render as IMAGES (not text)
-✅ Full response displays (no truncation)
-✅ Console shows: [parseContentSegments] FIGURE found: ...
-❌ NO warning: "Segment still contains [FIGURE tag!"
+1. **API Keys Missing/Invalid**
+   - Check Appwrite Function environment variables
+   - DEEPSEEK_API_KEY, GEMINI_API_KEY, GROQ_API_KEY
+
+2. **Function Deployment Issue**
+   - Appwrite Function might need redeployment
+   - Check Appwrite Console → Functions → aiProxyUniversal
+
+3. **Request Format Issue**
+   - Function might not handle payload correctly
+   - Check if recent changes broke compatibility
+
+4. **API Rate Limits**
+   - AI providers might be rate limiting
+   - Unlikely but possible
 
 ╔══════════════════════════════════════════════════════════════╗
-║  WHAT WAS WRONG:                                             ║
+║  WHAT WAS CHANGED:                                           ║
 ╚══════════════════════════════════════════════════════════════╝
 
-EnhancedMessageFormatter.jsx had TWO parsing paths:
-- Path 1: parseContentSegments() - WORKS ✅
-- Path 2: Combined regex - BROKEN ❌
+File: src/services/secureAiProvider.js
 
-Main content used Path 2 (broken combined regex)
-Result: FIGURE blocks not extracted, rendered as text
+Added detailed error logging:
+- console.error for response.error
+- console.error for status.errors  
+- console.error for status.stderr
+- console.error for status.responseBody
 
-THE FIX:
-Changed main content to use Path 1 (working function)
+This will show us EXACTLY what's failing in Appwrite Function
 
 ╔══════════════════════════════════════════════════════════════╗
-║  IT WASN'T CHUNKING!                                         ║
+║  PREVIOUS LOGS SHOWED:                                       ║
 ╚══════════════════════════════════════════════════════════════╝
 
-Your response was only ~16KB (not 1MB+)
-Chunking threshold is 800KB
-Chunking code is CORRECT but wasn't needed
+✅ Async execution started
+✅ Polling working (18 polls over 36 seconds)
+✅ Execution completed successfully
+❌ But response had error: "AI request failed"
+❌ Most other requests: immediate status=failed
 
-Console showed: isChunked: false (because response was small)
-
-The console warning "⚠️ Segment still contains [FIGURE tag!"
-was the real clue - FIGURE parsing was broken!
-
-╔══════════════════════════════════════════════════════════════╗
-║  FILES CREATED TO HELP YOU:                                  ║
-╚══════════════════════════════════════════════════════════════╝
-
-→ ACTUAL_ISSUE_WAS_FIGURE_PARSING.md  (Full explanation)
-→ restart_dev.bat                      (Easy restart script)
-
-╔══════════════════════════════════════════════════════════════╗
-║  WHAT ABOUT CHUNKING?                                        ║
-╚══════════════════════════════════════════════════════════════╝
-
-Chunking code is CORRECT and READY ✅
-It just wasn't triggered because response was small
-
-To test chunking, you'd need a MASSIVE response:
-- 10+ complex SVG graphs
-- 50+ MCQs
-- 100+ flashcards
-= ~1-2MB response
-
-But you don't need to test that now.
-The FIGURE parsing fix solves your immediate issue.
+This means:
+- Timeout FIX is working ✅
+- But Appwrite Function itself has issues ❌
 
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║  👉 START WITH: taskkill /F /IM node.exe                     ║
-║     THEN: npm run dev                                        ║
-║     THEN: Ctrl+Shift+R in browser                            ║
-║     THEN: Test same request again                            ║
+║  👉 RESTART DEV SERVER AND TEST                              ║
+║     THEN: Copy console errors here so I can see them         ║
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
 
-After successful test:
-1. Commit the fix
-2. Push to GitHub
-3. Deploy to production
+Commands:
+1. taskkill /F /IM node.exe
+2. cmd /c npm run dev
+3. Test AI request in new incognito
+4. Copy full error messages from console
 
 ─────────────────────────────────────────────────────────────────
-Status: ✅ Fixed | ✅ Built | ⏳ Awaiting test with restarted server
-Issue: FIGURE parsing (not chunking)
-Fix: 1-line change in EnhancedMessageFormatter.jsx
+Status: ✅ Async fix working | ❌ Function errors need diagnosis
+Next: Get detailed error logs to see what's failing
 ─────────────────────────────────────────────────────────────────

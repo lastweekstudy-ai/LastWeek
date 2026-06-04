@@ -97,7 +97,7 @@ export async function callGeminiText(prompt, systemInstruction = '') {
     action: 'chat',
     systemPrompt: systemInstruction,
     prompt,
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
   });
   return response.content;
 }
@@ -116,7 +116,7 @@ export async function callGeminiVision(base64Image, prompt, mimeType = 'image/jp
     image: base64Image,
     prompt,
     mimeType,
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
   });
   return response.content;
 }
@@ -132,7 +132,7 @@ export async function callGeminiVision(base64Image, prompt, mimeType = 'image/jp
  * @param {string} model - Model name (default: llama-3.1-70b-versatile)
  * @returns {Promise<string>} - AI response content
  */
-export async function callGroq(systemPrompt, messages, model = 'llama-3.1-70b-versatile') {
+export async function callGroq(systemPrompt, messages, model = 'llama-3.3-70b-versatile') {
   const response = await callAiProxy({
     provider: 'groq',
     action: 'chat',

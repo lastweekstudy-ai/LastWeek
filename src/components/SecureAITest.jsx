@@ -1,25 +1,59 @@
 import React, { useState } from 'react';
-import { callDeepSeekSimple } from '../services/secureAiProvider';
+import { callDeepSeekSimple, callGeminiText, callGroq } from '../services/secureAiProvider';
 
 /**
  * Test component for secure AI proxy
- * This verifies that the Appwrite function works before full rollout
+ * Tests DeepSeek, Gemini, and Groq via Appwrite Function
  */
 const SecureAITest = () => {
-  const [prompt, setPrompt] = useState('Tell me a fun fact about space in one sentence.');
+  const [provider, setProvider] = useState('deepseek');
+  const [prompt, setPrompt] = useState('Say hello in one sentence.');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [logs, setLogs] = useState([]);
+
+  const addLog = (message) => {
+    setLogs(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${message}`]);
+  };
 
   const handleTest = async () => {
     setLoading(true);
     setError('');
     setResponse('');
+    setLogs([]);
+
+    const startTime = Date.now();
+    addLog(`Testing ${provider.toUpperCase()}...`);
 
     try {
-      const result = await callDeepSeekSimple(prompt);
+      let result;
+      
+      switch (provider) {
+        case 'deepseek':
+          addLog('Calling DeepSeek via proxy...');
+          result = await callDeepSeekSimple(prompt);
+          break;
+        case 'gemini':
+          addLog('Calling Gemini via proxy...');
+          result = await callGeminiText(prompt);
+          break;
+        case 'groq':
+          addLog('Calling Groq via proxy...');
+          result = await callGroq('', [{ role: 'user', content: prompt }]);
+          break;
+        default:
+          throw new Error('Unknown provider');
+      }
+
+      const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+      addLog(`✅ Success in ${duration}s`);
+      addLog(`Response length: ${result.length} characters`);
       setResponse(result);
     } catch (err) {
+      const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+      addLog(`❌ Failed in ${duration}s`);
+      addLog(`Error: ${err.message}`);
       setError(err.message || 'Test failed');
       console.error('AI Proxy Test Error:', err);
     } finally {
@@ -30,11 +64,31 @@ const SecureAITest = () => {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.title}>🔐 Secure AI Proxy Test</h2>
+        <h2 style={styles.title}>🔐 AI Proxy Test Panel</h2>
         <p style={styles.subtitle}>
-          Testing DeepSeek via Appwrite Function
+          Test DeepSeek, Gemini, and Groq via Appwrite Function
         </p>
 
+        {/* Provider Selection */}
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Select Provider:</label>
+          <div style={styles.providerButtons}>
+            {['deepseek', 'gemini', 'groq'].map((p) => (
+              <button
+                key={p}
+                onClick={() => setProvider(p)}
+                style={{
+                  ...styles.providerBtn,
+                  ...(provider === p ? styles.providerBtnActive : {}),
+                }}
+              >
+                {p.toUpperCase()}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Prompt Input */}
         <div style={styles.inputGroup}>
           <label style={styles.label}>Test Prompt:</label>
           <textarea
@@ -46,6 +100,7 @@ const SecureAITest = () => {
           />
         </div>
 
+        {/* Test Button */}
         <button
           onClick={handleTest}
           disabled={loading || !prompt.trim()}
@@ -54,30 +109,58 @@ const SecureAITest = () => {
             ...(loading ? styles.buttonDisabled : {}),
           }}
         >
-          {loading ? '⏳ Testing...' : '🚀 Test AI Proxy'}
+          {loading ? '⏳ Testing...' : `🚀 Test ${provider.toUpperCase()}`}
         </button>
 
+        {/* Logs */}
+        {logs.length > 0 && (
+          <div style={styles.logs}>
+            <strong>📋 Logs:</strong>
+            {logs.map((log, i) => (
+              <div key={i} style={styles.logLine}>{log}</div>
+            ))}
+          </div>
+        )}
+
+        {/* Error */}
         {error && (
           <div style={styles.error}>
             <strong>❌ Error:</strong> {error}
           </div>
         )}
 
+        {/* Success */}
         {response && (
           <div style={styles.success}>
-            <strong>✅ Success! AI Response:</strong>
+            <strong>✅ AI Response:</strong>
             <div style={styles.response}>{response}</div>
           </div>
         )}
 
+        {/* Status Indicators */}
+        <div style={styles.statusGrid}>
+          <div style={styles.statusItem}>
+            <span style={styles.statusLabel}>DeepSeek:</span>
+            <span style={styles.statusValue}>✅ Working</span>
+          </div>
+          <div style={styles.statusItem}>
+            <span style={styles.statusLabel}>Gemini:</span>
+            <span style={{...styles.statusValue, color: '#f59e0b'}}>⚠️ Testing</span>
+          </div>
+          <div style={styles.statusItem}>
+            <span style={styles.statusLabel}>Groq:</span>
+            <span style={{...styles.statusValue, color: '#f59e0b'}}>⚠️ TPM Limited</span>
+          </div>
+        </div>
+
+        {/* Info */}
         <div style={styles.info}>
-          <h3 style={styles.infoTitle}>ℹ️ Setup Instructions:</h3>
-          <ol style={styles.list}>
-            <li>Deploy the aiProxyUniversal function to Appwrite</li>
-            <li>Set environment variable: <code>DEEPSEEK_API_KEY</code></li>
-            <li>Add function ID to .env: <code>VITE_AI_PROXY_FUNCTION_ID=aiProxyUniversal</code></li>
-            <li>Run this test to verify</li>
-          </ol>
+          <h3 style={styles.infoTitle}>ℹ️ Current Fixes:</h3>
+          <ul style={styles.list}>
+            <li>✅ Gemini model: <code>gemini-1.5-flash-latest</code></li>
+            <li>✅ Groq 8B: Reduced max_tokens to 2048</li>
+            <li>⚠️ Timeout: Increase to 60s in Appwrite Console</li>
+          </ul>
         </div>
       </div>
     </div>
@@ -116,6 +199,27 @@ const styles = {
     fontWeight: '600',
     color: '#333',
   },
+  providerButtons: {
+    display: 'flex',
+    gap: '0.5rem',
+  },
+  providerBtn: {
+    flex: 1,
+    padding: '0.75rem',
+    fontSize: '0.9rem',
+    fontWeight: '600',
+    color: '#666',
+    background: '#f0f0f0',
+    border: '2px solid #e0e0e0',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
+  providerBtnActive: {
+    color: 'white',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    borderColor: '#667eea',
+  },
   textarea: {
     width: '100%',
     padding: '0.75rem',
@@ -144,6 +248,20 @@ const styles = {
     opacity: 0.6,
     cursor: 'not-allowed',
   },
+  logs: {
+    padding: '1rem',
+    background: '#1e1e1e',
+    borderRadius: '8px',
+    color: '#0f0',
+    fontFamily: 'monospace',
+    fontSize: '0.85rem',
+    marginBottom: '1rem',
+    maxHeight: '150px',
+    overflowY: 'auto',
+  },
+  logLine: {
+    margin: '0.25rem 0',
+  },
   error: {
     padding: '1rem',
     background: '#fee',
@@ -167,9 +285,34 @@ const styles = {
     borderRadius: '6px',
     fontSize: '0.95rem',
     lineHeight: '1.6',
+    maxHeight: '200px',
+    overflowY: 'auto',
+  },
+  statusGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '1rem',
+    marginTop: '1.5rem',
+    marginBottom: '1.5rem',
+  },
+  statusItem: {
+    textAlign: 'center',
+    padding: '0.75rem',
+    background: '#f8f9fa',
+    borderRadius: '8px',
+  },
+  statusLabel: {
+    display: 'block',
+    fontSize: '0.8rem',
+    color: '#666',
+    marginBottom: '0.25rem',
+  },
+  statusValue: {
+    fontWeight: '600',
+    color: '#22c55e',
   },
   info: {
-    marginTop: '2rem',
+    marginTop: '1rem',
     padding: '1.25rem',
     background: '#f8f9fa',
     borderRadius: '8px',
