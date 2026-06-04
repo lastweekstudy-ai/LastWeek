@@ -1,13 +1,13 @@
-/* Landing Page Styles - Professional Black + Purple Theme */
+/* Landing Page Styles - Light Notebook Theme */
 
 :root {
-  --bg-dark: #0A0A0A;
-  --bg-secondary: #121212;
+  --bg-dark: var(--color-bg-primary);
+  --bg-secondary: var(--color-bg-secondary);
   --purple-primary: var(--color-accent);
   --purple-bright: var(--color-accent-light);
-  --text-white: #FFFFFF;
-  --text-muted: #A1A1AA;
-  --border-color: rgba(var(--color-accent-rgb, 168, 85, 247), 0.2);
+  --text-white: var(--color-text-primary);
+  --text-muted: var(--color-text-muted);
+  --border-color: rgba(var(--color-accent-rgb, 124, 58, 237), 0.2);
 }
 
 * {
@@ -180,7 +180,7 @@
 }
 
 .feature-card {
-  background: rgba(18, 18, 18, 0.8);
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--border-color);
   padding: 2rem;
   border-radius: 16px;
@@ -228,7 +228,7 @@
 }
 
 .mode-card-detailed {
-  background: rgba(18, 18, 18, 0.8);
+  background: rgba(255, 255, 255, 0.8);
   border: 2px solid var(--border-color);
   padding: 2rem;
   border-radius: 16px;
@@ -365,7 +365,7 @@
 }
 
 .tip-card {
-  background: rgba(18, 18, 18, 0.8);
+  background: rgba(255, 255, 255, 0.8);
   border: 1px solid var(--border-color);
   padding: 2rem;
   border-radius: 16px;
@@ -470,7 +470,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;

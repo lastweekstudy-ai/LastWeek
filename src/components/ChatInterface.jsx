@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import '../styles/ChatInterface.css';
+import '../styles/NotebookTheme.css';
 import LoadingDots from './LoadingDots';
 import AITypingAnimation from './AITypingAnimation';
 import FileAttachment from './FileAttachment';

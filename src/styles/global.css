@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&family=Caveat:wght@400;500;600;700&display=swap');
 
 /* CSS Variables - Theme System */
 :root {
-  --font-heading: 'Syne', sans-serif;
-  --font-body: 'IBM Plex Mono', monospace;
+  --font-heading: 'Caveat', 'Syne', cursive;   /* Handwritten heading style */
+  --font-body: 'Caveat', 'IBM Plex Mono', cursive; /* Pencil-written body text */
   
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -20,101 +20,105 @@
   --transition-slow: 0.3s ease;
 }
 
-/* Dark Theme - Always Dark, Color Accent Variants */
+/* ============================================================
+   LIGHT THEME — Full site, all accent color variants
+   Base backgrounds, text, and borders are now light/paper.
+   Accent colors are adjusted for light-mode contrast.
+   ============================================================ */
 
-/* Base dark theme (shared across all color variants) */
+/* Base LIGHT theme (shared across all color variants) */
 :root {
-  --color-bg-primary: #000000;
-  --color-bg-secondary: #0a0a0a;
-  --color-bg-tertiary: #141414;
-  --color-bg-hover: #1a1a1a;
+  --color-bg-primary: #f5f3ef;       /* Warm off-white paper */
+  --color-bg-secondary: #ffffff;     /* Clean white cards/panels */
+  --color-bg-tertiary: #f0ede8;      /* Slightly warmer for inputs/code */
+  --color-bg-hover: #e8e4de;         /* Hover state */
   
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #d1d5db;
-  --color-text-muted: #9ca3af;
+  --color-text-primary: #1a1a2e;     /* Near-black ink */
+  --color-text-secondary: #374151;   /* Secondary text */
+  --color-text-muted: #6b7280;       /* Muted/placeholder */
   
-  --color-border: #262626;
-  --color-border-light: #404040;
+  --color-border: #d1cdc7;           /* Warm light border */
+  --color-border-light: #e5e1db;     /* Lighter border */
   
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
-  --color-info: #3b82f6;
+  --color-success: #059669;
+  --color-warning: #d97706;
+  --color-error: #dc2626;
+  --color-info: #2563eb;
 }
 
-/* Purple Theme (default) */
+/* Purple Theme (default) — light mode adjusted */
 [data-color="purple"] {
-  --color-accent: #a855f7;
-  --color-accent-hover: #9333ea;
-  --color-accent-light: #c084fc;
-  --color-accent-dark: #7e22ce;
-  --color-border-accent: #581c87;
-  --color-accent-rgb: 168, 85, 247;
+  --color-accent: #7c3aed;
+  --color-accent-hover: #6d28d9;
+  --color-accent-light: #a78bfa;
+  --color-accent-dark: #5b21b6;
+  --color-border-accent: #c4b5fd;
+  --color-accent-rgb: 124, 58, 237;
   
-  --shadow-sm: 0 1px 2px 0 rgba(168, 85, 247, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(168, 85, 247, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(168, 85, 247, 0.15);
-  --shadow-glow: 0 0 20px rgba(168, 85, 247, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.25);
 }
 
-/* Orange Theme */
+/* Orange Theme — light mode adjusted */
 [data-color="orange"] {
-  --color-accent: #fb923c;
-  --color-accent-hover: #f97316;
-  --color-accent-light: #fdba74;
-  --color-accent-dark: #ea580c;
-  --color-border-accent: #9a3412;
-  --color-accent-rgb: 251, 146, 60;
+  --color-accent: #ea580c;
+  --color-accent-hover: #c2410c;
+  --color-accent-light: #fb923c;
+  --color-accent-dark: #9a3412;
+  --color-border-accent: #fed7aa;
+  --color-accent-rgb: 234, 88, 12;
   
-  --shadow-sm: 0 1px 2px 0 rgba(251, 146, 60, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(251, 146, 60, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(251, 146, 60, 0.15);
-  --shadow-glow: 0 0 20px rgba(251, 146, 60, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(234, 88, 12, 0.25);
 }
 
-/* Green Theme */
+/* Green Theme — light mode adjusted */
 [data-color="green"] {
-  --color-accent: #34d399;
-  --color-accent-hover: #10b981;
-  --color-accent-light: #6ee7b7;
-  --color-accent-dark: #059669;
-  --color-border-accent: #065f46;
-  --color-accent-rgb: 52, 211, 153;
+  --color-accent: #059669;
+  --color-accent-hover: #047857;
+  --color-accent-light: #34d399;
+  --color-accent-dark: #065f46;
+  --color-border-accent: #a7f3d0;
+  --color-accent-rgb: 5, 150, 105;
   
-  --shadow-sm: 0 1px 2px 0 rgba(52, 211, 153, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(52, 211, 153, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(52, 211, 153, 0.15);
-  --shadow-glow: 0 0 20px rgba(52, 211, 153, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(5, 150, 105, 0.25);
 }
 
-/* Brown Theme */
+/* Brown Theme — light mode adjusted */
 [data-color="brown"] {
-  --color-accent: #d97706;
-  --color-accent-hover: #b45309;
-  --color-accent-light: #fbbf24;
-  --color-accent-dark: #92400e;
-  --color-border-accent: #78350f;
-  --color-accent-rgb: 217, 119, 6;
+  --color-accent: #b45309;
+  --color-accent-hover: #92400e;
+  --color-accent-light: #d97706;
+  --color-accent-dark: #78350f;
+  --color-border-accent: #fde68a;
+  --color-accent-rgb: 180, 83, 9;
   
-  --shadow-sm: 0 1px 2px 0 rgba(217, 119, 6, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(217, 119, 6, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(217, 119, 6, 0.15);
-  --shadow-glow: 0 0 20px rgba(217, 119, 6, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(180, 83, 9, 0.25);
 }
 
-/* Blue Theme */
+/* Blue Theme — light mode adjusted */
 [data-color="blue"] {
-  --color-accent: #60a5fa;
-  --color-accent-hover: #3b82f6;
-  --color-accent-light: #93c5fd;
-  --color-accent-dark: #2563eb;
-  --color-border-accent: #1e40af;
-  --color-accent-rgb: 96, 165, 250;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-light: #60a5fa;
+  --color-accent-dark: #1e40af;
+  --color-border-accent: #bfdbfe;
+  --color-accent-rgb: 37, 99, 235;
   
-  --shadow-sm: 0 1px 2px 0 rgba(96, 165, 250, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(96, 165, 250, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(96, 165, 250, 0.15);
-  --shadow-glow: 0 0 20px rgba(96, 165, 250, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.25);
 }
 
 html, body {
@@ -500,12 +504,12 @@ p {
   border-radius: 2px;
 }
 
-/* Make KaTeX colours respect the dark theme */
+/* Make KaTeX colours respect the light theme */
 .katex {
-  color: #e8e8f0;
+  color: var(--color-text-primary);
 }
 .katex-display {
-  background: rgba(var(--color-accent-rgb, 168, 85, 247), 0.04);
+  background: rgba(var(--color-accent-rgb, 124, 58, 237), 0.04);
   border-left: 3px solid var(--color-accent);
   border-radius: 0 6px 6px 0;
   padding-left: 1rem;
@@ -645,4 +649,158 @@ p {
   .resource-panel {
     border-width: 0.5px;
   }
+}
+
+
+/* ============================================================
+   GLOBAL TYPOGRAPHY ENHANCEMENT
+   Bolder, larger, high-contrast text across the whole site
+   ============================================================ */
+
+/* ── Base text ──────────────────────────────────────────────── */
+body {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a1a2e;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Headings ───────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  color: #0f0f1a;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+h1 { font-size: 2.75rem; font-weight: 900; }
+h2 { font-size: 2.1rem;  font-weight: 800; }
+h3 { font-size: 1.55rem; font-weight: 800; }
+h4 { font-size: 1.25rem; font-weight: 700; }
+
+/* ── Paragraph / body copy ──────────────────────────────────── */
+p {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #2d3748;
+  line-height: 1.75;
+}
+
+/* ── Labels, spans, list items ──────────────────────────────── */
+label,
+li,
+td,
+th {
+  font-weight: 500;
+  color: #2d3748;
+}
+
+/* ── Muted / secondary text ─────────────────────────────────── */
+.text-muted,
+[class*="muted"],
+[class*="subtitle"],
+[class*="secondary"] {
+  color: #4a5568 !important;
+  font-weight: 500 !important;
+}
+
+/* ── Buttons — crisper label text ───────────────────────────── */
+.btn,
+button {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* ── Nav links ──────────────────────────────────────────────── */
+a {
+  font-weight: 600;
+}
+
+/* ── Card titles & section labels ───────────────────────────── */
+.card h3,
+.card h4,
+[class*="-title"],
+[class*="-heading"],
+[class*="-label"] {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* ── Form inputs — readable placeholder & value ─────────────── */
+input,
+select,
+textarea {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #1a1a2e;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #718096;
+  font-weight: 400;
+}
+
+/* ── Table text ─────────────────────────────────────────────── */
+table {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+th {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* ── Small / caption text — keep it readable ────────────────── */
+small,
+.text-xs,
+.text-sm {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+/* ── Dashboard / session card text ──────────────────────────── */
+.session-title,
+.session-subject,
+.session-info,
+.dashboard-title,
+.dashboard-subtitle {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* ── Chat messages ──────────────────────────────────────────── */
+.message-text-improved,
+.formatted-message,
+.formatted-message p,
+.formatted-message li {
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #1a1a2e;
+  line-height: 1.75;
+}
+
+/* ── Stat numbers / counters ────────────────────────────────── */
+.stat-number,
+[class*="-count"],
+[class*="-number"] {
+  font-weight: 900;
+  color: #0f172a;
+}
+
+/* ── Badges & chips ─────────────────────────────────────────── */
+[class*="badge"],
+[class*="chip"],
+[class*="tag"] {
+  font-weight: 700;
+}
+
+/* ── Mobile — keep sizes proportional ───────────────────────── */
+@media (max-width: 768px) {
+  body  { font-size: 15px; }
+  h1    { font-size: 2rem; }
+  h2    { font-size: 1.6rem; }
+  h3    { font-size: 1.3rem; }
+  p     { font-size: 1rem; }
 }

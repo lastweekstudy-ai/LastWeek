@@ -1,13 +1,13 @@
-/* Professional Landing Page - Black + Purple Theme */
+/* Professional Landing Page - Light Notebook Theme */
 
 :root {
-  --bg-dark: #0A0A0A;
-  --bg-secondary: #121212;
+  --bg-dark: var(--color-bg-primary);
+  --bg-secondary: var(--color-bg-secondary);
   --purple-primary: var(--color-accent);
   --purple-bright: var(--color-accent-light);
-  --text-white: #FFFFFF;
-  --text-muted: #A1A1AA;
-  --border-color: rgba(var(--color-accent-rgb, 168, 85, 247), 0.2);
+  --text-white: var(--color-text-primary);
+  --text-muted: var(--color-text-muted);
+  --border-color: rgba(var(--color-accent-rgb, 124, 58, 237), 0.2);
 }
 
 * {

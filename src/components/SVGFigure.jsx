@@ -269,7 +269,7 @@ const SVGFigure = ({ svgContent, title }) => {
         onTouchStart={handleTouchStart}
         style={{
           position: 'relative',
-          backgroundColor: '#0d0f14',
+          backgroundColor: 'var(--color-bg-secondary)',
           borderRadius: '10px',
           border: '1px solid rgba(var(--color-accent-rgb),0.18)',
           overflow: 'hidden',

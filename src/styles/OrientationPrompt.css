@@ -6,7 +6,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(10, 10, 10, 0.98);
+  background: rgba(245, 243, 239, 0.98);
   z-index: 10000;
   display: flex;
   align-items: center;
@@ -18,7 +18,7 @@
   max-width: 400px;
   width: 100%;
   text-align: center;
-  background: var(--color-bg-secondary, #121212);
+  background: var(--color-bg-secondary);
   border: 1px solid var(--color-border, #262626);
   border-radius: 1rem;
   padding: 2rem;

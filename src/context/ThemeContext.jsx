@@ -23,7 +23,7 @@ export const ThemeProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    // Apply color to document (always dark mode)
+    // Apply color to document (light mode)
     document.documentElement.setAttribute('data-color', color);
     localStorage.setItem('lastweek-color', color);
   }, [color]);

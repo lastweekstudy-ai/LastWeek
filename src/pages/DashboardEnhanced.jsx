@@ -245,7 +245,6 @@ const DashboardEnhanced = () => {
               </svg>
               {showStats ? 'Hide' : 'Show'} Stats
             </button>
-            <StorageIndicator userId={user.$id} className="compact" lazy={true} />
             <button
               className="btn btn-primary"
               onClick={() => navigate('/mode-select')}

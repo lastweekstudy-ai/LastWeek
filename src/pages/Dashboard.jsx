@@ -161,7 +161,6 @@ const Dashboard = () => {
             </p>
           </div>
           <div className="header-actions">
-            <StorageIndicator userId={user.$id} className="compact" lazy={true} />
             <button
               className="btn btn-secondary"
               onClick={() => navigate('/pdf-manager')}

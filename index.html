@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="dark" data-color="purple">
+<html lang="en" data-theme="light" data-color="purple">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/logos/lastweek_main_logo.ico" />
@@ -8,8 +8,8 @@
     <meta name="keywords" content="study app, AI learning, exam prep, flashcards, spaced repetition, PDF study tool" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="theme-color" content="#f5f3ef" />
     <title>LastWeek - Master Any Subject in One Week</title>
     <!-- Apply saved color theme before React loads to prevent flash -->
     <script>
@@ -17,12 +17,27 @@
         var validColors = ['purple', 'orange', 'green', 'brown', 'blue'];
         var saved = localStorage.getItem('lastweek-color');
         var color = (saved && validColors.indexOf(saved) !== -1) ? saved : 'purple';
-        document.documentElement.setAttribute('data-theme', 'dark');
+        document.documentElement.setAttribute('data-theme', 'light');
         document.documentElement.setAttribute('data-color', color);
       })();
     </script>
   </head>
   <body>
+    <!-- SVG Pencil texture filter — hidden, referenced via CSS filter: url(#pencil-rough) -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;pointer-events:none;">
+      <defs>
+        <filter id="pencil-rough" x="-5%" y="-5%" width="110%" height="110%">
+          <!-- Roughness/turbulence layer -->
+          <feTurbulence type="fractalNoise" baseFrequency="0.065" numOctaves="3" seed="2" result="noise"/>
+          <!-- Displace the text slightly for hand-drawn feel -->
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.7" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+          <!-- Merge back for a subtle effect -->
+          <feMerge>
+            <feMergeNode in="displaced"/>
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

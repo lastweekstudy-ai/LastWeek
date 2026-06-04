@@ -810,7 +810,7 @@ body {
   /* Tab bar to switch between left/right panel */
   .alv-mobile-tabs {
     display: flex !important;  /* Hidden by default in desktop CSS */
-    background: var(--color-bg-secondary, #1f2028);
+    background: var(--color-bg-secondary);
     border-bottom: 1px solid var(--border, #2e303a);
     flex-shrink: 0;
   }

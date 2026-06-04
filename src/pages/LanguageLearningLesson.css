@@ -2,8 +2,8 @@
 
 .lesson-container {
   min-height: 100vh;
-  background: var(--color-bg-primary, #0a0a0a);
-  color: var(--color-text-primary, #fff);
+  background: var(--color-bg-primary);
+  color: var(--color-text-primary);
 }
 
 .lesson-loading,

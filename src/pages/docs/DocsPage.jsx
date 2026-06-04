@@ -17,7 +17,7 @@ const DocsPage = () => {
   // Set body background to black for docs page
   React.useEffect(() => {
     const originalBg = document.body.style.backgroundColor;
-    document.body.style.backgroundColor = '#000000';
+    document.body.style.backgroundColor = 'var(--color-bg-primary)';
     return () => {
       document.body.style.backgroundColor = originalBg;
     };

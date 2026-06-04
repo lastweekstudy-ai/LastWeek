@@ -48,6 +48,7 @@ import AdminSettings from './pages/admin/Settings';
 import AdminTestingUsers from './pages/admin/TestingUsers';
 
 import './styles/global.css';
+import './styles/NotebookTheme.css';
 import './styles/ModePage.css';
 import './styles/ErrorBoundary.css';
 import './styles/MessageFormatter.css';

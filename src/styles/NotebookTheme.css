@@ -1,0 +1,439 @@
+/* ============================================================
+   NOTEBOOK PAPER THEME — Full Light Site
+   
+   1. Global paper texture on body (subtle, site-wide)
+   2. Notebook ruled lines in every primary content zone
+   3. Red margin line via ::before on content containers
+   4. Corner notebook decoration (top-left of every .card)
+   5. Mobile-safe, no breakage to layout or functionality
+   ============================================================ */
+
+/* ── Variables ─────────────────────────────────────────────── */
+:root {
+  --nb-line-height: 2rem;
+  --nb-line-color: rgba(147, 197, 253, 0.18);   /* Muted blue ruled lines */
+  --nb-margin-color: rgba(251, 113, 133, 0.45);  /* Soft red/pink margin */
+  --nb-margin-left: 2.75rem;
+  --nb-margin-left-mobile: 1.5rem;
+  --nb-corner-size: 18px;
+  --nb-corner-color: rgba(251, 113, 133, 0.5);
+}
+
+/* ── 1. Global paper texture on body ───────────────────────── */
+/* Very subtle ruled lines across the whole page background    */
+body {
+  background-image: linear-gradient(
+    transparent calc(var(--nb-line-height) - 1px),
+    var(--nb-line-color) calc(var(--nb-line-height) - 1px),
+    var(--nb-line-color) var(--nb-line-height)
+  );
+  background-size: 100% var(--nb-line-height);
+  background-attachment: fixed; /* Fixed to viewport, doesn't scroll */
+}
+
+/* ── 2. Notebook lines on primary content containers ────────── */
+/* Cards, panels, main content blocks all get ruled paper      */
+.card,
+.card-hover,
+.chat-interface-improved,
+.chat-messages-improved,
+.mode-page,
+.mode-content,
+.pdf-note-editor,
+.new-note-form,
+.note-item,
+.dashboard-content,
+.study-interface,
+.study-chat-section,
+.auth-container,
+.settings-container,
+.modal-content,
+.dropdown-menu,
+[class*="-panel"],
+[class*="-section"],
+[class*="-container"] {
+  background-image: linear-gradient(
+    transparent calc(var(--nb-line-height) - 1px),
+    var(--nb-line-color) calc(var(--nb-line-height) - 1px),
+    var(--nb-line-color) var(--nb-line-height)
+  );
+  background-size: 100% var(--nb-line-height);
+  background-attachment: local;
+  background-color: var(--color-bg-secondary);
+}
+
+/* ── 3. Reusable utility class ──────────────────────────────── */
+.notebook-paper-wrapper {
+  position: relative;
+  background-color: var(--color-bg-secondary);
+  background-image: linear-gradient(
+    transparent calc(var(--nb-line-height) - 1px),
+    var(--nb-line-color) calc(var(--nb-line-height) - 1px),
+    var(--nb-line-color) var(--nb-line-height)
+  );
+  background-size: 100% var(--nb-line-height);
+  background-attachment: local;
+  border-radius: 4px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+/* Red margin line */
+.notebook-paper-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--nb-margin-left);
+  width: 1.5px;
+  height: 100%;
+  background-color: var(--nb-margin-color);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── 4. Corner dog-ear decoration on every .card ────────────── */
+/* A classic notebook corner fold in the top-right              */
+.card {
+  position: relative;
+  overflow: visible;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 var(--nb-corner-size) var(--nb-corner-size) 0;
+  border-color: transparent var(--color-bg-primary) transparent transparent;
+  filter: drop-shadow(-1px 1px 1px rgba(0,0,0,0.12));
+  border-radius: 0 var(--border-radius) 0 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── 5. Margin line on key containers ───────────────────────── */
+.card,
+.message-bubble,
+.pdf-note-editor,
+.auth-card,
+.settings-card,
+.modal-content {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Red margin line on left side of these containers */
+.card::before,
+.message-bubble::before,
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--nb-margin-left);
+  width: 1.5px;
+  height: 100%;
+  background-color: var(--nb-margin-color);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Message bubbles (AI) — ruled paper look ────────────────── */
+.chat-message-improved.assistant .message-bubble {
+  background-color: var(--color-bg-secondary);
+  background-image: linear-gradient(
+    transparent calc(var(--nb-line-height) - 1px),
+    var(--nb-line-color) calc(var(--nb-line-height) - 1px),
+    var(--nb-line-color) var(--nb-line-height)
+  );
+  background-size: 100% var(--nb-line-height);
+  background-attachment: local;
+  padding-left: calc(var(--nb-margin-left) + 0.75rem);
+}
+
+.chat-message-improved.assistant .message-bubble::before {
+  left: var(--nb-margin-left);
+}
+
+/* Text synced to line height */
+.chat-message-improved.assistant .message-text-improved,
+.chat-message-improved.assistant .message-bubble p,
+.chat-message-improved.assistant .message-bubble li {
+  line-height: var(--nb-line-height);
+}
+
+/* User message bubble — white text on accent background */
+.chat-message-improved.user .message-bubble {
+  color: #ffffff !important;
+}
+
+.chat-message-improved.user .message-text-improved,
+.chat-message-improved.user .message-text-improved * {
+  color: #ffffff !important;
+}
+
+/* ── Note textarea — transparent so lines show through ─────── */
+.note-textarea,
+.chat-input-improved,
+.form-input,
+.form-textarea,
+.chat-textarea {
+  background-color: transparent !important;
+  background-image: none !important;
+  line-height: var(--nb-line-height);
+}
+
+/* ── KaTeX on light paper ───────────────────────────────────── */
+.katex {
+  color: var(--color-text-primary);
+}
+
+.katex-display {
+  background: rgba(var(--color-accent-rgb), 0.05);
+  border-left: 3px solid var(--nb-margin-color);
+}
+
+/* ── Code blocks on light paper ─────────────────────────────── */
+pre, code {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+  border: 1px solid var(--color-border);
+}
+
+/* ── MOBILE ─────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root {
+    --nb-margin-left: var(--nb-margin-left-mobile);
+    --nb-line-height: 1.875rem;
+    --nb-corner-size: 14px;
+  }
+
+  .chat-message-improved.assistant .message-bubble {
+    padding-left: calc(var(--nb-margin-left-mobile) + 0.5rem);
+  }
+}
+
+/* ── HIGH DPI ────────────────────────────────────────────────── */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .card::before,
+  .message-bubble::before,
+  .notebook-paper-wrapper::before,
+  .auth-card::before {
+    width: 1px;
+  }
+}
+
+/* ── Prevent ruled lines on nav/toolbar elements ────────────── */
+/* These should stay clean solid backgrounds                    */
+nav,
+.navbar,
+.sidebar,
+.study-header,
+.chat-input-area,
+.toolbar-btn,
+.btn,
+button,
+input,
+select,
+.modal-overlay,
+.loading-spinner,
+.scroll-to-bottom-btn,
+.message-avatar,
+.quick-actions-bar,
+.math-keyboard,
+.file-drop-zone {
+  background-image: none !important;
+  background-size: auto !important;
+}
+
+/* Ensure inputs and buttons keep their proper backgrounds */
+input,
+select,
+.form-input,
+.chat-input-improved,
+.chat-textarea {
+  background-color: var(--color-bg-tertiary) !important;
+  background-image: none !important;
+}
+
+button,
+.btn {
+  background-image: none !important;
+}
+
+/* ============================================================
+   PENCIL / HANDWRITTEN TEXT TEXTURE
+   
+   Uses SVG feTurbulence filter to give ALL text a subtle
+   hand-drawn, pencil-written roughness. Applied globally
+   so every character looks slightly organic.
+   ============================================================ */
+
+/* Inject the SVG filter into the page via a hidden element.
+   The actual filter is referenced below via filter: url(#pencil-texture) */
+
+/* Global pencil-like text rendering */
+body,
+h1, h2, h3, h4, h5, h6,
+p, li, td, th, span, label,
+.message-text-improved,
+.formatted-message,
+.chat-message-improved,
+.note-text,
+.session-title,
+.session-subject,
+.dashboard-subtitle,
+.auth-title,
+.auth-subtitle,
+.nm-item__label,
+.nm-row__label,
+.settings-section h2,
+.settings-section h3,
+.settings-description {
+  font-family: 'Caveat', 'IBM Plex Mono', cursive;
+  /* Slight letter-spacing for handwritten feel */
+  letter-spacing: 0.02em;
+  /* Subpixel rendering for pencil-like crispness */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Keep code, inputs, and monospace zones in their proper fonts */
+code, pre, kbd,
+.chat-input-improved,
+.form-input,
+input, textarea, select,
+.math-sym-btn,
+.katex,
+.katex * {
+  font-family: 'IBM Plex Mono', 'Courier New', monospace !important;
+  letter-spacing: 0 !important;
+}
+
+/* Heading sizes — Caveat looks best slightly larger */
+h1 { font-size: 2.75rem; font-weight: 700; }
+h2 { font-size: 2.25rem; font-weight: 600; }
+h3 { font-size: 1.75rem; font-weight: 600; }
+h4 { font-size: 1.4rem;  font-weight: 500; }
+
+/* Message text — synced to ruled line-height */
+.message-text-improved,
+.formatted-message p,
+.formatted-message li {
+  font-size: 1.1rem;
+  line-height: var(--nb-line-height);
+}
+
+/* Navigation items slightly smaller Caveat */
+.nm-item__label,
+.nm-row__label,
+.navbar-session-mode,
+.btn,
+.toolbar-btn {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* User message — white text guaranteed on accent bg */
+.chat-message-improved.user .message-bubble,
+.chat-message-improved.user .message-bubble *,
+.chat-message-improved.user .message-text-improved {
+  color: #ffffff !important;
+}
+
+/* Pencil texture via SVG filter on headings */
+h1, h2, h3 {
+  /* Subtle roughness — looks hand-lettered */
+  filter: url('#pencil-rough') drop-shadow(0.3px 0.3px 0 rgba(0,0,0,0.08));
+}
+
+/* ── SVG Filter definition (injected via CSS pseudo trick) ── */
+/* We add the SVG to the DOM in index.html or via a hidden div */
+
+/* ── Modal overlay backdrops — lighter for light theme ─────── */
+/* Full dark overlays look too harsh on a light background.    */
+/* Reduce opacity to a softer scrim.                           */
+.alv-overlay,
+.rs-overlay,
+.session-assessment,
+.keyboard-shortcuts-overlay,
+.migration-overlay,
+.audio-processor-overlay,
+.pdf-library-overlay,
+.session-actions-overlay,
+.nm-backdrop {
+  background: rgba(30, 20, 50, 0.35) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+/* ── Global light theme text safety net ─────────────────────── */
+/* Catch any remaining hardcoded white/light text that would    */
+/* be invisible on the warm paper background.                   */
+
+/* Ensure all paragraph text is dark */
+p, li, td, th, label, span:not([class*="badge"]):not([class*="chip"]) {
+  color: var(--color-text-primary);
+}
+
+/* Ensure secondary/muted text is readable */
+.text-muted, [class*="muted"], [class*="subtitle"],
+[class*="secondary-text"], [class*="description"] {
+  color: var(--color-text-muted) !important;
+}
+
+/* Override any remaining #fff text except on colored/gradient backgrounds */
+/* Specifically target known problematic elements */
+.navbar-link,
+.navbar-mobile-link,
+.nm-item,
+.nm-row__label,
+.footer-link,
+.footer-tagline,
+.footer-copyright,
+.footer-note {
+  color: var(--color-text-secondary) !important;
+}
+
+.section-title,
+.step-card h3,
+.feature-card h3,
+.testimonial-card h3,
+.pricing-card h3,
+.faq-question,
+.hero-title {
+  color: var(--color-text-primary) !important;
+}
+
+/* FAQ answer text */
+.faq-answer,
+.faq-answer p,
+.faq-answer li {
+  color: var(--color-text-secondary) !important;
+  background-color: var(--color-bg-secondary) !important;
+}
+
+/* Pricing card text */
+.pricing-price,
+.pricing-period,
+.pricing-feature-list li {
+  color: var(--color-text-primary) !important;
+}
+
+/* Testimonial text */
+.testimonial-text,
+.testimonial-author {
+  color: var(--color-text-primary) !important;
+}
+
+/* Keep white text on gradient/accent-colored buttons */
+.btn-primary,
+.btn-success,
+.btn-cta,
+.btn-danger,
+[class*="cta"]:not(.btn-outline):not(.btn-secondary),
+.navbar-cta,
+.navbar-mobile-cta {
+  color: white !important;
+}
