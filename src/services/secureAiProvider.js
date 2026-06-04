@@ -209,25 +209,33 @@ export async function transcribeAudio(audioBase64) {
     // Step 3: Poll database for result (max 3 minutes)
     const maxAttempts = 180;
     for (let i = 0; i < maxAttempts; i++) {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const updatedJob = await databases.getDocument(
-        DATABASE_ID,
-        TRANSCRIPTION_JOBS_COLLECTION_ID,
-        job.$id
-      );
+      try {
+        const updatedJob = await databases.getDocument(
+          DATABASE_ID,
+          TRANSCRIPTION_JOBS_COLLECTION_ID,
+          job.$id
+        );
 
-      console.log(`[Transcription] Poll ${i + 1}: status = ${updatedJob.status}`);
+        console.log(`[Transcription] Poll ${i + 1}: status = ${updatedJob.status}`);
 
-      if (updatedJob.status === 'completed') {
-        // Clean up job document
-        databases.deleteDocument(DATABASE_ID, TRANSCRIPTION_JOBS_COLLECTION_ID, job.$id)
-          .catch(() => {}); // best-effort cleanup
-        return updatedJob.result;
-      }
+        if (updatedJob.status === 'completed') {
+          databases.deleteDocument(DATABASE_ID, TRANSCRIPTION_JOBS_COLLECTION_ID, job.$id)
+            .catch(() => {});
+          return updatedJob.result;
+        }
 
-      if (updatedJob.status === 'failed') {
-        throw new Error(updatedJob.error || 'Transcription failed');
+        if (updatedJob.status === 'failed') {
+          throw new Error(updatedJob.error || 'Transcription failed');
+        }
+      } catch (pollError) {
+        // If it's a fatal error (not network), rethrow
+        if (pollError.message === 'Transcription failed' || pollError.message?.includes('failed')) {
+          throw pollError;
+        }
+        // Network error - log and continue polling
+        console.warn(`[Transcription] Poll ${i + 1}: network error, retrying...`, pollError.message);
       }
     }
 

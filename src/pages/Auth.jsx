@@ -236,7 +236,8 @@ const Auth = () => {
           console.error('[Auth] showFreeSlotFlow is true but newUser is:', newUser);
         }
 
-        navigate('/dashboard');
+        // Force dashboard refresh for new signups (especially free slot users)
+        navigate('/dashboard', { replace: true, state: { forceRefresh: true } });
       }
     } catch (err) {
       setError(err.message);

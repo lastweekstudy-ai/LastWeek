@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getUserSessions, getDueFlashcards } from '../appwrite/database';
 import { getDueSchedules } from '../appwrite/studySchedule';
@@ -26,6 +26,7 @@ import '../styles/LoadingSpinner.css';
 const Dashboard = () => {
   const { user, isGuest } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sessions, setSessions] = useState([]);
   const [dueFlashcards, setDueFlashcards] = useState([]);
   const [dueSchedules, setDueSchedules] = useState([]);
@@ -38,8 +39,18 @@ const Dashboard = () => {
       navigate('/auth');
       return;
     }
+    
+    // If coming from fresh signup, force profile reload
+    if (location.state?.forceRefresh) {
+      // Clear the state
+      window.history.replaceState({}, '');
+      // Trigger full reload
+      window.location.reload();
+      return;
+    }
+    
     loadDashboardData();
-  }, [user, navigate]);
+  }, [user, navigate, location.state]);
 
   const loadDashboardData = async () => {
     try {

@@ -16,7 +16,8 @@ const Hero = () => {
   }, []);
 
   const loadData = async () => {
-    setLoading(true);
+    // Show optimistic UI immediately (don't wait for load)
+    setLoading(false);
     
     // Load all data in parallel for faster initial load
     const [settings, publishedReviews, slots] = await Promise.allSettled([
@@ -27,6 +28,10 @@ const Hero = () => {
 
     if (settings.status === 'fulfilled') {
       setAdminSettings(settings.value);
+      // Set optimistic slot count based on settings
+      if (slots.status !== 'fulfilled') {
+        setRemainingSlots(settings.value?.dailyFreeSlotCount || 10);
+      }
     }
     if (publishedReviews.status === 'fulfilled') {
       setReviews(publishedReviews.value);
@@ -34,8 +39,6 @@ const Hero = () => {
     if (slots.status === 'fulfilled') {
       setRemainingSlots(slots.value);
     }
-    
-    setLoading(false);
   };
 
   const isPreRegMode = adminSettings?.preRegActive;
@@ -80,13 +83,7 @@ const Hero = () => {
               <span className="freetier-badge">🎁 FREE TRIAL</span>
               <h3 className="freetier-title">Test All Features Free Today!</h3>
               <p className="freetier-subtitle">
-                {loading ? (
-                  <span>Loading slots...</span>
-                ) : (
-                  <>
-                    <strong>{displaySlots}</strong> of <strong>{adminSettings?.dailyFreeSlotCount || 10}</strong> slots remaining today. Leave a review → Get Plus free for 1 year!
-                  </>
-                )}
+                <strong>{displaySlots}</strong> of <strong>{adminSettings?.dailyFreeSlotCount || 10}</strong> slots remaining today. Leave a review → Get Plus free for 1 year!
               </p>
               <Link to="/auth?freeSlot=true" className="btn btn-success btn-sm">
                 Claim Your Free Slot
