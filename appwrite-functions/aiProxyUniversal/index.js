@@ -92,7 +92,11 @@ export default async ({ req, res, log, error }) => {
         result = await handleGemini({ action, systemPrompt, messages, prompt, image, mimeType, model }, { log, error });
         break;
       case 'groq':
-        result = await handleGroq({ action, systemPrompt, messages, prompt, image, mimeType, audioFile, model, temperature, maxTokens }, { log, error });
+        if (action === 'transcribe_async') {
+          result = await handleAsyncTranscription({ jobId: body.jobId, audioData: body.audioFile }, { log, error });
+        } else {
+          result = await handleGroq({ action, systemPrompt, messages, prompt, image, mimeType, audioFile, model, temperature, maxTokens }, { log, error });
+        }
         break;
       default:
         return res.json({ success: false, error: `Unknown provider: ${provider}` }, 400, CORS_HEADERS);
@@ -223,7 +227,70 @@ async function handleGemini(params, { log, error }) {
 // GROQ HANDLER
 // ═══════════════════════════════════════════════════════════════════════════════
 
-async function handleGroq(params, { log, error }) {
+// ═══════════════════════════════════════════════════════════════════════════════
+// ASYNC TRANSCRIPTION HANDLER (bypasses 30s sync timeout)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+async function handleAsyncTranscription({ jobId, audioData }, { log, error }) {
+  const apiKey = process.env.GROQ_API_KEY;
+  const appwriteApiKey = process.env.APPWRITE_API_KEY;
+  const appwriteEndpoint = process.env.APPWRITE_ENDPOINT || 'https://sgp.cloud.appwrite.io/v1';
+  const projectId = process.env.APPWRITE_PROJECT_ID;
+  const databaseId = process.env.APPWRITE_DATABASE_ID || '69f742a2001f393e4b85';
+  const collectionId = 'transcription_jobs';
+
+  if (!apiKey) throw new Error('GROQ_API_KEY not configured');
+  if (!appwriteApiKey) throw new Error('APPWRITE_API_KEY not configured');
+
+  const patchJob = async (data) => {
+    await fetch(`${appwriteEndpoint}/databases/${databaseId}/collections/${collectionId}/documents/${jobId}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Appwrite-Project': projectId,
+        'X-Appwrite-Key': appwriteApiKey,
+      },
+      body: JSON.stringify(data),
+    });
+  };
+
+  // Mark as processing
+  await patchJob({ status: 'processing' }).catch(err => error(`[AsyncTranscription] Status update failed: ${err.message}`));
+  log(`[AsyncTranscription] Processing job ${jobId}`);
+
+  try {
+    const buffer = Buffer.from(audioData, 'base64');
+    const formData = new FormData();
+    formData.append('file', new Blob([buffer], { type: 'audio/webm' }), 'audio.webm');
+    formData.append('model', 'whisper-large-v3');
+
+    log(`[AsyncTranscription] Calling Groq Whisper, audio size: ${Math.round(buffer.length / 1024)}KB`);
+
+    const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}` },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      throw new Error(errData.error?.message || `Groq transcribe error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const transcript = data.text || '';
+    log(`[AsyncTranscription] Success, ${transcript.length} chars`);
+
+    // Store result
+    await patchJob({ status: 'completed', result: transcript });
+
+    return { success: true, message: 'Transcription completed' };
+  } catch (err) {
+    error(`[AsyncTranscription] Error: ${err.message}`);
+    await patchJob({ status: 'failed', error: err.message }).catch(() => {});
+    throw err;
+  }
+}
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error('GROQ_API_KEY not configured');
 

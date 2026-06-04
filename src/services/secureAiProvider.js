@@ -5,9 +5,12 @@
  * All API keys are stored in Appwrite Function environment variables.
  */
 
-import { functions } from '../appwrite/config';
+import { functions, databases, account } from '../appwrite/config';
+import { ID } from 'appwrite';
 
 const AI_PROXY_FUNCTION_ID = import.meta.env.VITE_AI_PROXY_FUNCTION_ID || 'aiProxyUniversal';
+const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
+const TRANSCRIPTION_JOBS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_TRANSCRIPTION_JOBS_COLLECTION_ID || 'transcription_jobs';
 
 /**
  * Call the AI proxy function
@@ -165,17 +168,74 @@ export async function callGroqVision(base64Image, prompt, mimeType = 'image/jpeg
 }
 
 /**
- * Transcribe audio using Groq Whisper
+ * Transcribe audio using async Groq Whisper via database polling
+ * Uses async execution to bypass Appwrite's 30-second sync timeout
  * @param {string} audioBase64 - Base64 encoded audio file
  * @returns {Promise<string>} - Transcribed text
  */
 export async function transcribeAudio(audioBase64) {
-  const response = await callAiProxy({
-    provider: 'groq',
-    action: 'transcribe',
-    audioFile: audioBase64,
-  });
-  return response.content;
+  try {
+    // Get current user ID
+    const user = await account.get();
+    const userId = user.$id;
+
+    // Step 1: Create a job document in the database
+    console.log('[Transcription] Creating job in database...');
+    const job = await databases.createDocument(
+      DATABASE_ID,
+      TRANSCRIPTION_JOBS_COLLECTION_ID,
+      ID.unique(),
+      {
+        userId,
+        status: 'pending',
+        audioData: audioBase64,
+      }
+    );
+    console.log('[Transcription] Job created:', job.$id);
+
+    // Step 2: Call function ASYNC (no 30s limit)
+    await functions.createExecution(
+      AI_PROXY_FUNCTION_ID,
+      JSON.stringify({
+        provider: 'groq',
+        action: 'transcribe_async',
+        jobId: job.$id,
+        audioFile: audioBase64,
+      }),
+      true // async = true, bypasses 30s limit
+    );
+    console.log('[Transcription] Async function triggered, polling...');
+
+    // Step 3: Poll database for result (max 3 minutes)
+    const maxAttempts = 180;
+    for (let i = 0; i < maxAttempts; i++) {
+      await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s
+
+      const updatedJob = await databases.getDocument(
+        DATABASE_ID,
+        TRANSCRIPTION_JOBS_COLLECTION_ID,
+        job.$id
+      );
+
+      console.log(`[Transcription] Poll ${i + 1}: status = ${updatedJob.status}`);
+
+      if (updatedJob.status === 'completed') {
+        // Clean up job document
+        databases.deleteDocument(DATABASE_ID, TRANSCRIPTION_JOBS_COLLECTION_ID, job.$id)
+          .catch(() => {}); // best-effort cleanup
+        return updatedJob.result;
+      }
+
+      if (updatedJob.status === 'failed') {
+        throw new Error(updatedJob.error || 'Transcription failed');
+      }
+    }
+
+    throw new Error('Transcription timed out after 3 minutes');
+  } catch (error) {
+    console.error('[Transcription] Error:', error);
+    throw error;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
