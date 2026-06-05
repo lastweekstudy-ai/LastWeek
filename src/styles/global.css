@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&family=Caveat:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 /* CSS Variables - Theme System */
 :root {
-  --font-heading: 'Caveat', 'Syne', cursive;   /* Handwritten heading style */
-  --font-body: 'Caveat', 'IBM Plex Mono', cursive; /* Pencil-written body text */
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -803,4 +803,202 @@ small,
   h2    { font-size: 1.6rem; }
   h3    { font-size: 1.3rem; }
   p     { font-size: 1rem; }
+}
+
+/* ============================================================
+   ENHANCED TYPOGRAPHY - Bigger, Bolder, More Readable
+   Applied at the end to override all previous styles
+   ============================================================ */
+
+* {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+body {
+  font-size: 19px !important;
+  font-weight: 700 !important;
+}
+
+h1 { font-size: 3.5rem !important; font-weight: 900 !important; }
+h2 { font-size: 2.75rem !important; font-weight: 900 !important; }
+h3 { font-size: 2rem !important; font-weight: 900 !important; }
+h4 { font-size: 1.6rem !important; font-weight: 900 !important; }
+h5 { font-size: 1.35rem !important; font-weight: 800 !important; }
+h6 { font-size: 1.15rem !important; font-weight: 800 !important; }
+
+p {
+  font-size: 1.25rem !important;
+  font-weight: 700 !important;
+  line-height: 1.8 !important;
+}
+
+label, li, td, span {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+}
+
+th {
+  font-size: 1.25rem !important;
+  font-weight: 900 !important;
+}
+
+.btn, button {
+  font-size: 1.15rem !important;
+  font-weight: 900 !important;
+  padding: 0.75rem 1.5rem !important;
+}
+
+a {
+  font-size: 1.1rem !important;
+  font-weight: 800 !important;
+}
+
+input, select, textarea {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  padding: 0.75rem 1rem !important;
+}
+
+.text-sm {
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+}
+
+.text-xs, small {
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+}
+
+/* Chat and messages */
+.message-text-improved,
+.formatted-message,
+.formatted-message p,
+.formatted-message li {
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+}
+
+/* Dashboard and cards */
+.session-title,
+.dashboard-title,
+[class*="-title"],
+[class*="-heading"] {
+  font-size: 1.5rem !important;
+  font-weight: 900 !important;
+}
+
+/* Navbar specific */
+.navbar-link,
+.nav-link {
+  font-size: 1.1rem !important;
+  font-weight: 800 !important;
+}
+
+/* Form labels */
+.form-label {
+  font-size: 1.15rem !important;
+  font-weight: 800 !important;
+}
+
+@media (max-width: 768px) {
+  body { font-size: 17px !important; }
+  h1 { font-size: 2.5rem !important; }
+  h2 { font-size: 2rem !important; }
+  h3 { font-size: 1.7rem !important; }
+  h4 { font-size: 1.4rem !important; }
+  p { font-size: 1.15rem !important; }
+  .btn, button { font-size: 1.1rem !important; }
+}
+
+/* ============================================================
+   MOBILE VIEW SPACING FIXES
+   ============================================================ */
+
+@media (max-width: 768px) {
+  /* Add breathing room on mobile */
+  .mode-page,
+  .study-interface,
+  .chat-interface-improved {
+    padding: 1.5rem !important;
+  }
+  
+  .container {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  
+  /* Session cards on mobile */
+  .session-card {
+    padding: 2rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  
+  /* Chat area spacing */
+  .chat-messages-improved {
+    padding: 1.5rem !important;
+  }
+  
+  /* Bottom padding for mobile keyboard */
+  .chat-input-area {
+    padding: 1.5rem !important;
+  }
+  
+  /* Study mode specific */
+  .study-content {
+    padding: 1.5rem !important;
+  }
+  
+  /* Exam mode specific */
+  .exam-session-container {
+    padding: 1.5rem !important;
+  }
+  
+  /* Mental model canvas */
+  .mental-model-canvas-container {
+    padding: 1.5rem !important;
+  }
+  
+  /* Resources panel */
+  .resource-panel,
+  .exam-resources-panel {
+    padding: 1.5rem !important;
+  }
+  
+  /* Card grids on mobile */
+  .dashboard-grid,
+  .sessions-grid {
+    gap: 1.5rem !important;
+    padding: 1.5rem !important;
+  }
+  
+  /* Form containers */
+  .form-container,
+  .auth-form {
+    padding: 2rem !important;
+  }
+  
+  /* Settings panels */
+  .settings-panel,
+  .settings-section {
+    padding: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small devices - even more space */
+  .mode-page,
+  .study-interface,
+  .chat-interface-improved {
+    padding: 1.25rem !important;
+  }
+  
+  .container {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+  
+  .session-card {
+    padding: 1.75rem !important;
+  }
 }

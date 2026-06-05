@@ -445,15 +445,14 @@ const DashboardEnhanced = () => {
                       onClick={() => navigate(`/session/${session.$id}`)}
                     >
                       <div className="session-header">
-                        <div className="session-mode">
+                        <div className="session-mode" title={formatDate(session.updatedAt)}>
                           {getModeIcon(session.mode)}
                           <span className="mode-name">{getModeName(session.mode)}</span>
+                          <div className="session-time-icon">
+                            <ClockIcon size={14} />
+                          </div>
                         </div>
                         <div className="session-meta">
-                          <span className="session-date">
-                            <ClockIcon size={14} />
-                            {formatDate(session.updatedAt)}
-                          </span>
                           <SessionActions 
                             session={session} 
                             onSessionDeleted={handleSessionDeleted}

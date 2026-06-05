@@ -19,16 +19,16 @@ export const PixelIcon = ({ type, size = 24, className = '' }) => {
     // Navigation and UI
     menu: (
       <svg width={baseSize} height={baseSize} viewBox="0 0 32 32" fill="none" className={className}>
-        <line x1="4" y1="8" x2="28" y2="8" stroke="#FFFFFF" strokeWidth="2"/>
-        <line x1="4" y1="16" x2="28" y2="16" stroke="#FFFFFF" strokeWidth="2"/>
-        <line x1="4" y1="24" x2="28" y2="24" stroke="#FFFFFF" strokeWidth="2"/>
+        <line x1="4" y1="8" x2="28" y2="8" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+        <line x1="4" y1="16" x2="28" y2="16" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+        <line x1="4" y1="24" x2="28" y2="24" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
       </svg>
     ),
     
     close: (
       <svg width={baseSize} height={baseSize} viewBox="0 0 32 32" fill="none" className={className}>
-        <line x1="8" y1="8" x2="24" y2="24" stroke="#FFFFFF" strokeWidth="2"/>
-        <line x1="24" y1="8" x2="8" y2="24" stroke="#FFFFFF" strokeWidth="2"/>
+        <line x1="8" y1="8" x2="24" y2="24" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+        <line x1="24" y1="8" x2="8" y2="24" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
       </svg>
     ),
     
