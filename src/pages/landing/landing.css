@@ -131,22 +131,32 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
-  border: none;
-  color: var(--text-white);
+  background: #7c3aed;
+  border: 2px solid #6d28d9;
+  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  color: #ffffff;
   cursor: pointer;
-  padding: 0.5rem;
-  transition: color 0.3s ease;
+  padding: 0;
+  transition: background 0.3s ease, transform 0.1s ease;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.45);
 }
 
 @media (min-width: 768px) {
   .navbar-mobile-toggle {
-    display: none;
+    display: none !important;
   }
 }
 
 .navbar-mobile-toggle:hover {
-  color: var(--purple-bright);
+  background: #6d28d9;
+  transform: translateY(-1px);
+}
+
+.navbar-mobile-toggle:active {
+  background: #5b21b6;
+  transform: scale(0.95);
 }
 
 .navbar-mobile-menu {

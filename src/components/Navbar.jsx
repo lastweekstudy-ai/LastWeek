@@ -340,10 +340,15 @@ const Navbar = ({ isSessionPage = false }) => {
                     onClick={() => setDrawerOpen(!drawerOpen)}
                     aria-label="Toggle navigation menu"
                     aria-expanded={drawerOpen}
+                    style={{
+                      background: '#7c3aed',
+                      border: '2px solid #6d28d9',
+                      boxShadow: '0 2px 8px rgba(124, 58, 237, 0.45)',
+                    }}
                   >
-                    <span className="hamburger-bar" />
-                    <span className="hamburger-bar" />
-                    <span className="hamburger-bar" />
+                    <span className="hamburger-bar" style={{ background: '#ffffff' }} />
+                    <span className="hamburger-bar" style={{ background: '#ffffff' }} />
+                    <span className="hamburger-bar" style={{ background: '#ffffff' }} />
                   </button>
                 </div>
               </>

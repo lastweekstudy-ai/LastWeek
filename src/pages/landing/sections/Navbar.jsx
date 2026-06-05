@@ -49,6 +49,16 @@ const Navbar = () => {
           className="navbar-mobile-toggle"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle mobile menu"
+          style={{
+            background: '#7c3aed',
+            border: '2px solid #6d28d9',
+            borderRadius: '8px',
+            width: '42px',
+            height: '42px',
+            boxShadow: '0 2px 8px rgba(124, 58, 237, 0.45)',
+            color: '#ffffff',
+            padding: 0
+          }}
         >
           <PixelIcon type={mobileMenuOpen ? 'close' : 'menu'} size={24} />
         </button>
