@@ -46,6 +46,11 @@ const StudyInterface = ({
   const [scale, setScale] = useState(1.0);
   const [loading, setLoading] = useState(true);
   const [isScannedPDF, setIsScannedPDF] = useState(false);
+  // Global font size scale for entire interface (85% - 130%)
+  const [contentScale, setContentScale] = useState(() => {
+    const stored = localStorage.getItem('study-content-scale');
+    return stored ? parseFloat(stored) : 100;
+  });
   // Live extracted text - fallback if resource.extractedText is missing
   const [liveExtractedText, setLiveExtractedText] = useState(resource.extractedText || '');
   const [extracting, setExtracting] = useState(false);
@@ -292,6 +297,28 @@ const StudyInterface = ({
   const handleZoomIn = () => setScale(prev => Math.min(prev + 0.2, 3.0));
   const handleZoomOut = () => setScale(prev => Math.max(prev - 0.2, 0.5));
   const handleResetZoom = () => setScale(1.0);
+
+  // Global content scale handlers
+  const handleContentZoomIn = () => {
+    setContentScale(prev => {
+      const newScale = Math.min(prev + 10, 130);
+      localStorage.setItem('study-content-scale', newScale.toString());
+      return newScale;
+    });
+  };
+
+  const handleContentZoomOut = () => {
+    setContentScale(prev => {
+      const newScale = Math.max(prev - 10, 85);
+      localStorage.setItem('study-content-scale', newScale.toString());
+      return newScale;
+    });
+  };
+
+  const handleContentZoomReset = () => {
+    setContentScale(100);
+    localStorage.setItem('study-content-scale', '100');
+  };
 
   const toggleBookmark = async () => {
     const isBookmarked = bookmarks.some(b => b.page === pageNumber);
@@ -996,7 +1023,11 @@ User Question: ${aiContextMessage || userMessage}`;
   };
 
   return (
-    <div className="study-interface" ref={containerRef}>
+    <div 
+      className="study-interface" 
+      ref={containerRef}
+      style={{ fontSize: `${contentScale}%` }}
+    >
       {/* Floating Ask AI Tip */}
       {selectionTip && (
         <div
@@ -1110,7 +1141,20 @@ User Question: ${aiContextMessage || userMessage}`;
 
           {/* PDF Toolbar */}
           <div className="pdf-toolbar">
-            <div className="toolbar-group">
+            {/* Global Content Zoom */}
+            <div className="toolbar-group" title="Global content size">
+              <span className="toolbar-label">Text:</span>
+              <button onClick={handleContentZoomOut} className="btn-toolbar" title="Decrease text size">A−</button>
+              <span className="zoom-level-small">{contentScale}%</span>
+              <button onClick={handleContentZoomIn} className="btn-toolbar" title="Increase text size">A+</button>
+              {contentScale !== 100 && (
+                <button onClick={handleContentZoomReset} className="btn-toolbar btn-reset" title="Reset to 100%">↺</button>
+              )}
+            </div>
+
+            {/* PDF Zoom */}
+            <div className="toolbar-group" title="PDF zoom">
+              <span className="toolbar-label">PDF:</span>
               <button onClick={handleZoomOut} className="btn-toolbar">−</button>
               <span className="zoom-level-small">{Math.round(scale * 100)}%</span>
               <button onClick={handleZoomIn} className="btn-toolbar">+</button>

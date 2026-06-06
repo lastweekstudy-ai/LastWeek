@@ -94,6 +94,15 @@
   position: relative;
 }
 
+.toolbar-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-right: 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .btn-toolbar {
   background-color: var(--color-bg-secondary);
   border: var(--border-width) solid var(--color-border);
@@ -125,6 +134,18 @@
   background-color: var(--color-accent);
   border-color: var(--color-accent);
   color: white;
+}
+
+.btn-toolbar.btn-reset {
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-border-light);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.btn-toolbar.btn-reset:hover:not(:disabled) {
+  background-color: var(--color-accent-light);
+  border-color: var(--color-accent);
 }
 
 .btn-toolbar.btn-color {

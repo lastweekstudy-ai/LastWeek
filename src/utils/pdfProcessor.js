@@ -117,7 +117,16 @@ export const isPDFProcessable = (file) => {
  *   - Non-printable characters below U+0020, except \t (U+0009), \n (U+000A), \r (U+000D)
  *   - The Unicode replacement character U+FFFD
  *   - Characters outside the Basic Multilingual Plane (code point > U+FFFF) that are NOT
- *     CJK Unified Ideographs (U+4E00–U+9FFF, U+3400–U+4DBF, U+20000–U+2A6DF)
+ *     CJK Unified Ideographs or other common writing systems
+ *
+ * Valid Unicode ranges include:
+ *   - Latin, Cyrillic, Greek, Arabic, Hebrew, Thai, etc. (U+0000-U+1FFF)
+ *   - Indian scripts: Devanagari (U+0900–U+097F), Bengali (U+0980–U+09FF), 
+ *     Gurmukhi (U+0A00–U+0A7F), Gujarati (U+0A80–U+0AFF), Oriya (U+0B00–U+0B7F),
+ *     Tamil (U+0B80–U+0BFF), Telugu (U+0C00–U+0C7F), Kannada (U+0C80–U+0CFF),
+ *     Malayalam (U+0D00–U+0D7F), Sinhala (U+0D80–U+0DFF)
+ *   - Southeast Asian: Thai (U+0E00–U+0E7F), Lao (U+0E80–U+0EFF), Myanmar (U+1000–U+109F)
+ *   - CJK Unified Ideographs (U+4E00–U+9FFF)
  *
  * @param {string} text
  * @returns {number} Ratio in [0, 1]; returns 0 for empty strings.
@@ -132,6 +141,7 @@ export function computeGarbageRatio(text) {
     const cp = char.codePointAt(0);
     totalCodePoints++;
 
+    // Check if it's garbage
     if (cp < 0x0020 && cp !== 0x0009 && cp !== 0x000A && cp !== 0x000D) {
       // Non-printable below U+0020 (except tab, newline, carriage return)
       garbageCount++;
@@ -139,14 +149,18 @@ export function computeGarbageRatio(text) {
       // Unicode replacement character
       garbageCount++;
     } else if (cp > 0xFFFF) {
-      // Outside BMP — check if it's a CJK Unified Ideograph extension
-      const isCJKExtA = cp >= 0x3400 && cp <= 0x4DBF;   // CJK Extension A (in BMP, but check anyway)
-      const isCJKMain = cp >= 0x4E00 && cp <= 0x9FFF;   // CJK Unified Ideographs (in BMP)
-      const isCJKExtB = cp >= 0x20000 && cp <= 0x2A6DF; // CJK Extension B (outside BMP)
-      if (!isCJKExtA && !isCJKMain && !isCJKExtB) {
+      // Outside BMP — check if it's a valid extended character
+      const isCJKExtA = cp >= 0x3400 && cp <= 0x4DBF;   // CJK Extension A
+      const isCJKExtB = cp >= 0x20000 && cp <= 0x2A6DF; // CJK Extension B
+      const isEmoji = cp >= 0x1F300 && cp <= 0x1F9FF;   // Emoji ranges
+      const isSupplementary = cp >= 0x10000 && cp <= 0x10FFFF; // Other supplementary planes
+      
+      if (!isCJKExtA && !isCJKExtB && !isEmoji && !isSupplementary) {
         garbageCount++;
       }
     }
+    // If we reach here and cp is in BMP (< 0xFFFF), it's valid
+    // This includes Latin, Cyrillic, Arabic, Hebrew, Thai, Devanagari, Bengali, etc.
   }
 
   return totalCodePoints === 0 ? 0 : garbageCount / totalCodePoints;
@@ -157,7 +171,8 @@ export function computeGarbageRatio(text) {
  *
  * Returns 'bad' if:
  *   - textItems is empty, OR
- *   - computeGarbageRatio(textItems.join('')) exceeds threshold
+ *   - computeGarbageRatio(textItems.join('')) exceeds threshold, OR
+ *   - text contains complex scripts that PDF.js often mangles (Bengali, Devanagari, etc.)
  * Otherwise returns 'good'.
  *
  * @param {string[]} textItems  Raw text strings from PDF.js
@@ -168,6 +183,17 @@ export function classifyPage(textItems, threshold = 0.3) {
   if (!textItems || textItems.length === 0) return 'bad';
   const joined = textItems.join('');
   if (joined.length === 0) return 'bad';
+  
+  // Check for complex scripts that often get garbled by PDF.js
+  // These scripts have complex rendering rules and ligatures that PDF.js may not handle correctly
+  const hasComplexScript = /[\u0900-\u097F\u0980-\u09FF\u0A00-\u0A7F\u0A80-\u0AFF\u0B00-\u0B7F\u0B80-\u0BFF\u0C00-\u0C7F\u0C80-\u0CFF\u0D00-\u0D7F\u0E00-\u0E7F\u1000-\u109F\u0600-\u06FF\u0750-\u077F]/.test(joined);
+  
+  if (hasComplexScript) {
+    // For Indic scripts, Arabic, Thai, Myanmar - prefer vision OCR
+    // Only use text extraction if the text looks clean (very low garbage ratio)
+    return computeGarbageRatio(joined) > 0.1 ? 'bad' : 'good';
+  }
+  
   return computeGarbageRatio(joined) > threshold ? 'bad' : 'good';
 }
 

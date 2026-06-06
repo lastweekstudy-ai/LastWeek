@@ -49,28 +49,36 @@ const Navbar = () => {
           className="navbar-mobile-toggle"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle mobile menu"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'transparent',
-            border: 'none',
-            width: '48px',
-            height: '48px',
-            cursor: 'pointer',
-            padding: '8px'
-          }}
         >
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            justifyContent: 'space-between',
-            width: '28px',
-            height: '20px'
+            gap: '5px',
+            width: '30px',
+            height: '24px',
+            justifyContent: 'center'
           }}>
-            <div style={{ width: '28px', height: '3px', backgroundColor: '#7c3aed', borderRadius: '2px' }}></div>
-            <div style={{ width: '28px', height: '3px', backgroundColor: '#7c3aed', borderRadius: '2px' }}></div>
-            <div style={{ width: '28px', height: '3px', backgroundColor: '#7c3aed', borderRadius: '2px' }}></div>
+            <div style={{ 
+              width: '30px', 
+              height: '4px', 
+              backgroundColor: '#7c3aed',
+              borderRadius: '2px',
+              display: 'block'
+            }}></div>
+            <div style={{ 
+              width: '30px', 
+              height: '4px', 
+              backgroundColor: '#7c3aed',
+              borderRadius: '2px',
+              display: 'block'
+            }}></div>
+            <div style={{ 
+              width: '30px', 
+              height: '4px', 
+              backgroundColor: '#7c3aed',
+              borderRadius: '2px',
+              display: 'block'
+            }}></div>
           </div>
         </button>
       </div>
