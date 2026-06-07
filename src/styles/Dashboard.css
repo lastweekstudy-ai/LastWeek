@@ -1,46 +1,48 @@
 .dashboard {
   min-height: 100vh;
-  padding: 2.5rem 1.5rem !important;
+  padding: var(--spacing-2xl) 0;
 }
 
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 2.5rem !important;
-  padding-bottom: 1.5rem !important;
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-lg);
   border-bottom: var(--border-width) solid var(--color-border);
 }
 
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 1rem !important;
+  gap: var(--spacing-md);
   flex-shrink: 0;
 }
 
 .dashboard-header h1 {
   font-size: 2rem;
-  margin-bottom: 1rem !important;
+  margin-bottom: var(--spacing-sm);
 }
 
 .dashboard-subtitle {
   color: var(--color-text-secondary);
   font-size: 1rem;
-  margin: 0 0 1rem 0 !important;
+  margin: 0;
 }
 
 .dashboard-section {
-  margin-bottom: 2.5rem !important;
+  margin-bottom: var(--spacing-2xl);
+  margin-top: var(--spacing-2xl);
 }
 
 .dashboard-section h2 {
   font-size: 1.5rem;
-  margin-bottom: 1.5rem !important;
+  margin-bottom: var(--spacing-lg);
+  margin-top: var(--spacing-lg);
   color: var(--color-text-primary);
   display: flex;
   align-items: center;
-  gap: 0.75rem !important;
+  gap: var(--spacing-sm);
 }
 
 .section-icon {
@@ -125,6 +127,9 @@
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 2rem;
   margin-top: 1.5rem;
+  margin-left: var(--spacing-xl);
+  margin-right: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
 }
 
 .session-card {
@@ -132,6 +137,7 @@
   transition: all 0.3s ease;
   padding: 2rem !important;
   min-height: 220px;
+  border-radius: 16px !important;
 }
 
 .session-card:hover {

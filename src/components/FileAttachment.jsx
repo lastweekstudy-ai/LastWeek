@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { uploadFile } from '../appwrite/storage';
 import { createFileAttachment } from '../appwrite/database';
-import { createPDFResource } from '../appwrite/pdfResources';
+import { createPDFResource, checkPDFCache } from '../appwrite/pdfResources';
 import useGemini from '../hooks/useGemini';
 import { extractTextFromPDF, isPDFProcessable, extractText } from '../utils/pdfProcessor';
 import { transcribeAudio } from '../services/aiProvider';
@@ -119,20 +119,54 @@ const FileAttachment = ({ onFileProcess, disabled = false, userId = null, sessio
               throw new Error('PDF is too large or not processable');
             }
             
+            setProgressText('Loading PDF...');
             const arrayBuffer = await file.arrayBuffer();
-            const pdfText = await extractText(arrayBuffer, {
-              processImage,
-              onProgress: ({ pageNum }) => {
-                setProgressText(`Processing page ${pageNum}…`);
-              }
+            
+            // Process PDF in chunks to avoid blocking UI
+            setProgressText('Extracting text...');
+            const pdfResult = await new Promise((resolve, reject) => {
+              // Use setTimeout to give UI time to update
+              setTimeout(async () => {
+                try {
+                  const result = await extractText(arrayBuffer, {
+                    processImage,
+                    checkCache: checkPDFCache, // Enable cache lookup
+                    onProgress: ({ stage, pageNum, totalPages, percentComplete }) => {
+                      if (stage === 'validating') {
+                        setProgressText('Checking cache...');
+                      } else if (stage === 'screening') {
+                        setProgressText('Analyzing document...');
+                      } else if (stage === 'extracting') {
+                        setProgressText(`Extracting page ${pageNum} of ${totalPages}...`);
+                      } else if (stage === 'ocr') {
+                        setProgressText(`Running OCR on page ${pageNum} of ${totalPages}...`);
+                      } else if (stage === 'indexing') {
+                        setProgressText('Indexing content...');
+                      } else if (stage === 'storing') {
+                        setProgressText('Finalizing...');
+                      }
+                    }
+                  });
+                  resolve(result);
+                } catch (err) {
+                  reject(err);
+                }
+              }, 50);
             });
+            
             setProgressText('');
+            
+            // Extract text from result
+            const pdfText = pdfResult.text || pdfResult;
             
             if (!pdfText || pdfText.length < 50) {
               throw new Error('No readable text found in PDF');
             }
             
             extractedContent = pdfText;
+            
+            // Store v4 pipeline metadata for later use
+            window.__lastPDFResult = pdfResult; // Temporary solution until full integration
           } catch (pdfError) {
             setProgressText('');
             console.error('PDF processing failed:', pdfError);
@@ -224,6 +258,20 @@ This file type requires manual content extraction. Please:
               extractedContent.substring(0, 50000)
             );
 
+            // Get v4 pipeline metadata if available
+            const pdfResult = window.__lastPDFResult;
+            const v4Options = {};
+            
+            if (pdfResult && fileType === 'application/pdf') {
+              v4Options.cacheKey = pdfResult.cacheKey;
+              v4Options.manifest = pdfResult.manifest;
+              v4Options.figureRegistry = pdfResult.figureRegistry;
+              v4Options.processingVersion = pdfResult.processingVersion || 4;
+              
+              // Clear temporary storage
+              delete window.__lastPDFResult;
+            }
+
             const resource = await createPDFResource(
               userId,
               sessionId,
@@ -232,7 +280,8 @@ This file type requires manual content extraction. Please:
               storageFileId,
               extractedContent.substring(0, 1000000),
               null,
-              fileType
+              fileType,
+              v4Options
             );
 
             // Record PDF upload usage using combined limits hook
@@ -303,13 +352,23 @@ Image processing is temporarily unavailable. Please describe what you see in the
             }
             
             const arrayBuffer = await file.arrayBuffer();
-            const pdfText = await extractText(arrayBuffer, {
+            const pdfResult = await extractText(arrayBuffer, {
               processImage,
-              onProgress: ({ pageNum }) => {
-                setProgressText(`Processing page ${pageNum} of ${file.name}…`);
+              checkCache: null, // TODO: Add cache check when integrated
+              onProgress: ({ stage, pageNum, percentComplete }) => {
+                if (stage === 'extracting') {
+                  setProgressText(`Processing page ${pageNum} of ${file.name}…`);
+                } else if (stage === 'ocr') {
+                  setProgressText(`Running OCR on page ${pageNum}…`);
+                } else if (stage === 'indexing') {
+                  setProgressText('Indexing content…');
+                }
               }
             });
             setProgressText('');
+            
+            // Extract text from result
+            const pdfText = pdfResult.text || pdfResult;
             
             if (!pdfText || pdfText.length < 50) {
               throw new Error('No readable text found in PDF');

@@ -60,6 +60,19 @@ export const AuthProvider = ({ children }) => {
         console.error('Failed to create user profile:', profileError);
       }
       
+      // Refresh user data after a short delay to get subscription status
+      // This ensures webhooks/cloud functions have time to create subscription records
+      setTimeout(async () => {
+        try {
+          const refreshedUser = await getCurrentUser();
+          if (refreshedUser) {
+            setUser(refreshedUser);
+          }
+        } catch (err) {
+          console.warn('[AuthContext] Failed to refresh user after registration:', err);
+        }
+      }, 2000); // 2 second delay
+      
       return newUser;
     } catch (error) {
       throw error;

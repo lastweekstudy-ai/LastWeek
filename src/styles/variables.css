@@ -1,0 +1,356 @@
+/* ============================================================
+   GLOBAL CSS VARIABLES - Design System
+   Created from Visual Audit Report - June 6, 2026
+   ============================================================ */
+
+/* ============================================================
+   LIGHT MODE (Default)
+   ============================================================ */
+
+:root {
+  /* ── Primary Brand Colors ────────────────────────────────── */
+  --color-purple-primary: #7c3aed;
+  --color-purple-hover: #6d28d9;
+  --color-purple-active: #5b21b6;
+  --color-purple-light: #a78bfa;
+  --color-purple-dark: #5b21b6;
+  --color-purple-border: #c4b5fd;
+  
+  /* ── Semantic Colors ─────────────────────────────────────── */
+  --color-success: #22c55e;
+  --color-success-light: #4ade80;
+  --color-success-dark: #16a34a;
+  --color-success-bg: rgba(34, 197, 94, 0.1);
+  --color-success-border: rgba(34, 197, 94, 0.3);
+  
+  --color-error: #ef4444;
+  --color-error-light: #f87171;
+  --color-error-dark: #dc2626;
+  --color-error-darker: #991b1b;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  
+  --color-warning: #fbbf24;
+  --color-warning-light: #fcd34d;
+  --color-warning-dark: #f59e0b;
+  --color-warning-darker: #d97706;
+  --color-warning-bg: rgba(251, 191, 36, 0.1);
+  --color-warning-border: rgba(251, 191, 36, 0.3);
+  --color-warning-fallback-bg: #fff3cd;
+  --color-warning-fallback-border: #ffeaa7;
+  --color-warning-fallback-text: #856404;
+  
+  --color-info: #3b82f6;
+  --color-info-light: #60a5fa;
+  --color-info-dark: #2563eb;
+  --color-info-darker: #1d4ed8;
+  --color-info-bg: rgba(59, 130, 246, 0.1);
+  --color-info-border: rgba(59, 130, 246, 0.3);
+  
+  --color-danger: #e74c3c;
+  --color-danger-hover: #c0392b;
+  --color-danger-bg: #f8d7da;
+  --color-danger-border: #f5c6cb;
+  --color-danger-text: #721c24;
+  
+  /* ── Background Colors ───────────────────────────────────── */
+  --color-bg-primary: #f5f3ef;          /* Warm paper */
+  --color-bg-secondary: #ffffff;        /* White cards */
+  --color-bg-tertiary: #f0ede8;         /* Input/code background */
+  --color-bg-hover: #e8e4de;            /* Hover state */
+  --color-bg-code: #f1f5f9;             /* Code blocks */
+  --color-bg-code-dark: #1e293b;        /* Code text contrast */
+  
+  /* ── Text Colors ─────────────────────────────────────────── */
+  --color-text-primary: #1a1a2e;        /* Near-black ink */
+  --color-text-secondary: #374151;      /* Secondary text */
+  --color-text-muted: #6b7280;          /* Muted/placeholder */
+  --color-text-heading: #0f0f1a;        /* Headings */
+  --color-text-on-accent: #ffffff;      /* Text on colored backgrounds */
+  
+  /* ── Border Colors ───────────────────────────────────────── */
+  --color-border: #d1cdc7;              /* Warm light border */
+  --color-border-light: #e5e1db;        /* Lighter border */
+  --color-border-dark: #2e303a;         /* Dark border fallback */
+  --color-border-accent: var(--color-purple-border);
+  
+  /* ── Highlight Colors (PDF/Study Tools) ──────────────────── */
+  --color-highlight-yellow: #ffeb3b;
+  --color-highlight-green: #4caf50;
+  --color-highlight-blue: #2196f3;
+  --color-highlight-pink: #e91e63;
+  --color-highlight-orange: #ff9800;
+  --color-highlight-purple: #9c27b0;
+  
+  /* ── Special UI Colors ───────────────────────────────────── */
+  --color-share-active-bg: #dcfce7;
+  --color-share-active-border: #10b981;
+  --color-share-active-text: #065f46;
+  --color-share-hover-bg: #fee2e2;
+  
+  --color-audio-badge-bg: rgba(37, 99, 235, 0.12);
+  --color-audio-badge-text: #1d4ed8;
+  
+  --color-imported-badge-bg: #dcfce7;
+  --color-imported-badge-text: #166534;
+  
+  /* ── Gradient Backgrounds ────────────────────────────────── */
+  --gradient-audio-upload: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-search-library: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  
+  /* ── Spacing Scale ───────────────────────────────────────── */
+  --space-xs: 0.25rem;      /* 4px */
+  --space-sm: 0.5rem;       /* 8px */
+  --space-md: 1rem;         /* 16px */
+  --space-lg: 1.5rem;       /* 24px */
+  --space-xl: 2rem;         /* 32px */
+  --space-2xl: 3rem;        /* 48px */
+  
+  /* Additional spacing for common patterns */
+  --space-input: 0.75rem;   /* 12px - button/input padding */
+  --space-section: 2rem;    /* 32px - section margins */
+  --space-mobile-default: 1.5rem; /* 24px - mobile container padding */
+  
+  /* Pixel-based spacing for precision */
+  --space-xs-px: 4px;
+  --space-sm-px: 8px;
+  --space-md-px: 12px;
+  --space-lg-px: 16px;
+  --space-xl-px: 24px;
+  --space-2xl-px: 32px;
+  
+  /* ── Border Radius ───────────────────────────────────────── */
+  --radius-sm: 0.25rem;     /* 4px */
+  --radius-md: 0.5rem;      /* 8px */
+  --radius-lg: 0.75rem;     /* 12px */
+  --radius-xl: 1rem;        /* 16px */
+  --radius-full: 9999px;    /* Pill shape */
+  
+  /* ── Z-Index Scale ───────────────────────────────────────── */
+  --z-base: 0;
+  --z-low: 1;
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-notification: 1080;
+  --z-toast: 1090;
+  
+  /* ── Shadows ─────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.10), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.10), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.10), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.25);
+  
+  /* ── Transitions ─────────────────────────────────────────── */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
+  
+  /* ── Typography ──────────────────────────────────────────── */
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, Consolas, monospace;
+}
+
+/* ============================================================
+   DARK MODE - [data-theme="dark"]
+   All colors adapted for dark backgrounds with proper contrast
+   ============================================================ */
+
+[data-theme="dark"] {
+  /* ── Primary Brand Colors (Lighter for dark backgrounds) ─── */
+  --color-purple-primary: #a78bfa;      /* Lighter purple for visibility */
+  --color-purple-hover: #c4b5fd;        /* Even lighter on hover */
+  --color-purple-active: #ddd6fe;       /* Lightest on active */
+  --color-purple-light: #e9d5ff;        /* Very light accent */
+  --color-purple-dark: #7c3aed;         /* Darker variant */
+  --color-purple-border: #6d28d9;       /* Border contrast */
+  
+  /* ── Semantic Colors (Adjusted for dark mode) ────────────── */
+  --color-success: #4ade80;
+  --color-success-light: #86efac;
+  --color-success-dark: #22c55e;
+  --color-success-bg: rgba(74, 222, 128, 0.15);
+  --color-success-border: rgba(74, 222, 128, 0.3);
+  
+  --color-error: #f87171;
+  --color-error-light: #fca5a5;
+  --color-error-dark: #ef4444;
+  --color-error-darker: #dc2626;
+  --color-error-bg: rgba(248, 113, 113, 0.15);
+  --color-error-border: rgba(248, 113, 113, 0.3);
+  
+  --color-warning: #fcd34d;
+  --color-warning-light: #fde68a;
+  --color-warning-dark: #fbbf24;
+  --color-warning-darker: #f59e0b;
+  --color-warning-bg: rgba(252, 211, 77, 0.15);
+  --color-warning-border: rgba(252, 211, 77, 0.3);
+  --color-warning-fallback-bg: #422006;
+  --color-warning-fallback-border: #78350f;
+  --color-warning-fallback-text: #fde68a;
+  
+  --color-info: #60a5fa;
+  --color-info-light: #93c5fd;
+  --color-info-dark: #3b82f6;
+  --color-info-darker: #2563eb;
+  --color-info-bg: rgba(96, 165, 250, 0.15);
+  --color-info-border: rgba(96, 165, 250, 0.3);
+  
+  --color-danger: #f87171;
+  --color-danger-hover: #fca5a5;
+  --color-danger-bg: #450a0a;
+  --color-danger-border: #7f1d1d;
+  --color-danger-text: #fca5a5;
+  
+  /* ── Background Colors (Dark surfaces) ───────────────────── */
+  --color-bg-primary: #0f0f0f;          /* Deep black background */
+  --color-bg-secondary: #1a1a1a;        /* Card surfaces */
+  --color-bg-tertiary: #242424;         /* Input/code backgrounds */
+  --color-bg-hover: #2e2e2e;            /* Hover state */
+  --color-bg-code: #1e1e1e;             /* Code blocks */
+  --color-bg-code-dark: #e0e0e0;        /* Code text (light) */
+  
+  /* ── Text Colors (Light for dark backgrounds) ────────────── */
+  --color-text-primary: #e0e0e0;        /* Primary light text */
+  --color-text-secondary: #b0b0b0;      /* Secondary text */
+  --color-text-muted: #808080;          /* Muted text */
+  --color-text-heading: #ffffff;        /* Bright headings */
+  --color-text-on-accent: #0f0f0f;      /* Dark text on light accents */
+  
+  /* ── Border Colors (Lighter for dark mode) ───────────────── */
+  --color-border: #3a3a3a;              /* Subtle borders */
+  --color-border-light: #2a2a2a;        /* Lighter borders */
+  --color-border-dark: #505050;         /* Darker/more visible borders */
+  --color-border-accent: var(--color-purple-border);
+  
+  /* ── Highlight Colors (Darker for dark backgrounds) ──────── */
+  --color-highlight-yellow: #fbbf24;    /* Darker yellow */
+  --color-highlight-green: #22c55e;     /* Darker green */
+  --color-highlight-blue: #3b82f6;      /* Darker blue */
+  --color-highlight-pink: #ec4899;      /* Darker pink */
+  --color-highlight-orange: #f97316;    /* Darker orange */
+  --color-highlight-purple: #a855f7;    /* Darker purple */
+  
+  /* ── Special UI Colors (Dark mode variants) ──────────────── */
+  --color-share-active-bg: #14532d;
+  --color-share-active-border: #22c55e;
+  --color-share-active-text: #86efac;
+  --color-share-hover-bg: #450a0a;
+  
+  --color-audio-badge-bg: rgba(59, 130, 246, 0.2);
+  --color-audio-badge-text: #93c5fd;
+  
+  --color-imported-badge-bg: #14532d;
+  --color-imported-badge-text: #86efac;
+  
+  /* ── Gradient Backgrounds (Darker variants) ──────────────── */
+  --gradient-audio-upload: linear-gradient(135deg, #4c1d95 0%, #5b21b6 100%);
+  --gradient-search-library: linear-gradient(135deg, #065f46 0%, #047857 100%);
+  
+  /* ── Shadows (Darker/subtler for dark mode) ──────────────── */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 20px rgba(167, 139, 250, 0.3);
+  
+  /* Spacing, radius, z-index, transitions, typography remain the same */
+}
+
+/* ============================================================
+   COLOR THEME VARIANTS (Orange, Green, Brown, Blue)
+   These override the primary accent colors for each theme
+   ============================================================ */
+
+[data-color="orange"] {
+  --color-purple-primary: #ea580c;
+  --color-purple-hover: #c2410c;
+  --color-purple-active: #9a3412;
+  --color-purple-light: #fb923c;
+  --color-purple-dark: #9a3412;
+  --color-purple-border: #fed7aa;
+  --shadow-glow: 0 0 20px rgba(234, 88, 12, 0.25);
+}
+
+[data-color="green"] {
+  --color-purple-primary: #059669;
+  --color-purple-hover: #047857;
+  --color-purple-active: #065f46;
+  --color-purple-light: #34d399;
+  --color-purple-dark: #065f46;
+  --color-purple-border: #a7f3d0;
+  --shadow-glow: 0 0 20px rgba(5, 150, 105, 0.25);
+}
+
+[data-color="brown"] {
+  --color-purple-primary: #b45309;
+  --color-purple-hover: #92400e;
+  --color-purple-active: #78350f;
+  --color-purple-light: #d97706;
+  --color-purple-dark: #78350f;
+  --color-purple-border: #fde68a;
+  --shadow-glow: 0 0 20px rgba(180, 83, 9, 0.25);
+}
+
+[data-color="blue"] {
+  --color-purple-primary: #2563eb;
+  --color-purple-hover: #1d4ed8;
+  --color-purple-active: #1e40af;
+  --color-purple-light: #60a5fa;
+  --color-purple-dark: #1e40af;
+  --color-purple-border: #bfdbfe;
+  --shadow-glow: 0 0 20px rgba(37, 99, 235, 0.25);
+}
+
+/* Dark mode variants for color themes */
+[data-theme="dark"][data-color="orange"] {
+  --color-purple-primary: #fb923c;
+  --color-purple-hover: #fdba74;
+  --color-purple-light: #fed7aa;
+}
+
+[data-theme="dark"][data-color="green"] {
+  --color-purple-primary: #34d399;
+  --color-purple-hover: #6ee7b7;
+  --color-purple-light: #a7f3d0;
+}
+
+[data-theme="dark"][data-color="brown"] {
+  --color-purple-primary: #d97706;
+  --color-purple-hover: #fbbf24;
+  --color-purple-light: #fde68a;
+}
+
+[data-theme="dark"][data-color="blue"] {
+  --color-purple-primary: #60a5fa;
+  --color-purple-hover: #93c5fd;
+  --color-purple-light: #bfdbfe;
+}
+
+/* ============================================================
+   LEGACY COMPATIBILITY ALIASES
+   Map old variable names to new system for gradual migration
+   ============================================================ */
+
+:root {
+  /* Existing global.css variables */
+  --color-accent: var(--color-purple-primary);
+  --color-accent-hover: var(--color-purple-hover);
+  --color-accent-light: var(--color-purple-light);
+  --color-accent-dark: var(--color-purple-dark);
+  --color-accent-rgb: 124, 58, 237;
+}
+
+[data-theme="dark"] {
+  --color-accent-rgb: 167, 139, 250;
+}
+
+/* ============================================================
+   END OF VARIABLES FILE
+   ============================================================ */

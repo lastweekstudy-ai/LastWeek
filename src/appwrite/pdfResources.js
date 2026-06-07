@@ -4,30 +4,84 @@ import { ID, Query } from 'appwrite';
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const PDF_RESOURCES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_PDF_RESOURCES_COLLECTION_ID;
 
-// Create resource for any supported file type (PDF, images, HTML, SVG)
-export const createPDFResource = async (userId, sessionId, fileName, fileSize, storageFileId, extractedText = null, pageCount = null, fileType = 'application/pdf') => {
+// ─── Cache Lookup (PDF Pipeline v4) ────────────────────────────────────────
+
+/**
+ * Check if PDF has been processed before using cache key
+ * @param {string} cacheKey - SHA-256 hash of PDF content
+ * @returns {Promise<object|null>} Cached PDF resource or null if not found
+ */
+export const checkPDFCache = async (cacheKey) => {
   try {
+    const pdfs = await databases.listDocuments(
+      DATABASE_ID,
+      PDF_RESOURCES_COLLECTION_ID,
+      [
+        Query.equal('cacheKey', cacheKey),
+        Query.limit(1)
+      ]
+    );
+    
+    if (pdfs.documents.length > 0) {
+      console.log(`[Cache HIT] Found cached PDF with key: ${cacheKey}`);
+      return pdfs.documents[0];
+    }
+    
+    console.log(`[Cache MISS] No cached PDF for key: ${cacheKey}`);
+    return null;
+  } catch (error) {
+    console.error('Failed to check PDF cache:', error);
+    // Don't throw - cache failure shouldn't block processing
+    return null;
+  }
+};
+
+// ─── Resource Creation (PDF Pipeline v4 Enhanced) ──────────────────────────
+
+// Create resource for any supported file type (PDF, images, HTML, SVG)
+export const createPDFResource = async (userId, sessionId, fileName, fileSize, storageFileId, extractedText = null, pageCount = null, fileType = 'application/pdf', options = {}) => {
+  try {
+    const data = {
+      userId,
+      sessionId,
+      fileName,
+      fileSize,
+      storageFileId,
+      pageCount: pageCount || 1, // Images/HTML default to 1 page
+      thumbnail: null,
+      extractedText: extractedText ? extractedText.substring(0, 1000000) : null,
+      notes: '',
+      currentPage: 1,
+      bookmarks: JSON.stringify([]),
+      highlights: JSON.stringify([]),
+      tags: fileType, // Store file type in tags field for filtering
+      lastAccessedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString()
+    };
+    
+    // PDF Pipeline v4 fields (optional)
+    if (options.cacheKey) {
+      data.cacheKey = options.cacheKey;
+    }
+    if (options.manifest) {
+      data.manifest = typeof options.manifest === 'string' 
+        ? options.manifest 
+        : JSON.stringify(options.manifest);
+    }
+    if (options.figureRegistry) {
+      data.figureRegistry = typeof options.figureRegistry === 'string'
+        ? options.figureRegistry
+        : JSON.stringify(options.figureRegistry);
+    }
+    if (options.processingVersion) {
+      data.processingVersion = options.processingVersion;
+    }
+    
     const resource = await databases.createDocument(
       DATABASE_ID,
       PDF_RESOURCES_COLLECTION_ID,
       ID.unique(),
-      {
-        userId,
-        sessionId,
-        fileName,
-        fileSize,
-        storageFileId,
-        pageCount: pageCount || 1, // Images/HTML default to 1 page
-        thumbnail: null,
-        extractedText: extractedText ? extractedText.substring(0, 1000000) : null,
-        notes: '',
-        currentPage: 1,
-        bookmarks: JSON.stringify([]),
-        highlights: JSON.stringify([]),
-        tags: fileType, // Store file type in tags field for filtering
-        lastAccessedAt: new Date().toISOString(),
-        createdAt: new Date().toISOString()
-      }
+      data
     );
     return resource;
   } catch (error) {

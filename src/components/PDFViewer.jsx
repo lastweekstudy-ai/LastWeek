@@ -18,6 +18,7 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
   const [pageNumber, setPageNumber] = useState(pdfResource.currentPage || 1);
   const [scale, setScale] = useState(1.0);
   const [loading, setLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [pageNotes, setPageNotes] = useState([]);
   const [bookmarks, setBookmarks] = useState([]);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -188,9 +189,19 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
     }
   };
 
-  const onDocumentLoadSuccess = ({ numPages }) => {
+  const onDocumentLoadSuccess = async ({ numPages }) => {
     setNumPages(numPages);
-    setLoading(false);
+    
+    // Simulate progress for better UX
+    for (let i = 20; i <= 100; i += 20) {
+      await new Promise(resolve => setTimeout(resolve, 50));
+      setLoadingProgress(i);
+    }
+    
+    setTimeout(() => {
+      setLoading(false);
+      setLoadingProgress(0);
+    }, 100);
   };
 
   const changePage = async (offset) => {
@@ -509,9 +520,20 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
         onMouseUp={(e) => { if (highlightMode) e.stopPropagation(); }}
       >
         {loading && (
-          <div className="pdf-loading">
-            <div className="spinner"></div>
-            <p>Loading PDF...</p>
+          <div className="pdf-loading-overlay">
+            <div className="pdf-loading">
+              <div className="spinner"></div>
+              <p>Loading PDF...</p>
+              {loadingProgress > 0 && (
+                <div className="loading-progress-bar">
+                  <div 
+                    className="loading-progress-fill" 
+                    style={{ width: `${loadingProgress}%` }}
+                  ></div>
+                </div>
+              )}
+              <p className="loading-tip">Please wait, large PDFs may take a moment</p>
+            </div>
           </div>
         )}
 
@@ -524,8 +546,35 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
         <Document
           file={pdfUrl}
           onLoadSuccess={onDocumentLoadSuccess}
-          loading={<div className="pdf-loading"><div className="spinner"></div></div>}
-          error={<div className="pdf-error">Failed to load PDF. Please try again.</div>}
+          onLoadProgress={({ loaded, total }) => {
+            if (total > 0) {
+              const progress = Math.floor((loaded / total) * 100);
+              setLoadingProgress(Math.min(progress, 95)); // Cap at 95% until fully loaded
+            }
+          }}
+          loading={
+            <div className="pdf-loading-overlay">
+              <div className="pdf-loading">
+                <div className="spinner"></div>
+                <p>Initializing PDF...</p>
+              </div>
+            </div>
+          }
+          error={
+            <div className="pdf-error">
+              <h3>Failed to load PDF</h3>
+              <p>This PDF might be too large or corrupted. Please try again.</p>
+              <button onClick={onClose} className="btn btn-primary">Close</button>
+            </div>
+          }
+          options={{
+            cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/',
+            cMapPacked: true,
+            standardFontDataUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/',
+            enableXfa: false, // Disable XFA for better performance
+            disableAutoFetch: false,
+            disableStream: false,
+          }}
         >
           {/* Task 1: position:relative wrapper + overlay layer */}
           {/* Task 5: --highlight-selection-color CSS variable for ::selection color */}
@@ -543,6 +592,17 @@ const PDFViewer = ({ pdfResource, onClose, onOpenNotes }) => {
               renderTextLayer={true}
               renderAnnotationLayer={true}
               onRenderSuccess={() => renderHighlightOverlays()}
+              loading={
+                <div className="page-loading">
+                  <div className="spinner-small"></div>
+                  <span>Rendering page {pageNumber}...</span>
+                </div>
+              }
+              error={
+                <div className="page-error">
+                  Failed to render page {pageNumber}
+                </div>
+              }
             />
             {/* Task 1: Overlay layer for highlight spans */}
             <div ref={overlayLayerRef} className="highlight-overlay-layer" />

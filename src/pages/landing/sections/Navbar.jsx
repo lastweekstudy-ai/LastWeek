@@ -50,36 +50,9 @@ const Navbar = () => {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Toggle mobile menu"
         >
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '5px',
-            width: '30px',
-            height: '24px',
-            justifyContent: 'center'
-          }}>
-            <div style={{ 
-              width: '30px', 
-              height: '4px', 
-              backgroundColor: '#7c3aed',
-              borderRadius: '2px',
-              display: 'block'
-            }}></div>
-            <div style={{ 
-              width: '30px', 
-              height: '4px', 
-              backgroundColor: '#7c3aed',
-              borderRadius: '2px',
-              display: 'block'
-            }}></div>
-            <div style={{ 
-              width: '30px', 
-              height: '4px', 
-              backgroundColor: '#7c3aed',
-              borderRadius: '2px',
-              display: 'block'
-            }}></div>
-          </div>
+          <span className="hamburger-bar"></span>
+          <span className="hamburger-bar"></span>
+          <span className="hamburger-bar"></span>
         </button>
       </div>
 

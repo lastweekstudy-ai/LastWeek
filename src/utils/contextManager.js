@@ -1,14 +1,16 @@
 /**
- * contextManager.js — Token-budget-aware context builder for DeepSeek API calls.
+ * contextManager.js — Token-budget-aware context builder for AI API calls.
  *
- * Implements Phase 3 of the Omni-Content Pipeline:
+ * Implements Phase 3 of the Omni-Content Pipeline + PDF Pipeline v4:
  *   - Sliding window eviction (newest pairs kept, oldest dropped)
  *   - Session Memory block (last 3 AI responses, each ≤ 500 chars)
- *   - Focused page context injection (currentPage ± 1)
+ *   - Smart PDF page selection using relevance scoring (Pipeline v4)
  *   - Token estimation at 4 chars/token
  *
- * References: Requirements 3.1–3.7, Design §Phase 3
+ * References: Requirements 3.1–3.7, Design §Phase 3, PDF Pipeline v4 Stage 6
  */
+
+import { buildContextForAI as buildPDFContext } from './tokenBudget.js';
 
 /**
  * Estimate token count for a messages array.
@@ -125,6 +127,31 @@ function stripLargeBlocks(content) {
 }
 
 /**
+ * Build AI context using PDF Pipeline v4 token budget manager.
+ * Uses relevance scoring to select the most important pages instead of simple windowing.
+ * 
+ * @param {object} pdfResource - Full PDF resource from database with manifest and figureRegistry
+ * @param {string} userMessage - User's current question
+ * @param {number} currentPage - Page user is viewing
+ * @param {string} model - AI model identifier ('groq_llama' | 'deepseek' | 'gemini')
+ * @returns {object} Context with pdfContext, figureContext, pagesIncluded, tokenEstimate
+ */
+export function buildSmartPDFContext(pdfResource, userMessage, currentPage, model = 'groq_llama') {
+  try {
+    return buildPDFContext(pdfResource, userMessage, [], currentPage, model);
+  } catch (error) {
+    console.warn('[contextManager] Smart PDF context failed, using fallback:', error.message);
+    // Fallback to old windowing approach
+    return {
+      pdfContext: extractFocusedPageContext(pdfResource.extractedText || '', currentPage),
+      figureContext: '',
+      pagesIncluded: [currentPage - 1, currentPage, currentPage + 1].filter(p => p > 0),
+      tokenEstimate: 0,
+    };
+  }
+}
+
+/**
  * Build the messages array for a DeepSeek API call with token-budget-aware
  * sliding window eviction, session memory, and optional page context injection.
  *
@@ -134,7 +161,7 @@ function stripLargeBlocks(content) {
  *  3. Strip large PDF blocks from historical messages
  *  4. Collect user/assistant pairs newest-first
  *  5. Sliding window: add pairs until budget exceeded; always keep ≥ 2 pairs
- *  6. Inject page context block if options.pageContext provided
+ *  6. Inject page context block (using v4 smart selection if pdfResource provided, else old windowing)
  *  7. Add the new user message
  *  8. Log evictions if any
  *  9. Return assembled result
@@ -145,8 +172,10 @@ function stripLargeBlocks(content) {
  * @param {number}   [tokenBudget=28000]
  * @param {Object}   [options={}]
  * @param {number}   [options.currentPage]  - For PDF study mode page windowing
- * @param {string}   [options.pageContext]  - Full extracted PDF text
- * @returns {{ messages: Array, tokenEstimate: number, evictedCount: number, hasSessionMemory: boolean }}
+ * @param {string}   [options.pageContext]  - Full extracted PDF text (legacy)
+ * @param {object}   [options.pdfResource]  - Full PDF resource with manifest (v4)
+ * @param {string}   [options.model='groq_llama'] - AI model for token budget
+ * @returns {{ messages: Array, tokenEstimate: number, evictedCount: number, hasSessionMemory: boolean, pagesIncluded: Array }}
  */
 export function buildContextMessages(
   messages,
@@ -237,10 +266,51 @@ export function buildContextMessages(
 
   // ── Step 6: Page context injection ────────────────────────────────────────
   const pageContextMessages = [];
-  if (options.pageContext) {
+  let pagesIncluded = [];
+  
+  // Try v4 smart PDF context first (if pdfResource provided)
+  if (options.pdfResource && options.pdfResource.manifest) {
+    try {
+      const model = options.model || 'groq_llama';
+      const smartContext = buildSmartPDFContext(
+        options.pdfResource, 
+        aiContextMessage, 
+        options.currentPage || 1, 
+        model
+      );
+      
+      // Combine PDF content and figure context
+      let contextContent = smartContext.pdfContext;
+      if (smartContext.figureContext) {
+        contextContent += '\n\n' + smartContext.figureContext;
+      }
+      
+      if (contextContent.trim()) {
+        pageContextMessages.push({
+          role: 'user',
+          content: 'RELEVANT DOCUMENT CONTENT:\n' + contextContent
+        });
+        pagesIncluded = smartContext.pagesIncluded || [];
+        
+        console.log(`[Context v4] Selected ${pagesIncluded.length} pages using relevance scoring`);
+      }
+    } catch (error) {
+      console.warn('[contextManager] Smart PDF context failed, falling back to legacy:', error.message);
+      // Fall through to legacy approach
+      options.pageContext = options.pdfResource.extractedText;
+    }
+  }
+  
+  // Legacy fallback: old windowing approach (if pageContext provided and v4 didn't work)
+  if (options.pageContext && pageContextMessages.length === 0) {
     let focusedText;
     if (options.currentPage) {
       focusedText = extractFocusedPageContext(options.pageContext, options.currentPage);
+      pagesIncluded = [
+        Math.max(1, options.currentPage - 1),
+        options.currentPage,
+        options.currentPage + 1
+      ];
     } else {
       // No specific page — use first 8000 chars
       focusedText = options.pageContext.substring(0, 8000);
@@ -267,6 +337,7 @@ export function buildContextMessages(
         role: 'user',
         content: 'RELEVANT DOCUMENT CONTENT:\n' + singlePageText
       });
+      pagesIncluded = [options.currentPage];
     } else {
       pageContextMessages.push(pageContextMsg);
     }
@@ -293,6 +364,7 @@ export function buildContextMessages(
     messages: finalMessages,
     tokenEstimate,
     evictedCount,
-    hasSessionMemory
+    hasSessionMemory,
+    pagesIncluded,
   };
 }

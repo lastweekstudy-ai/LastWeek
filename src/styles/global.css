@@ -135,33 +135,32 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color var(--transition-normal), color var(--transition-normal);
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 10.24px; /* Base size reduced by additional 20% from 12.8px */
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.2;
   margin-bottom: var(--spacing-md);
 }
 
 h1 {
-  font-size: 2.4rem;
+  font-size: 1.6rem; /* Reduced by 20% from 2rem */
   font-weight: 700;
 }
 
 h2 {
-  font-size: 1.9rem;
+  font-size: 1.28rem; /* Reduced by 20% from 1.6rem */
 }
 
 h3 {
-  font-size: 1.5rem;
+  font-size: 0.96rem; /* Reduced by 20% from 1.2rem */
 }
 
 h4 {
-  font-size: 1.2rem;
+  font-size: 0.8rem; /* Reduced by 20% from 1rem */
 }
 
 p {
@@ -808,8 +807,7 @@ small,
 }
 
 /* ============================================================
-   ENHANCED TYPOGRAPHY - Optimized for Better Density
-   Reduced by ~15% for better information density while maintaining readability
+   ENHANCED TYPOGRAPHY - Reduced by 36% Total for Maximum Density
    ============================================================ */
 
 * {
@@ -817,63 +815,58 @@ small,
 }
 
 body {
-  font-size: 14px !important; /* Slightly reduced from 16px default */
-  font-weight: 600 !important; /* Lighter weight for better readability */
-  line-height: 1.6 !important;
-}
-
-h1 { font-size: 2.4rem !important; font-weight: 800 !important; }
-h2 { font-size: 1.9rem !important; font-weight: 800 !important; }
-h3 { font-size: 1.5rem !important; font-weight: 800 !important; }
-h4 { font-size: 1.2rem !important; font-weight: 700 !important; }
-h5 { font-size: 1rem !important; font-weight: 700 !important; }
-h6 { font-size: 0.9rem !important; font-weight: 700 !important; }
-
-p {
-  font-size: 0.95rem !important;
-  font-weight: 500 !important;
-  line-height: 1.7 !important;
-  margin-bottom: 0.75rem !important;
-}
-
-label, li, td, span {
-  font-size: 0.9rem !important;
-  font-weight: 500 !important;
-  line-height: 1.5 !important;
-}
-
-th {
-  font-size: 0.95rem !important;
+  font-size: 12.16px !important; /* Reduced by additional 20% from 15.2px */
   font-weight: 700 !important;
 }
 
+h1 { font-size: 2.24rem !important; font-weight: 900 !important; } /* Reduced from 2.8rem */
+h2 { font-size: 1.76rem !important; font-weight: 900 !important; } /* Reduced from 2.2rem */
+h3 { font-size: 1.28rem !important; font-weight: 900 !important; } /* Reduced from 1.6rem */
+h4 { font-size: 1.024rem !important; font-weight: 900 !important; } /* Reduced from 1.28rem */
+h5 { font-size: 0.864rem !important; font-weight: 800 !important; } /* Reduced from 1.08rem */
+h6 { font-size: 0.736rem !important; font-weight: 800 !important; } /* Reduced from 0.92rem */
+
+p {
+  font-size: 0.8rem !important; /* Reduced from 1rem */
+  font-weight: 700 !important;
+  line-height: 1.8 !important;
+}
+
+label, li, td, span {
+  font-size: 0.736rem !important; /* Reduced from 0.92rem */
+  font-weight: 700 !important;
+}
+
+th {
+  font-size: 0.8rem !important; /* Reduced from 1rem */
+  font-weight: 900 !important;
+}
+
 .btn, button {
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
-  padding: 0.65rem 1.3rem !important;
-  line-height: 1.4 !important;
+  font-size: 0.736rem !important; /* Reduced from 0.92rem */
+  font-weight: 900 !important;
+  padding: 0.48rem 0.96rem !important; /* Reduced from 0.6rem 1.2rem */
 }
 
 a {
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
+  font-size: 0.704rem !important; /* Reduced from 0.88rem */
+  font-weight: 800 !important;
 }
 
 input, select, textarea {
-  font-size: 0.9rem !important;
-  font-weight: 500 !important;
-  padding: 0.7rem 1rem !important;
-  line-height: 1.5 !important;
+  font-size: 0.736rem !important; /* Reduced from 0.92rem */
+  font-weight: 700 !important;
+  padding: 0.48rem 0.64rem !important; /* Reduced from 0.6rem 0.8rem */
 }
 
 .text-sm {
-  font-size: 0.85rem !important;
-  font-weight: 500 !important;
+  font-size: 0.672rem !important; /* Reduced from 0.84rem */
+  font-weight: 800 !important;
 }
 
 .text-xs, small {
-  font-size: 0.8rem !important;
-  font-weight: 500 !important;
+  font-size: 0.64rem !important; /* Reduced from 0.8rem */
+  font-weight: 800 !important;
 }
 
 /* Chat and messages */
@@ -881,9 +874,8 @@ input, select, textarea {
 .formatted-message,
 .formatted-message p,
 .formatted-message li {
-  font-size: 0.95rem !important;
-  font-weight: 500 !important;
-  line-height: 1.7 !important;
+  font-size: 0.832rem !important; /* Reduced from 1.04rem */
+  font-weight: 700 !important;
 }
 
 /* Dashboard and cards */
@@ -891,126 +883,31 @@ input, select, textarea {
 .dashboard-title,
 [class*="-title"],
 [class*="-heading"] {
-  font-size: 1.1rem !important;
-  font-weight: 700 !important;
-  line-height: 1.3 !important;
+  font-size: 0.96rem !important; /* Reduced from 1.2rem */
+  font-weight: 900 !important;
 }
 
 /* Navbar specific */
 .navbar-link,
 .nav-link {
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
+  font-size: 0.704rem !important; /* Reduced from 0.88rem */
+  font-weight: 800 !important;
 }
 
 /* Form labels */
 .form-label {
-  font-size: 0.9rem !important;
-  font-weight: 600 !important;
-  margin-bottom: 0.4rem !important;
-}
-
-/* Card and container padding fixes */
-.card,
-.session-card,
-.dashboard-card {
-  padding: 1.25rem !important;
-  margin-bottom: 1.25rem !important;
-}
-
-.container {
-  padding-left: 1.5rem !important;
-  padding-right: 1.5rem !important;
-  padding-top: 1.5rem !important;
-  padding-bottom: 1.5rem !important;
-}
-
-/* Fix input field spacing */
-.form-group {
-  margin-bottom: 1.2rem !important;
-}
-
-/* Ensure proper spacing in lists */
-ul, ol {
-  padding-left: 1.5rem !important;
-  margin-bottom: 1rem !important;
-}
-
-li {
-  margin-bottom: 0.4rem !important;
-}
-
-/* Add spacing between major sections */
-section,
-.section {
-  margin-bottom: 2rem !important;
-}
-
-/* Dashboard grid spacing */
-.dashboard-grid,
-.sessions-grid {
-  gap: 1.5rem !important;
-}
-
-/* Add spacing between form elements */
-input,
-select,
-textarea,
-button {
-  margin-bottom: 0.75rem !important;
-}
-
-/* Search bar spacing */
-.search-container,
-.search-input {
-  margin-bottom: 1.5rem !important;
-}
-
-/* Filter buttons spacing */
-.filter-buttons,
-.mode-filters {
-  gap: 0.75rem !important;
-  margin-bottom: 1.5rem !important;
-}
-
-/* Page header spacing */
-.page-header,
-.dashboard-header {
-  margin-bottom: 2rem !important;
-  padding-bottom: 1rem !important;
-}
-
-/* Add spacing to all direct children of main containers */
-.dashboard > *,
-.mode-page > *,
-.app-container > * {
-  margin-bottom: 1.5rem !important;
-}
-
-/* Last child should not have bottom margin */
-.dashboard > *:last-child,
-.mode-page > *:last-child,
-.app-container > *:last-child {
-  margin-bottom: 0 !important;
+  font-size: 0.736rem !important; /* Reduced from 0.92rem */
+  font-weight: 800 !important;
 }
 
 @media (max-width: 768px) {
-  body { font-size: 13px !important; }
-  h1 { font-size: 1.8rem !important; }
-  h2 { font-size: 1.5rem !important; }
-  h3 { font-size: 1.3rem !important; }
-  h4 { font-size: 1.1rem !important; }
-  p { font-size: 0.9rem !important; }
-  .btn, button { font-size: 0.85rem !important; padding: 0.6rem 1.1rem !important; }
-  
-  .card, .session-card {
-    padding: 1rem !important;
-  }
-  
-  .container {
-    padding-left: 1rem !important;
-    padding-right: 1rem !important;
-  }
+  body { font-size: 10.88px !important; } /* Reduced from 13.6px */
+  h1 { font-size: 1.6rem !important; } /* Reduced from 2rem */
+  h2 { font-size: 1.28rem !important; } /* Reduced from 1.6rem */
+  h3 { font-size: 1.088rem !important; } /* Reduced from 1.36rem */
+  h4 { font-size: 0.896rem !important; } /* Reduced from 1.12rem */
+  p { font-size: 0.736rem !important; } /* Reduced from 0.92rem */
+  .btn, button { font-size: 0.704rem !important; } /* Reduced from 0.88rem */
 }
 
 /* ============================================================
@@ -1104,55 +1001,4 @@ button {
   .session-card {
     padding: 1.75rem !important;
   }
-}
-
-
-/* ============================================================
-   UNIVERSAL SPACING FIX - Add breathing room everywhere
-   ============================================================ */
-
-/* Search inputs need space below */
-input[type="search"],
-input[type="text"],
-.search-input,
-.search-bar {
-  margin-bottom: 1.5rem !important;
-}
-
-/* Filter/action buttons need space */
-.filter-container,
-.action-buttons,
-.button-group {
-  margin-bottom: 1.5rem !important;
-  gap: 1rem !important;
-}
-
-/* Page titles need space below */
-h1, h2 {
-  margin-bottom: 1.5rem !important;
-}
-
-/* Cards and containers */
-.card,
-[class*="card"],
-[class*="-container"] {
-  margin-bottom: 1.5rem !important;
-}
-
-/* Dashboard specific */
-.dashboard-header,
-.page-header {
-  margin-bottom: 2rem !important;
-  padding-bottom: 1.5rem !important;
-}
-
-.dashboard-section,
-.content-section {
-  margin-bottom: 2.5rem !important;
-}
-
-/* Session cards grid - ensure proper gap */
-[class*="grid"],
-[class*="-grid"] {
-  gap: 2rem !important;
 }

@@ -47,6 +47,10 @@ import AdminReviews from './pages/admin/Reviews';
 import AdminSettings from './pages/admin/Settings';
 import AdminTestingUsers from './pages/admin/TestingUsers';
 
+// Import variables FIRST - provides CSS custom properties for entire app
+import './styles/variables.css';
+
+// Then import other stylesheets
 import './styles/global.css';
 import './styles/NotebookTheme.css';
 import './styles/ModePage.css';

@@ -2,7 +2,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+  margin-top: var(--spacing-xl);
+  margin-left: var(--spacing-xl);
+  margin-right: var(--spacing-xl);
 }
 
 /* ── Search input ── */
@@ -14,59 +17,67 @@
 
 .search-icon {
   position: absolute;
-  left: var(--spacing-md);
-  color: var(--color-text-muted);
+  left: 18px;
+  color: var(--color-accent);
   pointer-events: none;
   flex-shrink: 0;
+  width: 20px;
+  height: 20px;
 }
 
 .search-input {
   width: 100%;
-  padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 3rem;
+  padding: 16px 3.5rem 16px 3.5rem;
   background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  font-size: 0.875rem;
+  font-size: 1rem;
+  font-weight: 500;
   transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
   box-sizing: border-box;
+  line-height: 1.5;
 }
 
 .search-input:hover {
-  border-color: var(--color-border-light);
+  border-color: var(--color-accent);
 }
 
 .search-input:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-bg, rgba(var(--color-accent-rgb), 0.15));
+  box-shadow: 0 0 0 4px var(--color-accent-bg, rgba(var(--color-accent-rgb), 0.2));
 }
 
 .search-input::placeholder {
   color: var(--color-text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
 }
 
 .search-clear {
   position: absolute;
-  right: var(--spacing-md);
+  right: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   background: transparent;
-  border: none;
+  border: 1px solid var(--color-border);
   color: var(--color-text-muted);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: 6px;
   transition: all var(--transition-normal);
 }
 
 .search-clear:hover {
-  background-color: var(--color-bg-hover);
-  color: var(--color-text-primary);
+  background-color: var(--color-accent);
+  color: white;
+  border-color: var(--color-accent);
+  transform: scale(1.05);
 }
 
 /* ── Filter row ── */
@@ -85,18 +96,18 @@
   background-color: var(--color-bg-secondary);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23a855f7' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding: var(--spacing-sm) 36px var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--color-border-light, #404040);
-  border-radius: var(--border-radius);
+  background-position: right 16px center;
+  padding: 14px 44px 14px 18px;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   transition: border-color var(--transition-normal), box-shadow var(--transition-normal),
               background-color var(--transition-normal);
-  min-height: 40px;
+  min-height: 52px;
 }
 
 /* First select: "All Modes" — slightly different label weight */
@@ -107,6 +118,7 @@
 /* Second select: "Most Recent" — muted label to distinguish from filter type */
 .filter-select:last-of-type {
   color: var(--color-text-secondary);
+  font-weight: 500;
 }
 
 .filter-select:hover {
@@ -117,7 +129,7 @@
 .filter-select:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-bg, rgba(var(--color-accent-rgb), 0.15));
+  box-shadow: 0 0 0 4px var(--color-accent-bg, rgba(var(--color-accent-rgb), 0.2));
 }
 
 /* Active/non-default value — highlight to show a filter is applied */
@@ -125,6 +137,7 @@
   border-color: var(--color-accent);
   color: var(--color-accent);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23a855f7' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  font-weight: 700;
 }
 
 /* ── Mobile ── */

@@ -125,18 +125,32 @@ const StudyInterface = ({
         .then(arrayBuffer => {
           return extractText(arrayBuffer, {
             processImage,
-            onProgress: ({ pageNum, totalPages }) => {
-              const pct = totalPages ? Math.round((pageNum / totalPages) * 100) : 0;
-              setExtractionPct(pct);
-              setExtractionProgress(
-                totalPages
-                  ? `Extracting page ${pageNum} of ${totalPages}…`
-                  : 'Extracting…'
-              );
+            checkCache: null, // TODO: Add cache check when integrated
+            onProgress: ({ stage, pageNum, totalPages, percentComplete }) => {
+              if (percentComplete) {
+                setExtractionPct(percentComplete);
+              }
+              if (stage === 'validating') {
+                setExtractionProgress('Checking cache…');
+              } else if (stage === 'screening') {
+                setExtractionProgress('Analyzing document…');
+              } else if (stage === 'extracting' && totalPages) {
+                setExtractionProgress(`Extracting page ${pageNum} of ${totalPages}…`);
+              } else if (stage === 'ocr' && totalPages) {
+                setExtractionProgress(`Running OCR on page ${pageNum} of ${totalPages}…`);
+              } else if (stage === 'indexing') {
+                setExtractionProgress('Indexing content…');
+              } else if (stage === 'storing') {
+                setExtractionProgress('Finalizing…');
+              } else {
+                setExtractionProgress('Extracting…');
+              }
             },
           });
         })
-        .then(text => {
+        .then(result => {
+          // Handle new format with backward compatibility
+          const text = result?.text || result;
           if (text && text.length > 50) {
             setLiveExtractedText(text);
           }

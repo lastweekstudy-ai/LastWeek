@@ -48,11 +48,34 @@ const useCombinedLimits = () => {
       setCheckingMode(true);
 
       try {
-        const testingDoc = await getTestingUsageDoc(user.$id);
+        // Add retry logic for new users where subscription might be being created
+        let testingDoc = null;
+        let attempts = 0;
+        const maxAttempts = 3;
+        
+        while (attempts < maxAttempts) {
+          try {
+            testingDoc = await getTestingUsageDoc(user.$id);
+            if (testingDoc !== null) {
+              // Found a document, stop retrying
+              break;
+            }
+          } catch (err) {
+            console.warn(`[useCombinedLimits] Attempt ${attempts + 1} failed:`, err.message);
+          }
+          
+          // Wait before retry (1 second, then 2 seconds)
+          if (attempts < maxAttempts - 1) {
+            await new Promise(resolve => setTimeout(resolve, (attempts + 1) * 1000));
+          }
+          attempts++;
+        }
+        
         const isTesting = testingDoc !== null && testingDoc.addedToPreReg !== true;
         setIsTestingMode(isTesting);
       } catch (err) {
         console.error('[useCombinedLimits] Failed to check mode:', err.message);
+        // Default to false (not testing mode) for new users
         setIsTestingMode(false);
       } finally {
         setCheckingMode(false);
