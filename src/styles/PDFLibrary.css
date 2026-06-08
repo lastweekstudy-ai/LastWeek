@@ -14,9 +14,9 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 90%;
+  width: 95%;
   max-width: 800px;
-  max-height: 80vh;
+  max-height: 90vh;
   background: var(--color-bg-primary);
   border-radius: 12px;
   box-shadow: var(--shadow-xl);
@@ -24,6 +24,13 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .pdf-library-panel {
+    width: 90%;
+    max-height: 80vh;
+  }
 }
 
 .pdf-library-header {
@@ -60,10 +67,19 @@
 
 .pdf-library-controls {
   display: flex;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
   background: var(--color-bg-secondary);
   border-bottom: 1px solid var(--color-border);
+}
+
+@media (min-width: 768px) {
+  .pdf-library-controls {
+    flex-direction: row;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+  }
 }
 
 .pdf-search {
@@ -74,6 +90,7 @@
   border-radius: 8px;
   color: var(--color-text-primary);
   font-size: 0.875rem;
+  min-height: 44px;
 }
 
 .pdf-search:focus {
@@ -89,14 +106,15 @@
   color: var(--color-text-primary);
   font-size: 0.875rem;
   cursor: pointer;
+  min-height: 44px;
 }
 
 .audio-upload-btn {
   padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background: var(--gradient-audio-upload) !important;
   border: none !important;
   border-radius: 8px;
-  color: #ffffff !important;
+  color: var(--color-text-on-accent) !important;
   font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
@@ -104,6 +122,7 @@
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4) !important;
   text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  min-height: 44px;
 }
 
 .audio-upload-btn:hover {
@@ -117,10 +136,10 @@
 
 .rs-search-lib-btn {
   padding: 0.75rem 1.25rem;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background: var(--gradient-search-library) !important;
   border: none !important;
   border-radius: 8px;
-  color: #ffffff !important;
+  color: var(--color-text-on-accent) !important;
   font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
@@ -128,6 +147,7 @@
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4) !important;
   text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  min-height: 44px;
 }
 .rs-search-lib-btn:hover {
   transform: translateY(-2px);
@@ -135,20 +155,24 @@
 }
 
 .pdf-action-btn.share-active {
-  background: #dcfce7;
-  border-color: #10b981;
-  color: #065f46;
+  background: var(--color-success-bg);
+  border-color: var(--color-success);
+  color: var(--color-success);
 }
 .pdf-action-btn.share-active:hover {
-  background: #fee2e2;
-  border-color: #ef4444;
-  color: #991b1b;
+  background: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
 }
 
 .pdf-library-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 1rem;
+  padding-bottom: 120px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-bg-primary);
 }
 
 .pdf-loading,
@@ -165,8 +189,8 @@
 .spinner {
   width: 48px;
   height: 48px;
-  border: 4px solid var(--color-border);
-  border-top-color: var(--color-accent);
+  border: 4px solid var(--border-default);
+  border-top-color: var(--accent-400);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -196,6 +220,7 @@
 
 .pdf-item {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
   padding: 1rem;
@@ -203,6 +228,13 @@
   border: 1px solid var(--color-border);
   border-radius: 8px;
   transition: all 0.2s ease;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .pdf-item {
+    flex-direction: row;
+  }
 }
 
 .pdf-item:hover {
@@ -260,7 +292,7 @@
 .pdf-tag {
   padding: 0.25rem 0.5rem;
   background: var(--color-accent);
-  color: white;
+  color: var(--color-text-on-accent);
   border-radius: 4px;
   font-size: 0.75rem;
   font-weight: 500;
@@ -270,6 +302,15 @@
   display: flex;
   gap: 0.5rem;
   flex-shrink: 0;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+@media (min-width: 768px) {
+  .pdf-actions {
+    width: auto;
+    flex-wrap: nowrap;
+  }
 }
 
 .pdf-action-btn {
@@ -282,6 +323,15 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  flex: 1;
+  min-height: 44px;
+}
+
+@media (min-width: 768px) {
+  .pdf-action-btn {
+    flex: initial;
+    min-height: auto;
+  }
 }
 
 .pdf-action-btn:hover {
@@ -293,7 +343,7 @@
 .pdf-action-btn.primary {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: white;
+  color: var(--color-text-on-accent);
 }
 
 .pdf-action-btn.primary:hover {
@@ -335,30 +385,6 @@
 
 .pdf-library-content::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-secondary);
-}
-
-/* Mobile responsive */
-@media (max-width: 768px) {
-  .pdf-library-panel {
-    width: 95%;
-    max-height: 90vh;
-  }
-
-  .pdf-library-controls {
-    flex-direction: column;
-  }
-
-  .pdf-item {
-    flex-direction: column;
-  }
-
-  .pdf-actions {
-    width: 100%;
-  }
-
-  .pdf-action-btn {
-    flex: 1;
-  }
 }
 
 /* ── Library tab switcher (Files / YouTube) ──────────────────────────────── */

@@ -373,7 +373,7 @@
 .ep-checkbox.checked {
   background: var(--color-success);
   border-color: var(--color-success);
-  color: #fff;
+  color: var(--color-text-on-accent);
 }
 
 .ep-topic-name { flex: 1; }

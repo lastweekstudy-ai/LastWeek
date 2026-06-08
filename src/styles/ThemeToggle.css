@@ -6,8 +6,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   background-color: transparent !important;
   background-image: none !important;
@@ -20,6 +20,13 @@
   overflow: hidden;
   flex-shrink: 0;
   position: relative;
+}
+
+@media (min-width: 1024px) {
+  .theme-toggle {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 .theme-toggle::before {
@@ -81,16 +88,25 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 6px 8px;
+  padding: 10px 12px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 4px;
   color: var(--color-text-secondary);
   font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: left;
+  min-height: 44px;
+}
+
+@media (min-width: 1024px) {
+  .theme-option {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+    min-height: auto;
+  }
 }
 
 .theme-option:hover {

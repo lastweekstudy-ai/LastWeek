@@ -12,17 +12,17 @@
 }
 
 .docs-page {
-  background: #000000 !important;
-  color: #FFFFFF !important;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-base) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-sans);
   min-height: 100vh;
   width: 100%;
 }
 
 /* Ensure dark background for docs page (always dark mode) */
 .docs-page {
-  background: #000000 !important;
-  color: #FFFFFF !important;
+  background: var(--bg-base) !important;
+  color: var(--text-primary) !important;
 }
 
 /* Override all text colors in docs */
@@ -34,7 +34,7 @@
 .docs-page li,
 .docs-page span,
 .docs-page div {
-  color: #FFFFFF !important;
+  color: var(--text-primary) !important;
 }
 
 .docs-container {
@@ -105,7 +105,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem;
-  color: #AAAAAA !important;
+  color: var(--text-secondary) !important;
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.3s ease;
@@ -139,7 +139,7 @@
   gap: 0.5rem;
   margin-bottom: 2rem;
   font-size: 0.9rem;
-  color: #AAAAAA !important;
+  color: var(--text-secondary) !important;
 }
 
 .docs-breadcrumb-item {
@@ -165,7 +165,7 @@
 }
 
 .docs-description {
-  color: #AAAAAA !important;
+  color: var(--text-secondary) !important;
   font-size: 1.1rem;
 }
 
@@ -174,7 +174,7 @@
   gap: 2rem;
   margin-top: 1rem;
   font-size: 0.9rem;
-  color: #AAAAAA !important;
+  color: var(--text-secondary) !important;
 }
 
 .docs-meta-item {
@@ -196,7 +196,7 @@
 }
 
 .docs-section-content {
-  color: #CCCCCC !important;
+  color: var(--text-secondary) !important;
   line-height: 1.8;
   font-size: 1rem;
 }

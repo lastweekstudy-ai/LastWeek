@@ -211,13 +211,14 @@
 }
 
 .btn-continue {
-  background: #10b981;
+  background: var(--color-success);
   color: white;
   border: none;
 }
 
 .btn-continue:hover {
-  background: #059669;
+  background: var(--color-success);
+  filter: brightness(0.9);
 }
 
 .btn-retry {
@@ -285,13 +286,13 @@
 }
 
 .option-btn.correct {
-  border-color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
 }
 
 .option-btn.incorrect {
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--color-danger);
+  background: var(--color-danger-bg);
 }
 
 .btn-submit:disabled {
@@ -316,11 +317,11 @@
 }
 
 .score-display.passed .score-value {
-  color: #10b981;
+  color: var(--color-success);
 }
 
 .score-display.failed .score-value {
-  color: #ef4444;
+  color: var(--color-danger);
 }
 
 .score-label {

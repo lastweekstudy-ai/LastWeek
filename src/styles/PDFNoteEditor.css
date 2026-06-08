@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   right: 0;
-  width: 400px;
+  width: 100%;
   height: 100%;
   background: var(--color-bg-primary);
   border-left: 1px solid var(--color-border);
@@ -10,6 +10,12 @@
   z-index: 1100;
   display: flex;
   flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .pdf-note-editor {
+    width: 400px;
+  }
 }
 
 .note-editor-header {
@@ -94,13 +100,20 @@
 .btn-primary {
   padding: 0.5rem 1.25rem;
   background: var(--color-accent);
-  color: white;
+  color: var(--color-text-on-accent);
   border: none;
   border-radius: 6px;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+@media (min-width: 768px) {
+  .btn-primary {
+    min-height: auto;
+  }
 }
 
 .btn-primary:hover:not(:disabled) {
@@ -129,6 +142,13 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+@media (min-width: 768px) {
+  .btn-secondary {
+    min-height: auto;
+  }
 }
 
 .btn-secondary:hover:not(:disabled) {
@@ -236,7 +256,7 @@
 .btn-icon-sm.btn-danger:hover {
   background: var(--color-danger);
   border-color: var(--color-danger);
-  color: white;
+  color: var(--color-text-on-accent);
 }
 
 .note-edit-form {
@@ -280,12 +300,4 @@
 
 .note-editor-content::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-secondary);
-}
-
-/* Mobile responsive */
-@media (max-width: 768px) {
-  .pdf-note-editor {
-    width: 100%;
-    max-width: 100%;
-  }
 }

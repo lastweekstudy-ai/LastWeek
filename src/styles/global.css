@@ -1,5 +1,156 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
+/* === RESET === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: var(--text-4xl); font-weight: var(--weight-black); }
+h2 { font-size: var(--text-3xl); }
+h3 { font-size: var(--text-2xl); }
+h4 { font-size: var(--text-xl); }
+h5 { font-size: var(--text-lg); }
+h6 { font-size: var(--text-md); }
+
+p {
+  line-height: var(--leading-relaxed);
+  color: var(--text-secondary);
+}
+
+a {
+  color: var(--text-accent);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--accent-300);
+}
+
+code, pre, kbd {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+code {
+  background: var(--bg-elevated);
+  color: var(--accent-300);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+
+pre {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  overflow-x: auto;
+}
+
+img, video {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+
+input, textarea, select {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--text-primary);
+}
+
+::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-400);
+}
+
+/* Selection */
+::selection {
+  background: rgba(155, 109, 255, 0.3);
+  color: var(--text-primary);
+}
+
+/* Focus */
+:focus-visible {
+  outline: 2px solid var(--accent-400);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Loading animation (used in Phase 10) */
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* CSS Variables - Theme System */
 :root {
   --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -662,13 +813,13 @@ p {
 body {
   font-size: 16px;
   font-weight: 500;
-  color: #1a1a2e;
+  color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
 }
 
 /* ── Headings ───────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6 {
-  color: #0f0f1a;
+  color: var(--color-text-heading);
   font-weight: 800;
   letter-spacing: -0.01em;
 }
@@ -682,7 +833,7 @@ h4 { font-size: 1.25rem; font-weight: 700; }
 p {
   font-size: 1.05rem;
   font-weight: 500;
-  color: #2d3748;
+  color: var(--color-text-secondary);
   line-height: 1.75;
 }
 
@@ -692,7 +843,7 @@ li,
 td,
 th {
   font-weight: 500;
-  color: #2d3748;
+  color: var(--color-text-secondary);
 }
 
 /* ── Muted / secondary text ─────────────────────────────────── */
@@ -700,7 +851,7 @@ th {
 [class*="muted"],
 [class*="subtitle"],
 [class*="secondary"] {
-  color: #4a5568 !important;
+  color: var(--color-text-muted) !important;
   font-weight: 500 !important;
 }
 
@@ -723,7 +874,7 @@ a {
 [class*="-heading"],
 [class*="-label"] {
   font-weight: 800;
-  color: #0f172a;
+  color: var(--color-text-heading);
 }
 
 /* ── Form inputs — readable placeholder & value ─────────────── */
@@ -732,12 +883,12 @@ select,
 textarea {
   font-size: 0.95rem;
   font-weight: 500;
-  color: #1a1a2e;
+  color: var(--color-text-primary);
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #718096;
+  color: var(--color-text-muted);
   font-weight: 400;
 }
 
@@ -749,7 +900,7 @@ table {
 
 th {
   font-weight: 800;
-  color: #0f172a;
+  color: var(--color-text-heading);
 }
 
 /* ── Small / caption text — keep it readable ────────────────── */
@@ -758,7 +909,7 @@ small,
 .text-sm {
   font-size: 0.82rem;
   font-weight: 600;
-  color: #4a5568;
+  color: var(--color-text-secondary);
 }
 
 /* ── Dashboard / session card text ──────────────────────────── */
@@ -768,7 +919,7 @@ small,
 .dashboard-title,
 .dashboard-subtitle {
   font-weight: 700;
-  color: #0f172a;
+  color: var(--color-text-heading);
 }
 
 /* ── Chat messages ──────────────────────────────────────────── */
@@ -778,7 +929,7 @@ small,
 .formatted-message li {
   font-size: 1.05rem;
   font-weight: 500;
-  color: #1a1a2e;
+  color: var(--color-text-primary);
   line-height: 1.75;
 }
 
@@ -787,7 +938,7 @@ small,
 [class*="-count"],
 [class*="-number"] {
   font-weight: 900;
-  color: #0f172a;
+  color: var(--color-text-heading);
 }
 
 /* ── Badges & chips ─────────────────────────────────────────── */

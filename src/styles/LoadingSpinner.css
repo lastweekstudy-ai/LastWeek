@@ -3,11 +3,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .spinner-icon {
   color: var(--color-accent, #6366f1);
   animation: spin 1s linear infinite;
+  width: 24px;
+  height: 24px;
 }
 
 @keyframes spin {
@@ -20,6 +24,11 @@
 }
 
 /* Variants */
+.loading-spinner.small {
+  min-width: auto;
+  min-height: auto;
+}
+
 .loading-spinner.small .spinner-icon {
   width: 16px;
   height: 16px;
@@ -34,5 +43,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .loading-spinner.center {
+    padding: 2rem;
+  }
 }

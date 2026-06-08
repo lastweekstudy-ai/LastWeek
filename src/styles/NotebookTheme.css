@@ -166,12 +166,12 @@ body {
 
 /* User message bubble — white text on accent background */
 .chat-message-improved.user .message-bubble {
-  color: #ffffff !important;
+  color: var(--color-text-on-accent) !important;
 }
 
 .chat-message-improved.user .message-text-improved,
 .chat-message-improved.user .message-text-improved * {
-  color: #ffffff !important;
+  color: var(--color-text-on-accent) !important;
 }
 
 /* ── Note textarea — transparent so lines show through ─────── */
@@ -197,8 +197,8 @@ body {
 
 /* ── Code blocks on light paper ─────────────────────────────── */
 pre, code {
-  background-color: #f1f5f9 !important;
-  color: #1e293b !important;
+  background-color: var(--color-bg-code) !important;
+  color: var(--color-bg-code-dark) !important;
   border: 1px solid var(--color-border);
 }
 
@@ -340,7 +340,7 @@ h4 { font-size: 1.4rem;  font-weight: 500; }
 .chat-message-improved.user .message-bubble,
 .chat-message-improved.user .message-bubble *,
 .chat-message-improved.user .message-text-improved {
-  color: #ffffff !important;
+  color: var(--color-text-on-accent) !important;
 }
 
 /* Pencil texture via SVG filter on headings */
@@ -435,5 +435,5 @@ p, li, td, th, label, span:not([class*="badge"]):not([class*="chip"]) {
 [class*="cta"]:not(.btn-outline):not(.btn-secondary),
 .navbar-cta,
 .navbar-mobile-cta {
-  color: white !important;
+  color: var(--color-text-on-accent) !important;
 }

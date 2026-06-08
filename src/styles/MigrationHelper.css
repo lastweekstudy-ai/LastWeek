@@ -12,8 +12,8 @@
 }
 
 .migration-panel {
-  width: 90%;
-  max-width: 500px;
+  width: 95%;
+  max-width: 100%;
   background: var(--color-bg-primary);
   border-radius: 16px;
   box-shadow: var(--shadow-xl);
@@ -70,7 +70,7 @@
 }
 
 .migration-content {
-  padding: 2rem 1.5rem;
+  padding: 1.5rem 1rem;
   text-align: center;
 }
 
@@ -104,6 +104,8 @@
   font-family: inherit;
   transition: all 0.15s;
   margin-top: 1rem;
+  width: 100%;
+  min-height: 44px;
 }
 
 .migration-btn:hover {
@@ -128,8 +130,8 @@
 .migration-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-accent);
+  border: 3px solid var(--border-default);
+  border-top-color: var(--accent-400);
   border-radius: 50%;
   animation: migration-spin 0.8s linear infinite;
 }
@@ -207,17 +209,17 @@
 }
 
 /* Mobile */
-@media (max-width: 480px) {
+@media (min-width: 480px) {
   .migration-panel {
-    width: 95%;
-    max-width: 100%;
+    width: 90%;
+    max-width: 500px;
   }
 
   .migration-content {
-    padding: 1.5rem 1rem;
+    padding: 2rem 1.5rem;
   }
 
   .migration-btn {
-    width: 100%;
+    width: auto;
   }
 }

@@ -155,17 +155,17 @@
 
 .inline-confidence-btn.hard {
   background: var(--color-error, #ef4444);
-  color: #fff;
+  color: var(--color-text-on-accent);
 }
 
 .inline-confidence-btn.okay {
   background: var(--color-warning, #f59e0b);
-  color: #fff;
+  color: var(--color-text-on-accent);
 }
 
 .inline-confidence-btn.easy {
   background: var(--color-success, #10b981);
-  color: #fff;
+  color: var(--color-text-on-accent);
 }
 
 @keyframes fadeIn {

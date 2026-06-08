@@ -162,18 +162,18 @@ body {
   width: 28px !important;
   height: 3px !important;
   min-height: 3px !important;
-  background-color: #7c3aed !important;
+  background-color: var(--accent-400) !important;
   border-radius: 2px;
   transition: all 0.3s ease;
   flex-shrink: 0;
 }
 
 .navbar-mobile-toggle:hover .hamburger-bar {
-  background-color: #6d28d9 !important;
+  background-color: var(--accent-500) !important;
 }
 
 .navbar-mobile-toggle:active .hamburger-bar {
-  background-color: #5b21b6 !important;
+  background-color: var(--accent-600) !important;
 }
 
 .navbar-mobile-menu {
@@ -1278,14 +1278,14 @@ body {
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
-  background: #ffffff !important;
+  background: var(--bg-surface) !important;
   background-image: none !important;
   backdrop-filter: blur(10px);
 }
 
 .faq-item:hover {
   border-color: var(--purple-bright);
-  background: #ffffff !important;
+  background: var(--bg-elevated) !important;
   background-image: none !important;
 }
 

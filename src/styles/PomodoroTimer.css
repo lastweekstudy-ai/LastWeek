@@ -213,7 +213,7 @@
   height: 46px;
   border-radius: 50%;
   border: none;
-  color: #fff;
+  color: var(--text-inverse);
   cursor: pointer;
   display: flex;
   align-items: center;

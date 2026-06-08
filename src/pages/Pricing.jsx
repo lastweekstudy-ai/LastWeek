@@ -170,14 +170,14 @@ const Pricing = () => {
         {/* Daily Free Slots Banner */}
         {!paymentsActive && adminSettings?.dailyFreeSlotsActive && (
           <div style={{
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            border: '1px solid #10b981',
+            backgroundColor: 'var(--color-success-bg)',
+            border: '1px solid var(--color-success)',
             borderRadius: '12px',
             padding: '1rem 1.5rem',
             marginBottom: '2rem',
             textAlign: 'center',
           }}>
-            <h3 style={{ color: '#10b981', margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
+            <h3 style={{ color: 'var(--color-success)', margin: '0 0 0.5rem', fontSize: '1.1rem' }}>
               🎁 Free Testing Available Today!
             </h3>
             <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>

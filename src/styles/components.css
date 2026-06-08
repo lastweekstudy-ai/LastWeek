@@ -1,0 +1,464 @@
+/* =============================================================
+   LASTWEEK COMPONENT STYLES
+   Button system, inputs, badges, and interactive controls
+   ============================================================= */
+
+/* =============================================================
+   BUTTON SYSTEM
+   ============================================================= */
+
+/* Base Button Properties */
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger,
+.btn-learn,
+.btn-practice,
+.btn-continue,
+.btn-next,
+.btn-submit,
+.btn-retry,
+.btn-back,
+.btn-finish,
+.btn-show-answer,
+.auth-submit,
+.mode-expand-btn {
+  height: 40px;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.01em;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+  transition: var(--transition-fast);
+  user-select: none;
+  text-decoration: none;
+}
+
+/* Mobile Touch Targets */
+@media (max-width: 768px) {
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost,
+  .btn-danger,
+  .btn-learn,
+  .btn-practice,
+  .btn-continue,
+  .btn-next,
+  .btn-submit,
+  .btn-retry,
+  .btn-back,
+  .btn-finish,
+  .btn-show-answer,
+  .auth-submit,
+  .mode-expand-btn {
+    min-height: 44px;
+  }
+}
+
+/* PRIMARY BUTTONS */
+.btn-primary,
+.auth-submit,
+.btn-learn,
+.btn-practice,
+.btn-continue,
+.btn-next,
+.btn-submit,
+.btn-finish {
+  background: var(--accent-400);
+  color: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover,
+.auth-submit:hover,
+.btn-learn:hover,
+.btn-practice:hover,
+.btn-continue:hover,
+.btn-next:hover,
+.btn-submit:hover,
+.btn-finish:hover {
+  background: var(--accent-500);
+  box-shadow: var(--shadow-accent);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active,
+.auth-submit:active,
+.btn-learn:active,
+.btn-practice:active,
+.btn-continue:active,
+.btn-next:active,
+.btn-submit:active,
+.btn-finish:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-accent-strong);
+}
+
+/* SECONDARY BUTTONS */
+.btn-secondary,
+.btn-back,
+.btn-retry {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+.btn-secondary:hover,
+.btn-back:hover,
+.btn-retry:hover {
+  background: var(--bg-overlay);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+/* GHOST BUTTONS */
+.btn-ghost,
+.btn-show-answer {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+}
+
+.btn-ghost:hover,
+.btn-show-answer:hover {
+  background: var(--bg-overlay);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+/* DANGER BUTTONS */
+.btn-danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+}
+
+.btn-danger:hover {
+  background: var(--color-danger);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* LARGE BUTTONS */
+.btn-large {
+  height: 48px;
+  padding: 0 var(--space-6);
+  font-size: var(--text-md);
+}
+
+@media (max-width: 768px) {
+  .btn-large {
+    min-height: 48px;
+  }
+}
+
+/* ICON-ONLY BUTTONS */
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .btn-icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* SPECIAL BUTTON CLASSES */
+.mode-expand-btn {
+  background: var(--bg-surface);
+  color: var(--accent-400);
+  border: 1px solid var(--accent-400);
+}
+
+.mode-expand-btn:hover {
+  background: var(--accent-400);
+  color: #ffffff;
+}
+
+/* RATING BUTTONS */
+.rating-btn {
+  height: 36px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  transition: var(--transition-fast);
+}
+
+.rating-btn.forgot {
+  background: var(--color-danger);
+  color: #ffffff;
+}
+
+.rating-btn.hard {
+  background: var(--color-warning);
+  color: #ffffff;
+}
+
+.rating-btn.easy {
+  background: var(--color-success);
+  color: #ffffff;
+}
+
+.rating-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+}
+
+/* OPTION BUTTONS */
+.option-btn {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border: 2px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: left;
+}
+
+.option-btn:hover {
+  border-color: var(--accent-400);
+  background: var(--bg-elevated);
+}
+
+.option-btn.selected {
+  border-color: var(--accent-400);
+  background: var(--bg-elevated);
+  color: var(--accent-400);
+}
+
+.option-btn.correct {
+  border-color: var(--color-success);
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.option-btn.incorrect {
+  border-color: var(--color-danger);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+}
+
+/* =============================================================
+   DISABLED STATES
+   ============================================================= */
+.btn:disabled,
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-ghost:disabled,
+.btn-danger:disabled,
+.btn-learn:disabled,
+.btn-practice:disabled,
+.btn-continue:disabled,
+.btn-next:disabled,
+.btn-submit:disabled,
+.btn-retry:disabled,
+.btn-back:disabled,
+.btn-finish:disabled,
+.btn-show-answer:disabled,
+.auth-submit:disabled,
+.mode-expand-btn:disabled,
+.rating-btn:disabled,
+.option-btn:disabled,
+.btn[aria-disabled="true"],
+.btn-primary[aria-disabled="true"],
+.btn-secondary[aria-disabled="true"],
+.btn-ghost[aria-disabled="true"],
+.btn-danger[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+}
+
+/* =============================================================
+   FOCUS STATES
+   ============================================================= */
+.btn:focus-visible,
+.btn-primary:focus-visible,
+.btn-secondary:focus-visible,
+.btn-ghost:focus-visible,
+.btn-danger:focus-visible,
+.rating-btn:focus-visible,
+.option-btn:focus-visible {
+  outline: 2px solid var(--accent-400);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* =============================================================
+   BADGES & TAGS
+   ============================================================= */
+.badge,
+.tag,
+.nm-item__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.badge {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+.badge.success {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.badge.warning {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+}
+
+.badge.danger {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.badge.accent {
+  background: rgba(155, 109, 255, 0.15);
+  color: var(--accent-400);
+  border-color: var(--accent-400);
+}
+
+/* =============================================================
+   INPUTS & FORMS
+   ============================================================= */
+.form-input,
+.form-textarea,
+.chat-input-improved,
+.search-input,
+.page-input-small,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+input[type="search"],
+textarea,
+select {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.5;
+  width: 100%;
+  transition: var(--transition-fast);
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.chat-input-improved:focus,
+.search-input:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--accent-400);
+  box-shadow: 0 0 0 3px rgba(155, 109, 255, 0.15);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder,
+.chat-input-improved::placeholder,
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.form-input:disabled,
+.form-textarea:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--bg-subtle);
+}
+
+/* Small inputs */
+.page-input-small {
+  width: 60px;
+  padding: var(--space-2);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+/* Chat input specific */
+.chat-input-improved {
+  min-height: 40px;
+  resize: none;
+  border-radius: var(--radius-full);
+}
+
+@media (max-width: 768px) {
+  .chat-input-improved {
+    min-height: 44px;
+  }
+}
+
+/* Select dropdown */
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right var(--space-3) center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: var(--space-8);
+}
+
+/* Form groups */
+.form-group {
+  margin-bottom: var(--space-5);
+}
+
+.form-group label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.form-help {
+  display: block;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: var(--space-1);
+}

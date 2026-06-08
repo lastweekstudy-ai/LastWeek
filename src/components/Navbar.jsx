@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import useSession from '../hooks/useSession';
 import StorageIndicator from './StorageIndicator';
 import ThemeToggle from './ThemeToggle';
+import DarkModeToggle from './DarkModeToggle';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import ProfileDropdown from './ProfileDropdown';
 import PomodoroTimer from './PomodoroTimer';
@@ -233,7 +234,10 @@ const Navbar = ({ isSessionPage = false }) => {
               }
               label="Theme"
             >
-              <ThemeToggle />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <DarkModeToggle />
+                <ThemeToggle />
+              </div>
             </NavRow>
 
             {isSessionPage && (
@@ -328,6 +332,7 @@ const Navbar = ({ isSessionPage = false }) => {
                     title="Keyboard Shortcuts (Ctrl+K)" aria-label="Show keyboard shortcuts">
                     <IconKeyboard />
                   </button>
+                  <DarkModeToggle />
                   <ThemeToggle />
                   {isSessionPage && <PomodoroTimer />}
                   <ProfileDropdown />

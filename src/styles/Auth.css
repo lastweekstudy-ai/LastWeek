@@ -44,11 +44,11 @@
 .auth-container {
   width: 100%;
   max-width: 400px;
-  background-color: var(--color-bg-secondary);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius);
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
   padding: var(--spacing-2xl);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-xl);
 }
 
 .auth-header {
@@ -116,12 +116,12 @@
   left: 0;
   right: 0;
   height: 1px;
-  background-color: var(--color-border);
+  background-color: var(--border-subtle);
 }
 
 .auth-divider span {
-  background-color: var(--color-bg-secondary);
-  color: var(--color-text-muted);
+  background-color: var(--bg-elevated);
+  color: var(--text-tertiary);
   padding: 0 var(--spacing-md);
   font-size: 0.875rem;
 }

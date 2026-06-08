@@ -15,32 +15,55 @@
 .audio-processor-panel {
   background: var(--bg-primary);
   border-radius: 1rem;
-  width: 90%;
+  width: 95%;
   max-width: 600px;
-  max-height: 90vh;
+  max-height: 95vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@media (min-width: 768px) {
+  .audio-processor-panel {
+    width: 90%;
+    max-height: 90vh;
+  }
 }
 
 .audio-processor-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1rem;
   border-bottom: 1px solid var(--border-color);
 }
 
 .audio-processor-header h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   color: var(--text-primary);
 }
 
+@media (min-width: 768px) {
+  .audio-processor-header {
+    padding: 1.5rem;
+  }
+
+  .audio-processor-header h3 {
+    font-size: 1.25rem;
+  }
+}
+
 .audio-processor-content {
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .audio-processor-content {
+    padding: 1.5rem;
+  }
 }
 
 /* Mode tabs */
@@ -101,9 +124,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2rem;
+  padding: 2rem 1rem;
   cursor: pointer;
   gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .audio-upload-label {
+    padding: 3rem 2rem;
+  }
 }
 
 .audio-upload-icon {
@@ -151,11 +180,17 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2rem;
+  padding: 2rem 1rem;
   border: 2px solid var(--border-color);
   border-radius: 0.75rem;
   background: var(--bg-secondary);
   min-height: 200px;
+}
+
+@media (min-width: 768px) {
+  .audio-recorder {
+    padding: 3rem 2rem;
+  }
 }
 
 .record-btn {
@@ -165,13 +200,22 @@
   gap: 0.75rem;
   padding: 1.5rem 2rem;
   background: var(--accent-color);
-  color: white;
+  color: var(--color-text-on-accent);
   border: none;
   border-radius: 0.75rem;
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (min-width: 768px) {
+  .record-btn {
+    min-height: auto;
+    min-width: auto;
+  }
 }
 
 .record-btn:hover:not(:disabled) {
@@ -205,7 +249,7 @@
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: #ef4444;
+  background: var(--color-danger);
   animation: recording-pulse 1.5s infinite;
 }
 
@@ -233,8 +277,8 @@
 
 .stop-btn {
   padding: 0.75rem 2rem;
-  background: #ef4444;
-  color: white;
+  background: var(--color-error);
+  color: var(--color-text-on-accent);
   border: none;
   border-radius: 0.5rem;
   font-size: 1rem;
@@ -244,7 +288,8 @@
 }
 
 .stop-btn:hover {
-  background: #dc2626;
+  background: var(--color-danger);
+  filter: brightness(0.9);
 }
 
 .recording-complete {
@@ -282,10 +327,10 @@
 /* Error */
 .audio-error {
   padding: 1rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid #ef4444;
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error);
   border-radius: 0.5rem;
-  color: #ef4444;
+  color: var(--color-error);
   font-size: 0.875rem;
   text-align: center;
 }
@@ -304,8 +349,8 @@
 .audio-progress-spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--border-color);
-  border-top-color: var(--accent-color);
+  border: 3px solid var(--border-default);
+  border-top-color: var(--accent-400);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
@@ -332,33 +377,10 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  min-height: 44px;
 }
 
 .audio-process-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(var(--color-accent-rgb), 0.3);
-}
-
-/* Mobile responsive */
-@media (max-width: 640px) {
-  .audio-processor-panel {
-    width: 95%;
-    max-height: 95vh;
-  }
-
-  .audio-processor-header {
-    padding: 1rem;
-  }
-
-  .audio-processor-content {
-    padding: 1rem;
-  }
-
-  .audio-upload-label {
-    padding: 2rem 1rem;
-  }
-
-  .audio-recorder {
-    padding: 2rem 1rem;
-  }
 }

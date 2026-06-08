@@ -227,8 +227,8 @@
 }
 
 .favorite-btn.favorited {
-  border-color: #ef4444;
-  background: #ef4444;
+  border-color: var(--color-danger);
+  background: var(--color-danger);
 }
 
 .heart-icon {
@@ -238,7 +238,7 @@
 }
 
 .favorite-btn.favorited .heart-icon {
-  color: white;
+  color: var(--color-text-on-accent);
 }
 
 .edit-category-btn {
@@ -301,7 +301,7 @@
 
 .save-category-btn {
   background: var(--primary-color);
-  color: white;
+  color: var(--color-text-on-accent);
 }
 
 .save-category-btn:hover {
@@ -336,7 +336,7 @@
 
 .track-time-btn:hover {
   background: var(--primary-color);
-  color: white;
+  color: var(--color-text-on-accent);
   border-color: var(--primary-color);
 }
 

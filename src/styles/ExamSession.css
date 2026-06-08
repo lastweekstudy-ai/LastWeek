@@ -93,9 +93,9 @@
   white-space: nowrap;
 }
 .es-days-chip.urgent {
-  background-color: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.3);
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+  border-color: var(--color-error-border);
 }
 
 .es-progress-mini {
@@ -218,7 +218,7 @@
   background-color: var(--color-accent);
 }
 .es-topic-dot.done {
-  background-color: #10b981;
+  background-color: var(--color-success);
 }
 
 .es-topic-label {
@@ -239,7 +239,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #f59e0b;
+  background-color: var(--color-warning);
   flex-shrink: 0;
 }
 
@@ -247,15 +247,15 @@
 .es-today-box {
   margin: 0.5rem 0.75rem 0.75rem;
   padding: 0.6rem 0.75rem;
-  background-color: rgba(245, 158, 11, 0.08);
-  border: 1px solid rgba(245, 158, 11, 0.25);
+  background-color: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
   border-radius: 8px;
   flex-shrink: 0;
 }
 .es-today-label {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #f59e0b;
+  color: var(--color-warning);
   margin: 0 0 0.2rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -294,8 +294,8 @@
 .es-spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--color-border);
-  border-top-color: var(--color-accent);
+  border: 3px solid var(--border-default);
+  border-top-color: var(--accent-400);
   border-radius: 50%;
   animation: es-spin 0.8s linear infinite;
 }

@@ -61,7 +61,7 @@ const SessionSearch = ({ sessions, onFilteredSessions }) => {
         <input
           type="text"
           className="search-input"
-          placeholder="Search sessions by title or subject... (Ctrl+F)"
+          placeholder="Search by title or subject..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />

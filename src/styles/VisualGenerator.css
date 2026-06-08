@@ -6,9 +6,10 @@
 
 .visual-generator-panel {
   position: fixed;
-  bottom: 100px;
-  right: var(--spacing-lg);
-  width: 500px;
+  bottom: 80px;
+  right: var(--spacing-md);
+  left: var(--spacing-md);
+  width: auto;
   max-width: 90vw;
   background-color: var(--color-bg-secondary);
   border: 1px solid var(--color-border);
@@ -16,6 +17,15 @@
   box-shadow: var(--shadow-lg);
   z-index: 1000;
   animation: slideUp 0.3s ease;
+}
+
+@media (min-width: 768px) {
+  .visual-generator-panel {
+    bottom: 100px;
+    right: var(--spacing-lg);
+    left: auto;
+    width: 500px;
+  }
 }
 
 @keyframes slideUp {
@@ -71,8 +81,14 @@
 
 .visual-types-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: var(--spacing-sm);
+}
+
+@media (min-width: 768px) {
+  .visual-types-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .visual-type-card {
@@ -87,6 +103,13 @@
   cursor: pointer;
   transition: all var(--transition-normal);
   text-align: center;
+  min-height: 44px;
+}
+
+@media (min-width: 768px) {
+  .visual-type-card {
+    min-height: auto;
+  }
 }
 
 .visual-type-card:hover {
@@ -126,8 +149,8 @@
   display: inline-block;
   width: 14px;
   height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border: 2px solid var(--border-subtle);
+  border-top-color: var(--accent-400);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -135,18 +158,5 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@media (max-width: 768px) {
-  .visual-generator-panel {
-    bottom: 80px;
-    right: var(--spacing-md);
-    left: var(--spacing-md);
-    width: auto;
-  }
-  
-  .visual-types-grid {
-    grid-template-columns: 1fr;
   }
 }

@@ -83,7 +83,7 @@
   width: 100%;
   padding: 1rem;
   background: var(--color-accent, var(--color-accent));
-  color: white;
+  color: var(--color-text-on-accent);
   border: none;
   border-radius: 0.5rem;
   font-size: 1rem;

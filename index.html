@@ -11,16 +11,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="theme-color" content="#f5f3ef" />
     <title>LastWeek - Master Any Subject in One Week</title>
-    <!-- Apply saved color theme before React loads to prevent flash -->
+    <!-- Apply saved theme before React loads to prevent flash — DARK FIRST -->
     <script>
       (function() {
         var validColors = ['purple', 'orange', 'green', 'brown', 'blue'];
-        var saved = localStorage.getItem('lastweek-color');
-        var color = (saved && validColors.indexOf(saved) !== -1) ? saved : 'purple';
-        document.documentElement.setAttribute('data-theme', 'light');
+        var savedColor = localStorage.getItem('lastweek-color');
+        var color = (savedColor && validColors.indexOf(savedColor) !== -1) ? savedColor : 'purple';
+        var savedTheme = localStorage.getItem('lastweek-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
         document.documentElement.setAttribute('data-color', color);
       })();
     </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   </head>
   <body>
     <!-- SVG Pencil texture filter — hidden, referenced via CSS filter: url(#pencil-rough) -->

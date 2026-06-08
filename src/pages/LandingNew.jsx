@@ -6,11 +6,18 @@ const LandingNew = () => {
   const navigate = useNavigate();
   const [scrollY, setScrollY] = useState(0);
   const [activeFeature, setActiveFeature] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const features = [
@@ -81,6 +88,25 @@ const LandingNew = () => {
 
   return (
     <div className="landing-new">
+      {/* Mobile Warning Banner */}
+      {isMobile && (
+        <div className="mobile-warning-banner">
+          <div className="warning-content">
+            <span className="warning-icon">💻</span>
+            <div className="warning-text">
+              <strong>Best on Desktop:</strong> LastWeek is optimized for laptop/desktop for the best learning experience. Try it on a larger screen for full features!
+            </div>
+            <button 
+              className="warning-close" 
+              onClick={() => setIsMobile(false)}
+              aria-label="Close warning"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Navigation */}
       <nav className="landing-nav">
         <div className="nav-container">

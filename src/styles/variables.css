@@ -1,3 +1,10 @@
+/* =============================================================
+   LASTWEEK DESIGN TOKENS - Import First
+   Bold · Energetic · Purple · Dark-first
+   ============================================================= */
+@import './tokens.css';
+@import './components.css';
+
 /* ============================================================
    GLOBAL CSS VARIABLES - Design System
    Created from Visual Audit Report - June 6, 2026

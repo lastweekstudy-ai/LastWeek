@@ -21,7 +21,7 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   background: var(--color-accent);
-  color: #fff;
+  color: var(--color-text-on-accent);
   padding: 0.2rem 0.55rem;
   border-radius: 4px;
 }
@@ -106,13 +106,13 @@
 .iq-option.correct .iq-option-label {
   background: var(--color-success, #10b981);
   border-color: var(--color-success, #10b981);
-  color: #fff;
+  color: var(--color-text-on-accent);
 }
 
 .iq-option.wrong .iq-option-label {
   background: var(--color-error, #ef4444);
   border-color: var(--color-error, #ef4444);
-  color: #fff;
+  color: var(--color-text-on-accent);
 }
 
 .iq-option-text {
