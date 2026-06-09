@@ -147,6 +147,14 @@ This ensures I have the complete PDF content with accurate page and line numbers
     }
   }, [handleSubmit]);
 
+  // Handle action button clicks - sends the button text as a user message
+  const handleActionClick = useCallback((buttonText) => {
+    if (!isLoading && !isStreaming) {
+      onSend(buttonText);
+      scrollToBottom();
+    }
+  }, [isLoading, isStreaming, onSend, scrollToBottom]);
+
   const handleQuickAction = useCallback((prompt) => {
     if (!isLoading) {
       onSend(prompt);
@@ -292,11 +300,12 @@ This ensures I have the complete PDF content with accurate page and line numbers
                     messageId={message.$id}
                     onFlashcardRate={onFlashcardRate}
                     onMCQAnswer={onMCQAnswer}
+                    onActionClick={handleActionClick}
                   />
                   {message.isStreaming && <span className="streaming-cursor" aria-hidden="true">▋</span>}
                 </>
               ) : (
-                <EnhancedMessageFormatter content={messageText} messageId={message.$id} />
+                <EnhancedMessageFormatter content={messageText} messageId={message.$id} onActionClick={handleActionClick} />
               )}
             </div>
             

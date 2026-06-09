@@ -361,3 +361,51 @@
 /* ============================================================
    END OF VARIABLES FILE
    ============================================================ */
+
+/* ============================================================
+   MINIMAL THEME COMPATIBILITY OVERRIDES
+   Keeps older CSS variable names aligned with the new neutral UI.
+   ============================================================ */
+
+:root,
+[data-theme="light"] {
+  --color-purple-primary: var(--accent-400);
+  --color-purple-hover: var(--accent-500);
+  --color-purple-active: var(--accent-600);
+  --color-purple-light: var(--accent-300);
+  --color-purple-dark: var(--accent-700);
+  --color-purple-border: var(--border-accent);
+
+  --color-bg-primary: var(--bg-base);
+  --color-bg-secondary: var(--bg-surface);
+  --color-bg-tertiary: var(--bg-subtle);
+  --color-bg-hover: var(--bg-overlay);
+  --color-bg-code: var(--bg-subtle);
+  --color-bg-code-dark: var(--text-primary);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-tertiary);
+  --color-text-heading: var(--text-primary);
+  --color-text-on-accent: var(--text-inverse);
+
+  --color-border: var(--border-default);
+  --color-border-light: var(--border-subtle);
+  --color-border-dark: var(--border-strong);
+  --color-border-accent: var(--border-accent);
+
+  --color-accent: var(--accent-400);
+  --color-accent-hover: var(--accent-500);
+  --color-accent-light: var(--accent-300);
+  --color-accent-dark: var(--accent-700);
+  --color-accent-rgb: 37, 99, 235;
+
+  --border-radius: var(--radius-md);
+  --border-width: 1px;
+  --gradient-audio-upload: linear-gradient(180deg, var(--bg-surface), var(--bg-subtle));
+  --gradient-search-library: linear-gradient(180deg, var(--bg-surface), var(--bg-subtle));
+}
+
+[data-theme="dark"] {
+  --color-accent-rgb: 96, 165, 250;
+}

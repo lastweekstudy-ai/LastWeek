@@ -451,3 +451,201 @@
   margin: 0;
   font-weight: 600;
 }
+
+/* Minimal redesign */
+.dashboard {
+  min-height: calc(100vh - 60px);
+  padding: clamp(28px, 5vw, 56px) 0;
+  background: transparent;
+}
+
+.dashboard-header {
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding: 0 0 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.dashboard-header h1 {
+  font-size: clamp(2rem, 4vw, 3rem) !important;
+  margin-bottom: 8px !important;
+}
+
+.dashboard-subtitle {
+  color: var(--text-secondary) !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+}
+
+.header-actions {
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.dashboard-section {
+  margin: 28px 0;
+}
+
+.dashboard-section h2 {
+  color: var(--text-primary) !important;
+  font-size: 1.25rem !important;
+  font-weight: 650 !important;
+  margin: 0 0 14px !important;
+}
+
+.section-icon,
+.mode-icon-small {
+  color: var(--text-accent) !important;
+}
+
+.alert {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-lg) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.empty-state {
+  padding: clamp(32px, 6vw, 64px);
+}
+
+.empty-icon {
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+}
+
+.sessions-grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 18px 0 0;
+}
+
+.session-card {
+  position: relative;
+  min-height: 0;
+  padding: 18px !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+.session-card:hover {
+  border-color: var(--border-default) !important;
+}
+
+.session-card.selected {
+  border-color: var(--accent-400) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-400) 16%, transparent) !important;
+}
+
+.session-checkbox {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  padding: 0;
+}
+
+.session-checkbox input {
+  width: 18px;
+  height: 18px;
+  padding: 0 !important;
+  accent-color: var(--accent-400);
+}
+
+.session-header {
+  margin-bottom: 18px;
+  padding-right: 30px;
+}
+
+.session-mode {
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--bg-subtle) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: none !important;
+}
+
+.mode-name {
+  color: var(--text-secondary) !important;
+  font-size: 0.82rem !important;
+  font-weight: 550 !important;
+}
+
+.session-time-icon {
+  width: 24px;
+  height: 24px;
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--text-tertiary);
+}
+
+.session-title {
+  color: var(--text-primary) !important;
+  font-size: 1.08rem !important;
+  font-weight: 650 !important;
+  line-height: 1.25 !important;
+  margin: 0 0 8px !important;
+}
+
+.session-subject {
+  color: var(--text-secondary) !important;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  margin: 0 0 12px !important;
+}
+
+.session-summary {
+  background: transparent !important;
+  border: 0 !important;
+  border-top: 1px solid var(--border-subtle) !important;
+  border-radius: 0 !important;
+  padding: 12px 0 0 !important;
+  margin-top: 12px !important;
+}
+
+.session-summary-line {
+  color: var(--text-secondary) !important;
+  font-size: 0.88rem !important;
+  font-weight: 400 !important;
+  line-height: 1.55 !important;
+  margin: 0 0 6px !important;
+}
+
+.session-footer {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.session-footer .text-muted {
+  color: var(--text-tertiary) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (max-width: 760px) {
+  .dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .header-actions .btn {
+    flex: 1 1 auto;
+  }
+
+  .sessions-grid {
+    grid-template-columns: 1fr;
+  }
+}

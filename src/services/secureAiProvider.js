@@ -150,21 +150,20 @@ export async function callGroq(systemPrompt, messages, model = 'llama-3.3-70b-ve
 
 /**
  * Call Groq for vision analysis
+ * DEPRECATED: llama-3.2-90b-vision-preview has been decommissioned.
+ * Use callGeminiVision() instead for PDF OCR and image analysis.
+ * 
+ * This function is kept for backwards compatibility but will fail.
  * @param {string} base64Image - Base64 encoded image
  * @param {string} prompt - Analysis prompt
  * @param {string} mimeType - Image MIME type
  * @returns {Promise<string>} - AI response content
+ * @deprecated Use callGeminiVision() instead
  */
 export async function callGroqVision(base64Image, prompt, mimeType = 'image/jpeg') {
-  const response = await callAiProxy({
-    provider: 'groq',
-    action: 'vision',
-    image: base64Image,
-    prompt,
-    mimeType,
-    model: 'llama-3.2-90b-vision-preview',
-  });
-  return response.content;
+  // NOTE: Groq vision model is deprecated. Redirecting to Gemini for better reliability.
+  console.warn('[SecureAI] callGroqVision is deprecated. Using Gemini vision instead.');
+  return callGeminiVision(base64Image, prompt, mimeType);
 }
 
 /**

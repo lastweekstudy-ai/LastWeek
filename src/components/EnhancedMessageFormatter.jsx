@@ -15,6 +15,7 @@ import 'katex/dist/katex.min.css';
 const CHART_REGEX = /\[CHART:(bar|line|pie|area):([^\]]+)\]([\s\S]*?)\[\\?\/CHART\]/gi;
 const MERMAID_REGEX = /```mermaid\n([\s\S]*?)```/gi;
 const FIGURE_REGEX = /\[FIGURE(?::([^\]]*))?\]([\s\S]*?)\[\/FIGURE\]/gi;
+const ACTION_BUTTON_REGEX = /\[ACTION:([^\]]+)\]/g;
 
 // Matches a single flashcard block (front + back)
 // The lookahead allows: "---\n**How confident" OR end of string OR end of block
@@ -160,6 +161,50 @@ const extractMCQs = (text) => {
 
   suffixText = text.slice(lastIndex).trim();
   return { prefix: prefixText, questions: blocks, suffix: suffixText };
+};
+
+/**
+ * Extract action buttons from text.
+ * Returns { textWithoutActions, buttons: [...] }
+ * Buttons format: [ACTION:button_text]
+ */
+const extractActionButtons = (text) => {
+  const buttons = [];
+  const regex = /\[ACTION:([^\]]+)\]/g;
+  let match;
+  
+  while ((match = regex.exec(text)) !== null) {
+    buttons.push({
+      text: match[1].trim(),
+      fullMatch: match[0]
+    });
+  }
+  
+  // Remove action tags from text
+  const textWithoutActions = text.replace(regex, '').trim();
+  
+  return { textWithoutActions, buttons };
+};
+
+/**
+ * ActionButtonBar — renders extracted action buttons
+ */
+const ActionButtonBar = ({ buttons, onActionClick }) => {
+  if (!buttons || buttons.length === 0) return null;
+  
+  return (
+    <div className="action-button-bar">
+      {buttons.map((button, idx) => (
+        <button
+          key={idx}
+          className="action-button"
+          onClick={() => onActionClick?.(button.text)}
+        >
+          {button.text}
+        </button>
+      ))}
+    </div>
+  );
 };
 
 /**
@@ -321,17 +366,22 @@ const FlashcardSetRenderer = ({ cards, prefix, suffix, onFlashcardRate }) => {
   );
 };
 
-const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAnswer }) => {
+const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAnswer, onActionClick }) => {
 
   // ── Pre-process content to fix malformed charts ───────────────────────────
   const processedContent = processAIResponse(content);
 
+  // ── Extract action buttons FIRST (before other parsing) ──────────────────
+  const { textWithoutActions, buttons } = extractActionButtons(processedContent);
+  const contentForParsing = textWithoutActions;
+
   // ── Detect both flashcards AND MCQs ───────────────────────────────────────
-  const flashcardData = extractFlashcards(processedContent);
-  const mcqData       = extractMCQs(processedContent);
+  const flashcardData = extractFlashcards(contentForParsing);
+  const mcqData       = extractMCQs(contentForParsing);
 
   const hasFlashcards = flashcardData && flashcardData.cards.length > 0;
   const hasMCQs       = mcqData && mcqData.questions.length > 0;
+  const hasActions    = buttons && buttons.length > 0;
 
   // ── Define helper functions BEFORE using them ─────────────────────────────
   
@@ -560,6 +610,11 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
           suffix={flashcardData.suffix}
           onFlashcardRate={onFlashcardRate}
         />
+        
+        {/* Action buttons */}
+        {hasActions && (
+          <ActionButtonBar buttons={buttons} onActionClick={onActionClick} />
+        )}
       </div>
     );
   }
@@ -579,6 +634,9 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
           onFlashcardRate={onFlashcardRate}
         />
         {renderSegments(suffixSegments, markdownComponents)}
+        {hasActions && (
+          <ActionButtonBar buttons={buttons} onActionClick={onActionClick} />
+        )}
       </div>
     );
   }
@@ -599,13 +657,16 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
           onMCQAnswer={onMCQAnswer}
         />
         {renderSegments(suffixSegments, markdownComponents)}
+        {hasActions && (
+          <ActionButtonBar buttons={buttons} onActionClick={onActionClick} />
+        )}
       </div>
     );
   }
 
   // ── Step 1: split content into chart/mermaid/figure blocks and text segments
   // Use the same parseContentSegments function that works for flashcard/MCQ prefix/suffix
-  const segments = parseContentSegments(processedContent);
+  const segments = parseContentSegments(contentForParsing);
 
   console.log('[EnhancedMessageFormatter] Total segments:', segments.length);
   console.log('[EnhancedMessageFormatter] Segment types:', segments.map(s => s.kind).join(', '));
@@ -614,6 +675,7 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
       console.warn(`⚠️ Segment ${i} (text) still contains [FIGURE tag!`, seg.value.substring(0, 100));
     }
   });
+  
   // ── Step 3: render segments in order ──────────────────────────────────────
   return (
     <div className="enhanced-message">
@@ -664,6 +726,11 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
           </ReactMarkdown>
         );
       })}
+      
+      {/* Render action buttons at the end if present */}
+      {hasActions && (
+        <ActionButtonBar buttons={buttons} onActionClick={onActionClick} />
+      )}
     </div>
   );
 };

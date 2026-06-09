@@ -401,7 +401,9 @@ export async function extractText(arrayBuffer, options = {}) {
   // Process pages with a queue that limits concurrent Vision OCR to 2 slots
   // This prevents API rate limiting while maximizing throughput
   const MAX_CONCURRENT_VISION = 2;
+  const VISION_RATE_LIMIT_DELAY = 1000; // 1 second delay between vision requests
   let activeVisionOCR = 0;
+  let lastVisionCallTime = 0;
   const visionQueue = [];
   
   /**
@@ -426,13 +428,21 @@ export async function extractText(arrayBuffer, options = {}) {
       content = textItems.join('');
       method = 'pdfjs';
     } else {
-      // Vision OCR path (needs queue management)
+      // Vision OCR path (needs queue management + rate limiting)
       method = 'vision';
       
       // Wait for available Vision OCR slot
       while (activeVisionOCR >= MAX_CONCURRENT_VISION) {
         await new Promise(resolve => setTimeout(resolve, 100));
       }
+      
+      // Rate limiting: ensure minimum delay between requests
+      const now = Date.now();
+      const timeSinceLastCall = now - lastVisionCallTime;
+      if (timeSinceLastCall < VISION_RATE_LIMIT_DELAY) {
+        await new Promise(resolve => setTimeout(resolve, VISION_RATE_LIMIT_DELAY - timeSinceLastCall));
+      }
+      lastVisionCallTime = Date.now();
       
       activeVisionOCR++;
       
@@ -468,8 +478,16 @@ export async function extractText(arrayBuffer, options = {}) {
             ]);
           } catch (visionError) {
             console.warn(`[pdfProcessor] Vision OCR failed for page ${pageNum}:`, visionError);
-            content = `[Page ${pageNum}: image-only — could not extract text]`;
-            isPlaceholder = true;
+            
+            // Fallback to PDF.js text even if it's garbled (better than nothing)
+            if (textItems.length > 0) {
+              console.log(`[pdfProcessor] Using garbled PDF.js text as fallback for page ${pageNum}`);
+              content = textItems.join('');
+              method = 'pdfjs_fallback';
+            } else {
+              content = `[Page ${pageNum}: image-only — could not extract text]`;
+              isPlaceholder = true;
+            }
           }
         } else {
           content = `[Page ${pageNum}: image-only — could not extract text]`;

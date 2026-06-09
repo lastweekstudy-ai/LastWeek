@@ -23,12 +23,12 @@ export const ThemeProvider = ({ children }) => {
   });
 
   const [mode, setMode] = useState(() => {
-    // Check localStorage first, default to dark
+    // Check localStorage first, default to light
     const savedMode = localStorage.getItem('lastweek-theme');
     if (savedMode && (savedMode === 'dark' || savedMode === 'light')) {
       return savedMode;
     }
-    return 'dark';
+    return 'light';
   });
 
   useEffect(() => {

@@ -224,7 +224,8 @@ async function handleGroq(params, { log, error }) {
   }
 
   // Chat completion (text or vision)
-  const chatModel = model || (action === 'vision' ? 'llama-3.2-90b-vision-preview' : 'llama-3.3-70b-versatile');
+  // NOTE: llama-3.2-90b-vision-preview was DEPRECATED by Groq. Using llama-3.2-11b-vision-preview instead.
+  const chatModel = model || (action === 'vision' ? 'llama-3.2-11b-vision-preview' : 'llama-3.3-70b-versatile');
   const safeMaxTokens = chatModel.includes('8b') ? Math.min(maxTokens || 2048, 2048) : (maxTokens || 4096);
 
   let msgs = [];

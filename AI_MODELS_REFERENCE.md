@@ -75,6 +75,19 @@ Frontend → Appwrite Function (aiProxyUniversal) → AI Provider APIs
   - Code explanation in PDFs
   - Programming problem breakdown
 
+##### **Llama 3.2 11B Vision Preview**
+- **Model ID:** `llama-3.2-11b-vision-preview`
+- **Context Window:** 128,000 tokens
+- **Rate Limits:** 1,000 requests/day (free tier)
+- **Cost:** Free tier
+- **Best For:**
+  - Vision OCR fallback (after Gemini)
+  - Image analysis
+- **Use Cases in App:**
+  - PDF OCR (secondary to Gemini)
+  - Image-only PDF pages
+- **Note:** Replaces deprecated `llama-3.2-90b-vision-preview` which was decommissioned
+
 ##### **Gemma 2 9B IT**
 - **Model ID:** `gemma2-9b-it`
 - **Context Window:** 8,192 tokens
@@ -202,8 +215,12 @@ Frontend → Appwrite Function (aiProxyUniversal) → AI Provider APIs
 ```
 1. Gemini 2.0 Flash (primary)
    ↓ (on error)
-2. Gemini 1.5 Flash (stable fallback)
+2. Groq Llama 3.2 11B Vision (fallback - replaces deprecated 90B model)
+   ↓ (on error)
+3. Garbled PDF.js text (for PDFs with text layer)
 ```
+
+**IMPORTANT:** Groq's `llama-3.2-90b-vision-preview` was decommissioned. All vision calls now use `llama-3.2-11b-vision-preview` or redirect to Gemini.
 
 ### Document Analysis Priority:
 ```
