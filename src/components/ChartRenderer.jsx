@@ -6,7 +6,23 @@ import {
   ScatterChart, Scatter, ComposedChart
 } from 'recharts';
 
-const COLORS = ['var(--color-accent)', 'var(--color-accent-hover)', '#7e22ce', '#6b21a8', '#581c87', '#3b0764'];
+const COLORS = ['var(--color-accent)', 'var(--color-accent-hover)', '#14b8a6', '#f59e0b', '#ef4444', '#2563eb'];
+
+const axisProps = {
+  stroke: 'var(--color-text-secondary)',
+  style: { fontSize: '0.75rem' },
+};
+
+const tooltipProps = {
+  contentStyle: {
+    backgroundColor: 'var(--color-bg-secondary)',
+    border: '1px solid var(--color-border)',
+    borderRadius: '12px',
+    color: 'var(--color-text-primary)',
+  },
+  labelStyle: { color: 'var(--color-text-primary)' },
+  itemStyle: { color: 'var(--color-text-primary)' },
+};
 
 const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
   // Debug logging
@@ -38,37 +54,17 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
     switch (type) {
       case 'bar':
       case 'column':
-        // DEBUG: Try without ResponsiveContainer first
         return (
-          <div style={{ width: '100%', height: height, overflow: 'auto' }}>
-            <BarChart width={600} height={height} data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis 
-                dataKey={xKey || 'name'} 
-                stroke="#6b7280"
-                style={{ fontSize: '0.875rem' }}
-              />
-              <YAxis 
-                stroke="#6b7280"
-                style={{ fontSize: '0.875rem' }}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#f9fafb',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  color: '#1f2937'
-                }}
-              />
-              <Legend 
-                wrapperStyle={{ 
-                  color: '#6b7280',
-                  fontSize: '0.875rem'
-                }}
-              />
+          <ResponsiveContainer width="100%" height={height}>
+            <BarChart data={data} margin={{ top: 16, right: 12, left: 0, bottom: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+              <XAxis dataKey={xKey || 'name'} {...axisProps} />
+              <YAxis {...axisProps} />
+              <Tooltip {...tooltipProps} />
+              <Legend wrapperStyle={{ color: 'var(--color-text-secondary)', fontSize: '0.75rem' }} />
               <Bar dataKey={yKey || 'value'} fill="var(--color-accent)" radius={[8, 8, 0, 0]} />
             </BarChart>
-          </div>
+          </ResponsiveContainer>
         );
 
       case 'stacked':
@@ -87,14 +83,7 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
                 stroke="var(--color-text-secondary)"
                 style={{ fontSize: '0.875rem' }}
               />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'var(--color-bg-secondary)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '8px',
-                  color: 'var(--color-text-primary)'
-                }}
-              />
+              <Tooltip {...tooltipProps} />
               <Legend />
               {valueKeys.map((key, index) => (
                 <Bar 
@@ -111,32 +100,13 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
 
       case 'line':
         return (
-          <div style={{ width: '100%', height: height, overflow: 'auto' }}>
-            <LineChart width={600} height={height} data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis 
-                dataKey={xKey || 'name'} 
-                stroke="#6b7280"
-                style={{ fontSize: '0.875rem' }}
-              />
-              <YAxis 
-                stroke="#6b7280"
-                style={{ fontSize: '0.875rem' }}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#f9fafb',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  color: '#1f2937'
-                }}
-              />
-              <Legend 
-                wrapperStyle={{ 
-                  color: '#6b7280',
-                  fontSize: '0.875rem'
-                }}
-              />
+          <ResponsiveContainer width="100%" height={height}>
+            <LineChart data={data} margin={{ top: 16, right: 12, left: 0, bottom: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+              <XAxis dataKey={xKey || 'name'} {...axisProps} />
+              <YAxis {...axisProps} />
+              <Tooltip {...tooltipProps} />
+              <Legend wrapperStyle={{ color: 'var(--color-text-secondary)', fontSize: '0.75rem' }} />
               <Line 
                 type="monotone" 
                 dataKey={yKey || 'value'} 
@@ -146,7 +116,7 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
                 activeDot={{ r: 7 }}
               />
             </LineChart>
-          </div>
+          </ResponsiveContainer>
         );
 
       case 'scatter':
@@ -168,15 +138,7 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
                 stroke="var(--color-text-secondary)"
                 style={{ fontSize: '0.875rem' }}
               />
-              <Tooltip 
-                cursor={{ strokeDasharray: '3 3' }}
-                contentStyle={{ 
-                  backgroundColor: 'var(--color-bg-secondary)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '8px',
-                  color: 'var(--color-text-primary)'
-                }}
-              />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} {...tooltipProps} />
               <Legend />
               <Scatter name="Data Points" data={data} fill="var(--color-accent)" />
             </ScatterChart>
@@ -186,63 +148,38 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
       case 'pie':
       case 'donut':
         return (
-          <div style={{ width: '100%', height: height, overflow: 'auto', display: 'flex', justifyContent: 'center' }}>
-            <PieChart width={Math.min(600, height)} height={height}>
+          <ResponsiveContainer width="100%" height={height}>
+            <PieChart>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={type === 'donut' ? 100 : 100}
-                innerRadius={type === 'donut' ? 60 : 0}
+                outerRadius={type === 'donut' ? '72%' : '72%'}
+                innerRadius={type === 'donut' ? '42%' : 0}
                 fill="#8884d8"
                 dataKey={yKey || 'value'}
+                stroke="var(--color-bg-secondary)"
               >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#f9fafb',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  color: '#1f2937'
-                }}
-              />
+              <Tooltip {...tooltipProps} />
             </PieChart>
-          </div>
+          </ResponsiveContainer>
         );
 
       case 'area':
         return (
-          <div style={{ width: '100%', height: height, overflow: 'auto' }}>
-            <AreaChart width={600} height={height} data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis 
-                dataKey={xKey || 'name'} 
-                stroke="#6b7280"
-                style={{ fontSize: '0.875rem' }}
-              />
-              <YAxis 
-                stroke="#6b7280"
-                style={{ fontSize: '0.875rem' }}
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: '#f9fafb',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  color: '#1f2937'
-                }}
-              />
-              <Legend 
-                wrapperStyle={{ 
-                  color: '#6b7280',
-                  fontSize: '0.875rem'
-                }}
-              />
+          <ResponsiveContainer width="100%" height={height}>
+            <AreaChart data={data} margin={{ top: 16, right: 12, left: 0, bottom: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
+              <XAxis dataKey={xKey || 'name'} {...axisProps} />
+              <YAxis {...axisProps} />
+              <Tooltip {...tooltipProps} />
+              <Legend wrapperStyle={{ color: 'var(--color-text-secondary)', fontSize: '0.75rem' }} />
               <Area 
                 type="monotone" 
                 dataKey={yKey || 'value'} 
@@ -251,7 +188,7 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
                 fillOpacity={0.3}
               />
             </AreaChart>
-          </div>
+          </ResponsiveContainer>
         );
 
       case 'radar':
@@ -275,14 +212,7 @@ const ChartRenderer = ({ type, data, title, xKey, yKey, height = 300 }) => {
                 fill="var(--color-accent)" 
                 fillOpacity={0.6} 
               />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: 'var(--color-bg-secondary)',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '8px',
-                  color: 'var(--color-text-primary)'
-                }}
-              />
+              <Tooltip {...tooltipProps} />
             </RadarChart>
           </ResponsiveContainer>
         );

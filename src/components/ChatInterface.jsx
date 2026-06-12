@@ -41,7 +41,7 @@ const ChatInterface = ({
 }) => {
   const [input, setInput] = useState('');
   const [showAttachments, setShowAttachments] = useState(false);
-  const [showQuickActions, setShowQuickActions] = useState(true);
+  const [showQuickActions, setShowQuickActions] = useState(false);
   const [showMathKeyboard, setShowMathKeyboard] = useState(false);
   const [showFlashcardModal, setShowFlashcardModal] = useState(false);
   const [pendingFile, setPendingFile] = useState(null);
@@ -397,7 +397,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
       </div>
 
       {/* Scroll to bottom button */}
-      {showScrollBtn && (
+      {(showScrollBtn || !isMobile) && (
         <button
           className="scroll-to-bottom-btn"
           onClick={scrollToBottom}
@@ -411,7 +411,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
       {/* Input Area */}
       <div className="chat-input-area">
         {/* Quick Actions - always at bottom, always accessible */}
-        {showQuickActions && !compactStudyTools && (
+        {false && showQuickActions && !compactStudyTools && (
           <div className="quick-actions-bar">
             <QuickActions 
               mode={mode} 
@@ -542,18 +542,36 @@ This ensures I have the complete PDF content with accurate page and line numbers
               🃏 <span className="toolbar-btn-label">Card</span>
             </button>
             
-            {!compactStudyTools && !showQuickActions && (
+            {!compactStudyTools && (
               <button
                 type="button"
-                className="toolbar-btn"
-                onClick={() => setShowQuickActions(true)}
+                className={`toolbar-btn ${showQuickActions ? 'active' : ''}`}
+                onClick={() => setShowQuickActions(v => !v)}
                 disabled={isLoading || isUploadingPDF}
-                title="Show quick actions"
+                title={showQuickActions ? 'Hide quick actions' : 'Show quick actions'}
               >
                 <QuickActionIcon size={13} /> <span className="toolbar-btn-label">Actions</span>
               </button>
             )}
           </div>
+
+          {showQuickActions && !compactStudyTools && (
+            <div className="quick-actions-bar">
+              <QuickActions
+                mode={mode}
+                onQuickAction={handleQuickAction}
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                className="close-quick-actions"
+                onClick={() => setShowQuickActions(false)}
+                title="Hide quick actions"
+              >
+                x
+              </button>
+            </div>
+          )}
 
           <div className="chat-input-container-improved">
             <textarea

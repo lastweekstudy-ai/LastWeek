@@ -127,7 +127,7 @@ const FocusBreakdown = () => {
   };
 
   return (
-    <div className="mode-page focus-breakdown">
+    <div className={`mode-page focus-breakdown ${sidebarOpen ? 'sidebar-visible' : ''}`}>
       {showAssessment && (
         <SessionAssessment
           mode="focus_breakdown"
@@ -153,7 +153,7 @@ const FocusBreakdown = () => {
             userId={user?.$id}
             sessionId={activeSession?.$id}
             subject={activeSession?.subject || 'General'}
-            onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+            onSidebarToggle={() => setSidebarOpen((open) => !open)}
             onResourcesToggle={() => setPdfLibraryOpen(!pdfLibraryOpen)}
             sidebarOpen={sidebarOpen}
             onPDFUploaded={handlePDFUploaded}
@@ -161,6 +161,15 @@ const FocusBreakdown = () => {
             onMCQAnswer={handleMCQAnswer}
           />
         </div>
+
+        {sidebarOpen && (
+          <button
+            type="button"
+            className="mode-sidebar-backdrop"
+            aria-label="Close sidebar"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
         <div className={`mode-sidebar ${sidebarOpen ? 'open' : ''}`}>
           <button 

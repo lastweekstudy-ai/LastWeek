@@ -130,7 +130,7 @@ const CollaborativeScholar = () => {
   };
 
   return (
-    <div className="mode-page collaborative-scholar">
+    <div className={`mode-page collaborative-scholar ${sidebarOpen ? 'sidebar-visible' : ''}`}>
       {showAssessment && (
         <SessionAssessment
           mode="collaborative_scholar"
@@ -156,7 +156,7 @@ const CollaborativeScholar = () => {
             userId={user?.$id}
             sessionId={activeSession?.$id}
             subject={activeSession?.subject || 'General'}
-            onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+            onSidebarToggle={() => setSidebarOpen((open) => !open)}
             onResourcesToggle={() => setPdfLibraryOpen(!pdfLibraryOpen)}
             sidebarOpen={sidebarOpen}
             onPDFUploaded={handlePDFUploaded}
@@ -164,6 +164,15 @@ const CollaborativeScholar = () => {
             onMCQAnswer={handleMCQAnswer}
           />
         </div>
+
+        {sidebarOpen && (
+          <button
+            type="button"
+            className="mode-sidebar-backdrop"
+            aria-label="Close sidebar"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
         <div className={`mode-sidebar ${sidebarOpen ? 'open' : ''}`}>
           <button 

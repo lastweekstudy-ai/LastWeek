@@ -1,36 +1,52 @@
 import React, { useState } from 'react';
 
-const Flashcard = ({ front, back, onRate, isReview = false }) => {
+const Flashcard = ({ front, back, onRate }) => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const handleFlip = () => {
-    setIsFlipped(!isFlipped);
+    setIsFlipped((flipped) => !flipped);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleFlip();
+    }
   };
 
   const handleRate = (confidence) => {
-    onRate(confidence);
+    if (onRate) {
+      onRate(confidence);
+    }
     setIsFlipped(false);
   };
 
   return (
     <div className="flashcard-container">
-      <div className={`flashcard ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
-        <div className="flashcard-front">
-          <div className="flashcard-content">
-            <h4>Question</h4>
-            <p>{front}</p>
+      <div
+        className={`flashcard ${isFlipped ? 'flipped' : ''}`}
+        onClick={handleFlip}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        aria-pressed={isFlipped}
+      >
+        {!isFlipped ? (
+          <div className="flashcard-front">
+            <div className="flashcard-content">
+              <h4>Question</h4>
+              <p>{front}</p>
+            </div>
+            <div className="flashcard-hint">Click to reveal answer</div>
           </div>
-          <div className="flashcard-hint">
-            Click to reveal answer
+        ) : (
+          <div className="flashcard-back">
+            <div className="flashcard-content">
+              <h4>Answer</h4>
+              <p>{back}</p>
+            </div>
           </div>
-        </div>
-        
-        <div className="flashcard-back">
-          <div className="flashcard-content">
-            <h4>Answer</h4>
-            <p>{back}</p>
-          </div>
-        </div>
+        )}
       </div>
 
       {isFlipped && (
@@ -41,19 +57,19 @@ const Flashcard = ({ front, back, onRate, isReview = false }) => {
               className="btn confidence-btn hard"
               onClick={() => handleRate(1)}
             >
-              😰 Hard
+              Need practice
             </button>
             <button
               className="btn confidence-btn okay"
               onClick={() => handleRate(2)}
             >
-              😐 Okay
+              Almost
             </button>
             <button
               className="btn confidence-btn easy"
               onClick={() => handleRate(3)}
             >
-              😊 Easy
+              Got it
             </button>
           </div>
         </div>

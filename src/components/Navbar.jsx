@@ -180,7 +180,7 @@ const Navbar = ({ isSessionPage = false }) => {
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 space-y-5 overflow-y-auto py-5">
+        <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain py-5 pb-24">
 
           {/* ── Session mode switcher ── */}
           {isOnSessionPage && activeSession && (

@@ -28,6 +28,7 @@ const Testimonials = () => {
       rating: 5,
     },
   ];
+  const scrollingTestimonials = [...testimonials, ...testimonials];
 
   return (
     <section id="testimonials" className="testimonials">
@@ -35,26 +36,28 @@ const Testimonials = () => {
         <h2 className="section-title">What Students Say</h2>
         <p className="section-subtitle">Join thousands of learners transforming their study habits</p>
 
-        <div className="testimonials-grid">
-          {testimonials.map((testimonial, index) => (
-            <div key={index} className="testimonial-card">
-              <div className="testimonial-rating">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <PixelIcon key={i} type="star" size={16} />
-                ))}
-              </div>
-              <p className="testimonial-text">"{testimonial.text}"</p>
-              <div className="testimonial-author">
-                <div className="author-avatar">
-                  {testimonial.name.charAt(0)}
+        <div className="testimonials-marquee" aria-label="Student testimonials">
+          <div className="testimonials-grid">
+            {scrollingTestimonials.map((testimonial, index) => (
+              <div key={`${testimonial.name}-${index}`} className="testimonial-card">
+                <div className="testimonial-rating">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <PixelIcon key={i} type="star" size={16} />
+                  ))}
                 </div>
-                <div className="author-info">
-                  <p className="author-name">{testimonial.name}</p>
-                  <p className="author-role">{testimonial.role}</p>
+                <p className="testimonial-text">"{testimonial.text}"</p>
+                <div className="testimonial-author">
+                  <div className="author-avatar">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                  <div className="author-info">
+                    <p className="author-name">{testimonial.name}</p>
+                    <p className="author-role">{testimonial.role}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -12,6 +12,39 @@ export const useTheme = () => {
 
 const AVAILABLE_COLORS = ['purple', 'orange', 'green', 'brown', 'blue'];
 
+const COLOR_PALETTES = {
+  purple: {
+    accent: '#7c3aed',
+    accentHover: '#8b5cf6',
+    accentSoft: '#ede9fe',
+    accentText: '#6d28d9',
+  },
+  orange: {
+    accent: '#ea580c',
+    accentHover: '#f97316',
+    accentSoft: '#ffedd5',
+    accentText: '#c2410c',
+  },
+  green: {
+    accent: '#16a34a',
+    accentHover: '#22c55e',
+    accentSoft: '#dcfce7',
+    accentText: '#15803d',
+  },
+  brown: {
+    accent: '#92400e',
+    accentHover: '#b45309',
+    accentSoft: '#fef3c7',
+    accentText: '#78350f',
+  },
+  blue: {
+    accent: '#2563eb',
+    accentHover: '#3b82f6',
+    accentSoft: '#dbeafe',
+    accentText: '#1d4ed8',
+  },
+};
+
 export const ThemeProvider = ({ children }) => {
   const [color, setColor] = useState(() => {
     // Check localStorage first, default to purple
@@ -33,7 +66,12 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     // Apply color to document (light mode)
+    const palette = COLOR_PALETTES[color] || COLOR_PALETTES.purple;
     document.documentElement.setAttribute('data-color', color);
+    document.documentElement.style.setProperty('--color-accent', palette.accent);
+    document.documentElement.style.setProperty('--color-accent-hover', palette.accentHover);
+    document.documentElement.style.setProperty('--color-accent-soft', palette.accentSoft);
+    document.documentElement.style.setProperty('--color-accent-text', palette.accentText);
     localStorage.setItem('lastweek-color', color);
   }, [color]);
 

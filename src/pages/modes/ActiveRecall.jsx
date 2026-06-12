@@ -189,7 +189,7 @@ const ActiveRecall = () => {
   const flashcardData = lastAiMessage ? extractFlashcardFromMessage(lastAiMessage.content) : null;
 
   return (
-    <div className="mode-page active-recall">
+    <div className={`mode-page active-recall ${sidebarOpen ? 'sidebar-visible' : ''}`}>
       {showAssessment && (
         <SessionAssessment
           mode="active_recall"
@@ -225,7 +225,7 @@ const ActiveRecall = () => {
             userId={user?.$id}
             sessionId={activeSession?.$id}
             subject={activeSession?.subject || 'General'}
-            onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+            onSidebarToggle={() => setSidebarOpen((open) => !open)}
             onResourcesToggle={() => setPdfLibraryOpen(!pdfLibraryOpen)}
             sidebarOpen={sidebarOpen}
             onPDFUploaded={handlePDFUploaded}
@@ -242,6 +242,15 @@ const ActiveRecall = () => {
             </div>
           )}
         </div>
+
+        {sidebarOpen && (
+          <button
+            type="button"
+            className="mode-sidebar-backdrop"
+            aria-label="Close sidebar"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
         <div className={`mode-sidebar ${sidebarOpen ? 'open' : ''}`}>
           <button 

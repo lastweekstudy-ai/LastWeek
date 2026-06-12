@@ -155,7 +155,7 @@ const CreativeSynthesis = () => {
   };
 
   return (
-    <div className="mode-page creative-synthesis">
+    <div className={`mode-page creative-synthesis ${sidebarOpen ? 'sidebar-visible' : ''}`}>
       {showAssessment && (
         <SessionAssessment
           mode="creative_synthesis"
@@ -181,7 +181,7 @@ const CreativeSynthesis = () => {
             userId={user?.$id}
             sessionId={activeSession?.$id}
             subject={activeSession?.subject || 'General'}
-            onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+            onSidebarToggle={() => setSidebarOpen((open) => !open)}
             onResourcesToggle={() => setPdfLibraryOpen(!pdfLibraryOpen)}
             sidebarOpen={sidebarOpen}
             onPDFUploaded={handlePDFUploaded}
@@ -189,6 +189,15 @@ const CreativeSynthesis = () => {
             onMCQAnswer={handleMCQAnswer}
           />
         </div>
+
+        {sidebarOpen && (
+          <button
+            type="button"
+            className="mode-sidebar-backdrop"
+            aria-label="Close sidebar"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
         <div className={`mode-sidebar ${sidebarOpen ? 'open' : ''}`}>
           <button 

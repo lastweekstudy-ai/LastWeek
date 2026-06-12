@@ -78,7 +78,7 @@ const ProfileDropdown = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full left-0 z-50 mb-3 w-full min-w-64 rounded-2xl border border-surface-200 bg-white p-2 shadow-strong dark:border-surface-800 dark:bg-surface-950 lg:bottom-auto lg:top-full lg:mb-0 lg:mt-3">
+        <div className="absolute bottom-full left-0 z-50 mb-3 max-h-[min(24rem,calc(100vh-8rem))] w-full min-w-64 overflow-y-auto overscroll-contain rounded-2xl border border-surface-200 bg-white p-2 shadow-strong dark:border-surface-800 dark:bg-surface-950">
           <div className="flex items-center gap-3 rounded-xl bg-surface-50 p-3 dark:bg-surface-900">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-base font-bold text-white">
               {getUserInitials()}

@@ -140,7 +140,7 @@ const MentalModel = () => {
   };
 
   return (
-    <div className="mode-page mental-model">
+    <div className={`mode-page mental-model ${sidebarOpen ? 'sidebar-visible' : ''}`}>
       {/* Show assessment overlay if needed */}
       {showAssessment && (
         <SessionAssessment
@@ -168,7 +168,7 @@ const MentalModel = () => {
             userId={user?.$id}
             sessionId={activeSession?.$id}
             subject={activeSession?.subject || 'General'}
-            onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+            onSidebarToggle={() => setSidebarOpen((open) => !open)}
             onResourcesToggle={() => setPdfLibraryOpen(!pdfLibraryOpen)}
             sidebarOpen={sidebarOpen}
             onPDFUploaded={handlePDFUploaded}
@@ -176,6 +176,15 @@ const MentalModel = () => {
             onMCQAnswer={handleMCQAnswer}
           />
         </div>
+
+        {sidebarOpen && (
+          <button
+            type="button"
+            className="mode-sidebar-backdrop"
+            aria-label="Close sidebar"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
 
         <div className={`mode-sidebar ${sidebarOpen ? 'open' : ''}`}>
           <button 
