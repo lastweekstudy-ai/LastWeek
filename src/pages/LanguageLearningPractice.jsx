@@ -19,7 +19,6 @@ import {
   generateReadingPassage,
   evaluateWriting
 } from '../services/languageAI';
-import './LanguageLearningPractice.css';
 
 const PRACTICE_TYPE_INFO = {
   mcq: { name: 'Multiple Choice', icon: '📝', description: 'Test your knowledge' },

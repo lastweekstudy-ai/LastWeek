@@ -16,7 +16,6 @@ import {
   ArrowRightIcon,
   PlusIcon
 } from '../../components/Icons';
-import '../../styles/ChatInterface.css';
 
 const CreativeSynthesis = () => {
   const { sessionId } = useParams();

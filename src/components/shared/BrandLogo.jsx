@@ -34,19 +34,11 @@ const BrandLogo = ({
   if (imageError) {
     return (
       <div
-        className={`brand-logo-fallback ${className}`}
+        className={`inline-flex items-center justify-center rounded-xl border border-brand-500/30 bg-brand-600/15 font-display font-bold text-gradient ${className}`}
         style={{
           width: `${width}px`,
           height: `${height}px`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
           fontSize: variant === 'text' ? '14px' : '12px',
-          fontWeight: 700,
-          color: '#FFFFFF',
-          backgroundColor: 'rgba(var(--color-accent-rgb), 0.1)',
-          borderRadius: '8px',
-          border: '1px solid rgba(var(--color-accent-rgb), 0.2)',
         }}
       >
         {variant === 'text' ? 'LastWeek' : 'LW'}
@@ -55,19 +47,18 @@ const BrandLogo = ({
   }
 
   return (
-    <img
-      src={logoPath}
-      alt={altText}
-      width={width}
-      height={height}
-      className={`brand-logo ${className}`}
-      onError={handleError}
-      loading={priority ? 'eager' : 'lazy'}
-      style={{
-        objectFit: 'contain',
-        display: 'block',
-      }}
-    />
+    <span className={`inline-flex items-center gap-2 font-display font-bold text-surface-900 dark:text-white ${className}`}>
+      <img
+        src={logoPath}
+        alt={altText}
+        width={width}
+        height={height}
+        className="block object-contain"
+        onError={handleError}
+        loading={priority ? 'eager' : 'lazy'}
+      />
+      {variant === 'text' && <span className="text-gradient">LastWeek</span>}
+    </span>
   );
 };
 

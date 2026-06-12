@@ -11,7 +11,6 @@ import {
 } from '../appwrite/examPlanner';
 import useCombinedLimits from '../hooks/useCombinedLimits';
 import UsageLimitModal from '../components/UsageLimitModal';
-import '../styles/ExamPlanner.css';
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const CalendarIcon = () => (

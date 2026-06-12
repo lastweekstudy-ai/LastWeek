@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../context/ThemeContext';
-import '../styles/ThemeToggle.css';
 
 const COLOR_META = {
   purple: { name: 'Purple', icon: '🟣' },
@@ -31,9 +30,9 @@ const ThemeToggle = () => {
   const currentIcon = COLOR_META[color]?.icon ?? '🟣';
 
   return (
-    <div className="theme-toggle-container" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef}>
       <button
-        className="theme-toggle"
+        className="btn-ghost flex h-9 w-9 items-center justify-center rounded-full"
         onClick={() => setIsOpen(prev => !prev)}
         aria-label="Change color theme"
         title="Change color theme"
@@ -42,13 +41,13 @@ const ThemeToggle = () => {
       </button>
 
       {isOpen && (
-        <div className="theme-dropdown">
+        <div className="glass absolute bottom-full left-0 z-50 mb-2 w-52 rounded-xl p-1 shadow-glow-sm">
           {availableColors.map((key) => {
             const meta = COLOR_META[key];
             return (
               <button
                 key={key}
-                className={`theme-option ${color === key ? 'active' : ''}`}
+                className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm transition-colors ${color === key ? 'bg-brand-600/15 text-brand-300' : 'text-surface-600 hover:bg-brand-100 hover:text-surface-900 dark:text-surface-200 dark:hover:bg-surface-700/60 dark:hover:text-white'}`}
                 onClick={() => {
                   changeColor(key);
                   setIsOpen(false);

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import BrandLogo from '../../../components/shared/BrandLogo';
 import { PixelIcon } from '../../../components/shared/pixel-art/PixelIcons';
 import { getAdminSettings, getPublishedReviews, getRemainingSlotsToday } from '../../../appwrite/admin';
-import '../landing.css';
 
 const Hero = () => {
   const [adminSettings, setAdminSettings] = useState(null);

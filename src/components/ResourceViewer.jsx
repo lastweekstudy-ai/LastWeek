@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { updatePDFProgress, addPDFBookmark, removePDFBookmark, trackStudyTime } from '../appwrite/pdfResources';
 import useOrientation from '../hooks/useOrientation';
 import OrientationPrompt from './OrientationPrompt';
-import '../styles/PDFViewer.css';
-import '../styles/PDFViewerMobile.css';
 
 const ResourceViewer = ({ resource, onClose, onOpenNotes }) => {
   const [isFullscreen, setIsFullscreen] = useState(false);

@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
-import '../styles/ChatInterface.css';
-import '../styles/NotebookTheme.css';
 import LoadingDots from './LoadingDots';
 import AITypingAnimation from './AITypingAnimation';
 import FileAttachment from './FileAttachment';
@@ -36,6 +34,7 @@ const ChatInterface = ({
   onResourcesToggle = null,
   sidebarOpen = false,
   insideStudyMode = false,
+  compactStudyTools = false,
   onPDFUploaded = null,
   onFlashcardRate = null,  // callback(confidence, front, back)
   onMCQAnswer = null,      // callback(isCorrect, questionText)
@@ -351,7 +350,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
   };
 
   return (
-    <div className="chat-interface-improved">
+    <div className={`chat-interface-improved ${compactStudyTools ? 'compact-study-chat' : ''}`}>
       {/* Messages Area */}
       <div
         className="chat-messages-improved"
@@ -412,7 +411,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
       {/* Input Area */}
       <div className="chat-input-area">
         {/* Quick Actions - always at bottom, always accessible */}
-        {showQuickActions && (
+        {showQuickActions && !compactStudyTools && (
           <div className="quick-actions-bar">
             <QuickActions 
               mode={mode} 
@@ -500,7 +499,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
               </button>
             )}
             
-            {onResourcesToggle && (
+            {!compactStudyTools && onResourcesToggle && (
               <button
                 type="button"
                 className="toolbar-btn"
@@ -511,6 +510,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
               </button>
             )}
             
+            {!compactStudyTools && (
             <button
               type="button"
               className={`toolbar-btn ${showAttachments ? 'active' : ''}`}
@@ -520,6 +520,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
             >
               <AttachmentIcon size={13} /> <span className="toolbar-btn-label">File</span>
             </button>
+            )}
 
             <button
               type="button"
@@ -541,7 +542,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
               🃏 <span className="toolbar-btn-label">Card</span>
             </button>
             
-            {!showQuickActions && (
+            {!compactStudyTools && !showQuickActions && (
               <button
                 type="button"
                 className="toolbar-btn"

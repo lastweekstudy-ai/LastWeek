@@ -8,7 +8,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { runFullMigration } from '../appwrite/migrateLegacyResources';
-import '../styles/MigrationHelper.css';
 
 const MigrationHelper = ({ onMigrationComplete }) => {
   const [status, setStatus] = useState('idle'); // idle, running, complete, error

@@ -10,7 +10,6 @@ import AudioLectureViewer from './AudioLectureViewer';
 import ResourceSearch from './ResourceSearch';
 import useCombinedLimits from '../hooks/useCombinedLimits';
 import { formatLimit } from '../config/planLimits';
-import '../styles/PDFLibrary.css';
 
 const PDFLibrary = ({ 
   sessionId, 
@@ -217,6 +216,8 @@ const PDFLibrary = ({
 
   return (
     <>
+      {!selectedResource && (
+      <>
       <div className="pdf-library-overlay" onClick={onClose} />
       <div className="pdf-library-panel">
         {/* Header */}
@@ -397,6 +398,8 @@ const PDFLibrary = ({
           </>
         )}
       </div>
+      </>
+      )}
 
       {selectedResource && (
         selectedResource.resourceType === 'audio' ? (

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAdminSettings } from '../../../appwrite/admin';
 import SlotRefreshCountdown from '../../../components/SlotRefreshCountdown';
-import '../landing.css';
 
 const CHECK = (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5">

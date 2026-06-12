@@ -6,8 +6,6 @@ import { createPDFNote, getPDFNotes, deletePDFNote } from '../appwrite/pdfNotes'
 import { trackAudioLectureView, trackAudioStudyTime } from '../appwrite/audioLecture';
 import useOrientation from '../hooks/useOrientation';
 import OrientationPrompt from './OrientationPrompt';
-import '../styles/AudioLectureViewer.css';
-import '../styles/AudioLectureViewerMobile.css';
 
 const PRESETS = [35, 50, 65];
 const SNAP_THRESHOLD = 3;
@@ -66,6 +64,7 @@ const AudioLectureViewer = ({
   // ── Layout ──────────────────────────────────────────────────────────────────
   const [isMobile,   setIsMobile]   = useState(window.innerWidth < 768);
   const [mobileTab,  setMobileTab]  = useState('content');
+  const [chatOpen,   setChatOpen]   = useState(false);
   const [leftWidth,  setLeftWidth]  = useState(() => {
     const s = localStorage.getItem('audio-split-ratio');
     const p = s ? parseFloat(s) : NaN;
@@ -295,12 +294,18 @@ const AudioLectureViewer = ({
     setSelectionTip(null);
     window.getSelection()?.removeAllRanges();
     handleSendWithContext(`Explain this from the lecture: "${text}"`);
-    if (isMobile) setMobileTab('chat');
+    if (isMobile) {
+      setMobileTab('chat');
+      setChatOpen(true);
+    }
   }, [isMobile]); // eslint-disable-line
 
   // ── Chat with full lecture context ──────────────────────────────────────────
   const handleSendWithContext = useCallback(async (userMessage, aiContextMessage = null, fileAttachment = null) => {
-    if (isMobile) setMobileTab('chat');
+    if (isMobile) {
+      setMobileTab('chat');
+      setChatOpen(true);
+    }
 
     const lectureNotes = lecture.audioData?.lectureNotes || '';
     const transcript   = lecture.audioData?.transcript   || '';
@@ -397,10 +402,13 @@ User Question: ${aiContextMessage || userMessage}`;
           </div>
           {isMobile && (
             <div className="alv-mobile-tabs">
-              <button className={`alv-mobile-tab ${mobileTab === 'content' ? 'active' : ''}`} onClick={() => setMobileTab('content')}>📝 Notes</button>
-              <button className={`alv-mobile-tab ${mobileTab === 'chat'    ? 'active' : ''}`} onClick={() => setMobileTab('chat')}>💬 Chat</button>
+              <button className={`alv-mobile-tab ${mobileTab === 'content' ? 'active' : ''}`} onClick={() => { setMobileTab('content'); setChatOpen(false); }}>📝 Notes</button>
+              <button className={`alv-mobile-tab ${mobileTab === 'chat' ? 'active' : ''}`} onClick={() => { setMobileTab('chat'); setChatOpen(true); }}>💬 Chat</button>
             </div>
           )}
+          <button className="btn-icon study-chat-toggle" onClick={() => { if (isMobile) setMobileTab('chat'); setChatOpen(true); }} title="Open AI tutor">
+            💬 Tutor
+          </button>
           <button className="alv-close-btn" onClick={onClose}>✕</button>
         </div>
 
@@ -427,7 +435,6 @@ User Question: ${aiContextMessage || userMessage}`;
           {/* Left pane */}
           <div
             className={`alv-left ${isMobile && mobileTab !== 'content' ? 'alv-pane-hidden' : ''}`}
-            style={{ width: isMobile ? '100%' : `${leftWidth}%` }}
           >
             {/* Tabs + toolbar */}
             <div className="alv-tabs-row">
@@ -583,21 +590,33 @@ User Question: ${aiContextMessage || userMessage}`;
             </div>
           </div>
 
-          {/* Resize handle */}
-          {!isMobile && (
-            <div
-              className={`alv-resize-handle ${isResizing ? 'is-resizing' : ''}`}
-              onMouseDown={e => { setIsResizing(true); e.preventDefault(); }}
-            >
-              <div className="alv-resize-grip"><span /><span /><span /></div>
-            </div>
-          )}
-
           {/* Right pane: chat */}
+          {!chatOpen && (
+            <button
+              className="floating-chat-launcher"
+              onClick={() => { if (isMobile) setMobileTab('chat'); setChatOpen(true); }}
+              title="Open AI tutor"
+            >
+              <span>💬</span>
+              <strong>AI Tutor</strong>
+            </button>
+          )}
           <div
-            className={`alv-right ${isMobile && mobileTab !== 'chat' ? 'alv-pane-hidden' : ''}`}
-            style={{ width: isMobile ? '100%' : `${100 - leftWidth}%` }}
+            className={`alv-right floating-study-chat ${isMobile && mobileTab !== 'chat' ? 'alv-pane-hidden' : ''} ${chatOpen ? 'open' : 'closed'}`}
           >
+            <div className="floating-chat-header">
+              <div>
+                <strong>AI Tutor</strong>
+                <span>Lecture context</span>
+              </div>
+              <button
+                className="floating-chat-minimize"
+                onClick={() => { setChatOpen(false); if (isMobile) setMobileTab('content'); }}
+                title="Minimize AI tutor"
+              >
+                _
+              </button>
+            </div>
             <div className="alv-chat-banner">
               <span>💬 Studying: <strong>{lecture.fileName}</strong></span>
               {highlights.length > 0 && <span className="alv-chat-badge">🖍️ {highlights.length} highlight{highlights.length > 1 ? 's' : ''}</span>}
@@ -612,6 +631,7 @@ User Question: ${aiContextMessage || userMessage}`;
               sessionId={sessionId}
               subject={subject}
               insideStudyMode={true}
+              compactStudyTools={true}
             />
           </div>
         </div>

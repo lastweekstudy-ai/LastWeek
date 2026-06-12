@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PixelIcon } from '../../../components/shared/pixel-art/PixelIcons';
-import '../landing.css';
 
 const FinalCTA = () => {
   return (

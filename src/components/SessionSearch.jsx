@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import '../styles/SessionSearch.css';
 
 const SessionSearch = ({ sessions, onFilteredSessions }) => {
   const [searchQuery, setSearchQuery] = useState('');

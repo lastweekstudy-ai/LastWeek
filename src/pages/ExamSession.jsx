@@ -18,7 +18,6 @@ import PDFLibrary from '../components/PDFLibrary';
 import PomodoroTimer from '../components/PomodoroTimer';
 import usePerformanceTracking from '../hooks/usePerformanceTracking';
 import UsageLimitModal from '../components/UsageLimitModal';
-import '../styles/ExamSession.css';
 
 /**
  * ExamSession — a dedicated session page for exam preparation.

@@ -10,7 +10,6 @@ import {
   isExistingUser,
 } from '../appwrite/admin';
 import SlotRefreshCountdown from '../components/SlotRefreshCountdown';
-import '../styles/Auth.css';
 
 const MIN_AGE = 13;
 

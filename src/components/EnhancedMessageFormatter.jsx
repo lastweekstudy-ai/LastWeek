@@ -10,7 +10,6 @@ import InlineFlashcard from './InlineFlashcard';
 import InlineQuiz from './InlineQuiz';
 import { fixChartFormat, processAIResponse } from '../utils/chartFixer';
 
-import 'katex/dist/katex.min.css';
 
 const CHART_REGEX = /\[CHART:(bar|line|pie|area):([^\]]+)\]([\s\S]*?)\[\\?\/CHART\]/gi;
 const MERMAID_REGEX = /```mermaid\n([\s\S]*?)```/gi;
@@ -157,10 +156,118 @@ const extractMCQs = (text) => {
     lastIndex = match.index + match[0].length;
   }
 
-  if (blocks.length === 0) return null;
+  if (blocks.length === 0) return extractLooseMCQs(text);
 
   suffixText = text.slice(lastIndex).trim();
   return { prefix: prefixText, questions: blocks, suffix: suffixText };
+};
+
+const splitCombinedOptions = (line, labels) => {
+  const cleaned = line.trim();
+  if (!cleaned) return [];
+
+  const explicit = cleaned.match(/(?:^|\s)([A-E])[\).:-]\s*([^A-E]*?)(?=\s+[A-E][\).:-]\s*|$)/gi);
+  if (explicit && explicit.length >= 2) {
+    return explicit.map(part => part.replace(/^\s*[A-E][\).:-]\s*/i, '').trim()).filter(Boolean);
+  }
+
+  const chunks = cleaned
+    .replace(/([a-z])([A-Z])/g, '$1|$2')
+    .split('|')
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  if (chunks.length >= labels.length) return chunks.slice(0, labels.length);
+
+  const words = cleaned.split(/\s+/).filter(Boolean);
+  if (words.length >= labels.length) return words.slice(0, labels.length - 1).concat(words.slice(labels.length - 1).join(' '));
+
+  return [cleaned];
+};
+
+const parseLooseMCQBlock = (block) => {
+  const lines = block
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean);
+
+  if (lines.length < 2) return null;
+
+  let labelIndex = lines.findIndex(line => /^[A-E](?:\s+[A-E]){1,4}$/i.test(line));
+  const singleLabelIndexes = lines
+    .map((line, index) => (/^[A-E]$/i.test(line) ? index : -1))
+    .filter(index => index >= 0);
+
+  if (singleLabelIndexes.length >= 2 && (labelIndex === -1 || singleLabelIndexes[0] < labelIndex)) {
+    labelIndex = -1;
+  }
+  let labels = [];
+  let questionLines = [];
+  let options = [];
+
+  if (labelIndex >= 0) {
+    labels = lines[labelIndex].split(/\s+/).map(label => label.toUpperCase());
+    questionLines = lines.slice(0, labelIndex);
+    const optionLines = lines.slice(labelIndex + 1);
+
+    if (optionLines.length >= labels.length) {
+      options = labels.map((label, index) => ({
+        label,
+        text: optionLines[index] || label,
+        isCorrect: false,
+      }));
+    } else if (optionLines.length === 1) {
+      const split = splitCombinedOptions(optionLines[0], labels);
+      options = labels.map((label, index) => ({
+        label,
+        text: split[index] || label,
+        isCorrect: false,
+      }));
+    }
+  } else {
+    if (singleLabelIndexes.length >= 2) {
+      questionLines = lines.slice(0, singleLabelIndexes[0]);
+      options = singleLabelIndexes.map((lineIndex, index) => {
+        const label = lines[lineIndex].toUpperCase();
+        const nextLabelIndex = singleLabelIndexes[index + 1] ?? lines.length;
+        return {
+          label,
+          text: lines.slice(lineIndex + 1, nextLabelIndex).join('\n').trim() || label,
+          isCorrect: false,
+        };
+      });
+    }
+  }
+
+  if (questionLines.length === 0 || options.length < 2) return null;
+
+  return {
+    questionText: questionLines.join('\n').trim(),
+    options,
+    explanation: '',
+    hasCorrect: false,
+  };
+};
+
+const extractLooseMCQs = (text) => {
+  const headingRegex = /(?:^|\n)\s*(?:MCQ\s*)?Question\s+\d+\s+of\s+\d+/gi;
+  const matches = [...text.matchAll(headingRegex)];
+  if (matches.length === 0) return null;
+
+  const questions = [];
+  const prefix = text.slice(0, matches[0].index).trim();
+  let suffix = '';
+
+  matches.forEach((match, index) => {
+    const start = match.index + match[0].length;
+    const end = matches[index + 1]?.index ?? text.length;
+    const parsed = parseLooseMCQBlock(text.slice(start, end));
+    if (parsed) questions.push(parsed);
+    if (index === matches.length - 1) suffix = text.slice(end).trim();
+  });
+
+  if (questions.length === 0) return null;
+  return { prefix, questions, suffix };
 };
 
 /**

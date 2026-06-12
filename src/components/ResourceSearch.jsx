@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { searchPublicResources, importSharedPDFResource, importSharedAudioLecture, expandSearchTerms, hasUserAddedResource } from '../appwrite/resourceLibrary';
-import '../styles/ResourceSearch.css';
 
 /**
  * ResourceSearch — search the shared resource library and import resources.

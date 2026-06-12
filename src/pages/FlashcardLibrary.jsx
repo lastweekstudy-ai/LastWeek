@@ -25,7 +25,7 @@ const FlashcardLibrary = () => {
   const [allCards, setAllCards] = useState([]);
   const [dueCards, setDueCards] = useState([]);
   const [collections, setCollections] = useState([]);
-  const [selectedCollection, setSelectedCollection] = useState('all'); // 'all' | 'due' | collectionId
+  const [selectedCollection, setSelectedCollection] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -35,10 +35,13 @@ const FlashcardLibrary = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [newCollectionName, setNewCollectionName] = useState('');
   const [showNewCollectionInput, setShowNewCollectionInput] = useState(false);
-  const [movingCard, setMovingCard] = useState(null); // cardId being moved
+  const [movingCard, setMovingCard] = useState(null);
 
   useEffect(() => {
-    if (!user) { navigate('/auth'); return; }
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
     loadData();
   }, [user]);
 
@@ -60,7 +63,6 @@ const FlashcardLibrary = () => {
     }
   };
 
-  // ── Filtered cards ────────────────────────────────────────────────────────
   const filteredCards = useCallback(() => {
     let cards = allCards;
     if (selectedCollection === 'due') {
@@ -77,7 +79,6 @@ const FlashcardLibrary = () => {
     return cards;
   }, [allCards, dueCards, selectedCollection, searchQuery]);
 
-  // ── Review mode ───────────────────────────────────────────────────────────
   const startReview = () => {
     const cards = selectedCollection === 'due' ? dueCards : filteredCards();
     if (cards.length === 0) return;
@@ -92,7 +93,6 @@ const FlashcardLibrary = () => {
     try {
       const nextDate = getNextReviewDate(confidence);
       await updateFlashcard(card.$id, confidence, nextDate);
-      // Update local state
       setAllCards(prev => prev.map(c =>
         c.$id === card.$id ? { ...c, confidence, nextReviewAt: nextDate.toISOString() } : c
       ));
@@ -101,13 +101,12 @@ const FlashcardLibrary = () => {
     }
     if (reviewIndex + 1 >= reviewQueue.length) {
       setReviewMode(false);
-      loadData(); // Refresh after review session
+      loadData();
     } else {
       setReviewIndex(i => i + 1);
     }
   };
 
-  // ── Collection management ─────────────────────────────────────────────────
   const handleCreateCollection = async () => {
     if (!newCollectionName.trim()) return;
     try {
@@ -132,14 +131,16 @@ const FlashcardLibrary = () => {
   };
 
   const handleMoveCard = async (cardId, collectionId) => {
+    setMovingCard(cardId);
     try {
       await moveFlashcardToCollection(cardId, collectionId);
       setAllCards(prev => prev.map(c =>
         c.$id === cardId ? { ...c, collectionId: collectionId || null } : c
       ));
-      setMovingCard(null);
     } catch (err) {
       setError('Failed to move card: ' + err.message);
+    } finally {
+      setMovingCard(null);
     }
   };
 
@@ -154,34 +155,22 @@ const FlashcardLibrary = () => {
     }
   };
 
-  // ── Review mode UI ────────────────────────────────────────────────────────
   if (reviewMode) {
     const card = reviewQueue[reviewIndex];
     return (
-      <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-primary)', padding: '2rem 1rem' }}>
-        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-          {/* Header */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <button
-              onClick={() => setReviewMode(false)}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-secondary)', fontSize: '0.9rem' }}
-            >
-              ← Exit Review
+      <div className="flashcard-review-page">
+        <div className="flashcard-review-shell">
+          <div className="flashcard-review-header">
+            <button onClick={() => setReviewMode(false)} className="flashcard-review-exit">
+              Exit Review
             </button>
-            <span style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
+            <span className="flashcard-review-count">
               {reviewIndex + 1} / {reviewQueue.length}
             </span>
           </div>
-
-          {/* Progress bar */}
-          <div style={{ height: '4px', backgroundColor: 'var(--color-border)', borderRadius: '2px', marginBottom: '2rem' }}>
-            <div style={{
-              height: '100%', borderRadius: '2px', backgroundColor: 'var(--color-accent)',
-              width: `${((reviewIndex) / reviewQueue.length) * 100}%`,
-              transition: 'width 0.3s ease',
-            }} />
+          <div className="flashcard-review-progress">
+            <div style={{ width: `${(reviewIndex / reviewQueue.length) * 100}%` }} />
           </div>
-
           <Flashcard
             front={card.front}
             back={card.back}
@@ -197,118 +186,74 @@ const FlashcardLibrary = () => {
   const dueCount = dueCards.length;
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: 'var(--color-bg-primary)' }}>
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '2rem 1rem' }}>
-
-        {/* ── Header ─────────────────────────────────────────────────────── */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+    <div className="flashcard-library-page">
+      <div className="flashcard-library-shell">
+        <div className="flashcard-library-header">
           <div>
-            <h1 style={{ margin: 0, fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-              🃏 Flashcard Library
-            </h1>
-            <p style={{ margin: '0.25rem 0 0', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}>
-              {allCards.length} cards total · {dueCount} due for review
-            </p>
+            <h1>Flashcard Library</h1>
+            <p>{allCards.length} cards total · {dueCount} due for review</p>
           </div>
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div className="flashcard-library-actions">
             {dueCount > 0 && (
               <button
                 onClick={() => { setSelectedCollection('due'); startReview(); }}
-                style={{
-                  padding: '0.6rem 1.25rem', borderRadius: '8px', border: 'none',
-                  backgroundColor: 'var(--color-accent)', color: 'white',
-                  cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
-                }}
+                className="btn btn-primary"
               >
-                📚 Review {dueCount} Due
+                Review {dueCount} Due
               </button>
             )}
-            <button
-              onClick={() => setShowCreateModal(true)}
-              style={{
-                padding: '0.6rem 1.25rem', borderRadius: '8px',
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-secondary)',
-                color: 'var(--color-text-primary)',
-                cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
-              }}
-            >
+            <button onClick={() => setShowCreateModal(true)} className="btn btn-secondary">
               + New Card
             </button>
           </div>
         </div>
 
-        {error && (
-          <div style={{ padding: '0.75rem 1rem', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', color: '#dc2626', marginBottom: '1rem', fontSize: '0.875rem' }}>
-            {error}
-          </div>
-        )}
+        {error && <div className="flashcard-error">{error}</div>}
 
-        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+        <div className="flashcard-library-layout">
+          <aside className="flashcard-collections">
+            <div className="flashcard-collection-panel">
+              <div className="flashcard-panel-title">Collections</div>
 
-          {/* ── Sidebar: Collections ──────────────────────────────────────── */}
-          <div style={{ width: '220px', flexShrink: 0 }}>
-            <div style={{ backgroundColor: 'var(--color-bg-secondary)', borderRadius: '12px', border: '1px solid var(--color-border)', overflow: 'hidden' }}>
-              <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid var(--color-border)', fontWeight: 600, fontSize: '0.85rem', color: 'var(--color-text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Collections
-              </div>
-
-              {/* All / Due */}
               {[
-                { id: 'all', label: `All Cards`, count: allCards.length, icon: '📋' },
-                { id: 'due', label: `Due Today`, count: dueCount, icon: '⏰' },
+                { id: 'all', label: 'All Cards', count: allCards.length },
+                { id: 'due', label: 'Due Today', count: dueCount },
               ].map(item => (
                 <button
                   key={item.id}
                   onClick={() => setSelectedCollection(item.id)}
-                  style={{
-                    width: '100%', textAlign: 'left', padding: '0.65rem 1rem',
-                    border: 'none', cursor: 'pointer',
-                    backgroundColor: selectedCollection === item.id ? 'rgba(var(--color-accent-rgb),0.1)' : 'transparent',
-                    color: selectedCollection === item.id ? 'var(--color-accent)' : 'var(--color-text-primary)',
-                    fontWeight: selectedCollection === item.id ? 600 : 400,
-                    fontSize: '0.9rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  }}
+                  className={`flashcard-collection-item ${selectedCollection === item.id ? 'active' : ''}`}
                 >
-                  <span>{item.icon} {item.label}</span>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>{item.count}</span>
+                  <span>{item.label}</span>
+                  <span>{item.count}</span>
                 </button>
               ))}
 
-              {/* User collections */}
               {collections.map(col => {
                 const count = allCards.filter(c => c.collectionId === col.$id).length;
                 return (
-                  <div key={col.$id} style={{ display: 'flex', alignItems: 'center' }}>
+                  <div key={col.$id} className="flashcard-collection-row">
                     <button
                       onClick={() => setSelectedCollection(col.$id)}
-                      style={{
-                        flex: 1, textAlign: 'left', padding: '0.65rem 1rem',
-                        border: 'none', cursor: 'pointer',
-                        backgroundColor: selectedCollection === col.$id ? 'rgba(var(--color-accent-rgb),0.1)' : 'transparent',
-                        color: selectedCollection === col.$id ? 'var(--color-accent)' : 'var(--color-text-primary)',
-                        fontWeight: selectedCollection === col.$id ? 600 : 400,
-                        fontSize: '0.9rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      }}
+                      className={`flashcard-collection-item ${selectedCollection === col.$id ? 'active' : ''}`}
                     >
-                      <span>{col.icon || '📚'} {col.name}</span>
-                      <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>{count}</span>
+                      <span>{col.name}</span>
+                      <span>{count}</span>
                     </button>
                     <button
                       onClick={() => handleDeleteCollection(col.$id)}
                       title="Delete collection"
-                      style={{ padding: '0.5rem 0.6rem', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: '0.75rem' }}
+                      className="flashcard-delete-collection"
                     >
-                      ✕
+                      ×
                     </button>
                   </div>
                 );
               })}
 
-              {/* New collection */}
-              <div style={{ padding: '0.5rem', borderTop: '1px solid var(--color-border)' }}>
+              <div className="flashcard-new-collection">
                 {showNewCollectionInput ? (
-                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                  <div className="flashcard-new-collection-form">
                     <input
                       type="text"
                       value={newCollectionName}
@@ -316,20 +261,16 @@ const FlashcardLibrary = () => {
                       onKeyDown={e => e.key === 'Enter' && handleCreateCollection()}
                       placeholder="Name..."
                       autoFocus
-                      style={{
-                        flex: 1, padding: '0.4rem 0.5rem', borderRadius: '6px',
-                        border: '1px solid var(--color-accent)',
-                        backgroundColor: 'var(--color-bg-primary)',
-                        color: 'var(--color-text-primary)', fontSize: '0.85rem',
-                      }}
                     />
-                    <button onClick={handleCreateCollection} style={{ padding: '0.4rem 0.6rem', borderRadius: '6px', border: 'none', backgroundColor: 'var(--color-accent)', color: 'white', cursor: 'pointer', fontSize: '0.8rem' }}>✓</button>
-                    <button onClick={() => { setShowNewCollectionInput(false); setNewCollectionName(''); }} style={{ padding: '0.4rem 0.5rem', borderRadius: '6px', border: 'none', backgroundColor: 'transparent', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: '0.8rem' }}>✕</button>
+                    <button onClick={handleCreateCollection}>Save</button>
+                    <button onClick={() => { setShowNewCollectionInput(false); setNewCollectionName(''); }}>
+                      Cancel
+                    </button>
                   </div>
                 ) : (
                   <button
                     onClick={() => setShowNewCollectionInput(true)}
-                    style={{ width: '100%', padding: '0.5rem', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: '0.85rem', textAlign: 'left' }}
+                    className="flashcard-new-collection-trigger"
                   >
                     + New collection
                   </button>
@@ -337,167 +278,85 @@ const FlashcardLibrary = () => {
               </div>
             </div>
 
-            {/* Review button for current filter */}
             {cards.length > 0 && (
-              <button
-                onClick={startReview}
-                style={{
-                  width: '100%', marginTop: '0.75rem', padding: '0.65rem',
-                  borderRadius: '8px', border: '1px solid var(--color-accent)',
-                  backgroundColor: 'transparent', color: 'var(--color-accent)',
-                  cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
-                }}
-              >
-                ▶ Review These ({cards.length})
+              <button onClick={startReview} className="flashcard-review-filter">
+                Review These ({cards.length})
               </button>
             )}
-          </div>
+          </aside>
 
-          {/* ── Main: Card Grid ───────────────────────────────────────────── */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {/* Search */}
+          <main className="flashcard-library-main">
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search cards..."
-              style={{
-                width: '100%', boxSizing: 'border-box',
-                padding: '0.65rem 1rem', borderRadius: '8px',
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-secondary)',
-                color: 'var(--color-text-primary)',
-                fontSize: '0.9rem', marginBottom: '1rem',
-              }}
+              className="flashcard-search"
             />
 
             {loading ? (
-              <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-muted)' }}>
-                Loading flashcards…
-              </div>
+              <div className="flashcard-library-loading">Loading flashcards...</div>
             ) : cards.length === 0 ? (
-              <div style={{
-                textAlign: 'center', padding: '3rem',
-                backgroundColor: 'var(--color-bg-secondary)',
-                borderRadius: '12px', border: '1px solid var(--color-border)',
-              }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🃏</div>
-                <p style={{ color: 'var(--color-text-muted)', marginBottom: '1rem' }}>
+              <div className="flashcard-library-empty">
+                <div>Flashcards</div>
+                <p>
                   {selectedCollection === 'due'
                     ? 'No cards due for review right now!'
                     : 'No flashcards here yet.'}
                 </p>
-                <button
-                  onClick={() => setShowCreateModal(true)}
-                  style={{
-                    padding: '0.6rem 1.25rem', borderRadius: '8px', border: 'none',
-                    backgroundColor: 'var(--color-accent)', color: 'white',
-                    cursor: 'pointer', fontWeight: 600,
-                  }}
-                >
+                <button onClick={() => setShowCreateModal(true)} className="btn btn-primary">
                   + Create your first card
                 </button>
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+              <div className="flashcard-card-grid">
                 {cards.map(card => {
                   const isDue = new Date(card.nextReviewAt) <= new Date();
                   const col = collections.find(c => c.$id === card.collectionId);
                   return (
-                    <div
-                      key={card.$id}
-                      style={{
-                        backgroundColor: 'var(--color-bg-secondary)',
-                        borderRadius: '10px',
-                        border: `1px solid ${isDue ? 'var(--color-accent)' : 'var(--color-border)'}`,
-                        padding: '1rem',
-                        position: 'relative',
-                      }}
-                    >
-                      {/* Due badge */}
-                      {isDue && (
-                        <span style={{
-                          position: 'absolute', top: '0.6rem', right: '0.6rem',
-                          backgroundColor: 'var(--color-accent)', color: 'white',
-                          fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem',
-                          borderRadius: '999px',
-                        }}>
-                          DUE
-                        </span>
-                      )}
+                    <div key={card.$id} className={`flashcard-library-card ${isDue ? 'is-due' : ''}`}>
+                      {isDue && <span className="flashcard-due-badge">DUE</span>}
 
-                      {/* Front */}
-                      <p style={{
-                        margin: '0 0 0.5rem', fontWeight: 600,
-                        color: 'var(--color-text-primary)', fontSize: '0.9rem',
-                        overflow: 'hidden', display: '-webkit-box',
-                        WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                      }}>
-                        {card.front}
-                      </p>
+                      <p className="flashcard-card-front">{card.front}</p>
+                      <p className="flashcard-card-back">{card.back}</p>
 
-                      {/* Back preview */}
-                      <p style={{
-                        margin: '0 0 0.75rem', color: 'var(--color-text-muted)',
-                        fontSize: '0.8rem',
-                        overflow: 'hidden', display: '-webkit-box',
-                        WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-                      }}>
-                        {card.back}
-                      </p>
-
-                      {/* Meta row */}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.4rem' }}>
-                        <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
-                          <span style={{
-                            fontSize: '0.72rem', fontWeight: 600, padding: '0.15rem 0.5rem',
-                            borderRadius: '999px', backgroundColor: `${CONFIDENCE_COLORS[card.confidence || 0]}20`,
-                            color: CONFIDENCE_COLORS[card.confidence || 0],
-                          }}>
+                      <div className="flashcard-card-meta">
+                        <div className="flashcard-card-tags">
+                          <span
+                            className="flashcard-confidence-chip"
+                            style={{
+                              backgroundColor: `${CONFIDENCE_COLORS[card.confidence || 0]}20`,
+                              color: CONFIDENCE_COLORS[card.confidence || 0],
+                            }}
+                          >
                             {CONFIDENCE_LABELS[card.confidence || 0]}
                           </span>
-                          {col && (
-                            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
-                              {col.icon} {col.name}
-                            </span>
-                          )}
+                          {col && <span className="flashcard-card-chip">{col.name}</span>}
                           {card.source && card.source !== 'ai' && (
-                            <span style={{ fontSize: '0.72rem', color: 'var(--color-text-muted)' }}>
-                              {card.source === 'manual' ? '✏️' : card.source === 'language' ? '🌐' : '📝'}
+                            <span className="flashcard-card-chip">
+                              {card.source === 'manual' ? 'Manual' : card.source === 'language' ? 'Language' : 'Imported'}
                             </span>
                           )}
                         </div>
 
-                        {/* Actions */}
-                        <div style={{ display: 'flex', gap: '0.25rem' }}>
-                          {/* Move to collection */}
+                        <div className="flashcard-card-actions">
                           <select
                             value={card.collectionId || ''}
                             onChange={e => handleMoveCard(card.$id, e.target.value || null)}
                             title="Move to collection"
-                            style={{
-                              fontSize: '0.75rem', padding: '0.2rem 0.3rem',
-                              borderRadius: '4px', border: '1px solid var(--color-border)',
-                              backgroundColor: 'var(--color-bg-tertiary)',
-                              color: 'var(--color-text-secondary)', cursor: 'pointer',
-                            }}
+                            disabled={movingCard === card.$id}
                           >
                             <option value="">No collection</option>
                             {collections.map(c => (
-                              <option key={c.$id} value={c.$id}>{c.icon} {c.name}</option>
+                              <option key={c.$id} value={c.$id}>{c.name}</option>
                             ))}
                           </select>
                           <button
                             onClick={() => handleDeleteCard(card.$id)}
                             title="Delete card"
-                            style={{
-                              padding: '0.2rem 0.4rem', borderRadius: '4px',
-                              border: '1px solid var(--color-border)',
-                              backgroundColor: 'transparent',
-                              color: '#ef4444', cursor: 'pointer', fontSize: '0.75rem',
-                            }}
+                            className="flashcard-card-delete"
                           >
-                            🗑
+                            Delete
                           </button>
                         </div>
                       </div>
@@ -506,11 +365,10 @@ const FlashcardLibrary = () => {
                 })}
               </div>
             )}
-          </div>
+          </main>
         </div>
       </div>
 
-      {/* Create Modal */}
       <FlashcardCreateModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}

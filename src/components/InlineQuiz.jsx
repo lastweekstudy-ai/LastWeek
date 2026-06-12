@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import EnhancedMessageFormatter from './EnhancedMessageFormatter';
-import '../styles/InlineQuiz.css';
 
 /**
  * InlineQuiz — renders a single MCQ question with clickable options.

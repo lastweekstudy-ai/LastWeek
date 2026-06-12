@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 import { getLanguageUser, createLanguageUser, getRoadmap, saveRoadmap, LANGUAGES } from '../appwrite/languageLearning';
 import { generateRoadmap, generateLesson } from '../services/languageAI';
 import useSession from '../hooks/useSession';
-import './LanguageLearning.css';
 
 // Fallback roadmap when AI is rate limited
 const createFallbackRoadmap = (targetLanguage) => {

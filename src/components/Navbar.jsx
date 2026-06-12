@@ -17,8 +17,6 @@ import {
 } from './Icons';
 import useKeyboardShortcuts from '../hooks/useKeyboardShortcuts';
 import { useAuth } from '../context/AuthContext';
-import '../styles/StorageIndicator.css';
-import '../styles/Navbar.css';
 
 /* ─── icon helpers ─────────────────────────────────────────── */
 const IconDashboard = () => (
@@ -67,24 +65,24 @@ const IconFlashcard = () => (
 /* ─── NavItem — consistent row template ────────────────────── */
 const NavItem = ({ icon, label, onClick, active, badge }) => (
   <button
-    className={`nm-item${active ? ' nm-item--active' : ''}`}
+    className={`nav-item w-full justify-start ${active ? 'nav-item-active' : ''}`}
     onClick={onClick}
     role="menuitem"
   >
-    <span className="nm-item__icon">{icon}</span>
-    <span className="nm-item__label">{label}</span>
-    {badge && <span className="nm-item__badge">{badge}</span>}
+    <span className="flex h-5 w-5 items-center justify-center">{icon}</span>
+    <span className="flex-1 text-left">{label}</span>
+    {badge && <span className="rounded-full bg-brand-100 px-2 py-0.5 text-[11px] font-semibold text-brand-700 dark:bg-brand-500/15 dark:text-brand-200">{badge}</span>}
   </button>
 );
 
 /* ─── NavRow — label + right-side widget ───────────────────── */
 const NavRow = ({ icon, label, children }) => (
-  <div className="nm-row">
-    <span className="nm-row__left">
-      <span className="nm-row__icon">{icon}</span>
-      <span className="nm-row__label">{label}</span>
+  <div className="flex items-center justify-between gap-3 rounded-2xl px-3 py-2 text-sm text-surface-700 dark:text-surface-200">
+    <span className="flex min-w-0 items-center gap-3">
+      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-brand-600 shadow-soft dark:bg-surface-900 dark:text-brand-300">{icon}</span>
+      <span className="truncate font-medium">{label}</span>
     </span>
-    <span className="nm-row__right">{children}</span>
+    <span className="flex shrink-0 items-center gap-2">{children}</span>
   </div>
 );
 
@@ -96,6 +94,10 @@ const Navbar = ({ isSessionPage = false }) => {
   const { activeSession, switchMode } = useSession();
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [desktopNavOpen, setDesktopNavOpen] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.localStorage.getItem('lastweek-desktop-nav-open') !== 'false';
+  });
 
   /* close on route change */
   useEffect(() => { setDrawerOpen(false); }, [location.pathname]);
@@ -105,6 +107,12 @@ const Navbar = ({ isSessionPage = false }) => {
     document.body.style.overflow = drawerOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [drawerOpen]);
+
+  useEffect(() => {
+    document.body.classList.toggle('nav-collapsed', !desktopNavOpen);
+    window.localStorage.setItem('lastweek-desktop-nav-open', desktopNavOpen ? 'true' : 'false');
+    return () => document.body.classList.remove('nav-collapsed');
+  }, [desktopNavOpen]);
 
   useKeyboardShortcuts([
     { key: 'k', ctrl: true, callback: () => setShowShortcuts(true) },
@@ -148,19 +156,19 @@ const Navbar = ({ isSessionPage = false }) => {
     <>
       {/* Backdrop */}
       <div
-        className="nm-backdrop"
+        className="fixed inset-0 z-40 bg-surface-950/70 backdrop-blur-sm lg:hidden"
         onClick={() => setDrawerOpen(false)}
         aria-hidden="true"
       />
 
       {/* Drawer panel */}
-      <div className="nm-drawer" role="dialog" aria-label="Navigation menu" aria-modal="true">
+      <div className="fixed inset-y-0 right-0 z-50 flex w-full max-w-sm flex-col border-l border-white/10 bg-white p-4 shadow-strong dark:bg-surface-950 lg:hidden" role="dialog" aria-label="Navigation menu" aria-modal="true">
 
         {/* Header */}
-        <div className="nm-drawer__header">
-          <span className="nm-drawer__title">Menu</span>
+        <div className="flex items-center justify-between border-b border-surface-200 pb-4 dark:border-surface-800">
+          <span className="text-sm font-semibold uppercase tracking-[0.18em] text-surface-500 dark:text-surface-400">Menu</span>
           <button
-            className="nm-drawer__close"
+            className="btn-ghost flex h-10 w-10 items-center justify-center rounded-full"
             onClick={() => setDrawerOpen(false)}
             aria-label="Close menu"
           >
@@ -172,14 +180,14 @@ const Navbar = ({ isSessionPage = false }) => {
         </div>
 
         {/* Scrollable body */}
-        <div className="nm-drawer__body">
+        <div className="flex-1 space-y-5 overflow-y-auto py-5">
 
           {/* ── Session mode switcher ── */}
           {isOnSessionPage && activeSession && (
-            <section className="nm-section">
-              <p className="nm-section__label">Switch Mode</p>
+            <section className="space-y-2">
+              <p className="px-3 text-xs font-semibold uppercase tracking-[0.18em] text-surface-500 dark:text-surface-400">Switch Mode</p>
               <select
-                className="nm-select"
+                className="input-base"
                 value={activeSession.mode || 'mental_model'}
                 onChange={(e) => { handleSwitchMode(e.target.value); setDrawerOpen(false); }}
               >
@@ -194,8 +202,8 @@ const Navbar = ({ isSessionPage = false }) => {
 
           {/* ── Navigation links ── */}
           {!isOnSessionPage && (
-            <section className="nm-section">
-              <p className="nm-section__label">Navigate</p>
+            <section className="space-y-1">
+              <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-surface-500 dark:text-surface-400">Navigate</p>
               <NavItem icon={<IconDashboard />}  label="Dashboard"         active={is('/dashboard')}         onClick={() => go('/dashboard')} />
               <NavItem icon={<IconExam />}        label="Exam Planner"      active={is('/exam-planner')}      onClick={() => go('/exam-planner')} />
               <NavItem icon={<IconLanguage />}    label="Language Learning" active={is('/language-learning')} onClick={() => go('/language-learning')} />
@@ -204,8 +212,8 @@ const Navbar = ({ isSessionPage = false }) => {
           )}
 
           {/* ── Utilities ── */}
-          <section className="nm-section">
-            <p className="nm-section__label">Utilities</p>
+          <section className="space-y-1">
+            <p className="px-3 pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-surface-500 dark:text-surface-400">Utilities</p>
 
             <NavItem
               icon={<IconKeyboard />}
@@ -234,7 +242,7 @@ const Navbar = ({ isSessionPage = false }) => {
               }
               label="Theme"
             >
-              <div style={{ display: 'flex', gap: '8px' }}>
+              <div className="flex items-center gap-2">
                 <DarkModeToggle />
                 <ThemeToggle />
               </div>
@@ -256,9 +264,9 @@ const Navbar = ({ isSessionPage = false }) => {
           </section>
 
           {/* ── Account ── */}
-          <section className="nm-section nm-section--last">
-            <p className="nm-section__label">Account</p>
-            <div className="nm-profile-wrapper">
+          <section className="space-y-2 border-t border-surface-200 pt-5 dark:border-surface-800">
+            <p className="px-3 text-xs font-semibold uppercase tracking-[0.18em] text-surface-500 dark:text-surface-400">Account</p>
+            <div className="px-1">
               <ProfileDropdown />
             </div>
           </section>
@@ -271,22 +279,31 @@ const Navbar = ({ isSessionPage = false }) => {
 
   return (
     <>
-      <nav className="navbar">
-        <div className="container">
-          <div className="navbar-content">
+      <nav className={`fixed left-0 top-0 z-40 w-full border-b border-surface-200/80 bg-white/90 shadow-soft backdrop-blur-xl transition-transform duration-200 dark:border-surface-800 dark:bg-surface-950/88 lg:h-screen lg:w-64 lg:border-b-0 lg:border-r ${desktopNavOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'}`}>
+        <div className="mx-auto flex h-full max-w-7xl px-4 lg:max-w-none lg:flex-col lg:px-3 lg:py-4">
+          <div className="flex h-16 w-full items-center justify-between gap-3 lg:h-full lg:flex-col lg:items-stretch lg:justify-start">
 
             {/* Left: brand + session info */}
-            <div className="navbar-left">
-              <div className="navbar-brand" onClick={() => navigate('/dashboard')}>
-                <img src="/logos/lastweek_main_logo.png" alt="LastWeek" className="navbar-logo" />
+            <div className="flex min-w-0 items-center gap-3 lg:flex-col lg:items-stretch">
+              <div className="flex cursor-pointer items-center gap-3 rounded-2xl px-2 py-2 transition hover:bg-surface-100 dark:hover:bg-surface-900" onClick={() => navigate('/dashboard')}>
+                <img src="/logos/lastweek_main_logo.png" alt="LastWeek" className="h-9 w-9 rounded-xl object-contain" />
+                <span className="hidden text-lg font-bold text-surface-950 dark:text-white sm:inline lg:inline">LastWeek</span>
               </div>
+              <button
+                className="btn-ghost hidden h-9 w-9 items-center justify-center rounded-full lg:flex"
+                onClick={() => setDesktopNavOpen(false)}
+                title="Collapse navigation"
+                aria-label="Collapse navigation"
+              >
+                ×
+              </button>
 
               {isOnSessionPage && activeSession && (
-                <div className="navbar-session-info">
-                  {getModeIcon()}
-                  <div>
-                    <div className="navbar-session-mode">{getModeName()}</div>
-                    <div className="navbar-session-subject">{activeSession.subject}</div>
+                <div className="hidden min-w-0 items-center gap-3 rounded-2xl border border-surface-200 bg-surface-50 px-3 py-2 text-sm dark:border-surface-800 dark:bg-surface-900 sm:flex lg:mt-2">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-brand-700 dark:bg-brand-500/15 dark:text-brand-200">{getModeIcon()}</span>
+                  <div className="min-w-0">
+                    <div className="truncate font-semibold text-surface-950 dark:text-white">{getModeName()}</div>
+                    <div className="truncate text-xs text-surface-500 dark:text-surface-400">{activeSession.subject}</div>
                   </div>
                 </div>
               )}
@@ -295,10 +312,10 @@ const Navbar = ({ isSessionPage = false }) => {
             {user && (
               <>
                 {/* Desktop actions */}
-                <div className="navbar-actions navbar-desktop-actions">
+                <div className="hidden w-full flex-1 flex-col gap-2 lg:flex">
                   {isOnSessionPage && activeSession && (
                     <select
-                      className="mode-switcher"
+                      className="input-base mb-3"
                       value={activeSession?.mode || 'mental_model'}
                       onChange={(e) => handleSwitchMode(e.target.value)}
                     >
@@ -311,44 +328,46 @@ const Navbar = ({ isSessionPage = false }) => {
                   )}
                   {!isOnSessionPage && <StorageIndicator userId={user.$id} className="compact" lazy={true} />}
                   {!isOnSessionPage && (
-                    <button className="btn btn-ghost" onClick={() => navigate('/exam-planner')}
-                      style={{ color: is('/exam-planner') ? 'var(--color-accent)' : undefined }}>
+                    <button className={`nav-item justify-start ${is('/exam-planner') ? 'nav-item-active' : ''}`} onClick={() => navigate('/exam-planner')}>
                       <IconExam /> Exam Planner
                     </button>
                   )}
                   {!isOnSessionPage && (
-                    <button className="btn btn-ghost" onClick={() => navigate('/language-learning')}
-                      style={{ color: is('/language-learning') ? 'var(--color-accent)' : undefined }}>
+                    <button className={`nav-item justify-start ${is('/language-learning') ? 'nav-item-active' : ''}`} onClick={() => navigate('/language-learning')}>
                       <IconLanguage /> Language Learning
                     </button>
                   )}
                   {!isOnSessionPage && (
-                    <button className="btn btn-ghost" onClick={() => navigate('/flashcards')}
-                      style={{ color: is('/flashcards') ? 'var(--color-accent)' : undefined }}>
+                    <button className={`nav-item justify-start ${is('/flashcards') ? 'nav-item-active' : ''}`} onClick={() => navigate('/flashcards')}>
                       <IconFlashcard /> Flashcards
                     </button>
                   )}
-                  <button className="btn btn-ghost btn-icon" onClick={() => setShowShortcuts(true)}
+                  <button className="nav-item justify-start" onClick={() => setShowShortcuts(true)}
                     title="Keyboard Shortcuts (Ctrl+K)" aria-label="Show keyboard shortcuts">
-                    <IconKeyboard />
+                    <IconKeyboard /> Shortcuts
                   </button>
-                  <DarkModeToggle />
-                  <ThemeToggle />
-                  {isSessionPage && <PomodoroTimer />}
-                  <ProfileDropdown />
+                  <div className="mt-auto space-y-3 border-t border-surface-200 pt-4 dark:border-surface-800">
+                    {isSessionPage && <PomodoroTimer />}
+                    <div className="flex items-center gap-2">
+                      <DarkModeToggle />
+                      <ThemeToggle />
+                    </div>
+                    <ProfileDropdown />
+                  </div>
                 </div>
 
                 {/* Mobile hamburger */}
-                <div className="navbar-mobile-wrapper">
+                <div className="flex items-center gap-2 lg:hidden">
+                  <DarkModeToggle />
                   <button
-                    className={`navbar-hamburger${drawerOpen ? ' open' : ''}`}
+                    className="btn-ghost flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full"
                     onClick={() => setDrawerOpen(!drawerOpen)}
                     aria-label="Toggle navigation menu"
                     aria-expanded={drawerOpen}
                   >
-                    <span className="hamburger-bar"></span>
-                    <span className="hamburger-bar"></span>
-                    <span className="hamburger-bar"></span>
+                    <span className={`h-0.5 w-5 rounded-full bg-current transition ${drawerOpen ? 'translate-y-2 rotate-45' : ''}`}></span>
+                    <span className={`h-0.5 w-5 rounded-full bg-current transition ${drawerOpen ? 'opacity-0' : ''}`}></span>
+                    <span className={`h-0.5 w-5 rounded-full bg-current transition ${drawerOpen ? '-translate-y-2 -rotate-45' : ''}`}></span>
                   </button>
                 </div>
               </>
@@ -356,6 +375,17 @@ const Navbar = ({ isSessionPage = false }) => {
           </div>
         </div>
       </nav>
+
+      {!desktopNavOpen && (
+        <button
+          className="btn-primary fixed left-4 top-4 z-50 hidden h-11 w-11 items-center justify-center rounded-full p-0 lg:flex"
+          onClick={() => setDesktopNavOpen(true)}
+          title="Open navigation"
+          aria-label="Open navigation"
+        >
+          ☰
+        </button>
+      )}
 
       {/* Drawer + backdrop via portal */}
       {drawer}

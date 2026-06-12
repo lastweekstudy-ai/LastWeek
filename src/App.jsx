@@ -47,29 +47,32 @@ import AdminReviews from './pages/admin/Reviews';
 import AdminSettings from './pages/admin/Settings';
 import AdminTestingUsers from './pages/admin/TestingUsers';
 
-// Import variables FIRST - provides CSS custom properties for entire app
-import './styles/variables.css';
+const LoadingScreen = ({ label = 'Loading...' }) => (
+  <div className="flex min-h-screen items-center justify-center bg-brand-50 px-4 text-surface-600 dark:bg-surface-950 dark:text-surface-300">
+    <div className="glass-card w-full max-w-sm p-6 text-center">
+      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-brand-100 border-t-brand-600 dark:border-surface-800 dark:border-t-brand-300" />
+      <p className="text-sm font-semibold">{label}</p>
+    </div>
+  </div>
+);
 
-// Then import other stylesheets
-import './styles/global.css';
-import './styles/NotebookTheme.css';
-import './styles/ModePage.css';
-import './styles/ErrorBoundary.css';
-import './styles/MessageFormatter.css';
-import './styles/RichTextViewer.css';
-import './styles/FilePromptInput.css';
-import './styles/mobile-responsive.css';
+const AppShell = ({ children, isSessionPage = false }) => (
+  <>
+    <Navbar isSessionPage={isSessionPage} />
+    <main className="min-h-screen bg-brand-50 pt-20 text-surface-900 dark:bg-surface-950 dark:text-surface-100 lg:pl-64 lg:pt-0">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        {children}
+      </div>
+    </main>
+  </>
+);
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
-    return (
-      <div className="loading-state">
-        <p>Loading...</p>
-      </div>
-    );
+    return <LoadingScreen />;
   }
   
   return user ? children : <Navigate to="/auth" replace />;
@@ -78,7 +81,7 @@ const ProtectedRoute = ({ children }) => {
 // Language Learning Guard — blocks free-tier users (but allows testing users)
 const LanguageLearningGuard = ({ children }) => {
   const { canDo, loading, isTestingMode } = useCombinedLimits();
-  if (loading) return <div className="loading-state"><p>Loading...</p></div>;
+  if (loading) return <LoadingScreen />;
   
   // Testing users get limited access
   if (isTestingMode) {
@@ -97,7 +100,7 @@ const AdminRoute = ({ children }) => {
   const { user, loading } = useAuth();
   
   if (loading) {
-    return <div className="loading-state"><p>Loading...</p></div>;
+    return <LoadingScreen />;
   }
   
   const isAdmin = user?.labels?.includes('admin');
@@ -152,11 +155,7 @@ const SessionRoute = () => {
   }, [sessionId]);
   
   if (!sessionLoaded || !activeSession) {
-    return (
-      <div className="loading-state">
-        <p>Loading session...</p>
-      </div>
-    );
+    return <LoadingScreen label="Loading session..." />;
   }
   
   // Route to appropriate mode component based on session mode
@@ -184,7 +183,7 @@ function App() {
           <SessionProvider>
             <MigrationHelper />
             <Router>
-              <div className="app">
+              <div className="min-h-screen bg-brand-50 text-surface-900 antialiased dark:bg-surface-950 dark:text-surface-100">
                 <Routes>
               {/* Public routes */}
               <Route path="/" element={<LandingPage />} />
@@ -205,8 +204,9 @@ function App() {
                 path="/dashboard" 
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <Dashboard />
+                    <AppShell>
+                      <Dashboard />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />
@@ -215,8 +215,9 @@ function App() {
                 path="/mode-select" 
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <ModeSelector />
+                    <AppShell>
+                      <ModeSelector />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />
@@ -225,8 +226,9 @@ function App() {
                 path="/settings" 
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <Settings />
+                    <AppShell>
+                      <Settings />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />
@@ -235,8 +237,9 @@ function App() {
                 path="/pdf-manager" 
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <PDFManager />
+                    <AppShell>
+                      <PDFManager />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />
@@ -245,8 +248,9 @@ function App() {
                 path="/exam-planner"
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <ExamPlanner />
+                    <AppShell>
+                      <ExamPlanner />
+                    </AppShell>
                   </ProtectedRoute>
                 }
               />
@@ -266,8 +270,9 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <LanguageLearningGuard>
-                      <Navbar />
-                      <LanguageLearning />
+                      <AppShell>
+                        <LanguageLearning />
+                      </AppShell>
                     </LanguageLearningGuard>
                   </ProtectedRoute>
                 } 
@@ -278,8 +283,9 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <LanguageLearningGuard>
-                      <Navbar />
-                      <LanguageLearningLessons />
+                      <AppShell>
+                        <LanguageLearningLessons />
+                      </AppShell>
                     </LanguageLearningGuard>
                   </ProtectedRoute>
                 } 
@@ -301,8 +307,9 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <LanguageLearningGuard>
-                      <Navbar />
-                      <LanguageLearningPractice />
+                      <AppShell>
+                        <LanguageLearningPractice />
+                      </AppShell>
                     </LanguageLearningGuard>
                   </ProtectedRoute>
                 } 
@@ -313,8 +320,9 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <LanguageLearningGuard>
-                      <Navbar />
-                      <LanguageLearning />
+                      <AppShell>
+                        <LanguageLearning />
+                      </AppShell>
                     </LanguageLearningGuard>
                   </ProtectedRoute>
                 } 
@@ -325,8 +333,9 @@ function App() {
                 path="/flashcards"
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <FlashcardLibrary />
+                    <AppShell>
+                      <FlashcardLibrary />
+                    </AppShell>
                   </ProtectedRoute>
                 }
               />
@@ -336,8 +345,9 @@ function App() {
                 path="/pricing"
                 element={
                   <ProtectedRoute>
-                    <Navbar />
-                    <Pricing />
+                    <AppShell>
+                      <Pricing />
+                    </AppShell>
                   </ProtectedRoute>
                 }
               />
@@ -370,8 +380,9 @@ function App() {
                 path="/session/:sessionId" 
                 element={
                   <ProtectedRoute>
-                    <Navbar isSessionPage={true} />
-                    <SessionRoute />
+                    <AppShell isSessionPage={true}>
+                      <SessionRoute />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />
@@ -381,8 +392,9 @@ function App() {
                 path="/session/new/mental-model" 
                 element={
                   <ProtectedRoute>
-                    <Navbar isSessionPage={true} />
-                    <MentalModel />
+                    <AppShell isSessionPage={true}>
+                      <MentalModel />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />
@@ -391,8 +403,9 @@ function App() {
                 path="/session/new/active-recall" 
                 element={
                   <ProtectedRoute>
-                    <Navbar isSessionPage={true} />
-                    <ActiveRecall />
+                    <AppShell isSessionPage={true}>
+                      <ActiveRecall />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />
@@ -401,8 +414,9 @@ function App() {
                 path="/session/new/focus-breakdown" 
                 element={
                   <ProtectedRoute>
-                    <Navbar isSessionPage={true} />
-                    <FocusBreakdown />
+                    <AppShell isSessionPage={true}>
+                      <FocusBreakdown />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />
@@ -411,8 +425,9 @@ function App() {
                 path="/session/new/collaborative-scholar" 
                 element={
                   <ProtectedRoute>
-                    <Navbar isSessionPage={true} />
-                    <CollaborativeScholar />
+                    <AppShell isSessionPage={true}>
+                      <CollaborativeScholar />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />
@@ -421,8 +436,9 @@ function App() {
                 path="/session/new/creative-synthesis" 
                 element={
                   <ProtectedRoute>
-                    <Navbar isSessionPage={true} />
-                    <CreativeSynthesis />
+                    <AppShell isSessionPage={true}>
+                      <CreativeSynthesis />
+                    </AppShell>
                   </ProtectedRoute>
                 } 
               />

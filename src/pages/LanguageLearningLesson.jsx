@@ -6,7 +6,6 @@ import { getLanguageUser, saveLessonProgress, addUserPoints, getLessonByModuleAn
 import SpeakingRecorder from '../components/SpeakingRecorder';
 import TTSHelpModal from '../components/TTSHelpModal';
 import { speak } from '../utils/geminiSpeech';
-import './LanguageLearningLesson.css';
 
 // Modules that require voice/speaking practice
 const SPEAKING_MODULES = ['pronunciation', 'speaking'];

@@ -1,6 +1,5 @@
 import React from 'react';
 import { PixelIcon } from '../../../components/shared/pixel-art/PixelIcons';
-import '../landing.css';
 
 const Features = () => {
   const features = [

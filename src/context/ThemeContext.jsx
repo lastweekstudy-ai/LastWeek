@@ -23,12 +23,12 @@ export const ThemeProvider = ({ children }) => {
   });
 
   const [mode, setMode] = useState(() => {
-    // Check localStorage first, default to light
+    // Check localStorage first, default to dark
     const savedMode = localStorage.getItem('lastweek-theme');
     if (savedMode && (savedMode === 'dark' || savedMode === 'light')) {
       return savedMode;
     }
-    return 'light';
+    return 'dark';
   });
 
   useEffect(() => {
@@ -40,6 +40,7 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     // Apply dark/light mode to document
     document.documentElement.setAttribute('data-theme', mode);
+    document.documentElement.classList.toggle('dark', mode === 'dark');
     localStorage.setItem('lastweek-theme', mode);
   }, [mode]);
 

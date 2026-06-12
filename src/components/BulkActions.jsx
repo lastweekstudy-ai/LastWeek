@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/BulkActions.css';
 
 const BulkActions = ({ selectedSessions, onDelete, onExport, onClearSelection }) => {
   if (selectedSessions.length === 0) return null;

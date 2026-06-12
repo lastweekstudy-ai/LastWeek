@@ -123,17 +123,7 @@ const UpgradeButton = ({
 
     if (badgeText) {
       return (
-        <span className={`upgrade-badge ${className}`} style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '0.4rem',
-          padding: '0.4rem 0.8rem',
-          borderRadius: '999px',
-          backgroundColor: 'rgba(var(--color-accent-rgb), 0.12)',
-          color: 'var(--color-accent)',
-          fontSize: '0.8rem',
-          fontWeight: 600,
-        }}>
+        <span className={`badge ${className}`}>
           {badgeText}
         </span>
       );
@@ -143,40 +133,23 @@ const UpgradeButton = ({
   // Show "Processing..." for a moment after payment before user re-fetches
   if (paid && !isPaid) {
     return (
-      <span style={{
-        display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
-        padding: '0.4rem 0.8rem', borderRadius: '999px',
-        backgroundColor: 'rgba(16,185,129,0.12)', color: '#10b981',
-        fontSize: '0.8rem', fontWeight: 600,
-      }}>
-        ✓ Payment successful — updating...
+      <span className="badge-green">
+        Payment successful - updating...
       </span>
     );
   }
 
   return (
-    <div style={{ display: 'inline-flex', flexDirection: 'column', gap: '0.25rem' }}>
+    <div className="inline-flex flex-col gap-1">
       <button
         onClick={handleCheckout}
         disabled={!navigateToPricing && (loading || !paddle)}
-        className={className}
-        style={{
-          padding: '0.6rem 1.25rem',
-          borderRadius: '8px',
-          border: 'none',
-          backgroundColor: 'var(--color-accent)',
-          color: 'white',
-          cursor: (!navigateToPricing && (loading || !paddle)) ? 'not-allowed' : 'pointer',
-          fontWeight: 600,
-          fontSize: '0.9rem',
-          opacity: (!navigateToPricing && (loading || !paddle)) ? 0.6 : 1,
-          transition: 'opacity 0.2s',
-        }}
+        className={`btn-primary justify-center disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
       >
         {navigateToPricing ? (label || 'View Plans') : (loading ? 'Opening Checkout...' : label)}
       </button>
       {error && (
-        <span style={{ fontSize: '0.75rem', color: '#ef4444' }}>{error}</span>
+        <span className="text-xs font-medium text-red-500">{error}</span>
       )}
     </div>
   );

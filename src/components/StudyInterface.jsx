@@ -8,9 +8,6 @@ import { createPDFHighlight, getPageHighlights, deletePDFHighlight, getPDFHighli
 import { extractText } from '../utils/pdfProcessor';
 import { clampTooltipX, TOOLTIP_OFFSET_ABOVE } from '../utils/studyUtils';
 import useGemini from '../hooks/useGemini';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-import '../styles/StudyInterface.css';
 
 // Configure PDF.js worker - use the worker from public folder
 if (typeof window !== 'undefined') {
@@ -68,7 +65,7 @@ const StudyInterface = ({
   
   // UI State
   const [showNotes, setShowNotes] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(() => window.innerWidth >= 768);
   const [pdfWidth, setPdfWidth] = useState(() => {
     const stored = localStorage.getItem('study-split-ratio');
     const parsed = stored ? parseFloat(stored) : NaN;
@@ -79,6 +76,7 @@ const StudyInterface = ({
   const [selectionTip, setSelectionTip] = useState(null); // { x, y, text }
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [mobileTab, setMobileTab] = useState('pdf'); // 'pdf' | 'chat'
+  const [chatOpen, setChatOpen] = useState(false);
   
   const containerRef = useRef(null);
   const resizeRef = useRef(null);
@@ -359,6 +357,7 @@ const StudyInterface = ({
     if (!highlightMode) return;
     // Only left button, not on toolbar buttons
     if (e.button !== 0) return;
+    if (!e.target.closest('.react-pdf__Page')) return;
     e.preventDefault();
     const viewerRect = pdfViewerRef.current?.getBoundingClientRect();
     if (!viewerRect) return;
@@ -498,18 +497,19 @@ const StudyInterface = ({
   };
 
   const highlightColorMap = {
-    yellow: '#ffeb3b',
-    green:  '#4caf50',
-    blue:   '#2196f3',
-    pink:   '#e91e63',
-    orange: '#ff9800',
-    purple: '#9c27b0',
+    yellow: 'rgba(255, 235, 59, 0.38)',
+    green:  'rgba(76, 175, 80, 0.34)',
+    blue:   'rgba(33, 150, 243, 0.32)',
+    pink:   'rgba(233, 30, 99, 0.30)',
+    orange: 'rgba(255, 152, 0, 0.32)',
+    purple: 'rgba(156, 39, 176, 0.28)',
   };
 
   // Touch handlers for mobile/tablet highlight support
   const handlePDFTouchStart = (e) => {
     if (!highlightMode) return;
     if (e.touches.length !== 1) return; // Only single touch
+    if (!e.target.closest('.react-pdf__Page')) return;
     e.preventDefault();
     const touch = e.touches[0];
     const viewerRect = pdfViewerRef.current?.getBoundingClientRect();
@@ -755,8 +755,10 @@ const StudyInterface = ({
 
       if (dx < 0) {
         setMobileTab('chat'); // swipe left → show chat
+        setChatOpen(true);
       } else {
         setMobileTab('pdf');  // swipe right → show pdf
+        setChatOpen(false);
       }
     };
 
@@ -947,12 +949,18 @@ const StudyInterface = ({
     window.getSelection()?.removeAllRanges();
     const question = `From PDF (page ${pageNumber}): "${text}"`;
     handleSendWithContext(question);
-    if (isMobile) setMobileTab('chat');
+    if (isMobile) {
+      setMobileTab('chat');
+      setChatOpen(true);
+    }
   };
 
   // Handle sending message with full resource context
   const handleSendWithContext = async (userMessage, aiContextMessage = null, fileAttachment = null) => {
-    if (isMobile) setMobileTab('chat');
+    if (isMobile) {
+      setMobileTab('chat');
+      setChatOpen(true);
+    }
 
     const pageHighlights = savedHighlights.filter(h => h.page === pageNumber);
     const highlightsText = pageHighlights.length > 0 
@@ -1077,20 +1085,39 @@ User Question: ${aiContextMessage || userMessage}`;
           <div className="mobile-tabs">
             <button
               className={`mobile-tab ${mobileTab === 'pdf' ? 'active' : ''}`}
-              onClick={() => setMobileTab('pdf')}
+              onClick={() => {
+                setMobileTab('pdf');
+                setChatOpen(false);
+              }}
             >
               📄 PDF
             </button>
             <button
               className={`mobile-tab ${mobileTab === 'chat' ? 'active' : ''}`}
-              onClick={() => setMobileTab('chat')}
+              onClick={() => {
+                setMobileTab('chat');
+                setChatOpen(true);
+              }}
             >
               💬 Chat
+            </button>
+            <button className="mobile-tab mobile-close-tab" onClick={onClose} aria-label="Close PDF study">
+              Close
             </button>
           </div>
         )}
 
         <div className="study-actions">
+          <button
+            onClick={() => {
+              if (isMobile) setMobileTab('chat');
+              setChatOpen(true);
+            }}
+            className="btn-icon study-chat-toggle"
+            title="Open AI tutor"
+          >
+            💬 Tutor
+          </button>
           {!isMobile && (
             <button 
               onClick={() => setShowSidebar(!showSidebar)}
@@ -1115,7 +1142,6 @@ User Question: ${aiContextMessage || userMessage}`;
         {/* PDF Section */}
         <div
           className={`study-pdf-section ${isMobile && mobileTab !== 'pdf' ? 'pane-hidden' : ''} ${extracting ? 'is-extracting' : ''}`}
-          style={{ width: isMobile ? '100%' : `${pdfWidth}%` }}
         >
           {/* Reading progress bar */}
           {numPages && (
@@ -1309,16 +1335,6 @@ User Question: ${aiContextMessage || userMessage}`;
                 </div>
               )}
 
-              {!loading && numPages && savedHighlights.length > 0 && (
-                <button
-                  className="clear-highlights-btn"
-                  onClick={() => setSavedHighlights([])}
-                  title="Clear all highlights from view"
-                >
-                  🗑️ Clear highlights
-                </button>
-              )}
-
               {isScannedPDF && !loading && (
                 <div className="scanned-pdf-warning">
                   ⚠️ This PDF may not support text selection. Try uploading a text-based PDF for best results.
@@ -1373,31 +1389,6 @@ User Question: ${aiContextMessage || userMessage}`;
                 ))}
               </Document>
 
-              {/* Floating page navigation — bottom center of PDF area */}
-              {numPages && (
-                <div className="pdf-float-nav">
-                  <button
-                    className="pdf-float-btn"
-                    onClick={() => changePage(-1)}
-                    disabled={pageNumber <= 1}
-                    title="Previous page"
-                  >
-                    ‹
-                  </button>
-                  <span className="pdf-float-page">
-                    {pageNumber} / {numPages}
-                  </span>
-                  <button
-                    className="pdf-float-btn"
-                    onClick={() => changePage(1)}
-                    disabled={pageNumber >= numPages}
-                    title="Next page"
-                  >
-                    ›
-                  </button>
-                </div>
-              )}
-
               {/* Rubber-band selection rectangle shown during drag in highlight mode */}
               {highlightMode && dragRect && dragRect.w > 3 && dragRect.h > 3 && (
                 <div
@@ -1411,6 +1402,31 @@ User Question: ${aiContextMessage || userMessage}`;
                 />
               )}
             </div>
+
+            {/* Floating page navigation — anchored to viewer frame, not PDF scroll */}
+            {numPages && (
+              <div className="pdf-float-nav">
+                <button
+                  className="pdf-float-btn"
+                  onClick={() => changePage(-1)}
+                  disabled={pageNumber <= 1}
+                  title="Previous page"
+                >
+                  ‹
+                </button>
+                <span className="pdf-float-page">
+                  {pageNumber} / {numPages}
+                </span>
+                <button
+                  className="pdf-float-btn"
+                  onClick={() => changePage(1)}
+                  disabled={pageNumber >= numPages}
+                  title="Next page"
+                >
+                  ›
+                </button>
+              </div>
+            )}
 
             {/* Sidebar for Bookmarks & Highlights */}
             {showSidebar && (
@@ -1455,7 +1471,16 @@ User Question: ${aiContextMessage || userMessage}`;
 
                   {savedHighlights.length > 0 && (
                     <div className="mini-sidebar-section">
-                      <h5>🖍️ Highlights ({savedHighlights.length})</h5>
+                      <div className="mini-sidebar-heading">
+                        <h5>🖍️ Highlights ({savedHighlights.length})</h5>
+                        <button
+                          className="mini-clear-btn"
+                          onClick={() => setSavedHighlights([])}
+                          title="Clear highlights from view"
+                        >
+                          Clear
+                        </button>
+                      </div>
                       {savedHighlights.map((highlight) => (
                         <div
                           key={highlight.id}
@@ -1502,20 +1527,39 @@ User Question: ${aiContextMessage || userMessage}`;
           </div>
         </div>
 
-        {/* Resize Handle */}
-        <div 
-          className={`resize-handle ${isResizing ? 'is-resizing' : ''}`}
-          onMouseDown={startResize}
-          ref={resizeRef}
-        >
-          <div className="resize-grip"><span /><span /><span /></div>
-        </div>
-
         {/* Chat Section */}
+        {!chatOpen && (
+          <button
+            className="floating-chat-launcher"
+            onClick={() => {
+              if (isMobile) setMobileTab('chat');
+              setChatOpen(true);
+            }}
+            title="Open AI tutor"
+          >
+            <span>💬</span>
+            <strong>AI Tutor</strong>
+          </button>
+        )}
         <div
-          className={`study-chat-section ${isMobile && mobileTab !== 'chat' ? 'pane-hidden' : ''}`}
-          style={{ width: isMobile ? '100%' : `${100 - pdfWidth}%` }}
+          className={`study-chat-section floating-study-chat ${isMobile && mobileTab !== 'chat' ? 'pane-hidden' : ''} ${chatOpen ? 'open' : 'closed'}`}
         >
+          <div className="floating-chat-header">
+            <div>
+              <strong>AI Tutor</strong>
+              <span>Page {pageNumber} context</span>
+            </div>
+            <button
+              className="floating-chat-minimize"
+              onClick={() => {
+                setChatOpen(false);
+                if (isMobile) setMobileTab('pdf');
+              }}
+              title="Minimize AI tutor"
+            >
+              _
+            </button>
+          </div>
           <div className="chat-context-banner">
             <div className="context-main">
               💬 Page {pageNumber} • {resource.fileName}
@@ -1585,6 +1629,7 @@ User Question: ${aiContextMessage || userMessage}`;
             sessionId={sessionId}
             subject={subject}
             insideStudyMode={true}
+            compactStudyTools={true}
           />
         </div>
       </div>

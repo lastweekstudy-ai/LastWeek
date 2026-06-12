@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/StudyStatistics.css';
 
 const StudyStatistics = ({ sessions, flashcards, dueFlashcards, totalMessages }) => {
   const stats = React.useMemo(() => {

@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createPDFNote, updatePDFNote, deletePDFNote, getPageNotes } from '../appwrite/pdfNotes';
 import { formatDistanceToNow } from 'date-fns';
-import '../styles/PDFNoteEditor.css';
-import '../styles/NotebookTheme.css';
 
 const PDFNoteEditor = ({ pdfResource, pageNumber, userId, onClose }) => {
   const [notes, setNotes] = useState([]);

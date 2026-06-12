@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useVisualGeneration } from '../hooks/useVisualGeneration';
-import '../styles/VisualGenerator.css';
 
 const VisualGenerator = ({ onVisualGenerated, disabled = false }) => {
   const [showPanel, setShowPanel] = useState(false);

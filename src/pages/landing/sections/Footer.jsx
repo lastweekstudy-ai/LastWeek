@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import BrandLogo from '../../../components/shared/BrandLogo';
 import { PixelIcon } from '../../../components/shared/pixel-art/PixelIcons';
-import '../landing.css';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();

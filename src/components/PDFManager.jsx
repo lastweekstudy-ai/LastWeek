@@ -13,7 +13,6 @@ import {
 } from '../appwrite/pdfResources';
 import { useAuth } from '../context/AuthContext';
 import { HeartIcon, ClockIcon, EyeIcon, TagIcon, ChartBarIcon } from './Icons';
-import '../styles/PDFManager.css';
 
 const PDFManager = () => {
   const { user } = useAuth();

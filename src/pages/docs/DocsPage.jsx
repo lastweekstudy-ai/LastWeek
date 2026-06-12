@@ -3,7 +3,6 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import BrandLogo from '../../components/shared/BrandLogo';
 import { PixelIcon } from '../../components/shared/pixel-art/PixelIcons';
 import { documentationIndex, sidebarNavigation, searchableContent } from '../../data/docs';
-import './docs.css';
 
 /**
  * Documentation Page Component

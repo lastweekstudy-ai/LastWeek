@@ -1,13 +1,13 @@
 import React from 'react';
 
 const LoadingSpinner = ({ size = 20, className = "" }) => (
-  <div className={`loading-spinner ${className}`}>
+  <div className={`flex items-center justify-center ${className}`}>
     <svg 
       width={size} 
       height={size} 
       viewBox="0 0 24 24" 
       fill="none" 
-      className="spinner-icon"
+      className="animate-spin rounded-full text-brand-500"
     >
       <circle 
         cx="12" 
@@ -16,22 +16,9 @@ const LoadingSpinner = ({ size = 20, className = "" }) => (
         stroke="currentColor" 
         strokeWidth="2" 
         strokeLinecap="round" 
-        strokeDasharray="31.416" 
-        strokeDashoffset="31.416"
-      >
-        <animate 
-          attributeName="stroke-dasharray" 
-          dur="2s" 
-          values="0 31.416;15.708 15.708;0 31.416;0 31.416" 
-          repeatCount="indefinite"
-        />
-        <animate 
-          attributeName="stroke-dashoffset" 
-          dur="2s" 
-          values="0;-15.708;-31.416;-31.416" 
-          repeatCount="indefinite"
-        />
-      </circle>
+        strokeDasharray="31.416"
+        strokeDashoffset="8"
+      />
     </svg>
   </div>
 );

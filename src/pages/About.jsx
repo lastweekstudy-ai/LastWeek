@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useScrollToTop from '../hooks/useScrollToTop';
-import '../styles/Pages.css';
 
 const About = () => {
   useScrollToTop();

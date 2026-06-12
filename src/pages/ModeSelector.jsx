@@ -11,7 +11,6 @@ import {
   CollaborativeScholarIcon, 
   CreativeSynthesisIcon 
 } from '../components/Icons';
-import '../styles/ModeSelector.css';
 
 const ModeSelector = () => {
   const { user } = useAuth();

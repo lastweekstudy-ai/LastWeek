@@ -18,10 +18,6 @@ import {
   CollaborativeScholarIcon,
   CreativeSynthesisIcon
 } from '../components/Icons';
-import '../styles/Dashboard.css';
-import '../styles/StorageIndicator.css';
-import '../styles/SessionActions.css';
-import '../styles/LoadingSpinner.css';
 
 const Dashboard = () => {
   const { user, isGuest } = useAuth();

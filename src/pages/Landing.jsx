@@ -22,7 +22,6 @@ import {
   SettingsIcon,
   WarningIcon
 } from '../components/Icons';
-import '../styles/LandingNew.css';
 
 const Landing = () => {
   const navigate = useNavigate();

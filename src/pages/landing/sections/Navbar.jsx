@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import BrandLogo from '../../../components/shared/BrandLogo';
 import { PixelIcon } from '../../../components/shared/pixel-art/PixelIcons';
-import '../landing.css';
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

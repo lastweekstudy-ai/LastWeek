@@ -1,0 +1,74 @@
+[
+  {
+    "route": "session",
+    "viewport": "mobile-320",
+    "size": "320x844",
+    "url": "http://localhost:5173/auth",
+    "title": "LastWeek - Master Any Subject in One Week",
+    "screenshot": "D:\\LastWeek\\LastWeek\\tmp\\responsive-qa\\session-mobile-320.png",
+    "error": null,
+    "authStatus": "failed",
+    "authError": "page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+    "textPreview": "← Home Welcome back Sign in to continue your study sessions Email * Password * 👁️ Sign In OR Don't have an account? Sign up"
+  },
+  {
+    "route": "dashboard",
+    "viewport": "mobile-320",
+    "size": "320x844",
+    "url": "http://localhost:5173/auth",
+    "title": "LastWeek - Master Any Subject in One Week",
+    "screenshot": "D:\\LastWeek\\LastWeek\\tmp\\responsive-qa\\dashboard-mobile-320.png",
+    "error": null,
+    "authStatus": "failed",
+    "authError": "page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+    "textPreview": "← Home Welcome back Sign in to continue your study sessions Email * Password * 👁️ Sign In OR Don't have an account? Sign up"
+  },
+  {
+    "route": "session",
+    "viewport": "mobile-390",
+    "size": "390x844",
+    "url": "http://localhost:5173/auth",
+    "title": "LastWeek - Master Any Subject in One Week",
+    "screenshot": "D:\\LastWeek\\LastWeek\\tmp\\responsive-qa\\session-mobile-390.png",
+    "error": null,
+    "authStatus": "failed",
+    "authError": "page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+    "textPreview": "← Home Welcome back Sign in to continue your study sessions Email * Password * 👁️ Sign In OR Don't have an account? Sign up"
+  },
+  {
+    "route": "dashboard",
+    "viewport": "mobile-390",
+    "size": "390x844",
+    "url": "http://localhost:5173/auth",
+    "title": "LastWeek - Master Any Subject in One Week",
+    "screenshot": "D:\\LastWeek\\LastWeek\\tmp\\responsive-qa\\dashboard-mobile-390.png",
+    "error": null,
+    "authStatus": "failed",
+    "authError": "page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+    "textPreview": "← Home Welcome back Sign in to continue your study sessions Email * Password * 👁️ Sign In OR Don't have an account? Sign up"
+  },
+  {
+    "route": "session",
+    "viewport": "tablet-768",
+    "size": "768x1024",
+    "url": "http://localhost:5173/auth",
+    "title": "LastWeek - Master Any Subject in One Week",
+    "screenshot": "D:\\LastWeek\\LastWeek\\tmp\\responsive-qa\\session-tablet-768.png",
+    "error": null,
+    "authStatus": "failed",
+    "authError": "page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+    "textPreview": "← Home Welcome back Sign in to continue your study sessions Email * Password * 👁️ Sign In OR Don't have an account? Sign up"
+  },
+  {
+    "route": "dashboard",
+    "viewport": "tablet-768",
+    "size": "768x1024",
+    "url": "http://localhost:5173/auth",
+    "title": "LastWeek - Master Any Subject in One Week",
+    "screenshot": "D:\\LastWeek\\LastWeek\\tmp\\responsive-qa\\dashboard-tablet-768.png",
+    "error": null,
+    "authStatus": "failed",
+    "authError": "page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
+    "textPreview": "← Home Welcome back Sign in to continue your study sessions Email * Password * 👁️ Sign In OR Don't have an account? Sign up"
+  }
+]

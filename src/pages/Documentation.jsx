@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import '../styles/Documentation.css';
 
 const Documentation = () => {
   const navigate = useNavigate();

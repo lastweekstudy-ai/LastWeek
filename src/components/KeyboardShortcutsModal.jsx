@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/KeyboardShortcutsModal.css';
 
 const KeyboardShortcutsModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;

@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { UserIcon, LogoutIcon, SettingsIcon } from './Icons';
-import '../styles/ProfileDropdown.css';
 
 const ProfileDropdown = () => {
   const { user, logout, isGuest } = useAuth();
@@ -54,17 +53,17 @@ const ProfileDropdown = () => {
   };
 
   return (
-    <div className="profile-dropdown" ref={dropdownRef}>
+    <div className="relative w-full" ref={dropdownRef}>
       <button
-        className="profile-trigger"
+        className="flex w-full items-center gap-3 rounded-2xl border border-surface-200 bg-white px-3 py-2 text-left text-sm shadow-soft transition hover:border-brand-300 hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-brand-500/40 dark:border-surface-800 dark:bg-surface-900 dark:hover:border-brand-500/50 dark:hover:bg-surface-800"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="User menu"
         aria-expanded={isOpen}
       >
-        <div className="profile-avatar">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-sm font-bold text-white shadow-soft">
           {getUserInitials()}
         </div>
-        <span className="profile-name">{getUserDisplayName()}</span>
+        <span className="min-w-0 flex-1 truncate font-semibold text-surface-900 dark:text-white">{getUserDisplayName()}</span>
         <svg 
           width="16" 
           height="16" 
@@ -72,30 +71,30 @@ const ProfileDropdown = () => {
           fill="none" 
           stroke="currentColor" 
           strokeWidth="2"
-          className={`profile-chevron ${isOpen ? 'open' : ''}`}
+          className={`shrink-0 text-surface-500 transition-transform dark:text-surface-400 ${isOpen ? 'rotate-180' : ''}`}
         >
           <polyline points="6 9 12 15 18 9"/>
         </svg>
       </button>
 
       {isOpen && (
-        <div className="profile-menu">
-          <div className="profile-menu-header">
-            <div className="profile-avatar-large">
+        <div className="absolute bottom-full left-0 z-50 mb-3 w-full min-w-64 rounded-2xl border border-surface-200 bg-white p-2 shadow-strong dark:border-surface-800 dark:bg-surface-950 lg:bottom-auto lg:top-full lg:mb-0 lg:mt-3">
+          <div className="flex items-center gap-3 rounded-xl bg-surface-50 p-3 dark:bg-surface-900">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-600 text-base font-bold text-white">
               {getUserInitials()}
             </div>
-            <div className="profile-info">
-              <div className="profile-info-name">{getUserDisplayName()}</div>
-              <div className="profile-info-email">{user?.email || 'No email'}</div>
-              {isGuest && <div className="profile-info-badge">Guest Account</div>}
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-sm font-semibold text-surface-950 dark:text-white">{getUserDisplayName()}</div>
+              <div className="truncate text-xs text-surface-500 dark:text-surface-400">{user?.email || 'No email'}</div>
+              {isGuest && <div className="mt-2 inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-semibold text-amber-700 dark:bg-amber-500/15 dark:text-amber-200">Guest Account</div>}
             </div>
           </div>
 
-          <div className="profile-menu-divider" />
+          <div className="my-2 h-px bg-surface-200 dark:bg-surface-800" />
 
-          <div className="profile-menu-section">
+          <div className="space-y-1">
             <button
-              className="profile-menu-item"
+              className="nav-item w-full justify-start"
               onClick={handleSettings}
             >
               <SettingsIcon size={18} />
@@ -103,7 +102,7 @@ const ProfileDropdown = () => {
             </button>
 
             <button
-              className="profile-menu-item"
+              className="nav-item w-full justify-start"
               onClick={() => {
                 setIsOpen(false);
                 navigate('/dashboard');
@@ -119,7 +118,7 @@ const ProfileDropdown = () => {
             </button>
 
             <button
-              className="profile-menu-item"
+              className="nav-item w-full justify-start"
               onClick={() => {
                 setIsOpen(false);
                 navigate('/mode-select');
@@ -134,11 +133,11 @@ const ProfileDropdown = () => {
             </button>
           </div>
 
-          <div className="profile-menu-divider" />
+          <div className="my-2 h-px bg-surface-200 dark:bg-surface-800" />
 
-          <div className="profile-menu-section">
+          <div className="space-y-1">
             <button
-              className="profile-menu-item profile-menu-item-danger"
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-red-600 transition hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500/30 dark:text-red-300 dark:hover:bg-red-500/10"
               onClick={handleLogout}
             >
               <LogoutIcon size={18} />

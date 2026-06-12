@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/OrientationPrompt.css';
 
 const OrientationPrompt = ({ onDismiss }) => {
   return (

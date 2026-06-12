@@ -5,10 +5,6 @@ import { getPageNotes } from '../appwrite/pdfNotes';
 import { createPDFHighlight, getPageHighlights, deletePDFHighlight } from '../appwrite/pdfHighlights';
 import useOrientation from '../hooks/useOrientation';
 import OrientationPrompt from './OrientationPrompt';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-import '../styles/PDFViewer.css';
-import '../styles/PDFViewerMobile.css';
 
 // Configure PDF.js worker - use the worker from public folder
 pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';

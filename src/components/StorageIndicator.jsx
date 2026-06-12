@@ -87,7 +87,7 @@ const StorageIndicator = ({ userId, className = "", lazy = false }) => {
 
   if (loading || !storageData) {
     return (
-      <div className={`storage-indicator loading ${className}`}>
+      <div className={`inline-flex items-center gap-2 rounded-full border border-surface-200 bg-white px-3 py-1.5 text-xs font-semibold text-surface-500 shadow-soft dark:border-surface-800 dark:bg-surface-900 dark:text-surface-400 ${className}`}>
         <StorageIcon size={16} />
         <span>...</span>
       </div>
@@ -101,27 +101,27 @@ const StorageIndicator = ({ userId, className = "", lazy = false }) => {
   const isOverLimit = usagePercentage > 100;
 
   return (
-    <div className={`storage-indicator ${isNearLimit ? 'warning' : ''} ${isOverLimit ? 'danger' : ''} ${className}`}>
-      <div className="storage-info">
-        <div className="storage-header">
+    <div className={`w-full rounded-2xl border border-surface-200 bg-white p-3 shadow-soft dark:border-surface-800 dark:bg-surface-900 ${className}`}>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2 text-xs font-semibold text-surface-700 dark:text-surface-200">
           <StorageIcon size={16} />
-          <span className="storage-text">
+          <span>
             {storageData.totalSizeMB} MB
           </span>
-          {isNearLimit && <WarningIcon size={14} />}
+          {isNearLimit && <span className={isOverLimit ? 'text-red-500' : 'text-amber-500'}><WarningIcon size={14} /></span>}
         </div>
         
-        <div className="storage-bar">
+        <div className="h-2 overflow-hidden rounded-full bg-surface-100 dark:bg-surface-800">
           <div 
-            className="storage-fill" 
+            className={`h-full rounded-full transition-all ${isOverLimit ? 'bg-red-500' : isNearLimit ? 'bg-amber-500' : 'bg-brand-500'}`}
             style={{ width: `${Math.min(usagePercentage, 100)}%` }}
           />
         </div>
         
         {!className.includes('compact') && (
-          <div className="storage-details">
-            <span className="text-sm">
-              {storageData.totalSessions} sessions • {storageData.totalMessages} messages
+          <div className="text-xs text-surface-500 dark:text-surface-400">
+            <span>
+              {storageData.totalSessions} sessions · {storageData.totalMessages} messages
             </span>
           </div>
         )}

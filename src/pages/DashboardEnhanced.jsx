@@ -29,13 +29,6 @@ import {
   CollaborativeScholarIcon,
   CreativeSynthesisIcon
 } from '../components/Icons';
-import '../styles/Dashboard.css';
-import '../styles/StorageIndicator.css';
-import '../styles/SessionActions.css';
-import '../styles/LoadingSpinner.css';
-import '../styles/SessionSearch.css';
-import '../styles/BulkActions.css';
-import '../styles/StudyStatistics.css';
 
 const DashboardEnhanced = () => {
   const { user, isGuest } = useAuth();

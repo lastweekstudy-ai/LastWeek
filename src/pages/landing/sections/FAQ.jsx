@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { PixelIcon } from '../../../components/shared/pixel-art/PixelIcons';
-import '../landing.css';
 
 const FAQ = () => {
   const [expandedIndex, setExpandedIndex] = useState(null);

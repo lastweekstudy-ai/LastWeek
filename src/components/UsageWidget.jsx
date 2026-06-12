@@ -26,32 +26,23 @@ const UsageWidget = () => {
   if (rows.length === 0) {
     // Pro+ user — all unlimited
     return (
-      <div style={{
-        backgroundColor: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)',
-        padding: '1rem 1.25rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '1rem',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '1.25rem' }}>🚀</span>
+      <div className="glass-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-100 text-lg dark:bg-emerald-500/15">🚀</span>
           <div>
-            <p style={{ margin: 0, fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '0.9rem' }}>
-              {planName} — Unlimited everything
+            <p className="text-sm font-semibold text-surface-950 dark:text-white">
+              {planName} - Unlimited everything
             </p>
-            <p style={{ margin: 0, fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
+            <p className="text-xs text-surface-500 dark:text-surface-400">
               No limits on any feature this month
             </p>
           </div>
         </div>
         <button
           onClick={() => navigate('/pricing')}
-          style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', fontSize: '0.8rem', cursor: 'pointer' }}
+          className="btn-secondary justify-center px-3 py-2 text-xs"
         >
-          Manage →
+          Manage
         </button>
       </div>
     );
@@ -60,60 +51,48 @@ const UsageWidget = () => {
   const month = new Date().toLocaleString('default', { month: 'long' });
 
   return (
-    <div style={{
-      backgroundColor: 'var(--color-bg-secondary)',
-      borderRadius: '12px',
-      border: '1px solid var(--color-border)',
-      padding: '1rem 1.25rem',
-    }}>
+    <div className="glass-card p-4">
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '1rem' }}>📊</span>
-          <span style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--color-text-primary)' }}>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-100 text-sm dark:bg-brand-500/15">📊</span>
+          <span className="text-sm font-semibold text-surface-950 dark:text-white">
             {month} Usage
           </span>
-          <span style={{
-            fontSize: '0.7rem', fontWeight: 700, padding: '0.15rem 0.5rem',
-            borderRadius: '999px', backgroundColor: 'rgba(var(--color-accent-rgb),0.1)', color: 'var(--color-accent)',
-          }}>
+          <span className="badge">
             {planName}
           </span>
         </div>
         <button
           onClick={() => navigate('/pricing')}
-          style={{ background: 'none', border: 'none', color: 'var(--color-accent)', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600 }}
+          className="btn-secondary justify-center px-3 py-2 text-xs"
         >
-          Upgrade →
+          Upgrade
         </button>
       </div>
 
       {/* Progress rows */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.6rem' }}>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         {rows.map(({ label, current, limit, icon }) => {
           const pct = Math.min(100, (current / limit) * 100);
           const isNear = pct >= 80;
           const isFull = pct >= 100;
-          const color = isFull ? '#ef4444' : isNear ? '#f59e0b' : 'var(--color-accent)';
 
           return (
-            <div key={label}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '3px' }}>
-                <span style={{ color: 'var(--color-text-secondary)' }}>
+            <div key={label} className="rounded-2xl border border-surface-200 bg-white p-3 dark:border-surface-800 dark:bg-surface-900">
+              <div className="mb-2 flex justify-between gap-3 text-xs">
+                <span className="min-w-0 truncate font-medium text-surface-600 dark:text-surface-300">
                   {icon} {label}
                 </span>
-                <span style={{ color: isFull ? '#ef4444' : 'var(--color-text-muted)', fontWeight: isFull ? 700 : 400 }}>
+                <span className={`shrink-0 font-semibold ${isFull ? 'text-red-500' : 'text-surface-500 dark:text-surface-400'}`}>
                   {current}/{formatLimit(limit)}
                 </span>
               </div>
-              <div style={{ height: '5px', backgroundColor: 'var(--color-bg-tertiary)', borderRadius: '3px', overflow: 'hidden' }}>
-                <div style={{
-                  height: '100%',
-                  width: `${pct}%`,
-                  backgroundColor: color,
-                  borderRadius: '3px',
-                  transition: 'width 0.4s ease',
-                }} />
+              <div className="h-2 overflow-hidden rounded-full bg-surface-100 dark:bg-surface-800">
+                <div
+                  className={`h-full rounded-full transition-all duration-300 ${isFull ? 'bg-red-500' : isNear ? 'bg-amber-500' : 'bg-brand-500'}`}
+                  style={{ width: `${pct}%` }}
+                />
               </div>
             </div>
           );
@@ -121,7 +100,7 @@ const UsageWidget = () => {
       </div>
 
       {/* "Resets in X days" footer */}
-      <p style={{ margin: '0.6rem 0 0', fontSize: '0.72rem', color: 'var(--color-text-muted)', textAlign: 'right' }}>
+      <p className="mt-3 text-right text-xs text-surface-500 dark:text-surface-400">
         Resets {new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleDateString('en', { month: 'short', day: 'numeric' })}
       </p>
     </div>

@@ -9,7 +9,6 @@ import Pricing from './sections/Pricing';
 import FAQ from './sections/FAQ';
 import FinalCTA from './sections/FinalCTA';
 import Footer from './sections/Footer';
-import './landing.css';
 
 /**
  * Landing Page Component

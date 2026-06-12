@@ -21,8 +21,6 @@ import {
   BookIcon,
   ArrowRightIcon
 } from '../../components/Icons';
-import '../../styles/ChatInterface.css';
-import '../../styles/Flashcard.css';
 
 const ActiveRecall = () => {
   const { sessionId } = useParams();

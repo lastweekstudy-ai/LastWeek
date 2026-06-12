@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../styles/PomodoroTimer.css';
 
 const MODES = {
   focus:       { label: 'Focus',       minutes: 25, color: 'var(--color-accent)' },

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { getSessionPDFs, updatePDFProgress } from '../appwrite/pdfResources';
 import { getPDFNoteCount } from '../appwrite/pdfNotes';
 import { formatDistanceToNow } from 'date-fns';
-import '../styles/PDFResourcePanel.css';
 
 const PDFResourcePanel = ({ sessionId, userId, onSelectPDF, currentPDFId = null }) => {
   const [pdfs, setPdfs] = useState([]);

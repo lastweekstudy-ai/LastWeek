@@ -16,7 +16,6 @@ import {
   UserIcon,
   CheckIcon,
 } from '../components/Icons';
-import '../styles/ResourceLibrary.css';
 
 const ResourceLibrary = () => {
   const { user } = useAuth();

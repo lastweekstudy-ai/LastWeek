@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { CheckIcon } from './Icons';
-import '../styles/SessionAssessment.css';
 
 const SessionAssessment = ({ mode, onComplete, onSkip }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);

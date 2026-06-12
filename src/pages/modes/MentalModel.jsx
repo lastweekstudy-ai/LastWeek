@@ -17,8 +17,6 @@ import {
   FileIcon,
   CheckIcon
 } from '../../components/Icons';
-import '../../styles/ChatInterface.css';
-import '../../styles/ModePage.css';
 
 const MentalModel = () => {
   const { sessionId } = useParams();

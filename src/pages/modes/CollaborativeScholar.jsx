@@ -16,7 +16,6 @@ import {
   CheckIcon,
   ArrowRightIcon
 } from '../../components/Icons';
-import '../../styles/ChatInterface.css';
 
 const CollaborativeScholar = () => {
   const { sessionId } = useParams();

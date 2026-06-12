@@ -1,5 +1,4 @@
 import React from 'react';
-import '../styles/AITypingAnimation.css';
 
 /**
  * AITypingAnimation - Enhanced loading animation for AI responses

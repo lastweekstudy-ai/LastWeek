@@ -7,7 +7,6 @@ import UpgradeButton from '../components/UpgradeButton';
 import UsageWidget from '../components/UsageWidget';
 import useCombinedLimits from '../hooks/useCombinedLimits';
 import { formatLimit } from '../config/planLimits';
-import '../styles/Settings.css';
 
 const Settings = () => {
   const { user, logout, isGuest } = useAuth();

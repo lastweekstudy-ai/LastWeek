@@ -12,7 +12,6 @@ import {
   cleanupDuplicateDailySlots,
   getRemainingSlotsToday,
 } from '../appwrite/admin';
-import '../styles/Auth.css';
 
 const AdminPanel = () => {
   const navigate = useNavigate();

@@ -5,7 +5,6 @@ import { getPlanLimits, getUserPlan } from '../config/planLimits';
 import { getUserSubscription, isSubscriptionActive } from '../appwrite/subscription';
 import { useAuth } from '../context/AuthContext';
 import useCombinedLimits from '../hooks/useCombinedLimits';
-import '../styles/AudioProcessor.css';
 
 /**
  * AudioProcessor - Upload or record audio, transcribe with Gemini, process with DeepSeek
