@@ -70,6 +70,7 @@ const LANG_NAMES = {
 // Cache: langCode → best BCP-47 tag (or null if unsupported)
 const voiceCache = {};
 let allVoices = null;
+let activeSpeechRunId = 0;
 
 /**
  * Load and cache all available voices.
@@ -186,6 +187,79 @@ export function extractSpeakableText(text, langCode) {
   return clean || text.trim();
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function splitIntoSpeechChunks(text, maxLength = 180) {
+  const clean = text.replace(/\s+/g, ' ').trim();
+  if (clean.length <= maxLength) return [clean];
+
+  const sentences = clean.match(/[^.!?。！？]+[.!?。！？]?/g) || [clean];
+  const chunks = [];
+  let current = '';
+
+  for (const sentence of sentences) {
+    const next = current ? `${current} ${sentence.trim()}` : sentence.trim();
+    if (next.length <= maxLength) {
+      current = next;
+      continue;
+    }
+    if (current) chunks.push(current);
+    if (sentence.length <= maxLength) {
+      current = sentence.trim();
+    } else {
+      const words = sentence.trim().split(/\s+/);
+      current = '';
+      for (const word of words) {
+        const candidate = current ? `${current} ${word}` : word;
+        if (candidate.length > maxLength && current) {
+          chunks.push(current);
+          current = word;
+        } else {
+          current = candidate;
+        }
+      }
+    }
+  }
+
+  if (current) chunks.push(current);
+  return chunks;
+}
+
+function speakUtterance(utterance, runId) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
+      resolve(result);
+    };
+
+    utterance.onend = () => finish({ ok: true });
+    utterance.onerror = (event) => {
+      if (runId !== activeSpeechRunId || event.error === 'interrupted' || event.error === 'canceled') {
+        finish({ ok: false, reason: event.error || 'canceled' });
+        return;
+      }
+      reject(new Error(event.error || 'speech_error'));
+    };
+
+    window.speechSynthesis.speak(utterance);
+
+    // Chrome occasionally stalls if speechSynthesis is left paused internally.
+    const watchdog = setInterval(() => {
+      if (settled || runId !== activeSpeechRunId) {
+        clearInterval(watchdog);
+        return;
+      }
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+    }, 1000);
+  });
+}
+
 /**
  * Main speak function.
  *
@@ -224,16 +298,46 @@ export async function speak(text, langCode, options = {}) {
     console.info(`[Speech] Using default voice for ${langName}. For better pronunciation, add ${langName} voices in your OS settings.`);
   }
 
+  const runId = ++activeSpeechRunId;
   window.speechSynthesis.cancel();
+  await sleep(80);
 
-  const utt = new SpeechSynthesisUtterance(speakable);
-  utt.voice = voiceInfo.voice;
-  utt.lang  = voiceInfo.bcp47;
-  utt.rate  = options.rate  ?? 0.85;
-  utt.pitch = options.pitch ?? 1;
+  const chunks = splitIntoSpeechChunks(speakable, options.maxChunkLength || 180);
 
-  window.speechSynthesis.speak(utt);
-  return { ok: true, usingDefaultVoice: voiceInfo.isDefault };
+  try {
+    for (const chunk of chunks) {
+      if (runId !== activeSpeechRunId) {
+        return { ok: false, reason: 'canceled' };
+      }
+
+      const utt = new SpeechSynthesisUtterance(chunk);
+      utt.voice = voiceInfo.voice;
+      utt.lang  = voiceInfo.bcp47;
+      utt.rate  = options.rate  ?? 0.85;
+      utt.pitch = options.pitch ?? 1;
+      utt.volume = options.volume ?? 1;
+
+      const result = await speakUtterance(utt, runId);
+      if (!result.ok && result.reason !== 'canceled' && result.reason !== 'interrupted') {
+        return result;
+      }
+    }
+
+    return { ok: true, usingDefaultVoice: voiceInfo.isDefault, chunks: chunks.length };
+  } catch (err) {
+    // One clean retry handles the common first-utterance failure after voice loading.
+    if (!options._retried) {
+      await sleep(150);
+      return speak(text, langCode, { ...options, _retried: true });
+    }
+    console.warn('[Speech] Playback failed:', err.message);
+    return { ok: false, reason: err.message || 'speech_error' };
+  }
+}
+
+export function stopSpeaking() {
+  activeSpeechRunId += 1;
+  window.speechSynthesis?.cancel();
 }
 
 /**

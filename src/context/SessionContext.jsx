@@ -33,6 +33,7 @@ export const SessionProvider = ({ children }) => {
   const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
   const streamFlushRef = useRef(null);
   const streamBufferRef = useRef('');
+  const sendInFlightRef = useRef(false);
 
   // Start a new session
   const startSession = async (mode, studySubject, title) => {
@@ -139,8 +140,10 @@ export const SessionProvider = ({ children }) => {
   // Send a message and get AI response
   const sendMessage = async (userMessage, aiResponseCallback, fileAttachment = null) => {
     if (!activeSession || !user) throw new Error('No active session');
+    if (sendInFlightRef.current) throw new Error('A message is already being sent. Please wait for it to finish.');
     
     try {
+      sendInFlightRef.current = true;
       setIsLoading(true);
       setError(null);
       
@@ -193,6 +196,7 @@ export const SessionProvider = ({ children }) => {
       setError(err.message);
       throw err;
     } finally {
+      sendInFlightRef.current = false;
       setIsLoading(false);
     }
   };
@@ -200,6 +204,8 @@ export const SessionProvider = ({ children }) => {
   // Send a message and stream the AI response
   const sendMessageStreaming = async (userMessage, streamCallback, fileAttachment = null) => {
     if (!activeSession || !user) throw new Error('No active session');
+    if (sendInFlightRef.current) throw new Error('A message is already being sent. Please wait for it to finish.');
+    sendInFlightRef.current = true;
 
     // Build message content (same file-attachment handling as sendMessage)
     let messageContent = userMessage;
@@ -221,7 +227,10 @@ export const SessionProvider = ({ children }) => {
       user.$id,
       'user',
       messageContent
-    );
+    ).catch((err) => {
+      sendInFlightRef.current = false;
+      throw err;
+    });
 
     // Update local state with user message
     setMessages(prev => [...prev, userMsg]);
@@ -299,6 +308,7 @@ export const SessionProvider = ({ children }) => {
       setMessages(prev => prev.filter(m => m.$id !== placeholderId));
       throw err;
     } finally {
+      sendInFlightRef.current = false;
       setIsStreaming(false);
     }
   };

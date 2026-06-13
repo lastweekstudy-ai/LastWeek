@@ -50,6 +50,12 @@ export function buildSessionMemory(messages, n = 3, maxChars = 500) {
   return segments.join('\n');
 }
 
+function buildStoredSummaryMemory(activeSession) {
+  const summary = activeSession?.summary;
+  if (!summary || typeof summary !== 'string') return null;
+  return summary.trim().substring(0, 1800);
+}
+
 /**
  * Extract a focused window of pages from the full PDF extracted text.
  * Returns pages currentPage-1 through currentPage+1.
@@ -199,6 +205,15 @@ export function buildContextMessages(
   // ── Step 2: Session Memory block ──────────────────────────────────────────
   let hasSessionMemory = false;
   const sessionMemoryMessages = [];
+  const storedSummary = buildStoredSummaryMemory(activeSession);
+  if (storedSummary !== null) {
+    sessionMemoryMessages.push({
+      role: 'user',
+      content: '[ROLLING SESSION SUMMARY]\n' + storedSummary
+    });
+    hasSessionMemory = true;
+  }
+
   const sessionMemory = buildSessionMemory(messages);
   if (sessionMemory !== null) {
     sessionMemoryMessages.push({
@@ -237,10 +252,11 @@ export function buildContextMessages(
   // ── Step 5: Sliding window — add pairs newest-first until budget exceeded ──
   // Always keep a minimum of 2 pairs even if over budget.
   const MIN_PAIRS = 2;
+  const MAX_PAIRS = Math.max(MIN_PAIRS, options.maxPairs || 6);
   const newUserMessage = { role: 'user', content: aiContextMessage };
 
   let keptPairs = 0;
-  for (let p = 0; p < pairs.length; p++) {
+  for (let p = 0; p < Math.min(pairs.length, MAX_PAIRS); p++) {
     const candidateWindow = pairs.slice(0, p + 1).flat(); // newest-first flat list
     const candidateMessages = [
       ...primingMessages,

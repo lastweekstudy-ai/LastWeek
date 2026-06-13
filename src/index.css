@@ -79,6 +79,161 @@
   }
 }
 
+/* Audio lecture mobile rescue: keep controls compact and make notes/transcript the main surface. */
+@media (max-width: 767px) {
+  .alv-overlay,
+  .alv-container {
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .alv-header {
+    gap: 0.45rem;
+  }
+
+  .alv-header-title {
+    font-size: 0.98rem;
+  }
+
+  .alv-player {
+    display: grid;
+    grid-template-columns: auto 2.35rem auto 1fr auto;
+    gap: 0.35rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  .alv-play-btn {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .alv-skip-btn,
+  .alv-speed-btn {
+    min-height: 2rem;
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+  }
+
+  .alv-progress-bar {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .alv-left {
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .alv-tabs-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.45rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  .alv-tabs {
+    display: flex;
+    gap: 0.35rem;
+    overflow-x: auto;
+    padding-bottom: 0.1rem;
+    scrollbar-width: none;
+  }
+
+  .alv-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .alv-tab {
+    flex: 0 0 auto;
+    min-width: max-content;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.72rem;
+  }
+
+  .alv-toolbar {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    overflow-x: auto;
+    padding-bottom: 0.1rem;
+    scrollbar-width: none;
+  }
+
+  .alv-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .alv-tool-btn,
+  .alv-color-swatch {
+    flex: 0 0 auto;
+    width: 2rem;
+    min-width: 2rem;
+    height: 2rem;
+    min-height: 2rem;
+  }
+
+  .alv-quick-actions {
+    display: flex;
+    gap: 0.4rem;
+    overflow-x: auto;
+    padding: 0.45rem 0.55rem;
+    scrollbar-width: none;
+  }
+
+  .alv-quick-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .alv-qa-btn {
+    flex: 0 0 auto;
+    min-height: 2rem;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.72rem;
+    white-space: nowrap;
+  }
+
+  .alv-content {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.75rem;
+    font-size: 100% !important;
+  }
+
+  .alv-notes,
+  .alv-transcript-text,
+  .alv-notes .message-formatter,
+  .alv-notes .enhanced-message-formatter {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    font-size: 0.98rem;
+    line-height: 1.75;
+  }
+
+  .floating-study-chat {
+    inset: 0;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+
+  .floating-study-chat .chat-messages-improved {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-x: hidden;
+  }
+
+  .floating-study-chat .chat-input-area {
+    flex: 0 0 auto;
+    max-height: 32dvh;
+  }
+}
+
 @layer components {
   .glass {
     @apply border border-brand-200/60 bg-white/80 backdrop-blur-xl dark:border-brand-600/20 dark:bg-surface-800/60;
@@ -5600,5 +5755,138 @@ body,
 
   .free-text-row .btn {
     width: 100%;
+  }
+}
+
+/* Final audio lecture mobile override: this intentionally sits at EOF to win the cascade. */
+@media (max-width: 767px) {
+  .alv-overlay,
+  .alv-container {
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .alv-player {
+    display: grid;
+    grid-template-columns: auto 2.35rem auto 1fr auto;
+    gap: 0.35rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  .alv-play-btn {
+    width: 2.35rem;
+    height: 2.35rem;
+  }
+
+  .alv-skip-btn,
+  .alv-speed-btn {
+    min-height: 2rem;
+    padding: 0.3rem 0.55rem;
+    white-space: nowrap;
+  }
+
+  .alv-progress-bar {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .alv-left {
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .alv-tabs-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.45rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  .alv-tabs,
+  .alv-toolbar,
+  .alv-quick-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .alv-tabs::-webkit-scrollbar,
+  .alv-toolbar::-webkit-scrollbar,
+  .alv-quick-actions::-webkit-scrollbar {
+    display: none;
+  }
+
+  .alv-tab,
+  .alv-qa-btn {
+    flex: 0 0 auto;
+    min-width: max-content;
+    white-space: nowrap;
+  }
+
+  .alv-tab {
+    padding: 0.45rem 0.65rem;
+    font-size: 0.72rem;
+  }
+
+  .alv-tool-btn,
+  .alv-color-swatch {
+    flex: 0 0 auto;
+    width: 2rem;
+    min-width: 2rem;
+    height: 2rem;
+    min-height: 2rem;
+  }
+
+  .alv-quick-actions {
+    gap: 0.4rem;
+    padding: 0.45rem 0.55rem;
+  }
+
+  .alv-qa-btn {
+    min-height: 2rem;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.72rem;
+  }
+
+  .alv-content {
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0.75rem;
+    font-size: 100% !important;
+  }
+
+  .alv-notes,
+  .alv-transcript-text,
+  .alv-notes .message-formatter,
+  .alv-notes .enhanced-message-formatter {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    font-size: 0.98rem;
+    line-height: 1.75;
+  }
+
+  .floating-study-chat {
+    inset: 0;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+
+  .floating-study-chat .chat-messages-improved {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-x: hidden;
+  }
+
+  .floating-study-chat .chat-input-area {
+    flex: 0 0 auto;
+    max-height: 32dvh;
   }
 }

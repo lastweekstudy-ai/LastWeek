@@ -12,6 +12,7 @@
 
 import { databases, ID } from './config';
 import { Query } from 'appwrite';
+import { callDeepSeek } from '../services/aiProvider';
 
 const DATABASE_ID                  = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const PDF_RESOURCES_COLLECTION_ID  = import.meta.env.VITE_APPWRITE_PDF_RESOURCES_COLLECTION_ID;
@@ -476,27 +477,17 @@ export const makeAudioLecturePrivate = async (lectureId) => {
  * Uses DeepSeek to infer a concise topic title.
  */
 export const generateAITitle = async (content, fileName) => {
-  const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
-  if (!DEEPSEEK_API_KEY || !content) return fileName;
+  if (!content) return fileName;
 
   try {
     const preview = content.substring(0, 2000);
-    const res = await fetch('https://api.deepseek.com/chat/completions', {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${DEEPSEEK_API_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'deepseek-chat',
-        messages: [{
-          role: 'user',
-          content: `Based on this content, generate a concise topic title (max 8 words, no quotes, no punctuation at end). Just the title, nothing else.\n\nContent preview:\n${preview}`
-        }],
-        max_tokens: 30,
-        temperature: 0.3,
-      })
-    });
-    if (!res.ok) return fileName;
-    const data = await res.json();
-    const title = data.choices?.[0]?.message?.content?.trim();
+    const title = await callDeepSeek(
+      'Generate concise study resource titles. Return only the title, no quotes.',
+      [{
+        role: 'user',
+        content: `Based on this content, generate a concise topic title (max 8 words, no punctuation at end).\n\nContent preview:\n${preview}`
+      }]
+    );
     return title || fileName;
   } catch {
     return fileName;

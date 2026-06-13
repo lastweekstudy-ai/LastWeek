@@ -342,9 +342,50 @@ export const getSessionMessagesPaginated = async (sessionId, options = {}) => {
 };
 
 // Flashcards CRUD
+const flashcardCreateLocks = new Set();
+
+const normalizeFlashcardText = (value) =>
+  (value || '').toString().trim().replace(/\s+/g, ' ').toLowerCase();
+
+const getFlashcardDedupeKey = (userId, sessionId, front, back) =>
+  [
+    userId || '',
+    sessionId || '',
+    normalizeFlashcardText(front),
+    normalizeFlashcardText(back),
+  ].join('|');
+
 export const createFlashcard = async (userId, sessionId, front, back, options = {}) => {
+  const dedupeKey = getFlashcardDedupeKey(userId, sessionId, front, back);
+  if (flashcardCreateLocks.has(dedupeKey)) {
+    throw new Error('This flashcard is already being saved.');
+  }
+
   try {
+    flashcardCreateLocks.add(dedupeKey);
     const { collectionId = null, source = 'ai', subject = null } = options;
+
+    try {
+      const existing = await databases.listDocuments(
+        DATABASE_ID,
+        FLASHCARDS_COLLECTION_ID,
+        [
+          Query.equal('userId', userId),
+          Query.equal('sessionId', sessionId),
+          Query.limit(25),
+          Query.select(['$id', 'userId', 'sessionId', 'front', 'back', 'confidence', 'nextReviewAt', 'createdAt', 'collectionId', 'subject', 'source'])
+        ]
+      );
+
+      const match = existing.documents.find(card =>
+        normalizeFlashcardText(card.front) === normalizeFlashcardText(front) &&
+        normalizeFlashcardText(card.back) === normalizeFlashcardText(back)
+      );
+      if (match) return match;
+    } catch (lookupError) {
+      console.warn('[createFlashcard] Duplicate lookup skipped:', lookupError.message);
+    }
+
     const flashcard = await databases.createDocument(
       DATABASE_ID,
       FLASHCARDS_COLLECTION_ID,
@@ -365,6 +406,8 @@ export const createFlashcard = async (userId, sessionId, front, back, options = 
     return flashcard;
   } catch (error) {
     throw new Error(error.message);
+  } finally {
+    flashcardCreateLocks.delete(dedupeKey);
   }
 };
 

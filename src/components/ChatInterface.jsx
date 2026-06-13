@@ -151,7 +151,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
         textareaRef.current.style.height = 'auto';
       }
     }
-  }, [input, isLoading, pendingFile, onSend]);
+  }, [input, isLoading, isStreaming, pendingFile, onSend, insideStudyMode]);
 
   const handleKeyPress = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -169,11 +169,11 @@ This ensures I have the complete PDF content with accurate page and line numbers
   }, [isLoading, isStreaming, onSend, scrollToBottom]);
 
   const handleQuickAction = useCallback((prompt) => {
-    if (!isLoading) {
+    if (!isLoading && !isStreaming) {
       onSend(prompt);
       setShowQuickActions(false);
     }
-  }, [isLoading, onSend]);
+  }, [isLoading, isStreaming, onSend]);
 
   const handleFileProcess = useCallback(async (fileData) => {
     // Check if it's a PDF

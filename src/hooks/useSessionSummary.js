@@ -8,10 +8,21 @@ import { useEffect, useRef } from 'react';
 const useSessionSummary = ({ messages, generateAndSaveSummary }) => {
   const messagesRef = useRef(messages);
   const generateRef = useRef(generateAndSaveSummary);
+  const lastRollingSummaryCountRef = useRef(0);
 
   // Keep refs current without re-running the effect
   useEffect(() => { messagesRef.current = messages; }, [messages]);
   useEffect(() => { generateRef.current = generateAndSaveSummary; }, [generateAndSaveSummary]);
+
+  useEffect(() => {
+    const messageCount = messages.length;
+    if (messageCount < 12) return;
+    if (messageCount % 12 !== 0) return;
+    if (lastRollingSummaryCountRef.current === messageCount) return;
+
+    lastRollingSummaryCountRef.current = messageCount;
+    generateRef.current?.();
+  }, [messages.length]);
 
   useEffect(() => {
     return () => {

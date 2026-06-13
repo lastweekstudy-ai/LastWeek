@@ -1,0 +1,8 @@
+{
+  "name": "ai-proxy-universal",
+  "version": "1.0.0",
+  "description": "Universal AI proxy for DeepSeek, Gemini, Groq, OpenRouter",
+  "type": "module",
+  "main": "index.js",
+  "dependencies": {}
+}
