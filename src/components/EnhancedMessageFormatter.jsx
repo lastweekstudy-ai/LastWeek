@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -476,15 +476,18 @@ const FlashcardSetRenderer = ({ cards, prefix, suffix, onFlashcardRate }) => {
 const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAnswer, onActionClick }) => {
 
   // ── Pre-process content to fix malformed charts ───────────────────────────
-  const processedContent = processAIResponse(content);
+  const processedContent = useMemo(() => processAIResponse(content), [content]);
 
   // ── Extract action buttons FIRST (before other parsing) ──────────────────
-  const { textWithoutActions, buttons } = extractActionButtons(processedContent);
+  const { textWithoutActions, buttons } = useMemo(
+    () => extractActionButtons(processedContent),
+    [processedContent]
+  );
   const contentForParsing = textWithoutActions;
 
   // ── Detect both flashcards AND MCQs ───────────────────────────────────────
-  const flashcardData = extractFlashcards(contentForParsing);
-  const mcqData       = extractMCQs(contentForParsing);
+  const flashcardData = useMemo(() => extractFlashcards(contentForParsing), [contentForParsing]);
+  const mcqData = useMemo(() => extractMCQs(contentForParsing), [contentForParsing]);
 
   const hasFlashcards = flashcardData && flashcardData.cards.length > 0;
   const hasMCQs       = mcqData && mcqData.questions.length > 0;
@@ -842,4 +845,10 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
   );
 };
 
-export default EnhancedMessageFormatter;
+export default React.memo(EnhancedMessageFormatter, (prev, next) => (
+  prev.content === next.content &&
+  prev.messageId === next.messageId &&
+  prev.onFlashcardRate === next.onFlashcardRate &&
+  prev.onMCQAnswer === next.onMCQAnswer &&
+  prev.onActionClick === next.onActionClick
+));

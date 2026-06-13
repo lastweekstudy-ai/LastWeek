@@ -1,0 +1,37 @@
+{
+  "runId": "appwrite-2026-06-13T02-48-27-805Z",
+  "createdAt": "2026-06-13T02:48:27.805Z",
+  "finishedAt": "2026-06-13T02:48:32.184Z",
+  "durationMs": 4379,
+  "endpoint": "https://sgp.cloud.appwrite.io/v1",
+  "projectId": "69958be2003344c314a1",
+  "backupPath": "D:\\LastWeek\\LastWeek\\backup\\appwrite-2026-06-13T02-48-27-805Z",
+  "pageSize": 100,
+  "verification": {
+    "databasesReachable": true,
+    "storageReachable": true,
+    "usersReachable": true
+  },
+  "databases": {
+    "databasesReported": 0,
+    "databasesExported": 0,
+    "databases": []
+  },
+  "users": {
+    "totalReported": 86,
+    "exported": 86
+  },
+  "storage": {
+    "bucketsReported": 1,
+    "bucketsExported": 1,
+    "buckets": [
+      {
+        "bucketId": "6995f259001c9af55009",
+        "name": "pdfs",
+        "filesReported": 30,
+        "filesExported": 30
+      }
+    ]
+  },
+  "complete": true
+}

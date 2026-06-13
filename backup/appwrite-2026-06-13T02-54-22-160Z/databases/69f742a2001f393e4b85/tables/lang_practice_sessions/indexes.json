@@ -1,0 +1,77 @@
+[
+  {
+    "$id": "25687_18_userId_idx",
+    "$createdAt": "2026-05-12T08:50:53.504+00:00",
+    "$updatedAt": "2026-05-12T08:50:53.597+00:00",
+    "key": "userId_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_18_practiceType_idx",
+    "$createdAt": "2026-05-12T08:51:46.836+00:00",
+    "$updatedAt": "2026-05-12T08:51:47.038+00:00",
+    "key": "practiceType_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "practiceType"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_18_timestamp_idx",
+    "$createdAt": "2026-05-12T08:52:03.349+00:00",
+    "$updatedAt": "2026-05-12T08:52:03.459+00:00",
+    "key": "timestamp_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "timestamp"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_18_user_practice",
+    "$createdAt": "2026-05-12T08:52:39.611+00:00",
+    "$updatedAt": "2026-05-12T08:52:39.698+00:00",
+    "key": "user_practice",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "practiceType"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  }
+]

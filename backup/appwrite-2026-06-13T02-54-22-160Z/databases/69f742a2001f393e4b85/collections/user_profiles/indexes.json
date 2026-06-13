@@ -1,0 +1,74 @@
+[
+  {
+    "$id": "25687_4_userId_unique",
+    "$createdAt": "2026-05-06T06:14:53.754+00:00",
+    "$updatedAt": "2026-05-06T06:14:53.871+00:00",
+    "key": "userId_unique",
+    "type": "unique",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_4_createdAt_index",
+    "$createdAt": "2026-05-06T06:15:32.849+00:00",
+    "$updatedAt": "2026-05-06T06:15:32.958+00:00",
+    "key": "createdAt_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "createdAt"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_4_currentMode_index",
+    "$createdAt": "2026-05-06T06:15:58.562+00:00",
+    "$updatedAt": "2026-05-06T06:15:58.688+00:00",
+    "key": "currentMode_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "currentMode"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_4_totalSessions_index",
+    "$createdAt": "2026-05-06T06:16:38.807+00:00",
+    "$updatedAt": "2026-05-06T06:16:38.919+00:00",
+    "key": "totalSessions_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "totalSessions"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "desc"
+    ]
+  }
+]

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
   searchPublicResources,
-  hasUserAddedResource,
+  getUserImportedResourceIds,
   importSharedPDFResource,
   importSharedAudioLecture,
 } from '../appwrite/resourceLibrary';
@@ -66,20 +66,19 @@ const ResourceLibrary = () => {
   const loadResources = async () => {
     try {
       setLoading(true);
-      const sharedResources = await searchPublicResources('', 100);
+      const [sharedResources, importedIds] = await Promise.all([
+        searchPublicResources('', 100),
+        getUserImportedResourceIds(user.$id),
+      ]);
 
-      // ✅ Check which resources the user has already added — run all checks in parallel
-      const resourcesWithStatus = await Promise.all(
-        sharedResources.map(async (resource) => {
-          const resourceType = resource.resourceType || 'pdf';
-          const alreadyAdded = await hasUserAddedResource(user.$id, resource.$id, resourceType);
-          return {
-            ...resource,
-            alreadyAdded,
-            addCount: resource.addCount || 0,
-          };
-        })
-      );
+      const resourcesWithStatus = sharedResources.map((resource) => {
+        const resourceType = resource.resourceType || 'pdf';
+        return {
+          ...resource,
+          alreadyAdded: importedIds[resourceType]?.has(resource.$id) || false,
+          addCount: resource.addCount || 0,
+        };
+      });
 
       setResources(resourcesWithStatus);
       setFilteredResources(resourcesWithStatus);
@@ -89,7 +88,6 @@ const ResourceLibrary = () => {
       setLoading(false);
     }
   };
-
   const filterResources = () => {
     let filtered = [...resources];
 

@@ -1,0 +1,21 @@
+[
+  {
+    "preRegActive": false,
+    "paymentsActive": true,
+    "dailyFreeSlotsActive": true,
+    "dailyFreeSlotCount": 10,
+    "freePlanActive": true,
+    "proPlanActive": true,
+    "plusPlanActive": true,
+    "proPlusPlanActive": true,
+    "preRegPriceId": null,
+    "updatedAt": "2026-06-05T13:12:41.924Z",
+    "$id": "admin_settings_doc",
+    "$sequence": "1",
+    "$createdAt": "2026-05-25T13:02:41.063+00:00",
+    "$updatedAt": "2026-06-05T13:12:42.380+00:00",
+    "$permissions": [],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "admin_settings"
+  }
+]

@@ -1,0 +1,209 @@
+[
+  {
+    "$id": "25687_6_userId_index",
+    "$createdAt": "2026-05-06T09:09:09.146+00:00",
+    "$updatedAt": "2026-05-06T09:09:09.250+00:00",
+    "key": "userId_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_6_sessionId_index",
+    "$createdAt": "2026-05-06T09:09:32.840+00:00",
+    "$updatedAt": "2026-05-06T09:09:32.961+00:00",
+    "key": "sessionId_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "sessionId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_6_category_index",
+    "$createdAt": "2026-05-06T09:10:01.960+00:00",
+    "$updatedAt": "2026-05-06T09:10:02.128+00:00",
+    "key": "category_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "category"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_6_isFavorite_index",
+    "$createdAt": "2026-05-06T09:10:51.582+00:00",
+    "$updatedAt": "2026-05-06T09:10:51.711+00:00",
+    "key": "isFavorite_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "isFavorite"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_6_lastAccessedAt_index",
+    "$createdAt": "2026-05-06T09:11:33.956+00:00",
+    "$updatedAt": "2026-05-06T09:11:34.064+00:00",
+    "key": "lastAccessedAt_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "lastAccessedAt"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_6_userId_lastAccessedAt_compound",
+    "$createdAt": "2026-05-08T06:55:08.982+00:00",
+    "$updatedAt": "2026-05-08T06:55:09.078+00:00",
+    "key": "userId_lastAccessedAt_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "lastAccessedAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_6_sessionId_lastAccessedAt_compound",
+    "$createdAt": "2026-05-08T06:55:43.040+00:00",
+    "$updatedAt": "2026-05-08T06:55:43.152+00:00",
+    "key": "sessionId_lastAccessedAt_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "sessionId",
+      "lastAccessedAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_6_public_index",
+    "$createdAt": "2026-05-11T09:10:46.715+00:00",
+    "$updatedAt": "2026-05-11T09:10:46.827+00:00",
+    "key": "public_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "isPublic"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_6_original_resource_idx",
+    "$createdAt": "2026-05-17T11:43:48.866+00:00",
+    "$updatedAt": "2026-05-17T11:43:48.963+00:00",
+    "key": "original_resource_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "originalResourceId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_6_user_original_pdf_idx",
+    "$createdAt": "2026-05-17T11:44:22.171+00:00",
+    "$updatedAt": "2026-05-17T11:44:22.270+00:00",
+    "key": "user_original_pdf_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "originalResourceId"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_6_cacheKey",
+    "$createdAt": "2026-06-07T00:52:55.758+00:00",
+    "$updatedAt": "2026-06-07T00:52:55.863+00:00",
+    "key": "cacheKey",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "cacheKey"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "$id": "25687_34_idx_userId",
+    "$createdAt": "2026-05-25T11:40:09.971+00:00",
+    "$updatedAt": "2026-05-25T11:40:10.098+00:00",
+    "key": "idx_userId",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_34_idx_isApproved",
+    "$createdAt": "2026-05-25T11:40:49.725+00:00",
+    "$updatedAt": "2026-05-25T11:40:49.839+00:00",
+    "key": "idx_isApproved",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "isApproved"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_34_idx_isPublished",
+    "$createdAt": "2026-05-25T11:41:51.165+00:00",
+    "$updatedAt": "2026-05-25T11:41:51.255+00:00",
+    "key": "idx_isPublished",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "isPublished"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  }
+]

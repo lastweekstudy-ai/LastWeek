@@ -1,0 +1,584 @@
+{
+  "$id": "pdf_resources",
+  "$createdAt": "2026-05-06T08:51:45.110+00:00",
+  "$updatedAt": "2026-05-06T09:12:04.228+00:00",
+  "$permissions": [
+    "create(\"users\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "pdf_resources",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T08:52:43.471+00:00",
+      "$updatedAt": "2026-05-06T08:52:43.614+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "sessionId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T08:53:19.556+00:00",
+      "$updatedAt": "2026-05-06T08:53:19.703+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "fileName",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T08:53:54.389+00:00",
+      "$updatedAt": "2026-05-06T08:53:54.537+00:00",
+      "size": 500,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "fileSize",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T08:54:28.215+00:00",
+      "$updatedAt": "2026-05-06T08:54:28.380+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "storageFileId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T08:55:09.376+00:00",
+      "$updatedAt": "2026-05-06T08:55:09.536+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "pageCount",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T08:55:34.063+00:00",
+      "$updatedAt": "2026-05-11T09:51:43.725+00:00",
+      "min": 1,
+      "max": 4000,
+      "default": 1
+    },
+    {
+      "key": "thumbnail",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T08:56:07.044+00:00",
+      "$updatedAt": "2026-05-06T08:56:07.207+00:00",
+      "size": 2000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "extractedText",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T08:56:42.616+00:00",
+      "$updatedAt": "2026-05-06T08:56:42.946+00:00",
+      "size": 1048576,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "notes",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T08:57:19.327+00:00",
+      "$updatedAt": "2026-05-06T08:57:19.498+00:00",
+      "size": 1048576,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "currentPage",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T08:57:39.906+00:00",
+      "$updatedAt": "2026-05-06T08:57:40.134+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 1
+    },
+    {
+      "key": "bookmarks",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T08:58:07.898+00:00",
+      "$updatedAt": "2026-05-06T08:58:08.060+00:00",
+      "size": 10000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "highlights",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T08:58:44.677+00:00",
+      "$updatedAt": "2026-05-06T08:58:44.856+00:00",
+      "size": 50000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "tags",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T08:59:24.977+00:00",
+      "$updatedAt": "2026-05-06T08:59:25.142+00:00",
+      "size": 1000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "lastAccessedAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T08:59:56.073+00:00",
+      "$updatedAt": "2026-05-06T08:59:56.240+00:00",
+      "format": "",
+      "default": null
+    },
+    {
+      "key": "createdAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T09:00:10.517+00:00",
+      "$updatedAt": "2026-05-06T09:00:10.753+00:00",
+      "format": "",
+      "default": null
+    },
+    {
+      "key": "viewCount",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T09:01:55.733+00:00",
+      "$updatedAt": "2026-05-06T09:01:55.937+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "studyTimeMinutes",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T09:02:49.743+00:00",
+      "$updatedAt": "2026-05-06T09:02:49.920+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "isFavorite",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T09:03:24.143+00:00",
+      "$updatedAt": "2026-05-06T09:03:24.314+00:00",
+      "default": false
+    },
+    {
+      "key": "category",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T09:03:55.007+00:00",
+      "$updatedAt": "2026-05-06T09:03:55.197+00:00",
+      "size": 100,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "isPublic",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-11T09:04:36.315+00:00",
+      "$updatedAt": "2026-05-11T09:04:36.597+00:00",
+      "default": false
+    },
+    {
+      "key": "aiTitle",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-11T09:05:12.572+00:00",
+      "$updatedAt": "2026-05-11T09:05:12.673+00:00",
+      "size": 500,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "isImported",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-17T11:41:23.293+00:00",
+      "$updatedAt": "2026-05-17T11:41:23.406+00:00",
+      "default": false
+    },
+    {
+      "key": "originalResourceId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-17T11:42:11.461+00:00",
+      "$updatedAt": "2026-05-17T11:42:11.559+00:00",
+      "size": 36,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "addCount",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-17T11:42:46.915+00:00",
+      "$updatedAt": "2026-05-17T11:42:47.052+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "cacheKey",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-06-07T00:49:24.508+00:00",
+      "$updatedAt": "2026-06-07T00:49:24.778+00:00",
+      "size": 32,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "manifest",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-06-07T00:50:03.022+00:00",
+      "$updatedAt": "2026-06-07T00:50:03.292+00:00",
+      "size": 1000000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "figureRegistry",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-06-07T00:51:20.168+00:00",
+      "$updatedAt": "2026-06-07T00:51:20.280+00:00",
+      "size": 1000000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "processingVersion",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-06-07T00:52:01.467+00:00",
+      "$updatedAt": "2026-06-07T00:52:01.881+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_6_userId_index",
+      "$createdAt": "2026-05-06T09:09:09.146+00:00",
+      "$updatedAt": "2026-05-06T09:09:09.250+00:00",
+      "key": "userId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_6_sessionId_index",
+      "$createdAt": "2026-05-06T09:09:32.840+00:00",
+      "$updatedAt": "2026-05-06T09:09:32.961+00:00",
+      "key": "sessionId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "sessionId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_6_category_index",
+      "$createdAt": "2026-05-06T09:10:01.960+00:00",
+      "$updatedAt": "2026-05-06T09:10:02.128+00:00",
+      "key": "category_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "category"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_6_isFavorite_index",
+      "$createdAt": "2026-05-06T09:10:51.582+00:00",
+      "$updatedAt": "2026-05-06T09:10:51.711+00:00",
+      "key": "isFavorite_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "isFavorite"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_6_lastAccessedAt_index",
+      "$createdAt": "2026-05-06T09:11:33.956+00:00",
+      "$updatedAt": "2026-05-06T09:11:34.064+00:00",
+      "key": "lastAccessedAt_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "lastAccessedAt"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_6_userId_lastAccessedAt_compound",
+      "$createdAt": "2026-05-08T06:55:08.982+00:00",
+      "$updatedAt": "2026-05-08T06:55:09.078+00:00",
+      "key": "userId_lastAccessedAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId",
+        "lastAccessedAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_6_sessionId_lastAccessedAt_compound",
+      "$createdAt": "2026-05-08T06:55:43.040+00:00",
+      "$updatedAt": "2026-05-08T06:55:43.152+00:00",
+      "key": "sessionId_lastAccessedAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "sessionId",
+        "lastAccessedAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_6_public_index",
+      "$createdAt": "2026-05-11T09:10:46.715+00:00",
+      "$updatedAt": "2026-05-11T09:10:46.827+00:00",
+      "key": "public_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "isPublic"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_6_original_resource_idx",
+      "$createdAt": "2026-05-17T11:43:48.866+00:00",
+      "$updatedAt": "2026-05-17T11:43:48.963+00:00",
+      "key": "original_resource_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "originalResourceId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_6_user_original_pdf_idx",
+      "$createdAt": "2026-05-17T11:44:22.171+00:00",
+      "$updatedAt": "2026-05-17T11:44:22.270+00:00",
+      "key": "user_original_pdf_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId",
+        "originalResourceId"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_6_cacheKey",
+      "$createdAt": "2026-06-07T00:52:55.758+00:00",
+      "$updatedAt": "2026-06-07T00:52:55.863+00:00",
+      "key": "cacheKey",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "cacheKey"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 60988
+}

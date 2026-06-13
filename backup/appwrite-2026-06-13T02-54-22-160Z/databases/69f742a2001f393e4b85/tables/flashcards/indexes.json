@@ -1,0 +1,143 @@
+[
+  {
+    "$id": "25687_3_userId_index",
+    "$createdAt": "2026-05-06T06:10:27.386+00:00",
+    "$updatedAt": "2026-05-06T06:10:27.483+00:00",
+    "key": "userId_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_3_sessionId_index",
+    "$createdAt": "2026-05-06T06:10:48.946+00:00",
+    "$updatedAt": "2026-05-06T06:10:49.057+00:00",
+    "key": "sessionId_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "sessionId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_3_userId_nextReviewAt_compound",
+    "$createdAt": "2026-05-06T06:11:25.216+00:00",
+    "$updatedAt": "2026-05-06T06:11:25.322+00:00",
+    "key": "userId_nextReviewAt_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "nextReviewAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_3_userId_confidence_compound",
+    "$createdAt": "2026-05-06T06:12:02.159+00:00",
+    "$updatedAt": "2026-05-06T06:12:02.259+00:00",
+    "key": "userId_confidence_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "confidence"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_3_userId_createdAt_compound",
+    "$createdAt": "2026-05-06T06:12:31.695+00:00",
+    "$updatedAt": "2026-05-06T06:12:31.795+00:00",
+    "key": "userId_createdAt_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "createdAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_3_sessionId_nextReviewAt_compound",
+    "$createdAt": "2026-05-06T06:13:24.030+00:00",
+    "$updatedAt": "2026-05-06T06:13:24.126+00:00",
+    "key": "sessionId_nextReviewAt_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "sessionId",
+      "nextReviewAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_3_userId_collectionId_compound",
+    "$createdAt": "2026-05-17T04:10:14.684+00:00",
+    "$updatedAt": "2026-05-17T04:10:14.773+00:00",
+    "key": "userId_collectionId_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "collectionId"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  }
+]

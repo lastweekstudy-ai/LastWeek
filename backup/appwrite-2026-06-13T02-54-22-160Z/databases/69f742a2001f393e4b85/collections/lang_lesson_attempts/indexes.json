@@ -1,0 +1,77 @@
+[
+  {
+    "$id": "25687_17_userId_idx",
+    "$createdAt": "2026-05-12T08:37:10.174+00:00",
+    "$updatedAt": "2026-05-12T08:37:10.265+00:00",
+    "key": "userId_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_17_lessonId_idx",
+    "$createdAt": "2026-05-12T08:37:28.275+00:00",
+    "$updatedAt": "2026-05-12T08:37:28.363+00:00",
+    "key": "lessonId_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "lessonId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_17_timestamp_idx",
+    "$createdAt": "2026-05-12T08:38:04.015+00:00",
+    "$updatedAt": "2026-05-12T08:38:04.141+00:00",
+    "key": "timestamp_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "timestamp"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_17_user_lesson",
+    "$createdAt": "2026-05-12T08:38:52.764+00:00",
+    "$updatedAt": "2026-05-12T08:38:52.851+00:00",
+    "key": "user_lesson",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "userId",
+      "lessonId"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  }
+]

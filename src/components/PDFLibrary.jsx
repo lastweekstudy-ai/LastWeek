@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getSessionPDFs, trackStudyTime, makeResourcePublic, makeResourcePrivate } from '../appwrite/pdfResources';
-import { getUserAudioLectures, makeAudioLecturePublic, makeAudioLecturePrivate } from '../appwrite/audioLecture';
+import { getSessionPDFs, getPDFResource, trackStudyTime, makeResourcePublic, makeResourcePrivate } from '../appwrite/pdfResources';
+import { getUserAudioLectures, getAudioLecture, makeAudioLecturePublic, makeAudioLecturePrivate } from '../appwrite/audioLecture';
 import { getFileURL } from '../appwrite/storage';
 import StudyInterface from './StudyInterface';
 import ResourceViewer from './ResourceViewer';
@@ -123,8 +123,8 @@ const PDFLibrary = ({
         addCount: lecture.addCount || 0,
         audioData: {
           audioUrl: lecture.audioUrl,
-          transcript: lecture.transcript,
-          lectureNotes: lecture.lectureNotes,
+          transcript: lecture.transcript || '',
+          lectureNotes: lecture.lectureNotes || '',
           duration: lecture.duration,
         },
       }));
@@ -142,8 +142,27 @@ const PDFLibrary = ({
     }
   };
 
-  const handleViewResource = (resource) => {
-    setSelectedResource(resource);
+  const handleViewResource = async (resource) => {
+    if (resource.resourceType === 'audio') {
+      const fullLecture = await getAudioLecture(resource.$id);
+      setSelectedResource({
+        ...resource,
+        ...fullLecture,
+        fileName: fullLecture.title || resource.fileName,
+        resourceType: 'audio',
+        audioData: {
+          audioUrl: fullLecture.audioUrl,
+          transcript: fullLecture.transcript || '',
+          lectureNotes: fullLecture.lectureNotes || '',
+          duration: fullLecture.duration,
+        },
+      });
+    } else if (resource.tags === 'application/pdf' || resource.fileName.endsWith('.pdf')) {
+      const fullResource = await getPDFResource(resource.$id);
+      setSelectedResource({ ...resource, ...fullResource });
+    } else {
+      setSelectedResource(resource);
+    }
     // Update activity time when user selects a resource
     if (lastActivityTime.current) {
       lastActivityTime.current = Date.now();
@@ -216,7 +235,7 @@ const PDFLibrary = ({
 
   return (
     <>
-      {!selectedResource && (
+      {!selectedResource && !showAudioProcessor && !showResourceSearch && (
       <>
       <div className="pdf-library-overlay" onClick={onClose} />
       <div className="pdf-library-panel">

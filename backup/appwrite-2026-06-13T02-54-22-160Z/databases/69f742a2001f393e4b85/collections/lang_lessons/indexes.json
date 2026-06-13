@@ -1,0 +1,98 @@
+[
+  {
+    "$id": "25687_16_userId_idx",
+    "$createdAt": "2026-05-12T08:27:31.912+00:00",
+    "$updatedAt": "2026-05-12T08:27:32.001+00:00",
+    "key": "userId_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_16_module_idx",
+    "$createdAt": "2026-05-12T08:29:06.944+00:00",
+    "$updatedAt": "2026-05-12T08:29:07.122+00:00",
+    "key": "module_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "moduleId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_16_stage_idx",
+    "$createdAt": "2026-05-12T08:30:07.825+00:00",
+    "$updatedAt": "2026-05-12T08:30:07.996+00:00",
+    "key": "stage_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "stageName"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_16_status_idx",
+    "$createdAt": "2026-05-12T08:30:45.498+00:00",
+    "$updatedAt": "2026-05-12T08:30:45.592+00:00",
+    "key": "status_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "status"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_16_user_module_stage",
+    "$createdAt": "2026-05-12T08:32:00.971+00:00",
+    "$updatedAt": "2026-05-12T08:32:01.081+00:00",
+    "key": "user_module_stage",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "userId",
+      "moduleId",
+      "stageName"
+    ],
+    "lengths": [
+      0,
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc",
+      "asc"
+    ]
+  }
+]

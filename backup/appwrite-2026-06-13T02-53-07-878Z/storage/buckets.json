@@ -1,0 +1,32 @@
+[
+  {
+    "$id": "6995f259001c9af55009",
+    "$createdAt": "2026-02-18T17:09:46.074+00:00",
+    "$updatedAt": "2026-05-06T10:23:31.516+00:00",
+    "$permissions": [
+      "create(\"users\")",
+      "read(\"users\")",
+      "update(\"users\")",
+      "delete(\"users\")",
+      "read(\"any\")"
+    ],
+    "fileSecurity": false,
+    "name": "pdfs",
+    "enabled": true,
+    "maximumFileSize": 50000000,
+    "allowedFileExtensions": [
+      "pdf",
+      "png",
+      "svg",
+      "html",
+      "jpg",
+      "gif",
+      "mp4"
+    ],
+    "compression": "none",
+    "encryption": true,
+    "antivirus": true,
+    "transformations": true,
+    "totalSize": 48646260
+  }
+]

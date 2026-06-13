@@ -1,0 +1,597 @@
+{
+  "runId": "appwrite-2026-06-13T02-54-22-160Z",
+  "createdAt": "2026-06-13T02:54:22.160Z",
+  "finishedAt": "2026-06-13T02:56:07.860Z",
+  "durationMs": 105700,
+  "endpoint": "https://sgp.cloud.appwrite.io/v1",
+  "projectId": "69958be2003344c314a1",
+  "backupPath": "D:\\LastWeek\\LastWeek\\backup\\appwrite-2026-06-13T02-54-22-160Z",
+  "pageSize": 100,
+  "verification": {
+    "databasesReachable": true,
+    "storageReachable": true,
+    "usersReachable": true
+  },
+  "databases": {
+    "databasesReported": 0,
+    "databasesExported": 1,
+    "databases": [
+      {
+        "databaseId": "69f742a2001f393e4b85",
+        "name": "lastweek_db",
+        "collectionsReported": 34,
+        "collectionsExported": 34,
+        "collections": [
+          {
+            "collectionId": "sessions",
+            "name": "sessions",
+            "documentsReported": 76,
+            "documentsExported": 76,
+            "attributes": 7,
+            "indexes": 5
+          },
+          {
+            "collectionId": "messages",
+            "name": "messages",
+            "documentsReported": 554,
+            "documentsExported": 554,
+            "attributes": 9,
+            "indexes": 9
+          },
+          {
+            "collectionId": "flashcards",
+            "name": "flashcards",
+            "documentsReported": 51,
+            "documentsExported": 51,
+            "attributes": 10,
+            "indexes": 7
+          },
+          {
+            "collectionId": "user_profiles",
+            "name": "user_profiles",
+            "documentsReported": 53,
+            "documentsExported": 53,
+            "attributes": 5,
+            "indexes": 4
+          },
+          {
+            "collectionId": "file_attachments",
+            "name": "file_attachments",
+            "documentsReported": 32,
+            "documentsExported": 32,
+            "attributes": 8,
+            "indexes": 6
+          },
+          {
+            "collectionId": "pdf_resources",
+            "name": "pdf_resources",
+            "documentsReported": 38,
+            "documentsExported": 38,
+            "attributes": 28,
+            "indexes": 11
+          },
+          {
+            "collectionId": "pdf_notes",
+            "name": "pdf_notes",
+            "documentsReported": 0,
+            "documentsExported": 0,
+            "attributes": 8,
+            "indexes": 6
+          },
+          {
+            "collectionId": "pdf_highlights",
+            "name": "pdf_highlights",
+            "documentsReported": 17,
+            "documentsExported": 17,
+            "attributes": 7,
+            "indexes": 6
+          },
+          {
+            "collectionId": "study_schedule",
+            "name": "study_schedule",
+            "documentsReported": 82,
+            "documentsExported": 82,
+            "attributes": 8,
+            "indexes": 3
+          },
+          {
+            "collectionId": "session_context",
+            "name": "session_context",
+            "documentsReported": 52,
+            "documentsExported": 52,
+            "attributes": 13,
+            "indexes": 3
+          },
+          {
+            "collectionId": "exam_plans",
+            "name": "exam_plans",
+            "documentsReported": 7,
+            "documentsExported": 7,
+            "attributes": 6,
+            "indexes": 1
+          },
+          {
+            "collectionId": "youtube_studies",
+            "name": "youtube_studies",
+            "documentsReported": 0,
+            "documentsExported": 0,
+            "attributes": 10,
+            "indexes": 1
+          },
+          {
+            "collectionId": "audio_lectures",
+            "name": "audio_lectures",
+            "documentsReported": 17,
+            "documentsExported": 17,
+            "attributes": 14,
+            "indexes": 4
+          },
+          {
+            "collectionId": "lang_users",
+            "name": "lang_users",
+            "documentsReported": 13,
+            "documentsExported": 13,
+            "attributes": 9,
+            "indexes": 3
+          },
+          {
+            "collectionId": "lang_roadmaps",
+            "name": "lang_roadmaps",
+            "documentsReported": 12,
+            "documentsExported": 12,
+            "attributes": 6,
+            "indexes": 2
+          },
+          {
+            "collectionId": "lang_lessons",
+            "name": "lang_lessons",
+            "documentsReported": 25,
+            "documentsExported": 25,
+            "attributes": 10,
+            "indexes": 5
+          },
+          {
+            "collectionId": "lang_lesson_attempts",
+            "name": "lang_lesson_attempts",
+            "documentsReported": 0,
+            "documentsExported": 0,
+            "attributes": 5,
+            "indexes": 4
+          },
+          {
+            "collectionId": "lang_practice_sessions",
+            "name": "lang_practice_sessions",
+            "documentsReported": 0,
+            "documentsExported": 0,
+            "attributes": 7,
+            "indexes": 4
+          },
+          {
+            "collectionId": "lang_flashcard_reviews",
+            "name": "lang_flashcard_reviews",
+            "documentsReported": 11,
+            "documentsExported": 11,
+            "attributes": 8,
+            "indexes": 5
+          },
+          {
+            "collectionId": "lang_conversation_sessions",
+            "name": "lang_conversation_sessions",
+            "documentsReported": 0,
+            "documentsExported": 0,
+            "attributes": 6,
+            "indexes": 2
+          },
+          {
+            "collectionId": "lang_user_points",
+            "name": "lang_user_points",
+            "documentsReported": 5,
+            "documentsExported": 5,
+            "attributes": 4,
+            "indexes": 1
+          },
+          {
+            "collectionId": "tts_cache_metadata",
+            "name": "tts_cache_metadata",
+            "documentsReported": 0,
+            "documentsExported": 0,
+            "attributes": 5,
+            "indexes": 2
+          },
+          {
+            "collectionId": "tts_usage",
+            "name": "tts_usage",
+            "documentsReported": 0,
+            "documentsExported": 0,
+            "attributes": 4,
+            "indexes": 4
+          },
+          {
+            "collectionId": "flashcard_collections",
+            "name": "flashcard_collections",
+            "documentsReported": 2,
+            "documentsExported": 2,
+            "attributes": 5,
+            "indexes": 1
+          },
+          {
+            "collectionId": "subscriptions",
+            "name": "subscriptions",
+            "documentsReported": 25,
+            "documentsExported": 25,
+            "attributes": 14,
+            "indexes": 1
+          },
+          {
+            "collectionId": "usage_tracking",
+            "name": "usage_tracking",
+            "documentsReported": 65,
+            "documentsExported": 65,
+            "attributes": 10,
+            "indexes": 1
+          },
+          {
+            "collectionId": "admin_settings",
+            "name": "admin_settings",
+            "documentsReported": 1,
+            "documentsExported": 1,
+            "attributes": 10,
+            "indexes": 0
+          },
+          {
+            "collectionId": "pre_registrations",
+            "name": "pre_registrations",
+            "documentsReported": 6,
+            "documentsExported": 6,
+            "attributes": 12,
+            "indexes": 4
+          },
+          {
+            "collectionId": "promo_code_usage",
+            "name": "promo_code_usage",
+            "documentsReported": 0,
+            "documentsExported": 0,
+            "attributes": 5,
+            "indexes": 3
+          },
+          {
+            "collectionId": "user_reviews",
+            "name": "user_reviews",
+            "documentsReported": 6,
+            "documentsExported": 6,
+            "attributes": 10,
+            "indexes": 3
+          },
+          {
+            "collectionId": "daily_free_slots",
+            "name": "daily_free_slots",
+            "documentsReported": 18,
+            "documentsExported": 18,
+            "attributes": 5,
+            "indexes": 1
+          },
+          {
+            "collectionId": "daily_slot_usage",
+            "name": "daily_slot_usage",
+            "documentsReported": 25,
+            "documentsExported": 25,
+            "attributes": 7,
+            "indexes": 3
+          },
+          {
+            "collectionId": "testing_usage",
+            "name": "testing_usage",
+            "documentsReported": 28,
+            "documentsExported": 28,
+            "attributes": 15,
+            "indexes": 2
+          },
+          {
+            "collectionId": "transcription_jobs",
+            "name": "transcription_jobs",
+            "documentsReported": 3,
+            "documentsExported": 3,
+            "attributes": 5,
+            "indexes": 3
+          }
+        ],
+        "tables": {
+          "available": true,
+          "tablesReported": 34,
+          "tablesExported": 34,
+          "tables": [
+            {
+              "tableId": "sessions",
+              "name": "sessions",
+              "rowsReported": 76,
+              "rowsExported": 76,
+              "columns": 7,
+              "indexes": 5
+            },
+            {
+              "tableId": "messages",
+              "name": "messages",
+              "rowsReported": 554,
+              "rowsExported": 554,
+              "columns": 9,
+              "indexes": 9
+            },
+            {
+              "tableId": "flashcards",
+              "name": "flashcards",
+              "rowsReported": 51,
+              "rowsExported": 51,
+              "columns": 10,
+              "indexes": 7
+            },
+            {
+              "tableId": "user_profiles",
+              "name": "user_profiles",
+              "rowsReported": 53,
+              "rowsExported": 53,
+              "columns": 5,
+              "indexes": 4
+            },
+            {
+              "tableId": "file_attachments",
+              "name": "file_attachments",
+              "rowsReported": 32,
+              "rowsExported": 32,
+              "columns": 8,
+              "indexes": 6
+            },
+            {
+              "tableId": "pdf_resources",
+              "name": "pdf_resources",
+              "rowsReported": 38,
+              "rowsExported": 38,
+              "columns": 28,
+              "indexes": 11
+            },
+            {
+              "tableId": "pdf_notes",
+              "name": "pdf_notes",
+              "rowsReported": 0,
+              "rowsExported": 0,
+              "columns": 8,
+              "indexes": 6
+            },
+            {
+              "tableId": "pdf_highlights",
+              "name": "pdf_highlights",
+              "rowsReported": 17,
+              "rowsExported": 17,
+              "columns": 7,
+              "indexes": 6
+            },
+            {
+              "tableId": "study_schedule",
+              "name": "study_schedule",
+              "rowsReported": 82,
+              "rowsExported": 82,
+              "columns": 8,
+              "indexes": 3
+            },
+            {
+              "tableId": "session_context",
+              "name": "session_context",
+              "rowsReported": 52,
+              "rowsExported": 52,
+              "columns": 13,
+              "indexes": 3
+            },
+            {
+              "tableId": "exam_plans",
+              "name": "exam_plans",
+              "rowsReported": 7,
+              "rowsExported": 7,
+              "columns": 6,
+              "indexes": 1
+            },
+            {
+              "tableId": "youtube_studies",
+              "name": "youtube_studies",
+              "rowsReported": 0,
+              "rowsExported": 0,
+              "columns": 10,
+              "indexes": 1
+            },
+            {
+              "tableId": "audio_lectures",
+              "name": "audio_lectures",
+              "rowsReported": 17,
+              "rowsExported": 17,
+              "columns": 14,
+              "indexes": 4
+            },
+            {
+              "tableId": "lang_users",
+              "name": "lang_users",
+              "rowsReported": 13,
+              "rowsExported": 13,
+              "columns": 9,
+              "indexes": 3
+            },
+            {
+              "tableId": "lang_roadmaps",
+              "name": "lang_roadmaps",
+              "rowsReported": 12,
+              "rowsExported": 12,
+              "columns": 6,
+              "indexes": 2
+            },
+            {
+              "tableId": "lang_lessons",
+              "name": "lang_lessons",
+              "rowsReported": 25,
+              "rowsExported": 25,
+              "columns": 10,
+              "indexes": 5
+            },
+            {
+              "tableId": "lang_lesson_attempts",
+              "name": "lang_lesson_attempts",
+              "rowsReported": 0,
+              "rowsExported": 0,
+              "columns": 5,
+              "indexes": 4
+            },
+            {
+              "tableId": "lang_practice_sessions",
+              "name": "lang_practice_sessions",
+              "rowsReported": 0,
+              "rowsExported": 0,
+              "columns": 7,
+              "indexes": 4
+            },
+            {
+              "tableId": "lang_flashcard_reviews",
+              "name": "lang_flashcard_reviews",
+              "rowsReported": 11,
+              "rowsExported": 11,
+              "columns": 8,
+              "indexes": 5
+            },
+            {
+              "tableId": "lang_conversation_sessions",
+              "name": "lang_conversation_sessions",
+              "rowsReported": 0,
+              "rowsExported": 0,
+              "columns": 6,
+              "indexes": 2
+            },
+            {
+              "tableId": "lang_user_points",
+              "name": "lang_user_points",
+              "rowsReported": 5,
+              "rowsExported": 5,
+              "columns": 4,
+              "indexes": 1
+            },
+            {
+              "tableId": "tts_cache_metadata",
+              "name": "tts_cache_metadata",
+              "rowsReported": 0,
+              "rowsExported": 0,
+              "columns": 5,
+              "indexes": 2
+            },
+            {
+              "tableId": "tts_usage",
+              "name": "tts_usage",
+              "rowsReported": 0,
+              "rowsExported": 0,
+              "columns": 4,
+              "indexes": 4
+            },
+            {
+              "tableId": "flashcard_collections",
+              "name": "flashcard_collections",
+              "rowsReported": 2,
+              "rowsExported": 2,
+              "columns": 5,
+              "indexes": 1
+            },
+            {
+              "tableId": "subscriptions",
+              "name": "subscriptions",
+              "rowsReported": 25,
+              "rowsExported": 25,
+              "columns": 14,
+              "indexes": 1
+            },
+            {
+              "tableId": "usage_tracking",
+              "name": "usage_tracking",
+              "rowsReported": 65,
+              "rowsExported": 65,
+              "columns": 10,
+              "indexes": 1
+            },
+            {
+              "tableId": "admin_settings",
+              "name": "admin_settings",
+              "rowsReported": 1,
+              "rowsExported": 1,
+              "columns": 10,
+              "indexes": 0
+            },
+            {
+              "tableId": "pre_registrations",
+              "name": "pre_registrations",
+              "rowsReported": 6,
+              "rowsExported": 6,
+              "columns": 12,
+              "indexes": 4
+            },
+            {
+              "tableId": "promo_code_usage",
+              "name": "promo_code_usage",
+              "rowsReported": 0,
+              "rowsExported": 0,
+              "columns": 5,
+              "indexes": 3
+            },
+            {
+              "tableId": "user_reviews",
+              "name": "user_reviews",
+              "rowsReported": 6,
+              "rowsExported": 6,
+              "columns": 10,
+              "indexes": 3
+            },
+            {
+              "tableId": "daily_free_slots",
+              "name": "daily_free_slots",
+              "rowsReported": 18,
+              "rowsExported": 18,
+              "columns": 5,
+              "indexes": 1
+            },
+            {
+              "tableId": "daily_slot_usage",
+              "name": "daily_slot_usage",
+              "rowsReported": 25,
+              "rowsExported": 25,
+              "columns": 7,
+              "indexes": 3
+            },
+            {
+              "tableId": "testing_usage",
+              "name": "testing_usage",
+              "rowsReported": 28,
+              "rowsExported": 28,
+              "columns": 15,
+              "indexes": 2
+            },
+            {
+              "tableId": "transcription_jobs",
+              "name": "transcription_jobs",
+              "rowsReported": 3,
+              "rowsExported": 3,
+              "columns": 5,
+              "indexes": 3
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "users": {
+    "totalReported": 86,
+    "exported": 86
+  },
+  "storage": {
+    "bucketsReported": 1,
+    "bucketsExported": 1,
+    "buckets": [
+      {
+        "bucketId": "6995f259001c9af55009",
+        "name": "pdfs",
+        "filesReported": 30,
+        "filesExported": 30
+      }
+    ]
+  },
+  "complete": true
+}

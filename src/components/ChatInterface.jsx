@@ -7,6 +7,7 @@ import EnhancedMessageFormatter from './EnhancedMessageFormatter';
 import MathKeyboard from './MathKeyboard';
 import FlashcardCreateModal from './FlashcardCreateModal';
 import useMobileViewport from '../hooks/useMobileViewport';
+import { useSession } from '../context/SessionContext';
 import { 
   MentalModelIcon, 
   ActiveRecallIcon, 
@@ -54,6 +55,17 @@ const ChatInterface = ({
   
   // Mobile viewport handling
   const { isMobile, adjustForKeyboard, scrollIntoViewMobile } = useMobileViewport();
+  const {
+    hasOlderMessages,
+    isLoadingOlderMessages,
+    loadOlderMessages,
+  } = useSession();
+
+  const renderMessages = useMemo(() => {
+    const windowSize = isMobile ? 80 : 140;
+    if (messages.length <= windowSize) return messages;
+    return messages.slice(messages.length - windowSize);
+  }, [messages, isMobile]);
 
   // Optimized scroll with debouncing
   const scrollToBottom = useCallback(() => {
@@ -213,7 +225,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
   }, []);
 
   // Memoized message component to prevent re-renders
-  const MessageItem = useMemo(() => React.memo(({ message, mode, onCopy, onFlashcardRate, onMCQAnswer }) => {
+  const MessageItem = useMemo(() => React.memo(({ message, mode, onCopy, onFlashcardRate, onMCQAnswer, onActionClick }) => {
     // Parse message content to check for file attachment
     let messageText = message.content;
     let fileAttachment = null;
@@ -299,12 +311,12 @@ This ensures I have the complete PDF content with accurate page and line numbers
                     messageId={message.$id}
                     onFlashcardRate={onFlashcardRate}
                     onMCQAnswer={onMCQAnswer}
-                    onActionClick={handleActionClick}
+                    onActionClick={onActionClick}
                   />
                   {message.isStreaming && <span className="streaming-cursor" aria-hidden="true">▋</span>}
                 </>
               ) : (
-                <EnhancedMessageFormatter content={messageText} messageId={message.$id} onActionClick={handleActionClick} />
+                <EnhancedMessageFormatter content={messageText} messageId={message.$id} onActionClick={onActionClick} />
               )}
             </div>
             
@@ -328,7 +340,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
         </div>
       </div>
     );
-  }), [mode]);
+  }), []);
 
   const getModeIcon = (mode) => {
     const iconProps = { size: 20, className: "mode-icon-svg" };
@@ -365,7 +377,26 @@ This ensures I have the complete PDF content with accurate page and line numbers
           </div>
         )}
 
-        {messages.map((message, index) => (
+        {hasOlderMessages && (
+          <div className="load-older-messages">
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={loadOlderMessages}
+              disabled={isLoadingOlderMessages}
+            >
+              {isLoadingOlderMessages ? 'Loading...' : 'Load older messages'}
+            </button>
+          </div>
+        )}
+
+        {messages.length > renderMessages.length && (
+          <div className="message-window-note">
+            Showing latest {renderMessages.length} messages. Load older history above when needed.
+          </div>
+        )}
+
+        {renderMessages.map((message, index) => (
           <MessageItem
             key={message.$id || `msg-${index}`}
             message={message}
@@ -373,6 +404,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
             onCopy={copyToClipboard}
             onFlashcardRate={onFlashcardRate}
             onMCQAnswer={onMCQAnswer}
+            onActionClick={handleActionClick}
           />
         ))}
         

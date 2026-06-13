@@ -1,0 +1,53 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-15T06:24:51.085+00:00",
+    "$updatedAt": "2026-05-15T06:24:51.257+00:00",
+    "size": 100,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "charCount",
+    "type": "integer",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-15T06:25:56.973+00:00",
+    "$updatedAt": "2026-05-15T06:25:57.261+00:00",
+    "min": 0,
+    "max": 1000000,
+    "default": null
+  },
+  {
+    "key": "voice",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-15T06:27:15.759+00:00",
+    "$updatedAt": "2026-05-15T06:27:15.937+00:00",
+    "size": 50,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "timestamp",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-15T06:27:44.971+00:00",
+    "$updatedAt": "2026-05-15T06:27:45.136+00:00",
+    "format": "",
+    "default": null
+  }
+]

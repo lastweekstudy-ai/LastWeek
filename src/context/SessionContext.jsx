@@ -1,10 +1,10 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useRef, useState } from 'react';
 import { 
   createSession, 
   getSession, 
   updateSession, 
   createMessage, 
-  getSessionMessages 
+  getSessionMessagesPaginated
 } from '../appwrite/database';
 import { useAuth } from './AuthContext';
 
@@ -28,6 +28,11 @@ export const SessionProvider = ({ children }) => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState(null);
   const [loadingSessionId, setLoadingSessionId] = useState(null);
+  const [hasOlderMessages, setHasOlderMessages] = useState(false);
+  const [olderMessagesCursor, setOlderMessagesCursor] = useState(null);
+  const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
+  const streamFlushRef = useRef(null);
+  const streamBufferRef = useRef('');
 
   // Start a new session
   const startSession = async (mode, studySubject, title) => {
@@ -42,6 +47,8 @@ export const SessionProvider = ({ children }) => {
       setCurrentMode(mode);
       setSubject(studySubject);
       setMessages([]);
+      setHasOlderMessages(false);
+      setOlderMessagesCursor(null);
       
       return session;
     } catch (err) {
@@ -70,13 +77,17 @@ export const SessionProvider = ({ children }) => {
       setIsLoading(true);
       setError(null);
       
-      const session = await getSession(sessionId);
-      const sessionMessages = await getSessionMessages(sessionId);
+      const [session, sessionMessagesPage] = await Promise.all([
+        getSession(sessionId),
+        getSessionMessagesPaginated(sessionId)
+      ]);
       
       setActiveSession(session);
       setCurrentMode(session.mode);
       setSubject(session.subject);
-      setMessages(sessionMessages);
+      setMessages(sessionMessagesPage.messages);
+      setHasOlderMessages(sessionMessagesPage.hasMore);
+      setOlderMessagesCursor(sessionMessagesPage.nextBefore);
       
       return session;
     } catch (err) {
@@ -86,6 +97,8 @@ export const SessionProvider = ({ children }) => {
       // Clear any existing session data on error
       setActiveSession(null);
       setMessages([]);
+      setHasOlderMessages(false);
+      setOlderMessagesCursor(null);
       setCurrentMode(null);
       setSubject(null);
       
@@ -93,6 +106,33 @@ export const SessionProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
       setLoadingSessionId(null);
+    }
+  };
+
+  const loadOlderMessages = async () => {
+    if (!activeSession || !olderMessagesCursor || isLoadingOlderMessages) {
+      return [];
+    }
+
+    try {
+      setIsLoadingOlderMessages(true);
+      const page = await getSessionMessagesPaginated(activeSession.$id, {
+        before: olderMessagesCursor,
+      });
+
+      setMessages(prev => {
+        const existingIds = new Set(prev.map(message => message.$id));
+        const older = page.messages.filter(message => !existingIds.has(message.$id));
+        return [...older, ...prev];
+      });
+      setHasOlderMessages(page.hasMore);
+      setOlderMessagesCursor(page.nextBefore);
+      return page.messages;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setIsLoadingOlderMessages(false);
     }
   };
 
@@ -201,19 +241,35 @@ export const SessionProvider = ({ children }) => {
 
     let fullText = '';
 
+    const flushStreamingText = () => {
+      const delta = streamBufferRef.current;
+      streamBufferRef.current = '';
+      streamFlushRef.current = null;
+      if (!delta) return;
+
+      setMessages(prev =>
+        prev.map(m =>
+          m.$id === placeholderId
+            ? { ...m, content: m.content + delta }
+            : m
+        )
+      );
+    };
+
     try {
       const onChunk = (delta) => {
         fullText += delta;
-        setMessages(prev =>
-          prev.map(m =>
-            m.$id === placeholderId
-              ? { ...m, content: m.content + delta }
-              : m
-          )
-        );
+        streamBufferRef.current += delta;
+        if (!streamFlushRef.current) {
+          streamFlushRef.current = setTimeout(flushStreamingText, 80);
+        }
       };
 
       await streamCallback(onChunk);
+      if (streamFlushRef.current) {
+        clearTimeout(streamFlushRef.current);
+        flushStreamingText();
+      }
 
       // Persist the completed assistant message
       const persistedMsg = await createMessage(
@@ -234,6 +290,11 @@ export const SessionProvider = ({ children }) => {
       return persistedMsg;
     } catch (err) {
       setError(err.message);
+      if (streamFlushRef.current) {
+        clearTimeout(streamFlushRef.current);
+        streamFlushRef.current = null;
+        streamBufferRef.current = '';
+      }
       // Remove the placeholder on error
       setMessages(prev => prev.filter(m => m.$id !== placeholderId));
       throw err;
@@ -294,6 +355,8 @@ export const SessionProvider = ({ children }) => {
     setCurrentMode(null);
     setSubject(null);
     setError(null);
+    setHasOlderMessages(false);
+    setOlderMessagesCursor(null);
   };
 
   // Resume a session by ID
@@ -308,6 +371,8 @@ export const SessionProvider = ({ children }) => {
     subject,
     isLoading,
     isStreaming,
+    hasOlderMessages,
+    isLoadingOlderMessages,
     error,
     startSession,
     loadSession,
@@ -315,7 +380,8 @@ export const SessionProvider = ({ children }) => {
     sendMessageStreaming,
     switchMode,
     endSession,
-    resumeSession
+    resumeSession,
+    loadOlderMessages
   };
 
   return (

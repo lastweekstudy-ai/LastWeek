@@ -1,0 +1,233 @@
+[
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_0",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"Hello\",\"back\":\"হ্যালো (halo) [Hello]\",\"pronunciation\":\"halo\"}",
+    "nextReview": "2026-05-27T18:55:19.307+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:19.307+00:00",
+    "$id": "6a04c9170028d99f7697",
+    "$sequence": "2",
+    "$createdAt": "2026-05-13T18:55:20.382+00:00",
+    "$updatedAt": "2026-05-13T18:55:20.382+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_1",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"Water\",\"back\":\"পানি (pani) [Water]\",\"pronunciation\":\"pani\"}",
+    "nextReview": "2026-05-27T18:55:32.022+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:32.022+00:00",
+    "$id": "6a04c92400175cbea152",
+    "$sequence": "3",
+    "$createdAt": "2026-05-13T18:55:32.948+00:00",
+    "$updatedAt": "2026-05-13T18:55:32.948+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_2",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"Food\",\"back\":\"খাবার (khābār) [Food]\",\"pronunciation\":\"khabar\"}",
+    "nextReview": "2026-05-27T18:55:36.171+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:36.171+00:00",
+    "$id": "6a04c928001fd4b2308c",
+    "$sequence": "4",
+    "$createdAt": "2026-05-13T18:55:37.074+00:00",
+    "$updatedAt": "2026-05-13T18:55:37.074+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_3",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"Mother\",\"back\":\"মা (ma) [Mother]\",\"pronunciation\":\"ma\"}",
+    "nextReview": "2026-05-27T18:55:38.755+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:38.755+00:00",
+    "$id": "6a04c92b000df040885e",
+    "$sequence": "5",
+    "$createdAt": "2026-05-13T18:55:39.794+00:00",
+    "$updatedAt": "2026-05-13T18:55:39.794+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_4",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"Father\",\"back\":\"বাবা (baba) [Father]\",\"pronunciation\":\"baba\"}",
+    "nextReview": "2026-05-27T18:55:41.211+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:41.211+00:00",
+    "$id": "6a04c92d0023413a8840",
+    "$sequence": "6",
+    "$createdAt": "2026-05-13T18:55:42.134+00:00",
+    "$updatedAt": "2026-05-13T18:55:42.134+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_5",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"House\",\"back\":\"বাড়ি (baṛi) [House]\",\"pronunciation\":\"bari\"}",
+    "nextReview": "2026-05-27T18:55:43.609+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:43.609+00:00",
+    "$id": "6a04c92f003bfb8b92b0",
+    "$sequence": "7",
+    "$createdAt": "2026-05-13T18:55:44.547+00:00",
+    "$updatedAt": "2026-05-13T18:55:44.547+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_6",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"School\",\"back\":\"বিদ্যালয় (bidyālaẏ) [School]\",\"pronunciation\":\"bidyaloy\"}",
+    "nextReview": "2026-05-27T18:55:46.108+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:46.108+00:00",
+    "$id": "6a04c932001cf1551d8b",
+    "$sequence": "8",
+    "$createdAt": "2026-05-13T18:55:47.401+00:00",
+    "$updatedAt": "2026-05-13T18:55:47.401+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_7",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"Book\",\"back\":\"বই (boi) [Book]\",\"pronunciation\":\"boi\"}",
+    "nextReview": "2026-05-27T18:55:48.653+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:48.653+00:00",
+    "$id": "6a04c934003e2e792e1c",
+    "$sequence": "9",
+    "$createdAt": "2026-05-13T18:55:49.561+00:00",
+    "$updatedAt": "2026-05-13T18:55:49.561+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_8",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"Pen\",\"back\":\"কলম (kalam) [Pen]\",\"pronunciation\":\"kalam\"}",
+    "nextReview": "2026-05-27T18:55:51.861+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:51.861+00:00",
+    "$id": "6a04c938000cbc24bfb9",
+    "$sequence": "10",
+    "$createdAt": "2026-05-13T18:55:52.769+00:00",
+    "$updatedAt": "2026-05-13T18:55:52.769+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "itemId": "card_9",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"Paper\",\"back\":\"কাগজ (kagaj) [Paper]\",\"pronunciation\":\"kagaj\"}",
+    "nextReview": "2026-05-27T18:55:55.306+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-13T18:55:55.306+00:00",
+    "$id": "6a04c93c0003208ab385",
+    "$sequence": "11",
+    "$createdAt": "2026-05-13T18:55:56.756+00:00",
+    "$updatedAt": "2026-05-13T18:55:56.756+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  },
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "itemId": "card_0",
+    "itemType": "flashcard",
+    "itemContent": "{\"front\":\"Hello\",\"back\":\"你好\",\"pronunciation\":\"nǐ hǎo\"}",
+    "nextReview": "2026-05-29T10:14:32.819+00:00",
+    "successStreak": 1,
+    "difficulty": "easy",
+    "lastReviewed": "2026-05-15T10:14:32.819+00:00",
+    "$id": "6a06f209000fa08c137c",
+    "$sequence": "12",
+    "$createdAt": "2026-05-15T10:14:31.904+00:00",
+    "$updatedAt": "2026-05-15T10:14:31.904+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_flashcard_reviews"
+  }
+]

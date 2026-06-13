@@ -1,0 +1,104 @@
+{
+  "$id": "daily_free_slots",
+  "$createdAt": "2026-05-25T11:45:27.333+00:00",
+  "$updatedAt": "2026-05-26T17:23:39.462+00:00",
+  "$permissions": [
+    "delete(\"user:69ff6bc9000ec45cda75\")",
+    "create(\"users\")",
+    "update(\"users\")",
+    "read(\"any\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "daily_free_slots",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "date",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-25T11:47:36.168+00:00",
+      "$updatedAt": "2026-05-25T11:47:36.339+00:00",
+      "size": 20,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "totalSlots",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:48:20.214+00:00",
+      "$updatedAt": "2026-05-25T11:48:20.386+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "usedSlots",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:48:55.195+00:00",
+      "$updatedAt": "2026-05-25T11:48:55.362+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "slotUserIds",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": true,
+      "$createdAt": "2026-05-25T12:14:22.130+00:00",
+      "$updatedAt": "2026-05-25T12:14:22.296+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T12:15:15.364+00:00",
+      "$updatedAt": "2026-05-25T12:15:15.563+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_35_idx_date",
+      "$createdAt": "2026-05-26T17:08:37.446+00:00",
+      "$updatedAt": "2026-05-26T17:08:37.518+00:00",
+      "key": "idx_date",
+      "type": "unique",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "date"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 2205
+}

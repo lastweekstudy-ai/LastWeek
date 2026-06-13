@@ -1,0 +1,20 @@
+[
+  {
+    "$id": "25687_35_idx_date",
+    "$createdAt": "2026-05-26T17:08:37.446+00:00",
+    "$updatedAt": "2026-05-26T17:08:37.518+00:00",
+    "key": "idx_date",
+    "type": "unique",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "date"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  }
+]

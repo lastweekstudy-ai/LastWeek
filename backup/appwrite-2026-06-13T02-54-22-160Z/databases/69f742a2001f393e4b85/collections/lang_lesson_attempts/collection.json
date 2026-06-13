@@ -1,0 +1,158 @@
+{
+  "$id": "lang_lesson_attempts",
+  "$createdAt": "2026-05-12T08:33:47.315+00:00",
+  "$updatedAt": "2026-05-12T09:32:01.156+00:00",
+  "$permissions": [
+    "create(\"any\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "lang_lesson_attempts",
+  "enabled": true,
+  "documentSecurity": false,
+  "attributes": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T08:34:26.561+00:00",
+      "$updatedAt": "2026-05-12T08:34:26.726+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "lessonId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T08:34:57.319+00:00",
+      "$updatedAt": "2026-05-12T08:34:57.488+00:00",
+      "size": 100,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "score",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T08:35:38.247+00:00",
+      "$updatedAt": "2026-05-12T08:35:38.432+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "passed",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T08:36:22.620+00:00",
+      "$updatedAt": "2026-05-12T08:36:22.802+00:00",
+      "default": false
+    },
+    {
+      "key": "timestamp",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T08:36:40.675+00:00",
+      "$updatedAt": "2026-05-12T08:36:40.827+00:00",
+      "format": "",
+      "default": null
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_17_userId_idx",
+      "$createdAt": "2026-05-12T08:37:10.174+00:00",
+      "$updatedAt": "2026-05-12T08:37:10.265+00:00",
+      "key": "userId_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_17_lessonId_idx",
+      "$createdAt": "2026-05-12T08:37:28.275+00:00",
+      "$updatedAt": "2026-05-12T08:37:28.363+00:00",
+      "key": "lessonId_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "lessonId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_17_timestamp_idx",
+      "$createdAt": "2026-05-12T08:38:04.015+00:00",
+      "$updatedAt": "2026-05-12T08:38:04.141+00:00",
+      "key": "timestamp_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "timestamp"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_17_user_lesson",
+      "$createdAt": "2026-05-12T08:38:52.764+00:00",
+      "$updatedAt": "2026-05-12T08:38:52.851+00:00",
+      "key": "user_lesson",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId",
+        "lessonId"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 2505
+}

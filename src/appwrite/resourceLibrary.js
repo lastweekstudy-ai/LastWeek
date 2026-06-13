@@ -16,6 +16,36 @@ import { Query } from 'appwrite';
 const DATABASE_ID                  = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const PDF_RESOURCES_COLLECTION_ID  = import.meta.env.VITE_APPWRITE_PDF_RESOURCES_COLLECTION_ID;
 const AUDIO_LECTURES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_AUDIO_LECTURES_COLLECTION_ID || 'audio_lectures';
+const PUBLIC_PDF_LIST_FIELDS = [
+  '$id',
+  '$createdAt',
+  '$updatedAt',
+  'fileName',
+  'fileSize',
+  'pageCount',
+  'tags',
+  'aiTitle',
+  'category',
+  'isPublic',
+  'isImported',
+  'originalResourceId',
+  'addCount',
+  'createdAt',
+  'lastAccessedAt',
+];
+const PUBLIC_AUDIO_LIST_FIELDS = [
+  '$id',
+  '$createdAt',
+  '$updatedAt',
+  'title',
+  'duration',
+  'isPublic',
+  'isImported',
+  'originalLectureId',
+  'addCount',
+  'createdAt',
+  'updatedAt',
+];
 
 // ── Topic expansion map for semantic search ──────────────────────────────────
 // When user searches a keyword, also search these related terms
@@ -91,6 +121,7 @@ export const searchPublicResources = async (query, limit = 30) => {
             Query.equal('isPublic', true),
             Query.limit(100),
             Query.offset(offset),
+            Query.select(PUBLIC_PDF_LIST_FIELDS),
           ]
         );
 
@@ -108,12 +139,10 @@ export const searchPublicResources = async (query, limit = 30) => {
             } else {
               const fileName = doc.fileName || '';
               const aiTitle = doc.aiTitle || '';
-              const extractedText = doc.extractedText || '';
 
               if (
                 matchesAnyTerm(fileName) ||
-                matchesAnyTerm(aiTitle) ||
-                matchesAnyTerm(extractedText.substring(0, 500))
+                matchesAnyTerm(aiTitle)
               ) {
                 seen.add(doc.$id);
                 results.push({ ...doc, resourceType: 'pdf' });
@@ -148,6 +177,7 @@ export const searchPublicResources = async (query, limit = 30) => {
             Query.equal('isPublic', true),
             Query.limit(100),
             Query.offset(offset),
+            Query.select(PUBLIC_AUDIO_LIST_FIELDS),
           ]
         );
 
@@ -164,13 +194,9 @@ export const searchPublicResources = async (query, limit = 30) => {
               results.push({ ...doc, resourceType: 'audio' });
             } else {
               const title = doc.title || '';
-              const transcript = doc.transcript || '';
-              const lectureNotes = doc.lectureNotes || '';
 
               if (
-                matchesAnyTerm(title) ||
-                matchesAnyTerm(transcript.substring(0, 500)) ||
-                matchesAnyTerm(lectureNotes.substring(0, 500))
+                matchesAnyTerm(title)
               ) {
                 seen.add(doc.$id);
                 results.push({ ...doc, resourceType: 'audio' });
@@ -191,6 +217,39 @@ export const searchPublicResources = async (query, limit = 30) => {
   }
 
   return results.slice(0, limit);
+};
+
+export const getUserImportedResourceIds = async (userId) => {
+  try {
+    const [pdfs, audios] = await Promise.all([
+      databases.listDocuments(
+        DATABASE_ID,
+        PDF_RESOURCES_COLLECTION_ID,
+        [
+          Query.equal('userId', userId),
+          Query.select(['$id', 'originalResourceId']),
+          Query.limit(100),
+        ]
+      ),
+      databases.listDocuments(
+        DATABASE_ID,
+        AUDIO_LECTURES_COLLECTION_ID,
+        [
+          Query.equal('userId', userId),
+          Query.select(['$id', 'originalLectureId']),
+          Query.limit(100),
+        ]
+      ),
+    ]);
+
+    return {
+      pdf: new Set(pdfs.documents.map((doc) => doc.originalResourceId).filter(Boolean)),
+      audio: new Set(audios.documents.map((doc) => doc.originalLectureId).filter(Boolean)),
+    };
+  } catch (err) {
+    console.warn('[getUserImportedResourceIds] Failed:', err.message);
+    return { pdf: new Set(), audio: new Set() };
+  }
 };
 
 /**

@@ -1,0 +1,117 @@
+{
+  "$id": "exam_plans",
+  "$createdAt": "2026-05-10T15:04:22.909+00:00",
+  "$updatedAt": "2026-05-10T15:11:37.059+00:00",
+  "$permissions": [
+    "create(\"users\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "exam_plans",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T15:04:58.899+00:00",
+      "$updatedAt": "2026-05-10T15:04:59.166+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "examName",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T15:05:30.400+00:00",
+      "$updatedAt": "2026-05-10T15:05:30.659+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "topics",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T15:06:49.113+00:00",
+      "$updatedAt": "2026-05-10T15:06:49.298+00:00",
+      "size": 50000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "examDate",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T15:08:53.429+00:00",
+      "$updatedAt": "2026-05-10T15:08:53.622+00:00",
+      "size": 20,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T15:09:27.679+00:00",
+      "$updatedAt": "2026-05-10T15:09:27.853+00:00",
+      "size": 50,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "updatedAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T15:09:48.518+00:00",
+      "$updatedAt": "2026-05-10T15:09:48.753+00:00",
+      "size": 50,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_11_user_index",
+      "$createdAt": "2026-05-10T15:11:14.380+00:00",
+      "$updatedAt": "2026-05-10T15:11:14.496+00:00",
+      "key": "user_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 3612
+}

@@ -1,0 +1,602 @@
+[
+  {
+    "$id": "6a01c08a00372b31d852",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-11T11:42:06.174+00:00",
+    "$updatedAt": "2026-05-11T11:42:06.174+00:00",
+    "$permissions": [
+      "read(\"user:6a01b7f700108fd02994\")",
+      "update(\"user:6a01b7f700108fd02994\")",
+      "delete(\"user:6a01b7f700108fd02994\")"
+    ],
+    "name": "force1.pdf",
+    "signature": "f657e89acfb79d36539eaf408d559b2e",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 193765,
+    "sizeActual": 258356,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a020ec9001fa7a62669",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-11T17:15:55.850+00:00",
+    "$updatedAt": "2026-05-11T17:15:55.850+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "name": "force1.pdf",
+    "signature": "f657e89acfb79d36539eaf408d559b2e",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 193765,
+    "sizeActual": 258356,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a0289ab002fbc16deca",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-12T02:00:20.547+00:00",
+    "$updatedAt": "2026-05-12T02:00:20.547+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "name": "inbound9129173196822393340.jpg",
+    "signature": "e2abbc53cf95dcf81843e223f9bbcfe2",
+    "mimeType": "image/jpeg",
+    "sizeOriginal": 5224101,
+    "sizeActual": 6965468,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a029065002fc7b200e1",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-12T02:28:56.869+00:00",
+    "$updatedAt": "2026-05-12T02:28:56.869+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "name": "PDF Gallery_20260512_102753.pdf",
+    "signature": "ad7205309e7f8c0d48872cbc8ee471c9",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 135610,
+    "sizeActual": 180816,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a02f98a00050cac2f4c",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-12T09:57:30.882+00:00",
+    "$updatedAt": "2026-05-12T09:57:30.882+00:00",
+    "$permissions": [
+      "read(\"user:6a02f8db0035af8cc639\")",
+      "update(\"user:6a02f8db0035af8cc639\")",
+      "delete(\"user:6a02f8db0035af8cc639\")"
+    ],
+    "name": "force1.pdf",
+    "signature": "f657e89acfb79d36539eaf408d559b2e",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 193765,
+    "sizeActual": 258356,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a03747b001756e2e073",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-12T18:42:05.610+00:00",
+    "$updatedAt": "2026-05-12T18:42:07.399+00:00",
+    "$permissions": [
+      "read(\"user:6a02fd2a003bc73494d6\")",
+      "update(\"user:6a02fd2a003bc73494d6\")",
+      "delete(\"user:6a02fd2a003bc73494d6\")"
+    ],
+    "name": "Gemini_Generated_Image_sf5fzqsf5fzqsf5f.png",
+    "signature": "44ce83e475e9c6f55f396c842d029c2b-2",
+    "mimeType": "image/png",
+    "sizeOriginal": 7602642,
+    "sizeActual": 10136856,
+    "chunksTotal": 2,
+    "chunksUploaded": 2,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a03e092001a00b728e6",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-13T02:23:15.857+00:00",
+    "$updatedAt": "2026-05-13T02:23:15.857+00:00",
+    "$permissions": [
+      "read(\"user:6a02fd2a003bc73494d6\")",
+      "update(\"user:6a02fd2a003bc73494d6\")",
+      "delete(\"user:6a02fd2a003bc73494d6\")"
+    ],
+    "name": "force1.pdf",
+    "signature": "f657e89acfb79d36539eaf408d559b2e",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 193765,
+    "sizeActual": 258356,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a059f17002a19ed76d0",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-14T10:08:23.680+00:00",
+    "$updatedAt": "2026-05-14T10:08:23.680+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "name": "force1.pdf",
+    "signature": "f657e89acfb79d36539eaf408d559b2e",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 193765,
+    "sizeActual": 258356,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a06081b001e70274987",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-14T17:36:29.813+00:00",
+    "$updatedAt": "2026-05-14T17:36:29.813+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "name": "9-Maths-NCERT-Book-Circles.pdf",
+    "signature": "6604ebb3790573587f4a518e98d949ab",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 228971,
+    "sizeActual": 305296,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a06ee41003df764ca11",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-15T09:58:30.502+00:00",
+    "$updatedAt": "2026-05-15T09:58:30.502+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "name": "circle.pdf",
+    "signature": "86a8b48569599fa309baa30323b02912",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 1366412,
+    "sizeActual": 1821884,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a09b12f000e38f932ef",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-17T12:14:39.276+00:00",
+    "$updatedAt": "2026-05-17T12:14:39.276+00:00",
+    "$permissions": [
+      "read(\"user:6a06d147001a790ae1ce\")",
+      "update(\"user:6a06d147001a790ae1ce\")",
+      "delete(\"user:6a06d147001a790ae1ce\")"
+    ],
+    "name": "circle.pdf",
+    "signature": "86a8b48569599fa309baa30323b02912",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 1366412,
+    "sizeActual": 1821884,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a0c641a0030fb36f4cf",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-19T13:22:39.598+00:00",
+    "$updatedAt": "2026-05-19T13:22:39.598+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "name": "circle.pdf",
+    "signature": "86a8b48569599fa309baa30323b02912",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 1366412,
+    "sizeActual": 1821884,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a16146b0008c309584f",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-26T21:45:22.491+00:00",
+    "$updatedAt": "2026-05-26T21:45:22.491+00:00",
+    "$permissions": [
+      "read(\"user:6a16104b00164ee016a2\")",
+      "update(\"user:6a16104b00164ee016a2\")",
+      "delete(\"user:6a16104b00164ee016a2\")"
+    ],
+    "name": "220425.pdf",
+    "signature": "b2d75d99e41b5b15c7f8062e985dbb8b",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 1236104,
+    "sizeActual": 1648140,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a1c9c7d000c01a12a9d",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-05-31T20:39:26.277+00:00",
+    "$updatedAt": "2026-05-31T20:39:26.277+00:00",
+    "$permissions": [
+      "read(\"user:6a1c8cfa0033e898b06e\")",
+      "update(\"user:6a1c8cfa0033e898b06e\")",
+      "delete(\"user:6a1c8cfa0033e898b06e\")"
+    ],
+    "name": "2b_Circle_theorems.pdf",
+    "signature": "06cb8d393c103dd386d33b1e8c6690ad",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 877860,
+    "sizeActual": 1170480,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a1ebba40008bc708bbf",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-02T11:16:58.972+00:00",
+    "$updatedAt": "2026-06-02T11:16:58.972+00:00",
+    "$permissions": [
+      "read(\"user:6a1c8cfa0033e898b06e\")",
+      "update(\"user:6a1c8cfa0033e898b06e\")",
+      "delete(\"user:6a1c8cfa0033e898b06e\")"
+    ],
+    "name": "2b_Circle_theorems.pdf",
+    "signature": "06cb8d393c103dd386d33b1e8c6690ad",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 877860,
+    "sizeActual": 1170480,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a1ec6ba0014511d6f9b",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-02T12:04:12.670+00:00",
+    "$updatedAt": "2026-06-02T12:04:12.670+00:00",
+    "$permissions": [
+      "read(\"user:6a1c8cfa0033e898b06e\")",
+      "update(\"user:6a1c8cfa0033e898b06e\")",
+      "delete(\"user:6a1c8cfa0033e898b06e\")"
+    ],
+    "name": "2b_Circle_theorems.pdf",
+    "signature": "06cb8d393c103dd386d33b1e8c6690ad",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 877860,
+    "sizeActual": 1170480,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a1fcc93002fde3304e6",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-03T06:41:25.607+00:00",
+    "$updatedAt": "2026-06-03T06:41:25.607+00:00",
+    "$permissions": [
+      "read(\"user:6a1fca0780de53135a3f\")",
+      "update(\"user:6a1fca0780de53135a3f\")",
+      "delete(\"user:6a1fca0780de53135a3f\")"
+    ],
+    "name": "26301.pdf",
+    "signature": "444915abdc865eeef6bdcfde15e491e4",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 47549,
+    "sizeActual": 63400,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a1fd1600016240fe245",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-03T07:01:55.452+00:00",
+    "$updatedAt": "2026-06-03T07:01:55.452+00:00",
+    "$permissions": [
+      "read(\"user:6a1fca0780de53135a3f\")",
+      "update(\"user:6a1fca0780de53135a3f\")",
+      "delete(\"user:6a1fca0780de53135a3f\")"
+    ],
+    "name": "2. Session-2   Graphics of linear equations.pdf",
+    "signature": "e8975b6d03efaf46bc40207fea4f9cb5",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 132143,
+    "sizeActual": 176192,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a204f9900288c5010a8",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-03T16:00:29.155+00:00",
+    "$updatedAt": "2026-06-03T16:00:29.155+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "name": "2. Session-2   Graphics of linear equations.pdf",
+    "signature": "e8975b6d03efaf46bc40207fea4f9cb5",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 132143,
+    "sizeActual": 176192,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a20504c00381229b723",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-03T16:03:27.394+00:00",
+    "$updatedAt": "2026-06-03T16:03:27.394+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "name": "2. Session-2   Graphics of linear equations.pdf",
+    "signature": "e8975b6d03efaf46bc40207fea4f9cb5",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 132143,
+    "sizeActual": 176192,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a2060e600389f2552a8",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-03T17:14:17.615+00:00",
+    "$updatedAt": "2026-06-03T17:14:17.615+00:00",
+    "$permissions": [
+      "read(\"user:6a0a1037003c2ed568aa\")",
+      "update(\"user:6a0a1037003c2ed568aa\")",
+      "delete(\"user:6a0a1037003c2ed568aa\")"
+    ],
+    "name": "2. Session-2   Graphics of linear equations.pdf",
+    "signature": "e8975b6d03efaf46bc40207fea4f9cb5",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 132143,
+    "sizeActual": 176192,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a2067f70004314a7746",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-03T17:44:26.324+00:00",
+    "$updatedAt": "2026-06-03T17:44:26.324+00:00",
+    "$permissions": [
+      "read(\"user:6a10083f9cabb9cb0789\")",
+      "update(\"user:6a10083f9cabb9cb0789\")",
+      "delete(\"user:6a10083f9cabb9cb0789\")"
+    ],
+    "name": "2. Session-2   Graphics of linear equations.pdf",
+    "signature": "e8975b6d03efaf46bc40207fea4f9cb5",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 132143,
+    "sizeActual": 176192,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a206d6f0021cfa47c08",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-03T18:07:47.777+00:00",
+    "$updatedAt": "2026-06-03T18:07:47.777+00:00",
+    "$permissions": [
+      "read(\"user:6a0a1037003c2ed568aa\")",
+      "update(\"user:6a0a1037003c2ed568aa\")",
+      "delete(\"user:6a0a1037003c2ed568aa\")"
+    ],
+    "name": "2. Session-2   Graphics of linear equations.pdf",
+    "signature": "e8975b6d03efaf46bc40207fea4f9cb5",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 132143,
+    "sizeActual": 176192,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a2083740023a7e3c74b",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-03T19:41:47.436+00:00",
+    "$updatedAt": "2026-06-03T19:41:47.436+00:00",
+    "$permissions": [
+      "read(\"user:6a1b6311eef49ee4afa0\")",
+      "update(\"user:6a1b6311eef49ee4afa0\")",
+      "delete(\"user:6a1b6311eef49ee4afa0\")"
+    ],
+    "name": "uhpc 26.pdf",
+    "signature": "5902aad028e77be08bca8abdae113146",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 1694855,
+    "sizeActual": 2259808,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a2164930031dafd6d88",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-04T11:42:15.301+00:00",
+    "$updatedAt": "2026-06-04T11:42:15.301+00:00",
+    "$permissions": [
+      "read(\"user:6a2162b8003a0a6572a1\")",
+      "update(\"user:6a2162b8003a0a6572a1\")",
+      "delete(\"user:6a2162b8003a0a6572a1\")"
+    ],
+    "name": "2. Session-2   Graphics of linear equations.pdf",
+    "signature": "e8975b6d03efaf46bc40207fea4f9cb5",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 132143,
+    "sizeActual": 176192,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a234c09003a2e3f5a50",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-05T22:22:10.956+00:00",
+    "$updatedAt": "2026-06-05T22:22:10.956+00:00",
+    "$permissions": [
+      "read(\"user:6a234bb0003a1a0fcf5a\")",
+      "update(\"user:6a234bb0003a1a0fcf5a\")",
+      "delete(\"user:6a234bb0003a1a0fcf5a\")"
+    ],
+    "name": "hscICT.pdf",
+    "signature": "419123a27d8c6474be5c849dd5207621",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 2881843,
+    "sizeActual": 3842460,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a24afc50006e39c9185",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-06T23:39:52.940+00:00",
+    "$updatedAt": "2026-06-06T23:39:52.940+00:00",
+    "$permissions": [
+      "read(\"user:6a24ab7000120e57640e\")",
+      "update(\"user:6a24ab7000120e57640e\")",
+      "delete(\"user:6a24ab7000120e57640e\")"
+    ],
+    "name": "1609917583_Math-Book-2021-Final.pdf",
+    "signature": "075ef863eaa25f7183cadf95057518fc",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 5212018,
+    "sizeActual": 6949360,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a2594e6000571f25258",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-07T15:57:27.461+00:00",
+    "$updatedAt": "2026-06-07T15:57:27.461+00:00",
+    "$permissions": [
+      "read(\"user:6a25915d0008b87fe8dd\")",
+      "update(\"user:6a25915d0008b87fe8dd\")",
+      "delete(\"user:6a25915d0008b87fe8dd\")"
+    ],
+    "name": "Ch1&4 -The Dynamic Business Environment_Taking Risks and Making Profits.pdf",
+    "signature": "c8e36866b7f69fed6b61930c0b946798",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 850508,
+    "sizeActual": 1134012,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a2725c1001e4b7a4ec5",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-08T20:27:51.641+00:00",
+    "$updatedAt": "2026-06-08T20:27:51.641+00:00",
+    "$permissions": [
+      "read(\"user:6a27223500269ad90928\")",
+      "update(\"user:6a27223500269ad90928\")",
+      "delete(\"user:6a27223500269ad90928\")"
+    ],
+    "name": "javascript_tutorial.pdf",
+    "signature": "21261ef4362f15179d68070d674b06c1",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 1038585,
+    "sizeActual": 1384780,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  },
+  {
+    "$id": "6a27b204001a078d269e",
+    "bucketId": "6995f259001c9af55009",
+    "$createdAt": "2026-06-09T06:26:19.609+00:00",
+    "$updatedAt": "2026-06-09T06:26:19.609+00:00",
+    "$permissions": [
+      "read(\"user:6a1b6311eef49ee4afa0\")",
+      "update(\"user:6a1b6311eef49ee4afa0\")",
+      "delete(\"user:6a1b6311eef49ee4afa0\")"
+    ],
+    "name": "uhpc 26.1_(1) modified.pdf",
+    "signature": "0b197e66f0b182271381459c67dee4bb",
+    "mimeType": "application/pdf",
+    "sizeOriginal": 1705235,
+    "sizeActual": 2273648,
+    "chunksTotal": 1,
+    "chunksUploaded": 1,
+    "encryption": true,
+    "compression": "none"
+  }
+]

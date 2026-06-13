@@ -1,0 +1,290 @@
+{
+  "$id": "flashcards",
+  "$createdAt": "2026-05-03T12:57:07.181+00:00",
+  "$updatedAt": "2026-05-03T13:13:25.995+00:00",
+  "$permissions": [
+    "create(\"users\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "flashcards",
+  "enabled": true,
+  "documentSecurity": false,
+  "attributes": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T12:59:16.061+00:00",
+      "$updatedAt": "2026-05-03T12:59:16.302+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "sessionId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T12:59:37.356+00:00",
+      "$updatedAt": "2026-05-03T12:59:37.606+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "front",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:00:27.908+00:00",
+      "$updatedAt": "2026-05-03T13:00:28.164+00:00",
+      "size": 2000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "back",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:01:18.231+00:00",
+      "$updatedAt": "2026-05-03T13:01:18.484+00:00",
+      "size": 2000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "confidence",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:01:56.954+00:00",
+      "$updatedAt": "2026-05-03T13:01:57.177+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "nextReviewAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:02:24.004+00:00",
+      "$updatedAt": "2026-05-03T13:02:24.293+00:00",
+      "format": "",
+      "default": null
+    },
+    {
+      "key": "createdAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:02:49.345+00:00",
+      "$updatedAt": "2026-05-03T13:02:49.598+00:00",
+      "format": "",
+      "default": null
+    },
+    {
+      "key": "collectionId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-17T04:06:40.735+00:00",
+      "$updatedAt": "2026-05-17T04:06:40.949+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "source",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-17T04:07:09.672+00:00",
+      "$updatedAt": "2026-05-17T04:07:09.924+00:00",
+      "size": 20,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "subject",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-17T04:07:34.227+00:00",
+      "$updatedAt": "2026-05-17T04:07:34.451+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_3_userId_index",
+      "$createdAt": "2026-05-06T06:10:27.386+00:00",
+      "$updatedAt": "2026-05-06T06:10:27.483+00:00",
+      "key": "userId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_3_sessionId_index",
+      "$createdAt": "2026-05-06T06:10:48.946+00:00",
+      "$updatedAt": "2026-05-06T06:10:49.057+00:00",
+      "key": "sessionId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "sessionId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_3_userId_nextReviewAt_compound",
+      "$createdAt": "2026-05-06T06:11:25.216+00:00",
+      "$updatedAt": "2026-05-06T06:11:25.322+00:00",
+      "key": "userId_nextReviewAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId",
+        "nextReviewAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_3_userId_confidence_compound",
+      "$createdAt": "2026-05-06T06:12:02.159+00:00",
+      "$updatedAt": "2026-05-06T06:12:02.259+00:00",
+      "key": "userId_confidence_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId",
+        "confidence"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_3_userId_createdAt_compound",
+      "$createdAt": "2026-05-06T06:12:31.695+00:00",
+      "$updatedAt": "2026-05-06T06:12:31.795+00:00",
+      "key": "userId_createdAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId",
+        "createdAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_3_sessionId_nextReviewAt_compound",
+      "$createdAt": "2026-05-06T06:13:24.030+00:00",
+      "$updatedAt": "2026-05-06T06:13:24.126+00:00",
+      "key": "sessionId_nextReviewAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "sessionId",
+        "nextReviewAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_3_userId_collectionId_compound",
+      "$createdAt": "2026-05-17T04:10:14.684+00:00",
+      "$updatedAt": "2026-05-17T04:10:14.773+00:00",
+      "key": "userId_collectionId_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId",
+        "collectionId"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 21258
+}

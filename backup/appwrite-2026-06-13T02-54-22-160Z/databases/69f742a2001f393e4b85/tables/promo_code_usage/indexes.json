@@ -1,0 +1,56 @@
+[
+  {
+    "$id": "25687_33_idx_promoCode",
+    "$createdAt": "2026-05-25T10:59:08.635+00:00",
+    "$updatedAt": "2026-05-25T10:59:08.722+00:00",
+    "key": "idx_promoCode",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "promoCode"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_33_idx_referrerId",
+    "$createdAt": "2026-05-25T10:59:36.098+00:00",
+    "$updatedAt": "2026-05-25T10:59:36.196+00:00",
+    "key": "idx_referrerId",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "referrerId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_33_idx_newUserId",
+    "$createdAt": "2026-05-25T11:00:03.015+00:00",
+    "$updatedAt": "2026-05-25T11:00:03.270+00:00",
+    "key": "idx_newUserId",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "newUserId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  }
+]

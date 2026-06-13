@@ -1,0 +1,91 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-03T13:09:00.873+00:00",
+    "$updatedAt": "2026-05-03T13:09:01.167+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "mode",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-03T13:09:31.218+00:00",
+    "$updatedAt": "2026-05-03T13:09:31.426+00:00",
+    "size": 50,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "subject",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-03T13:10:00.768+00:00",
+    "$updatedAt": "2026-05-08T05:56:04.272+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "title",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-03T13:10:34.501+00:00",
+    "$updatedAt": "2026-05-08T05:56:22.528+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "createdAt",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-03T13:11:05.061+00:00",
+    "$updatedAt": "2026-05-03T13:11:05.305+00:00",
+    "format": "",
+    "default": null
+  },
+  {
+    "key": "updatedAt",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-03T13:11:27.299+00:00",
+    "$updatedAt": "2026-05-03T13:11:27.509+00:00",
+    "format": "",
+    "default": null
+  },
+  {
+    "key": "summary",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-10T16:02:35.146+00:00",
+    "$updatedAt": "2026-05-10T16:02:35.416+00:00",
+    "size": 2000,
+    "default": null,
+    "encrypt": false
+  }
+]

@@ -1,0 +1,502 @@
+[
+  {
+    "userId": "6a15debd0036e0ef100f",
+    "email": "tashrifatwork69@gmail.com",
+    "date": "2026-05-26",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-05-26T17:56:16.470Z",
+    "$id": "6a15dec0001d685212ff",
+    "$sequence": "1",
+    "$createdAt": "2026-05-26T17:56:16.678+00:00",
+    "$updatedAt": "2026-05-26T17:56:16.678+00:00",
+    "$permissions": [
+      "read(\"user:6a15debd0036e0ef100f\")",
+      "update(\"user:6a15debd0036e0ef100f\")",
+      "delete(\"user:6a15debd0036e0ef100f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a16104b00164ee016a2",
+    "email": "itisjitu01@gmail.com",
+    "date": "2026-05-26",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-05-26T21:27:55.747Z",
+    "$id": "6a16105b002eb8f53480",
+    "$sequence": "2",
+    "$createdAt": "2026-05-26T21:27:55.781+00:00",
+    "$updatedAt": "2026-05-26T21:27:55.781+00:00",
+    "$permissions": [
+      "read(\"user:6a16104b00164ee016a2\")",
+      "update(\"user:6a16104b00164ee016a2\")",
+      "delete(\"user:6a16104b00164ee016a2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a16c4090018ccbd56e9",
+    "email": "tabeedhasan2@gmail.com",
+    "date": "2026-05-27",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-05-27T10:14:46.477Z",
+    "$id": "6a16c416001ddc0d28f7",
+    "$sequence": "3",
+    "$createdAt": "2026-05-27T10:14:47.336+00:00",
+    "$updatedAt": "2026-05-27T10:14:47.336+00:00",
+    "$permissions": [
+      "read(\"user:6a16c4090018ccbd56e9\")",
+      "update(\"user:6a16c4090018ccbd56e9\")",
+      "delete(\"user:6a16c4090018ccbd56e9\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a18b0b40016369c4005",
+    "email": "ranit8000@gmail.com",
+    "date": "2026-05-28",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-05-28T21:16:41.151Z",
+    "$id": "6a18b0b9000974bbb2bc",
+    "$sequence": "4",
+    "$createdAt": "2026-05-28T21:16:37.784+00:00",
+    "$updatedAt": "2026-05-28T21:16:37.784+00:00",
+    "$permissions": [
+      "read(\"user:6a18b0b40016369c4005\")",
+      "update(\"user:6a18b0b40016369c4005\")",
+      "delete(\"user:6a18b0b40016369c4005\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a1eced6003d3f847022",
+    "email": "aiproxytester@gmail.com",
+    "date": "2026-06-02",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-02T12:38:53.523Z",
+    "$id": "6a1ecedd0020b477d66e",
+    "$sequence": "5",
+    "$createdAt": "2026-06-02T12:38:54.187+00:00",
+    "$updatedAt": "2026-06-02T12:38:54.187+00:00",
+    "$permissions": [
+      "read(\"user:6a1eced6003d3f847022\")",
+      "update(\"user:6a1eced6003d3f847022\")",
+      "delete(\"user:6a1eced6003d3f847022\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a1fc8b100278ca3a83a",
+    "email": "tashrifattesting@gmail.com",
+    "date": "2026-06-03",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-03T06:24:53.980Z",
+    "$id": "6a1fc8b5003d488ae1f3",
+    "$sequence": "6",
+    "$createdAt": "2026-06-03T06:24:55.166+00:00",
+    "$updatedAt": "2026-06-03T06:24:55.166+00:00",
+    "$permissions": [
+      "read(\"user:6a1fc8b100278ca3a83a\")",
+      "update(\"user:6a1fc8b100278ca3a83a\")",
+      "delete(\"user:6a1fc8b100278ca3a83a\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a1fee35000b690f2685",
+    "email": "katiburrahman13@gmail.com",
+    "date": "2026-06-03",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-03T09:04:57.612Z",
+    "$id": "6a1fee3900264bb4e240",
+    "$sequence": "7",
+    "$createdAt": "2026-06-03T09:04:58.093+00:00",
+    "$updatedAt": "2026-06-03T09:04:58.093+00:00",
+    "$permissions": [
+      "read(\"user:6a1fee35000b690f2685\")",
+      "update(\"user:6a1fee35000b690f2685\")",
+      "delete(\"user:6a1fee35000b690f2685\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a200abd00183783e6f8",
+    "email": "hcgcc@gmail.com",
+    "date": "2026-06-03",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-03T11:06:44.048Z",
+    "$id": "6a200ac40003084e6c25",
+    "$sequence": "8",
+    "$createdAt": "2026-06-03T11:06:46.056+00:00",
+    "$updatedAt": "2026-06-03T11:06:46.056+00:00",
+    "$permissions": [
+      "read(\"user:6a200abd00183783e6f8\")",
+      "update(\"user:6a200abd00183783e6f8\")",
+      "delete(\"user:6a200abd00183783e6f8\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a200ff0000f8eef72b1",
+    "email": "mohammodrayhan444@gmail.com",
+    "date": "2026-06-03",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-03T11:28:53.156Z",
+    "$id": "6a200ff50009c9592743",
+    "$sequence": "9",
+    "$createdAt": "2026-06-03T11:28:53.557+00:00",
+    "$updatedAt": "2026-06-03T11:28:53.557+00:00",
+    "$permissions": [
+      "read(\"user:6a200ff0000f8eef72b1\")",
+      "update(\"user:6a200ff0000f8eef72b1\")",
+      "delete(\"user:6a200ff0000f8eef72b1\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a2032db003131a97829",
+    "email": "mominulislammahi@gmail.com",
+    "date": "2026-06-03",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-03T13:57:52.633Z",
+    "$id": "6a2032e000279827f915",
+    "$sequence": "10",
+    "$createdAt": "2026-06-03T13:57:53.163+00:00",
+    "$updatedAt": "2026-06-03T13:57:53.163+00:00",
+    "$permissions": [
+      "read(\"user:6a2032db003131a97829\")",
+      "update(\"user:6a2032db003131a97829\")",
+      "delete(\"user:6a2032db003131a97829\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a20506c00062220e27e",
+    "email": "suriayaoboni@gmail.com",
+    "date": "2026-06-03",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-03T16:04:01.306Z",
+    "$id": "6a205071001328a506d8",
+    "$sequence": "11",
+    "$createdAt": "2026-06-03T16:04:01.896+00:00",
+    "$updatedAt": "2026-06-03T16:04:01.896+00:00",
+    "$permissions": [
+      "read(\"user:6a20506c00062220e27e\")",
+      "update(\"user:6a20506c00062220e27e\")",
+      "delete(\"user:6a20506c00062220e27e\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a2162b8003a0a6572a1",
+    "email": "asd@gmail.com",
+    "date": "2026-06-04",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-04T11:34:23.951Z",
+    "$id": "6a2162bf003b6eeae350",
+    "$sequence": "12",
+    "$createdAt": "2026-06-04T11:34:26.890+00:00",
+    "$updatedAt": "2026-06-04T11:34:26.890+00:00",
+    "$permissions": [
+      "read(\"user:6a2162b8003a0a6572a1\")",
+      "update(\"user:6a2162b8003a0a6572a1\")",
+      "delete(\"user:6a2162b8003a0a6572a1\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a22ccae00154180381d",
+    "email": "golamalif4702@gmail.com",
+    "date": "2026-06-05",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-05T13:18:48.888Z",
+    "$id": "6a22ccb800378253bf33",
+    "$sequence": "13",
+    "$createdAt": "2026-06-05T13:18:50.148+00:00",
+    "$updatedAt": "2026-06-05T13:18:50.148+00:00",
+    "$permissions": [
+      "read(\"user:6a22ccae00154180381d\")",
+      "update(\"user:6a22ccae00154180381d\")",
+      "delete(\"user:6a22ccae00154180381d\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a22ead60026fedbc736",
+    "email": "roshiduzzaman1913@gmail.com",
+    "date": "2026-06-05",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-05T15:27:23.798Z",
+    "$id": "6a22eadb0031e0656543",
+    "$sequence": "14",
+    "$createdAt": "2026-06-05T15:27:23.963+00:00",
+    "$updatedAt": "2026-06-05T15:27:23.963+00:00",
+    "$permissions": [
+      "read(\"user:6a22ead60026fedbc736\")",
+      "update(\"user:6a22ead60026fedbc736\")",
+      "delete(\"user:6a22ead60026fedbc736\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a22f0290037b24ca177",
+    "email": "snafiz163@gmail.com",
+    "date": "2026-06-05",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-05T15:50:06.734Z",
+    "$id": "6a22f02e002de4c87cbd",
+    "$sequence": "15",
+    "$createdAt": "2026-06-05T15:50:07.585+00:00",
+    "$updatedAt": "2026-06-05T15:50:07.585+00:00",
+    "$permissions": [
+      "read(\"user:6a22f0290037b24ca177\")",
+      "update(\"user:6a22f0290037b24ca177\")",
+      "delete(\"user:6a22f0290037b24ca177\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a2307d3001080409019",
+    "email": "mushfiqurfahim795@gmail.com",
+    "date": "2026-06-05",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-05T17:31:03.602Z",
+    "$id": "6a2307d70025a5bf782d",
+    "$sequence": "16",
+    "$createdAt": "2026-06-05T17:31:04.150+00:00",
+    "$updatedAt": "2026-06-05T17:31:04.150+00:00",
+    "$permissions": [
+      "read(\"user:6a2307d3001080409019\")",
+      "update(\"user:6a2307d3001080409019\")",
+      "delete(\"user:6a2307d3001080409019\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a232501003c2b6793b5",
+    "email": "iratul825@gmail.com",
+    "date": "2026-06-05",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-05T19:35:34.807Z",
+    "$id": "6a232506003263ebfc13",
+    "$sequence": "17",
+    "$createdAt": "2026-06-05T19:35:35.779+00:00",
+    "$updatedAt": "2026-06-05T19:35:35.779+00:00",
+    "$permissions": [
+      "read(\"user:6a232501003c2b6793b5\")",
+      "update(\"user:6a232501003c2b6793b5\")",
+      "delete(\"user:6a232501003c2b6793b5\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a234b020022180ee748",
+    "email": "jonathaulter434@gmail.com",
+    "date": "2026-06-05",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-05T22:17:47.890Z",
+    "$id": "6a234b0b0037a0da8eb0",
+    "$sequence": "18",
+    "$createdAt": "2026-06-05T22:17:51.909+00:00",
+    "$updatedAt": "2026-06-05T22:17:51.909+00:00",
+    "$permissions": [
+      "read(\"user:6a234b020022180ee748\")",
+      "update(\"user:6a234b020022180ee748\")",
+      "delete(\"user:6a234b020022180ee748\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a234bb0003a1a0fcf5a",
+    "email": "icttest@gmail.com",
+    "date": "2026-06-05",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-05T22:20:39.292Z",
+    "$id": "6a234bb70012442b8757",
+    "$sequence": "19",
+    "$createdAt": "2026-06-05T22:20:42.843+00:00",
+    "$updatedAt": "2026-06-05T22:20:42.843+00:00",
+    "$permissions": [
+      "read(\"user:6a234bb0003a1a0fcf5a\")",
+      "update(\"user:6a234bb0003a1a0fcf5a\")",
+      "delete(\"user:6a234bb0003a1a0fcf5a\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a24ab7000120e57640e",
+    "email": "mathhinditest@gmail.com",
+    "date": "2026-06-06",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-06T23:21:25.018Z",
+    "$id": "6a24ab750001253f284e",
+    "$sequence": "20",
+    "$createdAt": "2026-06-06T23:21:25.987+00:00",
+    "$updatedAt": "2026-06-06T23:21:25.987+00:00",
+    "$permissions": [
+      "read(\"user:6a24ab7000120e57640e\")",
+      "update(\"user:6a24ab7000120e57640e\")",
+      "delete(\"user:6a24ab7000120e57640e\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a258b6a0000626a49ec",
+    "email": "johanx0xzero@gmail.com",
+    "date": "2026-06-07",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-07T15:17:03.358Z",
+    "$id": "6a258b6f00165a6d1f74",
+    "$sequence": "21",
+    "$createdAt": "2026-06-07T15:17:03.161+00:00",
+    "$updatedAt": "2026-06-07T15:17:03.161+00:00",
+    "$permissions": [
+      "read(\"user:6a258b6a0000626a49ec\")",
+      "update(\"user:6a258b6a0000626a49ec\")",
+      "delete(\"user:6a258b6a0000626a49ec\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a25915d0008b87fe8dd",
+    "email": "suriyasaftak@gmail.com",
+    "date": "2026-06-07",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-07T15:42:26.271Z",
+    "$id": "6a2591620010fb2ec7ed",
+    "$sequence": "22",
+    "$createdAt": "2026-06-07T15:42:26.898+00:00",
+    "$updatedAt": "2026-06-07T15:42:26.898+00:00",
+    "$permissions": [
+      "read(\"user:6a25915d0008b87fe8dd\")",
+      "update(\"user:6a25915d0008b87fe8dd\")",
+      "delete(\"user:6a25915d0008b87fe8dd\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a26d16e000f513150d6",
+    "email": "mahindiu7@gmail.com",
+    "date": "2026-06-08",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-08T14:28:03.577Z",
+    "$id": "6a26d17300240b3cc722",
+    "$sequence": "23",
+    "$createdAt": "2026-06-08T14:28:02.438+00:00",
+    "$updatedAt": "2026-06-08T14:28:02.438+00:00",
+    "$permissions": [
+      "read(\"user:6a26d16e000f513150d6\")",
+      "update(\"user:6a26d16e000f513150d6\")",
+      "delete(\"user:6a26d16e000f513150d6\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a27223500269ad90928",
+    "email": "testjs@gmail.com",
+    "date": "2026-06-08",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-08T20:12:44.379Z",
+    "$id": "6a27223c0017bf735bb9",
+    "$sequence": "24",
+    "$createdAt": "2026-06-08T20:12:46.189+00:00",
+    "$updatedAt": "2026-06-08T20:12:46.189+00:00",
+    "$permissions": [
+      "read(\"user:6a27223500269ad90928\")",
+      "update(\"user:6a27223500269ad90928\")",
+      "delete(\"user:6a27223500269ad90928\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  },
+  {
+    "userId": "6a2cb1870031af5a7202",
+    "email": "ramybabiker12@gmail.com",
+    "date": "2026-06-12",
+    "hasReviewed": false,
+    "reviewId": null,
+    "addedToPreReg": false,
+    "createdAt": "2026-06-13T01:25:33.852Z",
+    "$id": "6a2cb18d00354fc172ad",
+    "$sequence": "25",
+    "$createdAt": "2026-06-13T01:25:34.468+00:00",
+    "$updatedAt": "2026-06-13T01:25:34.468+00:00",
+    "$permissions": [
+      "read(\"user:6a2cb1870031af5a7202\")",
+      "update(\"user:6a2cb1870031af5a7202\")",
+      "delete(\"user:6a2cb1870031af5a7202\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "daily_slot_usage"
+  }
+]

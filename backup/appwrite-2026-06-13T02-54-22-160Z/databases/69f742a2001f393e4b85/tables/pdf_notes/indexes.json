@@ -1,0 +1,116 @@
+[
+  {
+    "$id": "25687_7_pdfResourceId_index",
+    "$createdAt": "2026-05-06T09:18:24.338+00:00",
+    "$updatedAt": "2026-05-06T09:18:24.422+00:00",
+    "key": "pdfResourceId_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "pdfResourceId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_7_pageNumber_index",
+    "$createdAt": "2026-05-06T09:18:50.805+00:00",
+    "$updatedAt": "2026-05-06T09:18:50.978+00:00",
+    "key": "pageNumber_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "pageNumber"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_7_userId_index",
+    "$createdAt": "2026-05-06T09:20:35.154+00:00",
+    "$updatedAt": "2026-05-06T09:20:35.303+00:00",
+    "key": "userId_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_7_createdAt_index",
+    "$createdAt": "2026-05-06T09:21:01.162+00:00",
+    "$updatedAt": "2026-05-06T09:21:01.281+00:00",
+    "key": "createdAt_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "createdAt"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_7_pdfResourceId_pageNumber_compound",
+    "$createdAt": "2026-05-08T06:50:02.546+00:00",
+    "$updatedAt": "2026-05-08T06:50:02.733+00:00",
+    "key": "pdfResourceId_pageNumber_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "pdfResourceId",
+      "pageNumber"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_7_userId_createdAt_compound",
+    "$createdAt": "2026-05-08T06:50:38.880+00:00",
+    "$updatedAt": "2026-05-08T06:50:38.986+00:00",
+    "key": "userId_createdAt_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "createdAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "desc"
+    ]
+  }
+]

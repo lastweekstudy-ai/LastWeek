@@ -1,0 +1,87 @@
+[
+  {
+    "userId": "6a02fd2a003bc73494d6",
+    "points": 25,
+    "reason": "Completed lesson: vocabulary",
+    "createdAt": "2026-05-13T14:28:02.663Z",
+    "$id": "6a048a72002973808797",
+    "$sequence": "13",
+    "$createdAt": "2026-05-13T14:28:03.330+00:00",
+    "$updatedAt": "2026-05-13T14:28:03.330+00:00",
+    "$permissions": [
+      "read(\"user:6a02fd2a003bc73494d6\")",
+      "update(\"user:6a02fd2a003bc73494d6\")",
+      "delete(\"user:6a02fd2a003bc73494d6\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_user_points"
+  },
+  {
+    "userId": "6a02fd2a003bc73494d6",
+    "points": 15,
+    "reason": "Completed lesson: speaking",
+    "createdAt": "2026-05-13T14:33:31.262Z",
+    "$id": "6a048bbb00106d6439c1",
+    "$sequence": "14",
+    "$createdAt": "2026-05-13T14:33:31.781+00:00",
+    "$updatedAt": "2026-05-13T14:33:31.781+00:00",
+    "$permissions": [
+      "read(\"user:6a02fd2a003bc73494d6\")",
+      "update(\"user:6a02fd2a003bc73494d6\")",
+      "delete(\"user:6a02fd2a003bc73494d6\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_user_points"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "points": 25,
+    "reason": "Completed lesson: vocabulary",
+    "createdAt": "2026-05-13T14:48:28.144Z",
+    "$id": "6a048f3c000901e4119e",
+    "$sequence": "15",
+    "$createdAt": "2026-05-13T14:48:29.051+00:00",
+    "$updatedAt": "2026-05-13T14:48:29.051+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_user_points"
+  },
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "points": 25,
+    "reason": "Completed lesson: vocabulary",
+    "createdAt": "2026-05-15T10:11:48.996Z",
+    "$id": "6a06f164003e3afdda92",
+    "$sequence": "16",
+    "$createdAt": "2026-05-15T10:11:47.730+00:00",
+    "$updatedAt": "2026-05-15T10:11:47.730+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_user_points"
+  },
+  {
+    "userId": "6a142e19001434a81163",
+    "points": 25,
+    "reason": "Completed lesson: vocabulary",
+    "createdAt": "2026-05-25T11:18:34.469Z",
+    "$id": "6a14300a001d5e190bf0",
+    "$sequence": "17",
+    "$createdAt": "2026-05-25T11:18:34.168+00:00",
+    "$updatedAt": "2026-05-25T11:18:34.168+00:00",
+    "$permissions": [
+      "read(\"user:6a142e19001434a81163\")",
+      "update(\"user:6a142e19001434a81163\")",
+      "delete(\"user:6a142e19001434a81163\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "lang_user_points"
+  }
+]

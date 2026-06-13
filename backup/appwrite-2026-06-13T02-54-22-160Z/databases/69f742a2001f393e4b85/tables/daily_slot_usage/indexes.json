@@ -1,0 +1,56 @@
+[
+  {
+    "$id": "25687_36_idx_userId",
+    "$createdAt": "2026-05-25T12:33:22.593+00:00",
+    "$updatedAt": "2026-05-25T12:33:22.730+00:00",
+    "key": "idx_userId",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_36_idx_email",
+    "$createdAt": "2026-05-25T12:33:46.183+00:00",
+    "$updatedAt": "2026-05-25T12:33:46.349+00:00",
+    "key": "idx_email",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "email"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_36_idx_date",
+    "$createdAt": "2026-05-25T12:34:12.044+00:00",
+    "$updatedAt": "2026-05-25T12:34:12.198+00:00",
+    "key": "idx_date",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "date"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  }
+]

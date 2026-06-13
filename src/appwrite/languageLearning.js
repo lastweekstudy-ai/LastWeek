@@ -315,6 +315,8 @@ export const getCompletedLessons = async (userId) => {
     const response = await databases.listDocuments(DB_ID, COLLECTIONS.LESSONS, [
       Query.equal('userId', userId),
       Query.equal('status', 'completed'),
+      Query.limit(100),
+      Query.select(['$id', '$createdAt', '$updatedAt', 'userId', 'moduleId', 'stageName', 'moduleName', 'status', 'score', 'completedAt']),
     ]);
     return response.documents;
   } catch (error) {
@@ -328,6 +330,8 @@ export const getAllLessons = async (userId) => {
   try {
     const response = await databases.listDocuments(DB_ID, COLLECTIONS.LESSONS, [
       Query.equal('userId', userId),
+      Query.limit(100),
+      Query.select(['$id', '$createdAt', '$updatedAt', 'userId', 'moduleId', 'stageName', 'moduleName', 'status', 'score', 'completedAt']),
     ]);
     return response.documents;
   } catch (error) {
@@ -345,24 +349,11 @@ export const getLessonByModuleAndStage = async (userId, moduleId, stageName) => 
       Query.equal('moduleId', moduleId),
       Query.equal('stageName', stageName),
       Query.orderDesc('$createdAt'),
-      Query.limit(100), // Get all to check for duplicates
+      Query.limit(1),
     ]);
     
     if (response.documents.length === 0) return null;
-    
-    // If there are duplicates, delete the old ones and keep the newest
-    if (response.documents.length > 1) {
-      console.warn(`[Lesson] Found ${response.documents.length} duplicate lessons for ${moduleId}/${stageName}, cleaning up...`);
-      for (let i = 1; i < response.documents.length; i++) {
-        try {
-          await databases.deleteDocument(DB_ID, COLLECTIONS.LESSONS, response.documents[i].$id);
-          console.log(`[Lesson] Deleted duplicate: ${response.documents[i].$id}`);
-        } catch (err) {
-          console.error(`[Lesson] Failed to delete duplicate ${response.documents[i].$id}:`, err);
-        }
-      }
-    }
-    
+
     return response.documents[0] || null;
   } catch (error) {
     console.error('Error getting lesson:', error);

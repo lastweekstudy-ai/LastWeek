@@ -1,0 +1,216 @@
+{
+  "$id": "lang_flashcard_reviews",
+  "$createdAt": "2026-05-12T08:54:17.940+00:00",
+  "$updatedAt": "2026-05-12T09:32:18.118+00:00",
+  "$permissions": [
+    "create(\"any\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "lang_flashcard_reviews",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T08:54:59.375+00:00",
+      "$updatedAt": "2026-05-12T08:54:59.530+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "itemId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T08:55:19.704+00:00",
+      "$updatedAt": "2026-05-12T08:55:19.855+00:00",
+      "size": 100,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "itemType",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T08:55:50.311+00:00",
+      "$updatedAt": "2026-05-12T08:55:50.558+00:00",
+      "size": 30,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "itemContent",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T09:00:10.099+00:00",
+      "$updatedAt": "2026-05-12T09:00:10.296+00:00",
+      "size": 2000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "nextReview",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T09:00:38.229+00:00",
+      "$updatedAt": "2026-05-12T09:00:38.418+00:00",
+      "format": "",
+      "default": null
+    },
+    {
+      "key": "successStreak",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T09:01:16.502+00:00",
+      "$updatedAt": "2026-05-12T09:01:16.689+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "difficulty",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T09:01:40.874+00:00",
+      "$updatedAt": "2026-05-12T09:01:41.035+00:00",
+      "size": 10,
+      "default": "hard",
+      "encrypt": false
+    },
+    {
+      "key": "lastReviewed",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T09:01:56.696+00:00",
+      "$updatedAt": "2026-05-12T09:01:56.844+00:00",
+      "format": "",
+      "default": null
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_19_userId_idx",
+      "$createdAt": "2026-05-12T09:02:32.341+00:00",
+      "$updatedAt": "2026-05-12T09:02:32.432+00:00",
+      "key": "userId_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_19_itemId_idx",
+      "$createdAt": "2026-05-12T09:02:44.852+00:00",
+      "$updatedAt": "2026-05-12T09:02:44.935+00:00",
+      "key": "itemId_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "itemId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_19_nextReview_idx",
+      "$createdAt": "2026-05-12T09:03:25.271+00:00",
+      "$updatedAt": "2026-05-12T09:03:25.360+00:00",
+      "key": "nextReview_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "nextReview"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_19_difficulty_idx",
+      "$createdAt": "2026-05-12T09:04:48.319+00:00",
+      "$updatedAt": "2026-05-12T09:04:48.437+00:00",
+      "key": "difficulty_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "difficulty"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_19_user_item",
+      "$createdAt": "2026-05-12T09:05:26.412+00:00",
+      "$updatedAt": "2026-05-12T09:05:26.544+00:00",
+      "key": "user_item",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId",
+        "itemId"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 10675
+}

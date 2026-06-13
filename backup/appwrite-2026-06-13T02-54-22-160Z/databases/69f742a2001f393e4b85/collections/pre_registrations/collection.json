@@ -1,0 +1,252 @@
+{
+  "$id": "pre_registrations",
+  "$createdAt": "2026-05-25T10:24:37.249+00:00",
+  "$updatedAt": "2026-05-26T17:46:07.590+00:00",
+  "$permissions": [
+    "read(\"any\")",
+    "create(\"user:69ff6bc9000ec45cda75\")",
+    "read(\"user:69ff6bc9000ec45cda75\")",
+    "update(\"user:69ff6bc9000ec45cda75\")",
+    "delete(\"user:69ff6bc9000ec45cda75\")",
+    "create(\"users\")",
+    "update(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "pre_registrations",
+  "enabled": true,
+  "documentSecurity": false,
+  "attributes": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:29:05.587+00:00",
+      "$updatedAt": "2026-05-25T10:29:05.776+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "email",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:29:42.890+00:00",
+      "$updatedAt": "2026-05-25T10:29:43.055+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "name",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-25T10:32:04.468+00:00",
+      "$updatedAt": "2026-05-25T10:33:05.104+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "type",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:32:33.558+00:00",
+      "$updatedAt": "2026-05-25T10:32:33.764+00:00",
+      "size": 50,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "promoCode",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:33:43.983+00:00",
+      "$updatedAt": "2026-05-25T10:33:44.196+00:00",
+      "size": 50,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "promoCodeUses",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:34:10.899+00:00",
+      "$updatedAt": "2026-05-25T10:34:11.079+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "bonusMonthsEarned",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:35:06.385+00:00",
+      "$updatedAt": "2026-05-25T10:35:06.601+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "plusUntil",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:35:41.405+00:00",
+      "$updatedAt": "2026-05-25T10:35:41.582+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "status",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:36:12.712+00:00",
+      "$updatedAt": "2026-05-25T10:36:12.887+00:00",
+      "size": 50,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "reviewId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-25T10:36:51.499+00:00",
+      "$updatedAt": "2026-05-25T10:37:11.297+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "paddlePaymentId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-25T10:37:35.442+00:00",
+      "$updatedAt": "2026-05-25T10:37:35.637+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-25T10:38:08.005+00:00",
+      "$updatedAt": "2026-05-25T10:38:08.208+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_28_idx_userId",
+      "$createdAt": "2026-05-25T10:42:34.847+00:00",
+      "$updatedAt": "2026-05-25T10:42:34.951+00:00",
+      "key": "idx_userId",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_28_idx_email",
+      "$createdAt": "2026-05-25T10:43:09.058+00:00",
+      "$updatedAt": "2026-05-25T10:43:09.164+00:00",
+      "key": "idx_email",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "email"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_28_idx_promoCode",
+      "$createdAt": "2026-05-25T10:43:34.210+00:00",
+      "$updatedAt": "2026-05-25T10:43:34.310+00:00",
+      "key": "idx_promoCode",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "promoCode"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_28_idx_status",
+      "$createdAt": "2026-05-25T10:43:59.125+00:00",
+      "$updatedAt": "2026-05-25T10:43:59.231+00:00",
+      "key": "idx_status",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "status"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 8833
+}

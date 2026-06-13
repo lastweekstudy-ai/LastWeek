@@ -1,0 +1,171 @@
+{
+  "$id": "usage_tracking",
+  "$createdAt": "2026-05-23T13:08:33.485+00:00",
+  "$updatedAt": "2026-05-23T13:16:06.037+00:00",
+  "$permissions": [
+    "create(\"users\")",
+    "read(\"users\")",
+    "update(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "usage_tracking",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-23T13:09:26.763+00:00",
+      "$updatedAt": "2026-05-23T13:09:26.977+00:00",
+      "size": 100,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "month",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-23T13:09:56.956+00:00",
+      "$updatedAt": "2026-05-23T13:09:57.155+00:00",
+      "size": 10,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "sessionsCreated",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-23T13:10:35.621+00:00",
+      "$updatedAt": "2026-05-23T13:10:35.826+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "messagesUsed",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-23T13:11:13.657+00:00",
+      "$updatedAt": "2026-05-23T13:11:13.863+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "pdfsUploaded",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-23T13:11:53.691+00:00",
+      "$updatedAt": "2026-05-23T13:11:53.883+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "audiosUploaded",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-23T13:12:29.354+00:00",
+      "$updatedAt": "2026-05-23T13:12:29.546+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "flashcardsCreated",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-23T13:12:57.908+00:00",
+      "$updatedAt": "2026-05-23T13:12:58.085+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "mcqsAnswered",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-23T13:13:27.864+00:00",
+      "$updatedAt": "2026-05-23T13:13:28.062+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "storageUsedBytes",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-23T13:13:47.462+00:00",
+      "$updatedAt": "2026-05-23T13:13:47.656+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "updatedAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-23T13:14:09.291+00:00",
+      "$updatedAt": "2026-05-23T13:14:09.508+00:00",
+      "size": 50,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_26_userId_month",
+      "$createdAt": "2026-05-23T13:15:33.452+00:00",
+      "$updatedAt": "2026-05-23T13:15:33.570+00:00",
+      "key": "userId_month",
+      "type": "unique",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId",
+        "month"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 1766
+}

@@ -1,0 +1,169 @@
+{
+  "$id": "youtube_studies",
+  "$createdAt": "2026-05-10T17:05:38.137+00:00",
+  "$updatedAt": "2026-05-10T19:53:12.809+00:00",
+  "$permissions": [
+    "create(\"users\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "youtube_studies",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T17:06:32.984+00:00",
+      "$updatedAt": "2026-05-10T17:06:33.134+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "videoId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T17:07:05.920+00:00",
+      "$updatedAt": "2026-05-10T17:07:06.130+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "youtubeUrl",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T17:07:39.343+00:00",
+      "$updatedAt": "2026-05-10T17:07:39.499+00:00",
+      "size": 500,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "summary",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": true,
+      "$createdAt": "2026-05-10T17:08:19.297+00:00",
+      "$updatedAt": "2026-05-10T17:08:19.493+00:00",
+      "size": 500,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "flashcards",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T17:08:53.758+00:00",
+      "$updatedAt": "2026-05-10T17:08:53.922+00:00",
+      "size": 50000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "quiz",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T17:09:31.187+00:00",
+      "$updatedAt": "2026-05-10T17:09:31.336+00:00",
+      "size": 50000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "keyTopics",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": true,
+      "$createdAt": "2026-05-10T17:10:08.273+00:00",
+      "$updatedAt": "2026-05-10T17:10:08.452+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-10T17:10:35.705+00:00",
+      "$updatedAt": "2026-05-10T17:10:35.940+00:00",
+      "size": 50,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "title",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-10T19:29:08.942+00:00",
+      "$updatedAt": "2026-05-10T19:29:09.124+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "detailedNotes",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-10T19:29:43.813+00:00",
+      "$updatedAt": "2026-05-10T19:29:43.980+00:00",
+      "size": 5000,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_12_user_index",
+      "$createdAt": "2026-05-10T17:11:13.305+00:00",
+      "$updatedAt": "2026-05-10T17:11:13.390+00:00",
+      "key": "user_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 26415
+}

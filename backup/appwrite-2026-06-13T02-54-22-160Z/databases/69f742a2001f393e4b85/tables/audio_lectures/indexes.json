@@ -1,0 +1,77 @@
+[
+  {
+    "$id": "25687_13_user_index",
+    "$createdAt": "2026-05-11T05:51:39.558+00:00",
+    "$updatedAt": "2026-05-11T05:51:39.634+00:00",
+    "key": "user_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_13_created_index",
+    "$createdAt": "2026-05-11T05:52:05.542+00:00",
+    "$updatedAt": "2026-05-11T05:52:05.623+00:00",
+    "key": "created_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "createdAt"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_13_original_lecture_idx",
+    "$createdAt": "2026-05-17T11:46:54.526+00:00",
+    "$updatedAt": "2026-05-17T11:46:54.624+00:00",
+    "key": "original_lecture_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_13_user_original_audio_idx",
+    "$createdAt": "2026-05-17T11:47:29.755+00:00",
+    "$updatedAt": "2026-05-17T11:47:29.916+00:00",
+    "key": "user_original_audio_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "originalLectureId"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  }
+]

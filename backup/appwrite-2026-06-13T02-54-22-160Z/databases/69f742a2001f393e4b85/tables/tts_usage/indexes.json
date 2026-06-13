@@ -1,0 +1,77 @@
+[
+  {
+    "$id": "25687_23_user_idx",
+    "$createdAt": "2026-05-15T06:28:20.942+00:00",
+    "$updatedAt": "2026-05-15T06:28:21.032+00:00",
+    "key": "user_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_23_timestamp_idx",
+    "$createdAt": "2026-05-15T06:29:31.822+00:00",
+    "$updatedAt": "2026-05-15T06:29:31.925+00:00",
+    "key": "timestamp_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "timestamp"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_23_user_timestamp_idx",
+    "$createdAt": "2026-05-15T06:30:15.286+00:00",
+    "$updatedAt": "2026-05-15T06:30:15.385+00:00",
+    "key": "user_timestamp_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "timestamp"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_23_voice_idx",
+    "$createdAt": "2026-05-15T06:31:08.384+00:00",
+    "$updatedAt": "2026-05-15T06:31:08.492+00:00",
+    "key": "voice_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "voice"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  }
+]

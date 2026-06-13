@@ -1,0 +1,98 @@
+[
+  {
+    "$id": "25687_1_userId_index",
+    "$createdAt": "2026-05-06T06:00:15.586+00:00",
+    "$updatedAt": "2026-05-06T06:00:15.692+00:00",
+    "key": "userId_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_1_updatedAt_index",
+    "$createdAt": "2026-05-06T06:01:47.825+00:00",
+    "$updatedAt": "2026-05-06T06:01:47.929+00:00",
+    "key": "updatedAt_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "updatedAt"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_1_userId_updatedAt_compound",
+    "$createdAt": "2026-05-06T06:02:21.066+00:00",
+    "$updatedAt": "2026-05-06T06:02:21.190+00:00",
+    "key": "userId_updatedAt_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "updatedAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_1_mode_index",
+    "$createdAt": "2026-05-06T06:02:47.586+00:00",
+    "$updatedAt": "2026-05-06T06:02:47.694+00:00",
+    "key": "mode_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "mode"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_1_userId_mode_compound",
+    "$createdAt": "2026-05-06T06:03:27.680+00:00",
+    "$updatedAt": "2026-05-06T06:03:27.791+00:00",
+    "key": "userId_mode_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "mode"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  }
+]

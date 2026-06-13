@@ -1,0 +1,79 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T09:07:02.363+00:00",
+    "$updatedAt": "2026-05-12T09:07:02.582+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "messages",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T09:08:08.298+00:00",
+    "$updatedAt": "2026-05-12T09:08:08.508+00:00",
+    "size": 1000000,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "errorSummary",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T09:08:47.813+00:00",
+    "$updatedAt": "2026-05-12T09:08:47.965+00:00",
+    "size": 1000,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "fluencyScore",
+    "type": "integer",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T09:09:11.560+00:00",
+    "$updatedAt": "2026-05-12T09:09:11.783+00:00",
+    "min": "-9223372036854775808",
+    "max": "9223372036854775807",
+    "default": 0
+  },
+  {
+    "key": "duration",
+    "type": "integer",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T09:09:36.733+00:00",
+    "$updatedAt": "2026-05-12T09:09:36.983+00:00",
+    "min": "-9223372036854775808",
+    "max": "9223372036854775807",
+    "default": 0
+  },
+  {
+    "key": "timestamp",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T09:10:11.922+00:00",
+    "$updatedAt": "2026-05-12T09:10:12.169+00:00",
+    "format": "",
+    "default": null
+  }
+]

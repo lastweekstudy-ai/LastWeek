@@ -89,23 +89,23 @@ const DashboardEnhanced = () => {
         });
       }
       
-      // Load flashcards and message counts in parallel
-      const [dueCards, allCards, storageUsage, examData] = await Promise.allSettled([
+      setLoading(false);
+
+      Promise.allSettled([
         getDueFlashcards(user.$id),
         getUserFlashcards(user.$id),
         getUserStorageUsage(user.$id),
         getUserExamPlans(user.$id),
-      ]);
-
-      if (dueCards.status === 'fulfilled') setDueFlashcards(dueCards.value);
-      if (allCards.status === 'fulfilled') setAllFlashcards(allCards.value);
-      if (storageUsage.status === 'fulfilled') setTotalMessages(storageUsage.value.totalMessages || 0);
-      if (examData.status === 'fulfilled') setExamPlans(examData.value);
+      ]).then(([dueCards, allCards, storageUsage, examData]) => {
+        if (dueCards.status === 'fulfilled') setDueFlashcards(dueCards.value);
+        if (allCards.status === 'fulfilled') setAllFlashcards(allCards.value);
+        if (storageUsage.status === 'fulfilled') setTotalMessages(storageUsage.value.totalMessages || 0);
+        if (examData.status === 'fulfilled') setExamPlans(examData.value);
+      });
         
     } catch (err) {
       setError('Failed to load dashboard data');
       console.error(err);
-    } finally {
       setLoading(false);
     }
   };

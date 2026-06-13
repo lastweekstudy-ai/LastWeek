@@ -1,0 +1,65 @@
+[
+  {
+    "key": "text",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-15T06:16:05.315+00:00",
+    "$updatedAt": "2026-05-15T06:16:05.444+00:00",
+    "size": 500,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "voice",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-15T06:17:05.529+00:00",
+    "$updatedAt": "2026-05-15T06:17:05.694+00:00",
+    "size": 50,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "fileId",
+    "type": "text",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-15T06:18:45.804+00:00",
+    "$updatedAt": "2026-05-15T06:18:45.922+00:00",
+    "default": null,
+    "encrypt": null
+  },
+  {
+    "key": "createdAt",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-15T06:20:26.208+00:00",
+    "$updatedAt": "2026-05-15T06:20:26.332+00:00",
+    "format": "",
+    "default": null
+  },
+  {
+    "key": "charCount",
+    "type": "integer",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-15T06:21:22.045+00:00",
+    "$updatedAt": "2026-05-15T06:21:22.201+00:00",
+    "min": 0,
+    "max": 1000000,
+    "default": null
+  }
+]

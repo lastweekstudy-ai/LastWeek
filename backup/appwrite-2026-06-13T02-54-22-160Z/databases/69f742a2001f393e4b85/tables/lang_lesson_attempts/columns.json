@@ -1,0 +1,64 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T08:34:26.561+00:00",
+    "$updatedAt": "2026-05-12T08:34:26.726+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "lessonId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T08:34:57.319+00:00",
+    "$updatedAt": "2026-05-12T08:34:57.488+00:00",
+    "size": 100,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "score",
+    "type": "integer",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T08:35:38.247+00:00",
+    "$updatedAt": "2026-05-12T08:35:38.432+00:00",
+    "min": "-9223372036854775808",
+    "max": "9223372036854775807",
+    "default": null
+  },
+  {
+    "key": "passed",
+    "type": "boolean",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T08:36:22.620+00:00",
+    "$updatedAt": "2026-05-12T08:36:22.802+00:00",
+    "default": false
+  },
+  {
+    "key": "timestamp",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T08:36:40.675+00:00",
+    "$updatedAt": "2026-05-12T08:36:40.827+00:00",
+    "format": "",
+    "default": null
+  }
+]

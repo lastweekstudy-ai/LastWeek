@@ -1,0 +1,92 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T08:40:37.090+00:00",
+    "$updatedAt": "2026-05-12T08:40:37.269+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "practiceType",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T08:41:25.172+00:00",
+    "$updatedAt": "2026-05-12T08:41:25.342+00:00",
+    "size": 30,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "modulesCovered",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T08:45:42.246+00:00",
+    "$updatedAt": "2026-05-12T08:45:42.402+00:00",
+    "size": 10000,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "score",
+    "type": "integer",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T08:48:54.117+00:00",
+    "$updatedAt": "2026-05-12T08:48:54.290+00:00",
+    "min": "-9223372036854775808",
+    "max": "9223372036854775807",
+    "default": 0
+  },
+  {
+    "key": "xpEarned",
+    "type": "integer",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T08:49:20.113+00:00",
+    "$updatedAt": "2026-05-12T08:49:20.274+00:00",
+    "min": "-9223372036854775808",
+    "max": "9223372036854775807",
+    "default": 0
+  },
+  {
+    "key": "duration",
+    "type": "integer",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T08:49:50.009+00:00",
+    "$updatedAt": "2026-05-12T08:49:50.174+00:00",
+    "min": "-9223372036854775808",
+    "max": "9223372036854775807",
+    "default": 0
+  },
+  {
+    "key": "timestamp",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T08:50:19.865+00:00",
+    "$updatedAt": "2026-05-12T08:50:20.073+00:00",
+    "format": "",
+    "default": null
+  }
+]

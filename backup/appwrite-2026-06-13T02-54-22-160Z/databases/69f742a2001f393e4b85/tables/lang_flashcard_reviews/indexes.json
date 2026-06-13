@@ -1,0 +1,95 @@
+[
+  {
+    "$id": "25687_19_userId_idx",
+    "$createdAt": "2026-05-12T09:02:32.341+00:00",
+    "$updatedAt": "2026-05-12T09:02:32.432+00:00",
+    "key": "userId_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_19_itemId_idx",
+    "$createdAt": "2026-05-12T09:02:44.852+00:00",
+    "$updatedAt": "2026-05-12T09:02:44.935+00:00",
+    "key": "itemId_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "itemId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_19_nextReview_idx",
+    "$createdAt": "2026-05-12T09:03:25.271+00:00",
+    "$updatedAt": "2026-05-12T09:03:25.360+00:00",
+    "key": "nextReview_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "nextReview"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_19_difficulty_idx",
+    "$createdAt": "2026-05-12T09:04:48.319+00:00",
+    "$updatedAt": "2026-05-12T09:04:48.437+00:00",
+    "key": "difficulty_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "difficulty"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_19_user_item",
+    "$createdAt": "2026-05-12T09:05:26.412+00:00",
+    "$updatedAt": "2026-05-12T09:05:26.544+00:00",
+    "key": "user_item",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "itemId"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  }
+]

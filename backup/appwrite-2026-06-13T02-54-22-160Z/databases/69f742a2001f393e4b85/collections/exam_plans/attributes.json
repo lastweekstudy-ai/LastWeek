@@ -1,0 +1,80 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-10T15:04:58.899+00:00",
+    "$updatedAt": "2026-05-10T15:04:59.166+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "examName",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-10T15:05:30.400+00:00",
+    "$updatedAt": "2026-05-10T15:05:30.659+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "topics",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-10T15:06:49.113+00:00",
+    "$updatedAt": "2026-05-10T15:06:49.298+00:00",
+    "size": 50000,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "examDate",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-10T15:08:53.429+00:00",
+    "$updatedAt": "2026-05-10T15:08:53.622+00:00",
+    "size": 20,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "createdAt",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-10T15:09:27.679+00:00",
+    "$updatedAt": "2026-05-10T15:09:27.853+00:00",
+    "size": 50,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "updatedAt",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-10T15:09:48.518+00:00",
+    "$updatedAt": "2026-05-10T15:09:48.753+00:00",
+    "size": 50,
+    "default": null,
+    "encrypt": false
+  }
+]

@@ -1,0 +1,67 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-06-04T12:15:18.703+00:00",
+    "$updatedAt": "2026-06-04T12:15:18.959+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "status",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-06-04T12:15:57.363+00:00",
+    "$updatedAt": "2026-06-04T12:15:57.783+00:00",
+    "size": 50,
+    "default": "pending",
+    "encrypt": false
+  },
+  {
+    "key": "audioData",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-06-04T12:16:54.223+00:00",
+    "$updatedAt": "2026-06-04T12:16:54.541+00:00",
+    "size": 10000000,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "result",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-06-04T12:17:34.887+00:00",
+    "$updatedAt": "2026-06-04T12:17:35.158+00:00",
+    "size": 100000,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "error",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-06-04T12:18:31.145+00:00",
+    "$updatedAt": "2026-06-04T12:18:31.399+00:00",
+    "size": 1000,
+    "default": null,
+    "encrypt": false
+  }
+]

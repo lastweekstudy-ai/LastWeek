@@ -1,0 +1,23 @@
+[
+  {
+    "$id": "25687_26_userId_month",
+    "$createdAt": "2026-05-23T13:15:33.452+00:00",
+    "$updatedAt": "2026-05-23T13:15:33.570+00:00",
+    "key": "userId_month",
+    "type": "unique",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "month"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  }
+]

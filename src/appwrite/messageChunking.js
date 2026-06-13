@@ -13,6 +13,8 @@ const MESSAGES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_MESSAGES_COLLECTION
 
 // Safe chunk size: 800KB (leaves 200KB margin below 1MB limit for metadata + encoding overhead)
 const MAX_CHUNK_SIZE_BYTES = 800 * 1024;
+const DEFAULT_MESSAGE_PAGE_SIZE = 60;
+const RAW_MESSAGE_FETCH_SIZE = 120;
 
 /**
  * Calculate the byte size of a string (UTF-8 encoding)
@@ -192,6 +194,90 @@ export async function getSessionMessagesWithChunks(sessionId) {
     return messages;
   } catch (error) {
     console.error('[MessageChunking] Failed to load messages:', error);
+    throw new Error(`Failed to load messages: ${error.message}`);
+  }
+}
+
+async function loadChunksForParents(parentMessages) {
+  const chunkedParents = parentMessages.filter((message) => message.isChunked);
+  if (chunkedParents.length === 0) return parentMessages;
+
+  const chunkResponses = await Promise.all(
+    chunkedParents.map((message) =>
+      databases.listDocuments(
+        DATABASE_ID,
+        MESSAGES_COLLECTION_ID,
+        [
+          Query.equal('parentMessageId', message.$id),
+          Query.orderAsc('chunkIndex'),
+          Query.limit(Math.max((message.totalChunks || 1) - 1, 1)),
+        ]
+      )
+    )
+  );
+
+  const chunks = chunkResponses.flatMap((response) => response.documents || []);
+  return reassembleChunkedMessages([...parentMessages, ...chunks]);
+}
+
+/**
+ * Get one page of logical session messages.
+ * Loads newest messages first without pulling every chunk/document in the session.
+ */
+export async function getSessionMessagesPage(sessionId, options = {}) {
+  const pageSize = options.limit || DEFAULT_MESSAGE_PAGE_SIZE;
+  const before = options.before || null;
+  const logicalMessages = [];
+  let boundary = before;
+  let hasMore = false;
+
+  try {
+    while (logicalMessages.length < pageSize + 1) {
+      const queries = [
+        Query.equal('sessionId', sessionId),
+        Query.orderDesc('createdAt'),
+        Query.limit(RAW_MESSAGE_FETCH_SIZE),
+      ];
+
+      if (boundary) {
+        queries.push(Query.lessThan('createdAt', boundary));
+      }
+
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        MESSAGES_COLLECTION_ID,
+        queries
+      );
+
+      const parentMessages = response.documents.filter(
+        (message) => !message.role?.endsWith('_chunk')
+      );
+      logicalMessages.push(...parentMessages);
+
+      if (response.documents.length < RAW_MESSAGE_FETCH_SIZE) {
+        break;
+      }
+
+      boundary = response.documents.at(-1)?.createdAt;
+      if (!boundary) break;
+    }
+
+    hasMore = logicalMessages.length > pageSize;
+    const pageParentsDesc = logicalMessages.slice(0, pageSize);
+    const pageMessages = await loadChunksForParents(pageParentsDesc);
+    const sortedAsc = pageMessages.sort((a, b) => {
+      const aDate = new Date(a.createdAt || a.$createdAt || 0).getTime();
+      const bDate = new Date(b.createdAt || b.$createdAt || 0).getTime();
+      return aDate - bDate;
+    });
+
+    return {
+      messages: sortedAsc,
+      hasMore,
+      nextBefore: sortedAsc[0]?.createdAt || null,
+    };
+  } catch (error) {
+    console.error('[MessageChunking] Failed to load message page:', error);
     throw new Error(`Failed to load messages: ${error.message}`);
   }
 }

@@ -1,0 +1,62 @@
+[
+  {
+    "$id": "25687_10_session_index",
+    "$createdAt": "2026-05-10T10:14:13.503+00:00",
+    "$updatedAt": "2026-05-10T10:14:13.587+00:00",
+    "key": "session_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "sessionId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_10_user_session_index",
+    "$createdAt": "2026-05-10T10:14:40.513+00:00",
+    "$updatedAt": "2026-05-10T10:14:40.591+00:00",
+    "key": "user_session_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "sessionId"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_10_assessment_status_index",
+    "$createdAt": "2026-05-10T10:15:17.812+00:00",
+    "$updatedAt": "2026-05-10T10:15:17.901+00:00",
+    "key": "assessment_status_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId",
+      "assessmentCompleted"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  }
+]

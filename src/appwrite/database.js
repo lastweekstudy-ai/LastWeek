@@ -73,7 +73,7 @@ export const getSession = async (sessionId) => {
   }
 };
 
-export const getUserSessions = async (userId) => {
+export const getUserSessions = async (userId, limit = 50) => {
   try {
     // Debug logging to help identify the issue
     if (!DATABASE_ID) {
@@ -92,7 +92,9 @@ export const getUserSessions = async (userId) => {
       [
         Query.equal('userId', userId),
         Query.notEqual('mode', 'exam_prep'), // exam sessions live at /exam-session, not /session
-        Query.orderDesc('updatedAt')
+        Query.orderDesc('updatedAt'),
+        Query.limit(limit),
+        Query.select(['$id', '$createdAt', '$updatedAt', 'userId', 'mode', 'subject', 'title', 'summary', 'createdAt', 'updatedAt'])
       ]
     );
     return sessions.documents;
@@ -196,7 +198,8 @@ export const getUserStorageUsage = async (userId) => {
         SESSIONS_COLLECTION_ID,
         [
           Query.equal('userId', userId),
-          Query.select(['$id']) // Only select ID to minimize data transfer
+          Query.limit(1),
+          Query.select(['$id'])
         ]
       ),
       databases.listDocuments(
@@ -204,7 +207,8 @@ export const getUserStorageUsage = async (userId) => {
         MESSAGES_COLLECTION_ID,
         [
           Query.equal('userId', userId),
-          Query.select(['$id', 'content']) // Only select necessary fields
+          Query.limit(1),
+          Query.select(['$id'])
         ]
       ),
       databases.listDocuments(
@@ -212,7 +216,8 @@ export const getUserStorageUsage = async (userId) => {
         FLASHCARDS_COLLECTION_ID,
         [
           Query.equal('userId', userId),
-          Query.select(['$id']) // Only select ID to minimize data transfer
+          Query.limit(1),
+          Query.select(['$id'])
         ]
       )
     ]);
@@ -223,11 +228,8 @@ export const getUserStorageUsage = async (userId) => {
     // Sessions (approximate 1KB each)
     totalSize += sessions.total * 1024;
     
-    // Messages (calculate actual content size, but limit processing)
-    const messageSize = messages.documents.reduce((acc, message) => {
-      return acc + ((message.content || '').length * 2); // UTF-8 encoding approximation
-    }, 0);
-    totalSize += messageSize;
+    // Messages (rough count-based estimate; avoids scanning huge content on dashboard load)
+    totalSize += messages.total * 2048;
     
     // Flashcards (approximate 500 bytes each)
     totalSize += flashcards.total * 512;
@@ -256,7 +258,8 @@ export const getUserStorageUsage = async (userId) => {
 import { 
   needsChunking, 
   createChunkedMessage, 
-  getSessionMessagesWithChunks 
+  getSessionMessagesWithChunks,
+  getSessionMessagesPage
 } from './messageChunking';
 
 export const createMessage = async (sessionId, userId, role, content) => {
@@ -329,6 +332,15 @@ export const getSessionMessages = async (sessionId) => {
   }
 };
 
+export const getSessionMessagesPaginated = async (sessionId, options = {}) => {
+  try {
+    return await getSessionMessagesPage(sessionId, options);
+  } catch (error) {
+    console.error('getSessionMessagesPaginated error:', error);
+    throw new Error(error.message);
+  }
+};
+
 // Flashcards CRUD
 export const createFlashcard = async (userId, sessionId, front, back, options = {}) => {
   try {
@@ -373,14 +385,16 @@ export const updateFlashcard = async (flashcardId, confidence, nextReviewAt) => 
   }
 };
 
-export const getUserFlashcards = async (userId) => {
+export const getUserFlashcards = async (userId, limit = 100) => {
   try {
     const flashcards = await databases.listDocuments(
       DATABASE_ID,
       FLASHCARDS_COLLECTION_ID,
       [
         Query.equal('userId', userId),
-        Query.orderDesc('createdAt')
+        Query.orderDesc('createdAt'),
+        Query.limit(limit),
+        Query.select(['$id', 'userId', 'sessionId', 'front', 'back', 'confidence', 'nextReviewAt', 'createdAt', 'collectionId', 'subject', 'source'])
       ]
     );
     return flashcards.documents;
@@ -389,7 +403,7 @@ export const getUserFlashcards = async (userId) => {
   }
 };
 
-export const getDueFlashcards = async (userId) => {
+export const getDueFlashcards = async (userId, limit = 50) => {
   try {
     const now = new Date().toISOString();
     const flashcards = await databases.listDocuments(
@@ -397,7 +411,9 @@ export const getDueFlashcards = async (userId) => {
       FLASHCARDS_COLLECTION_ID,
       [
         Query.equal('userId', userId),
-        Query.lessThanEqual('nextReviewAt', now)
+        Query.lessThanEqual('nextReviewAt', now),
+        Query.limit(limit),
+        Query.select(['$id', 'userId', 'sessionId', 'front', 'back', 'confidence', 'nextReviewAt', 'createdAt', 'collectionId', 'subject', 'source'])
       ]
     );
     return flashcards.documents;

@@ -1,0 +1,141 @@
+{
+  "$id": "promo_code_usage",
+  "$createdAt": "2026-05-25T10:44:23.565+00:00",
+  "$updatedAt": "2026-05-25T10:55:48.090+00:00",
+  "$permissions": [
+    "read(\"any\")",
+    "create(\"user:69ff6bc9000ec45cda75\")",
+    "read(\"user:69ff6bc9000ec45cda75\")",
+    "update(\"user:69ff6bc9000ec45cda75\")",
+    "delete(\"user:69ff6bc9000ec45cda75\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "promo_code_usage",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "promoCode",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:47:39.740+00:00",
+      "$updatedAt": "2026-05-25T10:47:39.917+00:00",
+      "size": 50,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "referrerId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:48:23.343+00:00",
+      "$updatedAt": "2026-05-25T10:48:23.524+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "newUserId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:52:32.124+00:00",
+      "$updatedAt": "2026-05-25T10:52:32.317+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "newUserEmail",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:53:36.450+00:00",
+      "$updatedAt": "2026-05-25T10:53:36.620+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:54:54.975+00:00",
+      "$updatedAt": "2026-05-25T10:54:55.157+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_33_idx_promoCode",
+      "$createdAt": "2026-05-25T10:59:08.635+00:00",
+      "$updatedAt": "2026-05-25T10:59:08.722+00:00",
+      "key": "idx_promoCode",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "promoCode"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_33_idx_referrerId",
+      "$createdAt": "2026-05-25T10:59:36.098+00:00",
+      "$updatedAt": "2026-05-25T10:59:36.196+00:00",
+      "key": "idx_referrerId",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "referrerId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_33_idx_newUserId",
+      "$createdAt": "2026-05-25T11:00:03.015+00:00",
+      "$updatedAt": "2026-05-25T11:00:03.270+00:00",
+      "key": "idx_newUserId",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "newUserId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 5352
+}

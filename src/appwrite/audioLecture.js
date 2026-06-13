@@ -5,6 +5,23 @@ import { transcribeAudio, callGeminiText, callDeepSeek } from '../services/aiPro
 
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const AUDIO_LECTURES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_AUDIO_LECTURES_COLLECTION_ID || 'audio_lectures';
+const AUDIO_LECTURE_LIST_FIELDS = [
+  '$id',
+  '$createdAt',
+  '$updatedAt',
+  'userId',
+  'sessionId',
+  'title',
+  'audioFileId',
+  'audioUrl',
+  'duration',
+  'isPublic',
+  'isImported',
+  'originalLectureId',
+  'addCount',
+  'createdAt',
+  'updatedAt',
+];
 
 /**
  * Transcribe audio with Groq Whisper (via secure proxy)
@@ -211,7 +228,8 @@ export const getUserAudioLectures = async (userId, sessionId = null) => {
             Query.equal('userId', userId),
             Query.equal('sessionId', sessionId),
             Query.orderDesc('createdAt'),
-            Query.limit(50)
+            Query.limit(50),
+            Query.select(AUDIO_LECTURE_LIST_FIELDS)
           ]
         );
         return response.documents;
@@ -221,7 +239,7 @@ export const getUserAudioLectures = async (userId, sessionId = null) => {
         const response = await databases.listDocuments(
           DATABASE_ID,
           AUDIO_LECTURES_COLLECTION_ID,
-          queries
+          [...queries, Query.select(AUDIO_LECTURE_LIST_FIELDS)]
         );
         return response.documents;
       }
@@ -230,7 +248,7 @@ export const getUserAudioLectures = async (userId, sessionId = null) => {
     const response = await databases.listDocuments(
       DATABASE_ID,
       AUDIO_LECTURES_COLLECTION_ID,
-      queries
+      [...queries, Query.select(AUDIO_LECTURE_LIST_FIELDS)]
     );
     return response.documents;
   } catch (error) {

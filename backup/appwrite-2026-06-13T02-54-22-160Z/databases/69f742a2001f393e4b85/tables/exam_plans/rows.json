@@ -1,0 +1,135 @@
+[
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "examName": "csca",
+    "topics": "[{\"name\":\"circle\",\"done\":false,\"sessionId\":\"6a06f0a000265b3a7e07\"},{\"name\":\"force\",\"done\":true,\"sessionId\":\"6a06f06900081afc600d\"}]",
+    "examDate": "2026-05-20",
+    "createdAt": "2026-05-15T10:07:22.061Z",
+    "updatedAt": "2026-05-15T10:08:32.809Z",
+    "$id": "6a06f05a0003c2e519b2",
+    "$sequence": "3",
+    "$createdAt": "2026-05-15T10:07:21.426+00:00",
+    "$updatedAt": "2026-05-15T10:08:31.371+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "exam_plans"
+  },
+  {
+    "userId": "6a06d147001a790ae1ce",
+    "examName": "csca",
+    "topics": "[{\"name\":\"math\",\"done\":false,\"sessionId\":\"6a0961bd0039d8244ee8\"}]",
+    "examDate": "2026-05-20",
+    "createdAt": "2026-05-17T06:35:39.355Z",
+    "updatedAt": "2026-05-17T06:35:42.287Z",
+    "$id": "6a0961bb0016305e50b8",
+    "$sequence": "4",
+    "$createdAt": "2026-05-17T06:35:37.429+00:00",
+    "$updatedAt": "2026-05-17T06:35:40.516+00:00",
+    "$permissions": [
+      "read(\"user:6a06d147001a790ae1ce\")",
+      "update(\"user:6a06d147001a790ae1ce\")",
+      "delete(\"user:6a06d147001a790ae1ce\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "exam_plans"
+  },
+  {
+    "userId": "6a0a1037003c2ed568aa",
+    "examName": "csca",
+    "topics": "[{\"name\":\"geometry\",\"done\":false,\"sessionId\":\"6a0a1284003b9fa888dc\"},{\"name\":\"circle\",\"done\":false,\"sessionId\":\"6a0a128f000fcf6f3bb1\"},{\"name\":\"force\",\"done\":true,\"sessionId\":\"6a0a1293001cabf0ad25\"}]",
+    "examDate": "2026-05-22",
+    "createdAt": "2026-05-17T19:09:42.957Z",
+    "updatedAt": "2026-05-17T19:10:19.869Z",
+    "$id": "6a0a1276003bd5cd240f",
+    "$sequence": "5",
+    "$createdAt": "2026-05-17T19:09:43.561+00:00",
+    "$updatedAt": "2026-05-17T19:10:20.134+00:00",
+    "$permissions": [
+      "read(\"user:6a0a1037003c2ed568aa\")",
+      "update(\"user:6a0a1037003c2ed568aa\")",
+      "delete(\"user:6a0a1037003c2ed568aa\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "exam_plans"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "examName": "final exam",
+    "topics": "[{\"name\":\"Force\",\"done\":false,\"sessionId\":\"6a0c65a70023db8977f6\"},{\"name\":\"circle\",\"done\":false,\"sessionId\":\"6a0c6592002bb39d6591\"}]",
+    "examDate": "2026-05-25",
+    "createdAt": "2026-05-19T13:28:47.350Z",
+    "updatedAt": "2026-05-19T13:29:11.812Z",
+    "$id": "6a0c658f0015e74a8c90",
+    "$sequence": "6",
+    "$createdAt": "2026-05-19T13:28:47.038+00:00",
+    "$updatedAt": "2026-05-19T13:29:11.305+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "exam_plans"
+  },
+  {
+    "userId": "6a16104b00164ee016a2",
+    "examName": "Chinese Economy",
+    "topics": "[{\"name\":\"GDP\",\"done\":false,\"sessionId\":\"6a161d48003e60d7833a\"}]",
+    "examDate": "2026-06-04",
+    "createdAt": "2026-05-26T22:22:33.558Z",
+    "updatedAt": "2026-05-26T22:23:05.527Z",
+    "$id": "6a161d290022e14073f5",
+    "$sequence": "7",
+    "$createdAt": "2026-05-26T22:22:37.977+00:00",
+    "$updatedAt": "2026-05-26T22:23:03.712+00:00",
+    "$permissions": [
+      "read(\"user:6a16104b00164ee016a2\")",
+      "update(\"user:6a16104b00164ee016a2\")",
+      "delete(\"user:6a16104b00164ee016a2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "exam_plans"
+  },
+  {
+    "userId": "6a27223500269ad90928",
+    "examName": "Language Test",
+    "topics": "[{\"name\":\"English Language\",\"done\":false,\"sessionId\":\"6a2b736900392da37f7d\"}]",
+    "examDate": "2026-06-20",
+    "createdAt": "2026-06-12T02:48:05.629Z",
+    "updatedAt": "2026-06-12T02:48:10.791Z",
+    "$id": "6a2b73650027527df510",
+    "$sequence": "9",
+    "$createdAt": "2026-06-12T02:48:08.997+00:00",
+    "$updatedAt": "2026-06-12T02:48:13.590+00:00",
+    "$permissions": [
+      "read(\"user:6a27223500269ad90928\")",
+      "update(\"user:6a27223500269ad90928\")",
+      "delete(\"user:6a27223500269ad90928\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "exam_plans"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "examName": "english test",
+    "topics": "[{\"name\":\"english\",\"done\":false,\"sessionId\":\"6a2c6f340006bcfa94fc\"}]",
+    "examDate": "2026-11-11",
+    "createdAt": "2026-06-12T20:42:03.094Z",
+    "updatedAt": "2026-06-12T20:42:28.389Z",
+    "$id": "6a2c6f1b0005ee589043",
+    "$sequence": "10",
+    "$createdAt": "2026-06-12T20:42:06.358+00:00",
+    "$updatedAt": "2026-06-12T20:42:31.526+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "exam_plans"
+  }
+]

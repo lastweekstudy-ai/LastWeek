@@ -1,0 +1,90 @@
+{
+  "$id": "lang_user_points",
+  "$createdAt": "2026-05-13T02:59:28.896+00:00",
+  "$updatedAt": "2026-05-13T03:12:24.257+00:00",
+  "$permissions": [
+    "create(\"any\")",
+    "read(\"users\")",
+    "update(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "lang_user_points",
+  "enabled": true,
+  "documentSecurity": false,
+  "attributes": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-13T03:00:16.730+00:00",
+      "$updatedAt": "2026-05-13T03:00:17.072+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "points",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-13T03:01:03.785+00:00",
+      "$updatedAt": "2026-05-13T03:01:04.030+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "reason",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-13T03:01:45.301+00:00",
+      "$updatedAt": "2026-05-13T03:01:45.522+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-13T03:02:12.664+00:00",
+      "$updatedAt": "2026-05-13T03:02:12.879+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_21_userId_idx",
+      "$createdAt": "2026-05-13T03:04:29.797+00:00",
+      "$updatedAt": "2026-05-13T03:04:29.898+00:00",
+      "key": "userId_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 4138
+}

@@ -1,0 +1,228 @@
+{
+  "$id": "pdf_highlights",
+  "$createdAt": "2026-05-06T09:22:57.920+00:00",
+  "$updatedAt": "2026-05-06T09:28:16.630+00:00",
+  "$permissions": [
+    "create(\"users\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "pdf_highlights",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T09:23:36.720+00:00",
+      "$updatedAt": "2026-05-06T09:23:36.884+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "pdfResourceId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T09:24:06.121+00:00",
+      "$updatedAt": "2026-05-06T09:24:06.307+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "pageNumber",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T09:24:34.762+00:00",
+      "$updatedAt": "2026-05-06T09:24:34.948+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "highlightedText",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T09:25:13.398+00:00",
+      "$updatedAt": "2026-05-06T09:25:13.560+00:00",
+      "size": 5000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "position",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T09:25:41.755+00:00",
+      "$updatedAt": "2026-05-06T09:25:41.917+00:00",
+      "size": 1000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-06T09:26:52.310+00:00",
+      "$updatedAt": "2026-05-06T09:26:52.468+00:00",
+      "format": "",
+      "default": null
+    },
+    {
+      "key": "color",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-06T11:05:41.387+00:00",
+      "$updatedAt": "2026-05-06T11:05:41.626+00:00",
+      "size": 20,
+      "default": "yellow",
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_8_pdfResourceId_index",
+      "$createdAt": "2026-05-06T09:27:27.493+00:00",
+      "$updatedAt": "2026-05-06T09:27:27.578+00:00",
+      "key": "pdfResourceId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "pdfResourceId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_8_pageNumber_index",
+      "$createdAt": "2026-05-06T09:27:49.944+00:00",
+      "$updatedAt": "2026-05-06T09:27:50.036+00:00",
+      "key": "pageNumber_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "pageNumber"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_8_userId_index",
+      "$createdAt": "2026-05-06T10:02:28.694+00:00",
+      "$updatedAt": "2026-05-06T10:02:28.787+00:00",
+      "key": "userId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_8_pdfResourceId_pageNumber_compound",
+      "$createdAt": "2026-05-08T06:51:41.280+00:00",
+      "$updatedAt": "2026-05-08T06:51:41.372+00:00",
+      "key": "pdfResourceId_pageNumber_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "pdfResourceId",
+        "pageNumber"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_8_userId_createdAt_compound",
+      "$createdAt": "2026-05-08T06:52:19.266+00:00",
+      "$updatedAt": "2026-05-08T06:52:19.356+00:00",
+      "key": "userId_createdAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId",
+        "createdAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_8_pdfResourceId_createdAt_compound",
+      "$createdAt": "2026-05-08T06:53:02.471+00:00",
+      "$updatedAt": "2026-05-08T06:53:02.589+00:00",
+      "key": "pdfResourceId_createdAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "pdfResourceId",
+        "createdAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "desc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 27209
+}

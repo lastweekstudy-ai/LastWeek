@@ -1,0 +1,1522 @@
+[
+  {
+    "userId": "6a02fd2a003bc73494d6",
+    "mode": "mental_model",
+    "subject": "physics",
+    "title": "Mental Model - physics",
+    "createdAt": "2026-05-13T05:15:53.030+00:00",
+    "updatedAt": "2026-05-13T05:16:12.302+00:00",
+    "summary": null,
+    "$id": "6a0409090001e69b44d7",
+    "$sequence": "67",
+    "$createdAt": "2026-05-13T05:15:53.870+00:00",
+    "$updatedAt": "2026-05-13T05:16:13.125+00:00",
+    "$permissions": [
+      "read(\"user:6a02fd2a003bc73494d6\")",
+      "update(\"user:6a02fd2a003bc73494d6\")",
+      "delete(\"user:6a02fd2a003bc73494d6\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "mode": "mental_model",
+    "subject": "physics",
+    "title": "Mental Model - physics",
+    "createdAt": "2026-05-14T10:07:07.138+00:00",
+    "updatedAt": "2026-05-14T10:07:30.518+00:00",
+    "summary": null,
+    "$id": "6a059ecb0008a73d98cb",
+    "$sequence": "68",
+    "$createdAt": "2026-05-14T10:07:06.758+00:00",
+    "$updatedAt": "2026-05-14T10:07:30.153+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "mode": "mental_model",
+    "subject": "Physics",
+    "title": "Mental Model - Physics",
+    "createdAt": "2026-05-14T12:38:03.052+00:00",
+    "updatedAt": "2026-05-14T12:38:26.789+00:00",
+    "summary": null,
+    "$id": "6a05c22b000330c9b028",
+    "$sequence": "69",
+    "$createdAt": "2026-05-14T12:38:03.752+00:00",
+    "$updatedAt": "2026-05-14T12:38:28.237+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a05c1ed00379001e2a3",
+    "mode": "mental_model",
+    "subject": "Circle",
+    "title": "Mental Model - Circle",
+    "createdAt": "2026-05-14T17:23:13.175+00:00",
+    "updatedAt": "2026-05-14T17:23:48.423+00:00",
+    "summary": null,
+    "$id": "6a060501000af11c651c",
+    "$sequence": "70",
+    "$createdAt": "2026-05-14T17:23:15.312+00:00",
+    "$updatedAt": "2026-05-14T17:23:49.407+00:00",
+    "$permissions": [
+      "read(\"user:6a05c1ed00379001e2a3\")",
+      "update(\"user:6a05c1ed00379001e2a3\")",
+      "delete(\"user:6a05c1ed00379001e2a3\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "mode": "mental_model",
+    "subject": "Circle",
+    "title": "Mental Model - Circle",
+    "createdAt": "2026-05-14T17:38:27.191+00:00",
+    "updatedAt": "2026-05-14T17:44:20.719+00:00",
+    "summary": "✅ Covered: Circle fundamentals, chords, central angles, and perpendicular bisector theorem.\n⚠️ Gaps: Student switched topics mid-explanation, no complete understanding demonstrated.\n📌 Next: Revisit circle definitions and chord-angle theorem from page 5.",
+    "$id": "6a060893000bf186bfe4",
+    "$sequence": "71",
+    "$createdAt": "2026-05-14T17:38:28.121+00:00",
+    "$updatedAt": "2026-05-14T17:44:21.096+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-15T09:49:04.526+00:00",
+    "updatedAt": "2026-05-15T10:38:02.193+00:00",
+    "summary": "✅ Covered: Circle basics\n⚠️ Gaps: None identified\n📌 Next: Circle concepts",
+    "$id": "6a06ec100020eddd0ed0",
+    "$sequence": "72",
+    "$createdAt": "2026-05-15T09:49:03.171+00:00",
+    "$updatedAt": "2026-05-15T10:38:00.681+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "mode": "exam_prep",
+    "subject": "csca",
+    "title": "csca — force",
+    "createdAt": "2026-05-15T10:07:36.966+00:00",
+    "updatedAt": "2026-05-15T10:07:36.966+00:00",
+    "summary": null,
+    "$id": "6a06f068003c629a2d3e",
+    "$sequence": "73",
+    "$createdAt": "2026-05-15T10:07:35.477+00:00",
+    "$updatedAt": "2026-05-15T10:07:35.477+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "mode": "exam_prep",
+    "subject": "csca",
+    "title": "csca — force",
+    "createdAt": "2026-05-15T10:07:37.129+00:00",
+    "updatedAt": "2026-05-15T10:08:14.998+00:00",
+    "summary": null,
+    "$id": "6a06f06900081afc600d",
+    "$sequence": "74",
+    "$createdAt": "2026-05-15T10:07:35.687+00:00",
+    "$updatedAt": "2026-05-15T10:08:13.554+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "mode": "exam_prep",
+    "subject": "csca",
+    "title": "csca — circle",
+    "createdAt": "2026-05-15T10:08:32.442+00:00",
+    "updatedAt": "2026-05-15T10:08:32.442+00:00",
+    "summary": null,
+    "$id": "6a06f0a0001bad14de01",
+    "$sequence": "75",
+    "$createdAt": "2026-05-15T10:08:31.001+00:00",
+    "$updatedAt": "2026-05-15T10:08:31.001+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "mode": "exam_prep",
+    "subject": "csca",
+    "title": "csca — circle",
+    "createdAt": "2026-05-15T10:08:32.613+00:00",
+    "updatedAt": "2026-05-15T10:08:34.853+00:00",
+    "summary": null,
+    "$id": "6a06f0a000265b3a7e07",
+    "$sequence": "76",
+    "$createdAt": "2026-05-15T10:08:31.091+00:00",
+    "$updatedAt": "2026-05-15T10:08:33.592+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06d5dd0034c5507721",
+    "mode": "mental_model",
+    "subject": "Organic chemistry",
+    "title": "Mental Model - Organic chemistry",
+    "createdAt": "2026-05-16T07:53:07.753+00:00",
+    "updatedAt": "2026-05-16T07:53:36.622+00:00",
+    "summary": null,
+    "$id": "6a082263002f1b4b674d",
+    "$sequence": "77",
+    "$createdAt": "2026-05-16T07:53:09.299+00:00",
+    "$updatedAt": "2026-05-16T07:53:39.018+00:00",
+    "$permissions": [
+      "read(\"user:6a06d5dd0034c5507721\")",
+      "update(\"user:6a06d5dd0034c5507721\")",
+      "delete(\"user:6a06d5dd0034c5507721\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06d147001a790ae1ce",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-16T13:13:05.073+00:00",
+    "updatedAt": "2026-05-17T12:03:28.661+00:00",
+    "summary": "✅ Covered: Circles, radius, circumference\n⚠️ Gaps: None identified\n📌 Next: Volume, angular speed",
+    "$id": "6a086d6100049b642f85",
+    "$sequence": "78",
+    "$createdAt": "2026-05-16T13:13:03.012+00:00",
+    "$updatedAt": "2026-05-17T12:03:26.688+00:00",
+    "$permissions": [
+      "read(\"user:6a06d147001a790ae1ce\")",
+      "update(\"user:6a06d147001a790ae1ce\")",
+      "delete(\"user:6a06d147001a790ae1ce\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06d5dd0034c5507721",
+    "mode": "mental_model",
+    "subject": "C programming",
+    "title": "Mental Model - C programming",
+    "createdAt": "2026-05-16T19:18:39.160+00:00",
+    "updatedAt": "2026-05-16T19:20:01.918+00:00",
+    "summary": null,
+    "$id": "6a08c30f000a03ba6a77",
+    "$sequence": "79",
+    "$createdAt": "2026-05-16T19:18:40.668+00:00",
+    "$updatedAt": "2026-05-16T19:20:02.699+00:00",
+    "$permissions": [
+      "read(\"user:6a06d5dd0034c5507721\")",
+      "update(\"user:6a06d5dd0034c5507721\")",
+      "delete(\"user:6a06d5dd0034c5507721\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06d147001a790ae1ce",
+    "mode": "exam_prep",
+    "subject": "csca",
+    "title": "csca — math",
+    "createdAt": "2026-05-17T06:35:42.090+00:00",
+    "updatedAt": "2026-05-17T06:35:42.090+00:00",
+    "summary": null,
+    "$id": "6a0961be0005a48789d9",
+    "$sequence": "80",
+    "$createdAt": "2026-05-17T06:35:40.000+00:00",
+    "$updatedAt": "2026-05-17T06:35:40.000+00:00",
+    "$permissions": [
+      "read(\"user:6a06d147001a790ae1ce\")",
+      "update(\"user:6a06d147001a790ae1ce\")",
+      "delete(\"user:6a06d147001a790ae1ce\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06d147001a790ae1ce",
+    "mode": "exam_prep",
+    "subject": "csca",
+    "title": "csca — math",
+    "createdAt": "2026-05-17T06:35:41.925+00:00",
+    "updatedAt": "2026-05-17T11:29:09.671+00:00",
+    "summary": null,
+    "$id": "6a0961bd0039d8244ee8",
+    "$sequence": "81",
+    "$createdAt": "2026-05-17T06:35:39.999+00:00",
+    "$updatedAt": "2026-05-17T11:29:07.688+00:00",
+    "$permissions": [
+      "read(\"user:6a06d147001a790ae1ce\")",
+      "update(\"user:6a06d147001a790ae1ce\")",
+      "delete(\"user:6a06d147001a790ae1ce\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06d147001a790ae1ce",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-17T12:13:20.138+00:00",
+    "updatedAt": "2026-05-17T12:14:23.813+00:00",
+    "summary": null,
+    "$id": "6a09b0e00008ae202787",
+    "$sequence": "82",
+    "$createdAt": "2026-05-17T12:13:18.994+00:00",
+    "$updatedAt": "2026-05-17T12:14:21.994+00:00",
+    "$permissions": [
+      "read(\"user:6a06d147001a790ae1ce\")",
+      "update(\"user:6a06d147001a790ae1ce\")",
+      "delete(\"user:6a06d147001a790ae1ce\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a06d147001a790ae1ce",
+    "mode": "mental_model",
+    "subject": "circle 2",
+    "title": "Mental Model - circle 2",
+    "createdAt": "2026-05-17T12:16:26.169+00:00",
+    "updatedAt": "2026-05-17T12:45:17.046+00:00",
+    "summary": "✅ Covered: Circle, line relationships\n⚠️ Gaps: None identified\n📌 Next: Secants, tangents review",
+    "$id": "6a09b19a000a9a6efa07",
+    "$sequence": "83",
+    "$createdAt": "2026-05-17T12:16:24.184+00:00",
+    "$updatedAt": "2026-05-17T12:45:15.084+00:00",
+    "$permissions": [
+      "read(\"user:6a06d147001a790ae1ce\")",
+      "update(\"user:6a06d147001a790ae1ce\")",
+      "delete(\"user:6a06d147001a790ae1ce\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0a1037003c2ed568aa",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-17T19:01:12.341+00:00",
+    "updatedAt": "2026-05-29T16:41:02.975+00:00",
+    "summary": "✅ Covered: Circle definition\n⚠️ Gaps: None identified\n📌 Next: Page 2 review",
+    "$id": "6a0a1078001552066c7b",
+    "$sequence": "84",
+    "$createdAt": "2026-05-17T19:01:12.905+00:00",
+    "$updatedAt": "2026-05-29T16:41:02.172+00:00",
+    "$permissions": [
+      "read(\"user:6a0a1037003c2ed568aa\")",
+      "update(\"user:6a0a1037003c2ed568aa\")",
+      "delete(\"user:6a0a1037003c2ed568aa\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0a1037003c2ed568aa",
+    "mode": "exam_prep",
+    "subject": "csca",
+    "title": "csca — geometry",
+    "createdAt": "2026-05-17T19:09:56.953+00:00",
+    "updatedAt": "2026-05-17T19:10:00.065+00:00",
+    "summary": null,
+    "$id": "6a0a1284003b9fa888dc",
+    "$sequence": "85",
+    "$createdAt": "2026-05-17T19:09:57.195+00:00",
+    "$updatedAt": "2026-05-17T19:10:00.657+00:00",
+    "$permissions": [
+      "read(\"user:6a0a1037003c2ed568aa\")",
+      "update(\"user:6a0a1037003c2ed568aa\")",
+      "delete(\"user:6a0a1037003c2ed568aa\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0a1037003c2ed568aa",
+    "mode": "exam_prep",
+    "subject": "csca",
+    "title": "csca — circle",
+    "createdAt": "2026-05-17T19:10:07.252+00:00",
+    "updatedAt": "2026-05-17T19:10:07.252+00:00",
+    "summary": null,
+    "$id": "6a0a128f000fcf6f3bb1",
+    "$sequence": "86",
+    "$createdAt": "2026-05-17T19:10:07.492+00:00",
+    "$updatedAt": "2026-05-17T19:10:07.492+00:00",
+    "$permissions": [
+      "read(\"user:6a0a1037003c2ed568aa\")",
+      "update(\"user:6a0a1037003c2ed568aa\")",
+      "delete(\"user:6a0a1037003c2ed568aa\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0a1037003c2ed568aa",
+    "mode": "exam_prep",
+    "subject": "csca",
+    "title": "csca — force",
+    "createdAt": "2026-05-17T19:10:11.458+00:00",
+    "updatedAt": "2026-05-17T19:10:11.458+00:00",
+    "summary": null,
+    "$id": "6a0a1293001cabf0ad25",
+    "$sequence": "87",
+    "$createdAt": "2026-05-17T19:10:11.697+00:00",
+    "$updatedAt": "2026-05-17T19:10:11.697+00:00",
+    "$permissions": [
+      "read(\"user:6a0a1037003c2ed568aa\")",
+      "update(\"user:6a0a1037003c2ed568aa\")",
+      "delete(\"user:6a0a1037003c2ed568aa\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-19T06:38:06.784+00:00",
+    "updatedAt": "2026-05-19T13:22:08.120+00:00",
+    "summary": "✅ Covered: Circle basics\n⚠️ Gaps: None identified\n📌 Next: Radius applications",
+    "$id": "6a0c054e003103a3f5fd",
+    "$sequence": "88",
+    "$createdAt": "2026-05-19T06:38:08.971+00:00",
+    "$updatedAt": "2026-05-19T13:22:07.676+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-19T13:10:43.911+00:00",
+    "updatedAt": "2026-05-19T13:14:48.985+00:00",
+    "summary": "✅ Covered: Circles, radius\n⚠️ Gaps: Parametric equations\n📌 Next: Coordinate graphs",
+    "$id": "6a0c61530038f735dce9",
+    "$sequence": "89",
+    "$createdAt": "2026-05-19T13:10:43.568+00:00",
+    "$updatedAt": "2026-05-19T13:14:48.475+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "mode": "mental_model",
+    "subject": "climate change",
+    "title": "Mental Model - climate change",
+    "createdAt": "2026-05-19T13:15:03.401+00:00",
+    "updatedAt": "2026-05-20T11:44:39.532+00:00",
+    "summary": "✅ Covered: Climate change basics, greenhouse effect, weather vs. climate distinction  \n⚠️ Gaps: Tangents to a circle requested but unrelated to climate topic  \n📌 Next: Review greenhouse gas effect and role of human activity",
+    "$id": "6a0c62570019169ca3ba",
+    "$sequence": "90",
+    "$createdAt": "2026-05-19T13:15:03.298+00:00",
+    "$updatedAt": "2026-05-20T11:44:39.378+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "mode": "mental_model",
+    "subject": "Calculus",
+    "title": "Mental Model - Calculus",
+    "createdAt": "2026-05-19T13:17:49.903+00:00",
+    "updatedAt": "2026-05-19T13:21:24.853+00:00",
+    "summary": "✅ Covered: Basic Calculus concepts\n⚠️ Gaps: None identified\n📌 Next: Derivatives review",
+    "$id": "6a0c62fd003872b94f92",
+    "$sequence": "91",
+    "$createdAt": "2026-05-19T13:17:49.395+00:00",
+    "$updatedAt": "2026-05-19T13:21:24.350+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "mode": "mental_model",
+    "subject": "circle 2",
+    "title": "Mental Model - circle 2",
+    "createdAt": "2026-05-19T13:26:32.918+00:00",
+    "updatedAt": "2026-05-19T13:26:42.935+00:00",
+    "summary": null,
+    "$id": "6a0c65080039516a80b3",
+    "$sequence": "92",
+    "$createdAt": "2026-05-19T13:26:32.404+00:00",
+    "$updatedAt": "2026-05-19T13:26:42.630+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "mode": "exam_prep",
+    "subject": "final exam",
+    "title": "final exam — circle",
+    "createdAt": "2026-05-19T13:28:50.522+00:00",
+    "updatedAt": "2026-05-19T13:28:50.522+00:00",
+    "summary": null,
+    "$id": "6a0c65920020ac8e6afc",
+    "$sequence": "93",
+    "$createdAt": "2026-05-19T13:28:50.065+00:00",
+    "$updatedAt": "2026-05-19T13:28:50.065+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "mode": "exam_prep",
+    "subject": "final exam",
+    "title": "final exam — circle",
+    "createdAt": "2026-05-19T13:28:50.699+00:00",
+    "updatedAt": "2026-05-19T13:29:06.291+00:00",
+    "summary": null,
+    "$id": "6a0c6592002bb39d6591",
+    "$sequence": "94",
+    "$createdAt": "2026-05-19T13:28:50.229+00:00",
+    "$updatedAt": "2026-05-19T13:29:05.823+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "mode": "exam_prep",
+    "subject": "final exam",
+    "title": "final exam — Force",
+    "createdAt": "2026-05-19T13:29:11.573+00:00",
+    "updatedAt": "2026-05-19T13:29:29.470+00:00",
+    "summary": null,
+    "$id": "6a0c65a70023db8977f6",
+    "$sequence": "95",
+    "$createdAt": "2026-05-19T13:29:11.101+00:00",
+    "$updatedAt": "2026-05-19T13:29:29.188+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0e342aa4652d20694b",
+    "mode": "mental_model",
+    "subject": "Quantum Physics",
+    "title": "Mental Model - Quantum Physics",
+    "createdAt": "2026-05-20T22:23:29.429+00:00",
+    "updatedAt": "2026-05-20T22:25:13.996+00:00",
+    "summary": null,
+    "$id": "6a0e3461001adadc2346",
+    "$sequence": "96",
+    "$createdAt": "2026-05-20T22:23:30.017+00:00",
+    "$updatedAt": "2026-05-20T22:25:14.252+00:00",
+    "$permissions": [
+      "read(\"user:6a0e342aa4652d20694b\")",
+      "update(\"user:6a0e342aa4652d20694b\")",
+      "delete(\"user:6a0e342aa4652d20694b\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0ea9df9fef477bf83d",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-21T06:45:04.251+00:00",
+    "updatedAt": "2026-05-21T06:45:16.828+00:00",
+    "summary": null,
+    "$id": "6a0ea9f0000fba89b03a",
+    "$sequence": "97",
+    "$createdAt": "2026-05-21T06:45:03.855+00:00",
+    "$updatedAt": "2026-05-21T06:45:16.443+00:00",
+    "$permissions": [
+      "read(\"user:6a0ea9df9fef477bf83d\")",
+      "update(\"user:6a0ea9df9fef477bf83d\")",
+      "delete(\"user:6a0ea9df9fef477bf83d\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "mode": "mental_model",
+    "subject": "y combinator rules",
+    "title": "Mental Model - y combinator rules",
+    "createdAt": "2026-05-23T11:01:08.303+00:00",
+    "updatedAt": "2026-06-08T03:02:18.425+00:00",
+    "summary": "✅ Covered: Y combinator basics, key lecture concepts, page 2 content, and real-world examples.\n⚠️ Gaps: Repeated requests for simplification and examples; struggled with connecting abstract rules to concrete understanding.\n📌 Next: Review core Y combinator definition and practice applying it to a simple recursive function.",
+    "$id": "6a1188f40012f51b7d7b",
+    "$sequence": "98",
+    "$createdAt": "2026-05-23T11:01:09.168+00:00",
+    "$updatedAt": "2026-06-08T03:02:18.796+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a11b0ca000be180cdd2",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-23T14:02:38.322+00:00",
+    "updatedAt": "2026-05-23T14:02:49.911+00:00",
+    "summary": null,
+    "$id": "6a11b37e00142b74a162",
+    "$sequence": "99",
+    "$createdAt": "2026-05-23T14:02:38.955+00:00",
+    "$updatedAt": "2026-05-23T14:02:50.549+00:00",
+    "$permissions": [
+      "read(\"user:6a11b0ca000be180cdd2\")",
+      "update(\"user:6a11b0ca000be180cdd2\")",
+      "delete(\"user:6a11b0ca000be180cdd2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a11b903000dd0761e1b",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-23T14:26:52.498+00:00",
+    "updatedAt": "2026-05-23T14:27:05.898+00:00",
+    "summary": null,
+    "$id": "6a11b92c001f282416e6",
+    "$sequence": "100",
+    "$createdAt": "2026-05-23T14:26:52.964+00:00",
+    "$updatedAt": "2026-05-23T14:27:06.533+00:00",
+    "$permissions": [
+      "read(\"user:6a11b903000dd0761e1b\")",
+      "update(\"user:6a11b903000dd0761e1b\")",
+      "delete(\"user:6a11b903000dd0761e1b\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a11d0eb5b393705612c",
+    "mode": "creative_synthesis",
+    "subject": "Python libraries",
+    "title": "Creative Synthesis - Python libraries",
+    "createdAt": "2026-05-23T16:08:43.750+00:00",
+    "updatedAt": "2026-05-23T16:09:33.200+00:00",
+    "summary": null,
+    "$id": "6a11d10b002eea7f66cf",
+    "$sequence": "101",
+    "$createdAt": "2026-05-23T16:08:45.009+00:00",
+    "$updatedAt": "2026-05-23T16:09:33.661+00:00",
+    "$permissions": [
+      "read(\"user:6a11d0eb5b393705612c\")",
+      "update(\"user:6a11d0eb5b393705612c\")",
+      "delete(\"user:6a11d0eb5b393705612c\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a13190f000996cb3d50",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-24T18:46:12.053+00:00",
+    "updatedAt": "2026-05-24T18:46:28.027+00:00",
+    "summary": null,
+    "$id": "6a13477400035beb0da9",
+    "$sequence": "102",
+    "$createdAt": "2026-05-24T18:46:11.791+00:00",
+    "$updatedAt": "2026-05-24T18:46:27.747+00:00",
+    "$permissions": [
+      "read(\"user:6a13190f000996cb3d50\")",
+      "update(\"user:6a13190f000996cb3d50\")",
+      "delete(\"user:6a13190f000996cb3d50\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a135a8f0009e456d46b",
+    "mode": "mental_model",
+    "subject": "pythagorean theorem",
+    "title": "Mental Model - pythagorean theorem",
+    "createdAt": "2026-05-24T20:15:23.762+00:00",
+    "updatedAt": "2026-05-24T20:15:58.643+00:00",
+    "summary": null,
+    "$id": "6a135c5b002fafb7f955",
+    "$sequence": "103",
+    "$createdAt": "2026-05-24T20:15:33.558+00:00",
+    "$updatedAt": "2026-05-24T20:15:58.096+00:00",
+    "$permissions": [
+      "read(\"user:6a135a8f0009e456d46b\")",
+      "update(\"user:6a135a8f0009e456d46b\")",
+      "delete(\"user:6a135a8f0009e456d46b\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a135f22002f115aa198",
+    "mode": "mental_model",
+    "subject": "pythagorean theorem",
+    "title": "Mental Model - pythagorean theorem",
+    "createdAt": "2026-05-24T20:29:08.425+00:00",
+    "updatedAt": "2026-05-24T20:29:31.684+00:00",
+    "summary": null,
+    "$id": "6a135f94001a9d95062f",
+    "$sequence": "104",
+    "$createdAt": "2026-05-24T20:29:07.722+00:00",
+    "$updatedAt": "2026-05-24T20:29:31.274+00:00",
+    "$permissions": [
+      "read(\"user:6a135f22002f115aa198\")",
+      "update(\"user:6a135f22002f115aa198\")",
+      "delete(\"user:6a135f22002f115aa198\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a14babdd35febbd49b1",
+    "mode": "mental_model",
+    "subject": "Quantum Physics",
+    "title": "Mental Model - Quantum Physics",
+    "createdAt": "2026-05-25T21:10:54.221+00:00",
+    "updatedAt": "2026-05-25T21:11:35.816+00:00",
+    "summary": null,
+    "$id": "6a14bade000dd2ff2ee3",
+    "$sequence": "105",
+    "$createdAt": "2026-05-25T21:10:54.829+00:00",
+    "$updatedAt": "2026-05-25T21:11:36.437+00:00",
+    "$permissions": [
+      "read(\"user:6a14babdd35febbd49b1\")",
+      "update(\"user:6a14babdd35febbd49b1\")",
+      "delete(\"user:6a14babdd35febbd49b1\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a15b6e0003e57a8466e",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-26T15:10:34.973+00:00",
+    "updatedAt": "2026-05-26T15:10:46.193+00:00",
+    "summary": null,
+    "$id": "6a15b7ea003cd733f2e6",
+    "$sequence": "106",
+    "$createdAt": "2026-05-26T15:10:35.220+00:00",
+    "$updatedAt": "2026-05-26T15:10:46.451+00:00",
+    "$permissions": [
+      "read(\"user:6a15b6e0003e57a8466e\")",
+      "update(\"user:6a15b6e0003e57a8466e\")",
+      "delete(\"user:6a15b6e0003e57a8466e\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a15b6e0003e57a8466e",
+    "mode": "mental_model",
+    "subject": "Chemistry",
+    "title": "Mental Model - Chemistry",
+    "createdAt": "2026-05-26T15:11:11.426+00:00",
+    "updatedAt": "2026-05-26T15:11:11.426+00:00",
+    "summary": null,
+    "$id": "6a15b80f001aa5997306",
+    "$sequence": "107",
+    "$createdAt": "2026-05-26T15:11:11.519+00:00",
+    "$updatedAt": "2026-05-26T15:11:11.519+00:00",
+    "$permissions": [
+      "read(\"user:6a15b6e0003e57a8466e\")",
+      "update(\"user:6a15b6e0003e57a8466e\")",
+      "delete(\"user:6a15b6e0003e57a8466e\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a15d7890021adc0c123",
+    "mode": "mental_model",
+    "subject": "1",
+    "title": "Mental Model - 1",
+    "createdAt": "2026-05-26T17:41:09.169+00:00",
+    "updatedAt": "2026-05-26T17:41:09.169+00:00",
+    "summary": null,
+    "$id": "6a15db35000a9799be33",
+    "$sequence": "108",
+    "$createdAt": "2026-05-26T17:41:09.748+00:00",
+    "$updatedAt": "2026-05-26T17:41:09.748+00:00",
+    "$permissions": [
+      "read(\"user:6a15d7890021adc0c123\")",
+      "update(\"user:6a15d7890021adc0c123\")",
+      "delete(\"user:6a15d7890021adc0c123\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a16104b00164ee016a2",
+    "mode": "focus_breakdown",
+    "subject": "Chinese economy",
+    "title": "Mental Model - Chinese economy",
+    "createdAt": "2026-05-26T21:33:36.392+00:00",
+    "updatedAt": "2026-05-26T22:11:41.615+00:00",
+    "summary": "✅ Covered: Reform and Opening-Up (1978), Made in China 2025, GDP sector composition, and economic history shifts.\n⚠️ Gaps: Student struggled with applying economic statistics to future projections from the PDF.\n📌 Next: Review core definitions and practice teaching the economic progression timeline.",
+    "$id": "6a1611b000188741b971",
+    "$sequence": "109",
+    "$createdAt": "2026-05-26T21:33:36.411+00:00",
+    "$updatedAt": "2026-05-26T22:11:39.829+00:00",
+    "$permissions": [
+      "read(\"user:6a16104b00164ee016a2\")",
+      "update(\"user:6a16104b00164ee016a2\")",
+      "delete(\"user:6a16104b00164ee016a2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a16104b00164ee016a2",
+    "mode": "exam_prep",
+    "subject": "Chinese Economy",
+    "title": "Chinese Economy — GDP",
+    "createdAt": "2026-05-26T22:23:04.998+00:00",
+    "updatedAt": "2026-05-26T22:24:08.289+00:00",
+    "summary": null,
+    "$id": "6a161d48003e60d7833a",
+    "$sequence": "110",
+    "$createdAt": "2026-05-26T22:23:03.177+00:00",
+    "$updatedAt": "2026-05-26T22:24:06.484+00:00",
+    "$permissions": [
+      "read(\"user:6a16104b00164ee016a2\")",
+      "update(\"user:6a16104b00164ee016a2\")",
+      "delete(\"user:6a16104b00164ee016a2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a18b0b40016369c4005",
+    "mode": "mental_model",
+    "subject": "Calculus",
+    "title": "Mental Model - Calculus",
+    "createdAt": "2026-05-28T21:17:17.612+00:00",
+    "updatedAt": "2026-05-28T21:17:17.612+00:00",
+    "summary": null,
+    "$id": "6a18b0dd00264dd32ac0",
+    "$sequence": "111",
+    "$createdAt": "2026-05-28T21:17:14.259+00:00",
+    "$updatedAt": "2026-05-28T21:17:14.259+00:00",
+    "$permissions": [
+      "read(\"user:6a18b0b40016369c4005\")",
+      "update(\"user:6a18b0b40016369c4005\")",
+      "delete(\"user:6a18b0b40016369c4005\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-29T05:23:17.171+00:00",
+    "updatedAt": "2026-06-13T01:05:37.893+00:00",
+    "summary": "✅ Covered: Defined a circle as a round shape with all points equidistant from center.\n⚠️ Gaps: None identified\n📌 Next: Learn about radius, diameter, and circumference of a circle.",
+    "$id": "6a1922c5000ab5cd3724",
+    "$sequence": "112",
+    "$createdAt": "2026-05-29T05:23:17.358+00:00",
+    "$updatedAt": "2026-06-13T01:05:42.394+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a1b6311eef49ee4afa0",
+    "mode": "mental_model",
+    "subject": "uhpc",
+    "title": "Mental Model - uhpc",
+    "createdAt": "2026-05-30T22:25:06.029+00:00",
+    "updatedAt": "2026-06-10T18:03:21.736+00:00",
+    "summary": "✅ Covered: UHPC challenges, future prospects\n⚠️ Gaps: None identified\n📌 Next: Review UHPC formulations",
+    "$id": "6a1b63c20001d2c5a8db",
+    "$sequence": "113",
+    "$createdAt": "2026-05-30T22:25:07.425+00:00",
+    "$updatedAt": "2026-06-10T18:03:27.363+00:00",
+    "$permissions": [
+      "read(\"user:6a1b6311eef49ee4afa0\")",
+      "update(\"user:6a1b6311eef49ee4afa0\")",
+      "delete(\"user:6a1b6311eef49ee4afa0\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a1c8cfa0033e898b06e",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-05-31T19:48:51.011+00:00",
+    "updatedAt": "2026-06-01T01:15:18.538+00:00",
+    "summary": "✅ Covered: Circles, Pythagorean Theorem\n⚠️ Gaps: None identified\n📌 Next: Practice problems",
+    "$id": "6a1c90a30000aa1ec42c",
+    "$sequence": "114",
+    "$createdAt": "2026-05-31T19:48:51.628+00:00",
+    "$updatedAt": "2026-06-01T01:15:19.120+00:00",
+    "$permissions": [
+      "read(\"user:6a1c8cfa0033e898b06e\")",
+      "update(\"user:6a1c8cfa0033e898b06e\")",
+      "delete(\"user:6a1c8cfa0033e898b06e\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a1c8cfa0033e898b06e",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-06-02T11:15:58.371+00:00",
+    "updatedAt": "2026-06-02T11:44:32.318+00:00",
+    "summary": "✅ Covered: Circle Theorems\n⚠️ Gaps: None identified\n📌 Next: Mental models",
+    "$id": "6a1ebb6e001732e51699",
+    "$sequence": "115",
+    "$createdAt": "2026-06-02T11:15:59.865+00:00",
+    "$updatedAt": "2026-06-02T11:44:32.442+00:00",
+    "$permissions": [
+      "read(\"user:6a1c8cfa0033e898b06e\")",
+      "update(\"user:6a1c8cfa0033e898b06e\")",
+      "delete(\"user:6a1c8cfa0033e898b06e\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a1c8cfa0033e898b06e",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-06-02T12:00:23.258+00:00",
+    "updatedAt": "2026-06-02T12:00:45.188+00:00",
+    "summary": null,
+    "$id": "6a1ec5d7001020b38ee9",
+    "$sequence": "116",
+    "$createdAt": "2026-06-02T12:00:23.935+00:00",
+    "$updatedAt": "2026-06-02T12:00:46.015+00:00",
+    "$permissions": [
+      "read(\"user:6a1c8cfa0033e898b06e\")",
+      "update(\"user:6a1c8cfa0033e898b06e\")",
+      "delete(\"user:6a1c8cfa0033e898b06e\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a1fb5466cb08a979740",
+    "mode": "exam_prep",
+    "subject": "Physics",
+    "title": "Physics — law",
+    "createdAt": "2026-06-03T05:26:47.241+00:00",
+    "updatedAt": "2026-06-03T05:31:58.013+00:00",
+    "summary": null,
+    "$id": "6a1fbb17000f1dec3175",
+    "$sequence": "117",
+    "$createdAt": "2026-06-03T05:26:36.689+00:00",
+    "$updatedAt": "2026-06-03T05:31:47.254+00:00",
+    "$permissions": [
+      "read(\"user:6a1fb5466cb08a979740\")",
+      "update(\"user:6a1fb5466cb08a979740\")",
+      "delete(\"user:6a1fb5466cb08a979740\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a1fca0780de53135a3f",
+    "mode": "focus_breakdown",
+    "subject": "straight line",
+    "title": "Mental Model - straight line",
+    "createdAt": "2026-06-03T06:38:11.362+00:00",
+    "updatedAt": "2026-06-03T10:43:47.667+00:00",
+    "summary": "✅ Covered: Slope-intercept form\n⚠️ Gaps: None identified\n📌 Next: Practice problems",
+    "$id": "6a1fcbd30016a6869791",
+    "$sequence": "118",
+    "$createdAt": "2026-06-03T06:38:12.648+00:00",
+    "$updatedAt": "2026-06-03T10:43:49.142+00:00",
+    "$permissions": [
+      "read(\"user:6a1fca0780de53135a3f\")",
+      "update(\"user:6a1fca0780de53135a3f\")",
+      "delete(\"user:6a1fca0780de53135a3f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a1fcc6309e0ee8bbd94",
+    "mode": "focus_breakdown",
+    "subject": "Mechanics",
+    "title": "Focus Breakdown - Mechanics",
+    "createdAt": "2026-06-03T06:41:22.713+00:00",
+    "updatedAt": "2026-06-03T06:42:22.548+00:00",
+    "summary": null,
+    "$id": "6a1fcc92002c99879ab3",
+    "$sequence": "119",
+    "$createdAt": "2026-06-03T06:41:22.690+00:00",
+    "$updatedAt": "2026-06-03T06:42:22.274+00:00",
+    "$permissions": [
+      "read(\"user:6a1fcc6309e0ee8bbd94\")",
+      "update(\"user:6a1fcc6309e0ee8bbd94\")",
+      "delete(\"user:6a1fcc6309e0ee8bbd94\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a200ff0000f8eef72b1",
+    "mode": "focus_breakdown",
+    "subject": "Probablity and statistics",
+    "title": "Focus Breakdown - Probablity and statistics",
+    "createdAt": "2026-06-03T11:30:29.152+00:00",
+    "updatedAt": "2026-06-03T11:31:09.924+00:00",
+    "summary": null,
+    "$id": "6a201055000987540e50",
+    "$sequence": "120",
+    "$createdAt": "2026-06-03T11:30:29.594+00:00",
+    "$updatedAt": "2026-06-03T11:31:10.130+00:00",
+    "$permissions": [
+      "read(\"user:6a200ff0000f8eef72b1\")",
+      "update(\"user:6a200ff0000f8eef72b1\")",
+      "delete(\"user:6a200ff0000f8eef72b1\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-06-03T12:38:42.967+00:00",
+    "updatedAt": "2026-06-13T01:04:17.213+00:00",
+    "summary": "✅ Covered: Circle definition, parts (radius, diameter, circumference), and Pi (π)\n⚠️ Gaps: None identified\n📌 Next: Continue circle geometry or start linear equations from PDF",
+    "$id": "6a202052003c77677067",
+    "$sequence": "121",
+    "$createdAt": "2026-06-03T12:38:44.929+00:00",
+    "$updatedAt": "2026-06-13T01:04:20.421+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a2032db003131a97829",
+    "mode": "mental_model",
+    "subject": "Solidworks",
+    "title": "Mental Model - Solidworks",
+    "createdAt": "2026-06-03T13:58:36.242+00:00",
+    "updatedAt": "2026-06-03T13:59:50.569+00:00",
+    "summary": null,
+    "$id": "6a20330c000f23f7557d",
+    "$sequence": "122",
+    "$createdAt": "2026-06-03T13:58:36.802+00:00",
+    "$updatedAt": "2026-06-03T13:59:50.848+00:00",
+    "$permissions": [
+      "read(\"user:6a2032db003131a97829\")",
+      "update(\"user:6a2032db003131a97829\")",
+      "delete(\"user:6a2032db003131a97829\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "mode": "mental_model",
+    "subject": "straight line",
+    "title": "Mental Model - straight line",
+    "createdAt": "2026-06-03T16:02:47.689+00:00",
+    "updatedAt": "2026-06-13T00:43:42.837+00:00",
+    "summary": "✅ Covered: Slope-intercept form y=mx+b, slope, y-intercept, graphing, and real-world analogies.\n⚠️ Gaps: Student requested topics outside scope (Y Combinator, circle equations), not fully engaged with linear concepts.\n📌 Next: Review slope and y-intercept identification from linear equations.",
+    "$id": "6a205027002b1dbf36c7",
+    "$sequence": "123",
+    "$createdAt": "2026-06-03T16:02:49.887+00:00",
+    "$updatedAt": "2026-06-13T00:43:46.033+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a0a1037003c2ed568aa",
+    "mode": "mental_model",
+    "subject": "straight line",
+    "title": "Mental Model - straight line",
+    "createdAt": "2026-06-03T17:13:58.500+00:00",
+    "updatedAt": "2026-06-03T18:27:19.274+00:00",
+    "summary": "✅ Covered: Graphics of linear equations, slope-intercept form, graphing lines, and interpreting slopes.\n⚠️ Gaps: Student repeatedly requested full PDF explanation and graphs, indicating difficulty grasping concepts independently.\n📌 Next: Review slope calculation and graphing practice with simpler examples first.",
+    "$id": "6a2060d6001f41845511",
+    "$sequence": "124",
+    "$createdAt": "2026-06-03T17:14:00.729+00:00",
+    "$updatedAt": "2026-06-03T18:27:21.112+00:00",
+    "$permissions": [
+      "read(\"user:6a0a1037003c2ed568aa\")",
+      "update(\"user:6a0a1037003c2ed568aa\")",
+      "delete(\"user:6a0a1037003c2ed568aa\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a10083f9cabb9cb0789",
+    "mode": "mental_model",
+    "subject": "Math",
+    "title": "Mental Model - Math",
+    "createdAt": "2026-06-03T17:43:58.360+00:00",
+    "updatedAt": "2026-06-06T20:24:58.967+00:00",
+    "summary": "✅ Covered: Problems 7(a) to 7(c)\n⚠️ Gaps: None identified\n📌 Next: Problem 7(d)",
+    "$id": "6a2067de001685a534cc",
+    "$sequence": "125",
+    "$createdAt": "2026-06-03T17:43:59.734+00:00",
+    "$updatedAt": "2026-06-06T20:24:59.404+00:00",
+    "$permissions": [
+      "read(\"user:6a10083f9cabb9cb0789\")",
+      "update(\"user:6a10083f9cabb9cb0789\")",
+      "delete(\"user:6a10083f9cabb9cb0789\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a2162b8003a0a6572a1",
+    "mode": "mental_model",
+    "subject": "straight line",
+    "title": "Mental Model - straight line",
+    "createdAt": "2026-06-04T11:35:05.379+00:00",
+    "updatedAt": "2026-06-04T19:59:56.570+00:00",
+    "summary": "✅ Covered: Slope-intercept form\n⚠️ Gaps: None identified\n📌 Next: Graphing lines",
+    "$id": "6a2162e90017b61aaec1",
+    "$sequence": "126",
+    "$createdAt": "2026-06-04T11:35:09.148+00:00",
+    "$updatedAt": "2026-06-04T19:59:59.215+00:00",
+    "$permissions": [
+      "read(\"user:6a2162b8003a0a6572a1\")",
+      "update(\"user:6a2162b8003a0a6572a1\")",
+      "delete(\"user:6a2162b8003a0a6572a1\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a2307d3001080409019",
+    "mode": "mental_model",
+    "subject": "Environmental Hygiene",
+    "title": "Mental Model - Environmental Hygiene",
+    "createdAt": "2026-06-05T17:31:33.533+00:00",
+    "updatedAt": "2026-06-05T17:32:15.002+00:00",
+    "summary": null,
+    "$id": "6a2307f50021587533c3",
+    "$sequence": "127",
+    "$createdAt": "2026-06-05T17:31:34.076+00:00",
+    "$updatedAt": "2026-06-05T17:32:15.537+00:00",
+    "$permissions": [
+      "read(\"user:6a2307d3001080409019\")",
+      "update(\"user:6a2307d3001080409019\")",
+      "delete(\"user:6a2307d3001080409019\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a234b020022180ee748",
+    "mode": "mental_model",
+    "subject": "circle",
+    "title": "Mental Model - circle",
+    "createdAt": "2026-06-05T22:18:06.492+00:00",
+    "updatedAt": "2026-06-05T22:18:41.620+00:00",
+    "summary": null,
+    "$id": "6a234b1e001ec7b46d2e",
+    "$sequence": "128",
+    "$createdAt": "2026-06-05T22:18:10.628+00:00",
+    "$updatedAt": "2026-06-05T22:18:45.677+00:00",
+    "$permissions": [
+      "read(\"user:6a234b020022180ee748\")",
+      "update(\"user:6a234b020022180ee748\")",
+      "delete(\"user:6a234b020022180ee748\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a234bb0003a1a0fcf5a",
+    "mode": "mental_model",
+    "subject": "information and communication technology",
+    "title": "Mental Model - information and communication technology",
+    "createdAt": "2026-06-05T22:21:02.588+00:00",
+    "updatedAt": "2026-06-07T16:56:46.846+00:00",
+    "summary": "✅ Covered: ICT questions, for loop\n⚠️ Gaps: None identified\n📌 Next: Review loops, practice questions",
+    "$id": "6a234bce0024ca626436",
+    "$sequence": "129",
+    "$createdAt": "2026-06-05T22:21:06.217+00:00",
+    "$updatedAt": "2026-06-07T16:56:46.688+00:00",
+    "$permissions": [
+      "read(\"user:6a234bb0003a1a0fcf5a\")",
+      "update(\"user:6a234bb0003a1a0fcf5a\")",
+      "delete(\"user:6a234bb0003a1a0fcf5a\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a142e19001434a81163",
+    "mode": "mental_model",
+    "subject": "Circle",
+    "title": "Mental Model - Circle",
+    "createdAt": "2026-06-05T22:54:38.157+00:00",
+    "updatedAt": "2026-06-12T05:01:18.682+00:00",
+    "summary": "✅ Covered: Circle definition\n⚠️ Gaps: None identified\n📌 Next: Circle area",
+    "$id": "6a2353ae0009de2361bb",
+    "$sequence": "130",
+    "$createdAt": "2026-06-05T22:54:39.126+00:00",
+    "$updatedAt": "2026-06-12T05:01:19.761+00:00",
+    "$permissions": [
+      "read(\"user:6a142e19001434a81163\")",
+      "update(\"user:6a142e19001434a81163\")",
+      "delete(\"user:6a142e19001434a81163\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a24ab7000120e57640e",
+    "mode": "mental_model",
+    "subject": "math",
+    "title": "Mental Model - math",
+    "createdAt": "2026-06-06T23:23:46.483+00:00",
+    "updatedAt": "2026-06-07T02:27:31.104+00:00",
+    "summary": "✅ Covered: Decimals and Fractions\n⚠️ Gaps: Language barriers\n📌 Next: Hindi math basics",
+    "$id": "6a24ac02001e358e597b",
+    "$sequence": "131",
+    "$createdAt": "2026-06-06T23:23:47.436+00:00",
+    "$updatedAt": "2026-06-07T02:27:32.088+00:00",
+    "$permissions": [
+      "read(\"user:6a24ab7000120e57640e\")",
+      "update(\"user:6a24ab7000120e57640e\")",
+      "delete(\"user:6a24ab7000120e57640e\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a25915d0008b87fe8dd",
+    "mode": "mental_model",
+    "subject": "Introduction to business",
+    "title": "Mental Model - Introduction to business",
+    "createdAt": "2026-06-07T15:44:50.330+00:00",
+    "updatedAt": "2026-06-08T16:23:40.440+00:00",
+    "summary": "✅ Covered: CSR definition, examples (Grameenphone), and business purpose MCQs\n⚠️ Gaps: None identified\n📌 Next: Practice more MCQs on CSR and business types",
+    "$id": "6a2591f20014ade35793",
+    "$sequence": "132",
+    "$createdAt": "2026-06-07T15:44:51.064+00:00",
+    "$updatedAt": "2026-06-08T16:23:40.762+00:00",
+    "$permissions": [
+      "read(\"user:6a25915d0008b87fe8dd\")",
+      "update(\"user:6a25915d0008b87fe8dd\")",
+      "delete(\"user:6a25915d0008b87fe8dd\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "mode": "mental_model",
+    "subject": "Law",
+    "title": "Mental Model - Law",
+    "createdAt": "2026-06-07T16:57:30.324+00:00",
+    "updatedAt": "2026-06-13T00:56:57.792+00:00",
+    "summary": "✅ Covered: Criminal case stages (Reporting to Appeal), Rule of Law, and justice as a process vs. outcome.\n⚠️ Gaps: Distinction between asking questions and achieving justice; reliance on statistical data.\n📌 Next: Review stages of criminal case and practice applying Rule of Law to scenarios.",
+    "$id": "6a25a2fa00144f7ea600",
+    "$sequence": "133",
+    "$createdAt": "2026-06-07T16:57:42.205+00:00",
+    "$updatedAt": "2026-06-13T00:57:00.973+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "mode": "mental_model",
+    "subject": "JavaScript",
+    "title": "Mental Model - JavaScript",
+    "createdAt": "2026-06-07T17:47:23.247+00:00",
+    "updatedAt": "2026-06-08T03:00:38.103+00:00",
+    "summary": "✅ Covered: Variables\n⚠️ Gaps: None identified\n📌 Next: Data Types",
+    "$id": "6a25aeab000f71ef435d",
+    "$sequence": "134",
+    "$createdAt": "2026-06-07T17:47:23.109+00:00",
+    "$updatedAt": "2026-06-08T03:00:38.437+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a27223500269ad90928",
+    "mode": "mental_model",
+    "subject": "javascript",
+    "title": "Mental Model - javascript",
+    "createdAt": "2026-06-08T20:12:58.435+00:00",
+    "updatedAt": "2026-06-12T22:24:39.873+00:00",
+    "summary": "✅ Covered: Closures, Module Pattern, `this` binding, prototypal inheritance, and HTML script loading.\n⚠️ Gaps: None identified; student declared no prior knowledge and began from basics.\n📌 Next: Continue `this` binding rules and apply them to real-world code examples.",
+    "$id": "6a27224a001b36694fa8",
+    "$sequence": "135",
+    "$createdAt": "2026-06-08T20:13:00.238+00:00",
+    "$updatedAt": "2026-06-12T22:24:43.099+00:00",
+    "$permissions": [
+      "read(\"user:6a27223500269ad90928\")",
+      "update(\"user:6a27223500269ad90928\")",
+      "delete(\"user:6a27223500269ad90928\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a27223500269ad90928",
+    "mode": "exam_prep",
+    "subject": "Language Test",
+    "title": "Language Test — English Language",
+    "createdAt": "2026-06-12T02:48:09.914+00:00",
+    "updatedAt": "2026-06-12T02:50:55.582+00:00",
+    "summary": null,
+    "$id": "6a2b736900392da37f7d",
+    "$sequence": "136",
+    "$createdAt": "2026-06-12T02:48:12.423+00:00",
+    "$updatedAt": "2026-06-12T02:50:57.765+00:00",
+    "$permissions": [
+      "read(\"user:6a27223500269ad90928\")",
+      "update(\"user:6a27223500269ad90928\")",
+      "delete(\"user:6a27223500269ad90928\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a142e19001434a81163",
+    "mode": "mental_model",
+    "subject": "Java script",
+    "title": "Creative Synthesis - Java script",
+    "createdAt": "2026-06-12T05:02:08.923+00:00",
+    "updatedAt": "2026-06-12T05:10:04.554+00:00",
+    "summary": "✅ Covered: Functions as building blocks, JavaScript mental model using kitchen analogy\n⚠️ Gaps: Shifted from mind maps to lecture sheets, topic direction unclear\n📌 Next: Re-establish topic focus and apply mental model to a specific concept",
+    "$id": "6a2b92d00039be3c5c12",
+    "$sequence": "137",
+    "$createdAt": "2026-06-12T05:02:10.728+00:00",
+    "$updatedAt": "2026-06-12T05:10:05.706+00:00",
+    "$permissions": [
+      "read(\"user:6a142e19001434a81163\")",
+      "update(\"user:6a142e19001434a81163\")",
+      "delete(\"user:6a142e19001434a81163\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a25915d0008b87fe8dd",
+    "mode": "mental_model",
+    "subject": "Math",
+    "title": "Mental Model - Math",
+    "createdAt": "2026-06-12T18:41:11.989+00:00",
+    "updatedAt": "2026-06-12T18:43:14.687+00:00",
+    "summary": null,
+    "$id": "6a2c52c7003dd464f47e",
+    "$sequence": "138",
+    "$createdAt": "2026-06-12T18:41:12.491+00:00",
+    "$updatedAt": "2026-06-12T18:43:14.953+00:00",
+    "$permissions": [
+      "read(\"user:6a25915d0008b87fe8dd\")",
+      "update(\"user:6a25915d0008b87fe8dd\")",
+      "delete(\"user:6a25915d0008b87fe8dd\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "mode": "exam_prep",
+    "subject": "english test",
+    "title": "english test — english",
+    "createdAt": "2026-06-12T20:42:27.857+00:00",
+    "updatedAt": "2026-06-12T20:42:27.857+00:00",
+    "summary": null,
+    "$id": "6a2c6f3300359cc21206",
+    "$sequence": "139",
+    "$createdAt": "2026-06-12T20:42:31.031+00:00",
+    "$updatedAt": "2026-06-12T20:42:31.031+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "mode": "exam_prep",
+    "subject": "english test",
+    "title": "english test — english",
+    "createdAt": "2026-06-12T20:42:28.107+00:00",
+    "updatedAt": "2026-06-12T20:42:44.329+00:00",
+    "summary": null,
+    "$id": "6a2c6f340006bcfa94fc",
+    "$sequence": "140",
+    "$createdAt": "2026-06-12T20:42:31.113+00:00",
+    "$updatedAt": "2026-06-12T20:42:47.509+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "mode": "mental_model",
+    "subject": "calculus",
+    "title": "Mental Model - calculus",
+    "createdAt": "2026-06-13T00:37:05.859+00:00",
+    "updatedAt": "2026-06-13T00:37:05.859+00:00",
+    "summary": null,
+    "$id": "6a2ca6310035b0664fe4",
+    "$sequence": "141",
+    "$createdAt": "2026-06-13T00:37:09.300+00:00",
+    "$updatedAt": "2026-06-13T00:37:09.300+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  },
+  {
+    "userId": "6a2cb1870031af5a7202",
+    "mode": "creative_synthesis",
+    "subject": "Fashion",
+    "title": "Creative Synthesis - Fashion",
+    "createdAt": "2026-06-13T01:26:56.885+00:00",
+    "updatedAt": "2026-06-13T01:26:56.885+00:00",
+    "summary": null,
+    "$id": "6a2cb1e0003750de03e9",
+    "$sequence": "142",
+    "$createdAt": "2026-06-13T01:26:57.809+00:00",
+    "$updatedAt": "2026-06-13T01:26:57.809+00:00",
+    "$permissions": [
+      "read(\"user:6a2cb1870031af5a7202\")",
+      "update(\"user:6a2cb1870031af5a7202\")",
+      "delete(\"user:6a2cb1870031af5a7202\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$collectionId": "sessions"
+  }
+]

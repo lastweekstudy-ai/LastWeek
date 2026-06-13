@@ -1,0 +1,10 @@
+{
+  "$id": "69f742a2001f393e4b85",
+  "name": "lastweek_db",
+  "$createdAt": "2026-05-03T12:42:08.617+00:00",
+  "$updatedAt": "2026-05-03T12:42:08.617+00:00",
+  "enabled": true,
+  "type": "tablesdb",
+  "policies": [],
+  "archives": []
+}

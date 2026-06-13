@@ -1,0 +1,67 @@
+[
+  {
+    "key": "promoCode",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T10:47:39.740+00:00",
+    "$updatedAt": "2026-05-25T10:47:39.917+00:00",
+    "size": 50,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "referrerId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T10:48:23.343+00:00",
+    "$updatedAt": "2026-05-25T10:48:23.524+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "newUserId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T10:52:32.124+00:00",
+    "$updatedAt": "2026-05-25T10:52:32.317+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "newUserEmail",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T10:53:36.450+00:00",
+    "$updatedAt": "2026-05-25T10:53:36.620+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "createdAt",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T10:54:54.975+00:00",
+    "$updatedAt": "2026-05-25T10:54:55.157+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  }
+]

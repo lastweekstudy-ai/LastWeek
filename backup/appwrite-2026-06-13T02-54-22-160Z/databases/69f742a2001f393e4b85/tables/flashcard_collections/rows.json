@@ -1,0 +1,38 @@
+[
+  {
+    "userId": "6a06d147001a790ae1ce",
+    "name": "circle",
+    "color": "#a855f7",
+    "icon": "📚",
+    "createdAt": "2026-05-17T04:13:49.103+00:00",
+    "$id": "6a09407d000679cbf352",
+    "$sequence": "1",
+    "$createdAt": "2026-05-17T04:13:47.142+00:00",
+    "$updatedAt": "2026-05-17T04:13:47.142+00:00",
+    "$permissions": [
+      "read(\"user:6a06d147001a790ae1ce\")",
+      "update(\"user:6a06d147001a790ae1ce\")",
+      "delete(\"user:6a06d147001a790ae1ce\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "flashcard_collections"
+  },
+  {
+    "userId": "6a16104b00164ee016a2",
+    "name": "Cn economy",
+    "color": "#a855f7",
+    "icon": "📚",
+    "createdAt": "2026-05-26T21:42:21.809+00:00",
+    "$id": "6a1613bd003291807260",
+    "$sequence": "2",
+    "$createdAt": "2026-05-26T21:42:20.590+00:00",
+    "$updatedAt": "2026-05-26T21:42:20.590+00:00",
+    "$permissions": [
+      "read(\"user:6a16104b00164ee016a2\")",
+      "update(\"user:6a16104b00164ee016a2\")",
+      "delete(\"user:6a16104b00164ee016a2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "flashcard_collections"
+  }
+]

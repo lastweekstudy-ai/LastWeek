@@ -1,0 +1,143 @@
+{
+  "$id": "transcription_jobs",
+  "$createdAt": "2026-06-04T12:11:11.262+00:00",
+  "$updatedAt": "2026-06-04T12:24:40.316+00:00",
+  "$permissions": [
+    "read(\"users\")",
+    "delete(\"users\")",
+    "create(\"any\")",
+    "update(\"any\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "transcription_jobs",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-06-04T12:15:18.703+00:00",
+      "$updatedAt": "2026-06-04T12:15:18.959+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "status",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-06-04T12:15:57.363+00:00",
+      "$updatedAt": "2026-06-04T12:15:57.783+00:00",
+      "size": 50,
+      "default": "pending",
+      "encrypt": false
+    },
+    {
+      "key": "audioData",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-06-04T12:16:54.223+00:00",
+      "$updatedAt": "2026-06-04T12:16:54.541+00:00",
+      "size": 10000000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "result",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-06-04T12:17:34.887+00:00",
+      "$updatedAt": "2026-06-04T12:17:35.158+00:00",
+      "size": 100000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "error",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-06-04T12:18:31.145+00:00",
+      "$updatedAt": "2026-06-04T12:18:31.399+00:00",
+      "size": 1000,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_38_userId_index",
+      "$createdAt": "2026-06-04T12:19:09.187+00:00",
+      "$updatedAt": "2026-06-04T12:19:09.380+00:00",
+      "key": "userId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_38_status_index",
+      "$createdAt": "2026-06-04T12:19:33.026+00:00",
+      "$updatedAt": "2026-06-04T12:19:33.205+00:00",
+      "key": "status_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "status"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_38_userId_status_index",
+      "$createdAt": "2026-06-04T12:20:28.469+00:00",
+      "$updatedAt": "2026-06-04T12:20:28.633+00:00",
+      "key": "userId_status_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId",
+        "status"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 6331
+}

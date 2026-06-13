@@ -1,0 +1,206 @@
+{
+  "$id": "sessions",
+  "$createdAt": "2026-05-03T12:43:47.570+00:00",
+  "$updatedAt": "2026-05-03T13:12:09.018+00:00",
+  "$permissions": [
+    "create(\"users\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "sessions",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:09:00.873+00:00",
+      "$updatedAt": "2026-05-03T13:09:01.167+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "mode",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:09:31.218+00:00",
+      "$updatedAt": "2026-05-03T13:09:31.426+00:00",
+      "size": 50,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "subject",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:10:00.768+00:00",
+      "$updatedAt": "2026-05-08T05:56:04.272+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "title",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:10:34.501+00:00",
+      "$updatedAt": "2026-05-08T05:56:22.528+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:11:05.061+00:00",
+      "$updatedAt": "2026-05-03T13:11:05.305+00:00",
+      "format": "",
+      "default": null
+    },
+    {
+      "key": "updatedAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T13:11:27.299+00:00",
+      "$updatedAt": "2026-05-03T13:11:27.509+00:00",
+      "format": "",
+      "default": null
+    },
+    {
+      "key": "summary",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-10T16:02:35.146+00:00",
+      "$updatedAt": "2026-05-10T16:02:35.416+00:00",
+      "size": 2000,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_1_userId_index",
+      "$createdAt": "2026-05-06T06:00:15.586+00:00",
+      "$updatedAt": "2026-05-06T06:00:15.692+00:00",
+      "key": "userId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_1_updatedAt_index",
+      "$createdAt": "2026-05-06T06:01:47.825+00:00",
+      "$updatedAt": "2026-05-06T06:01:47.929+00:00",
+      "key": "updatedAt_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "updatedAt"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_1_userId_updatedAt_compound",
+      "$createdAt": "2026-05-06T06:02:21.066+00:00",
+      "$updatedAt": "2026-05-06T06:02:21.190+00:00",
+      "key": "userId_updatedAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId",
+        "updatedAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_1_mode_index",
+      "$createdAt": "2026-05-06T06:02:47.586+00:00",
+      "$updatedAt": "2026-05-06T06:02:47.694+00:00",
+      "key": "mode_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "mode"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_1_userId_mode_compound",
+      "$createdAt": "2026-05-06T06:03:27.680+00:00",
+      "$updatedAt": "2026-05-06T06:03:27.791+00:00",
+      "key": "userId_mode_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId",
+        "mode"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 12347
+}

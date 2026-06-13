@@ -1,0 +1,103 @@
+{
+  "$id": "flashcard_collections",
+  "$createdAt": "2026-05-17T03:58:17.587+00:00",
+  "$updatedAt": "2026-05-17T04:04:20.822+00:00",
+  "$permissions": [
+    "create(\"any\")",
+    "read(\"any\")",
+    "update(\"any\")",
+    "delete(\"any\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "flashcard_collections",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-17T03:58:54.168+00:00",
+      "$updatedAt": "2026-05-17T03:58:54.312+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "name",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-17T03:59:20.467+00:00",
+      "$updatedAt": "2026-05-17T03:59:20.626+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "color",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-17T04:01:39.107+00:00",
+      "$updatedAt": "2026-05-17T04:01:39.262+00:00",
+      "size": 20,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "icon",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-17T04:02:13.024+00:00",
+      "$updatedAt": "2026-05-17T04:02:13.193+00:00",
+      "size": 10,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-17T04:02:53.795+00:00",
+      "$updatedAt": "2026-05-17T04:02:53.940+00:00",
+      "format": "",
+      "default": null
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_24_userId_idx",
+      "$createdAt": "2026-05-17T04:05:16.517+00:00",
+      "$updatedAt": "2026-05-17T04:05:16.622+00:00",
+      "key": "userId_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 3238
+}

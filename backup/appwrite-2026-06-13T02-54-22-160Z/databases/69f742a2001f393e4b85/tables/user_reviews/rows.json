@@ -1,0 +1,140 @@
+[
+  {
+    "userId": "6a15debd0036e0ef100f",
+    "preRegId": null,
+    "rating": 5,
+    "title": "mcq",
+    "content": "i like the way lastweek creates mcq and its fully clickble",
+    "isApproved": true,
+    "isPublished": true,
+    "helpfulCount": 0,
+    "createdAt": "2026-05-26T17:57:07.064Z",
+    "userName": null,
+    "$id": "6a15def3000404cd4772",
+    "$sequence": "2",
+    "$createdAt": "2026-05-26T17:57:07.466+00:00",
+    "$updatedAt": "2026-05-27T10:24:41.174+00:00",
+    "$permissions": [
+      "read(\"user:6a15debd0036e0ef100f\")",
+      "update(\"user:6a15debd0036e0ef100f\")",
+      "delete(\"user:6a15debd0036e0ef100f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "user_reviews"
+  },
+  {
+    "userId": "6a16104b00164ee016a2",
+    "preRegId": null,
+    "rating": 5,
+    "title": "Overall my experience was pretty good.",
+    "content": "I'm definitely seeing myself using it daily for everyday learning.",
+    "isApproved": true,
+    "isPublished": true,
+    "helpfulCount": 0,
+    "createdAt": "2026-05-26T22:13:52.260Z",
+    "userName": null,
+    "$id": "6a161b2000104f222fb0",
+    "$sequence": "3",
+    "$createdAt": "2026-05-26T22:14:08.251+00:00",
+    "$updatedAt": "2026-05-27T10:24:34.464+00:00",
+    "$permissions": [
+      "read(\"user:6a16104b00164ee016a2\")",
+      "update(\"user:6a16104b00164ee016a2\")",
+      "delete(\"user:6a16104b00164ee016a2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "user_reviews"
+  },
+  {
+    "userId": "6a16c4090018ccbd56e9",
+    "preRegId": null,
+    "rating": 5,
+    "title": "All in one platform",
+    "content": "Starting from clear n concise ai explanation to flashcards, it stands out because it has it all. Once I started using it, its the only platform im using(the onlt ai assistant and study buddy you need).",
+    "isApproved": true,
+    "isPublished": true,
+    "helpfulCount": 0,
+    "createdAt": "2026-05-27T10:21:15.350Z",
+    "userName": null,
+    "$id": "6a16c59b0015d75ecce8",
+    "$sequence": "4",
+    "$createdAt": "2026-05-27T10:21:18.351+00:00",
+    "$updatedAt": "2026-05-27T10:24:30.007+00:00",
+    "$permissions": [
+      "read(\"user:6a16c4090018ccbd56e9\")",
+      "update(\"user:6a16c4090018ccbd56e9\")",
+      "delete(\"user:6a16c4090018ccbd56e9\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "user_reviews"
+  },
+  {
+    "userId": "6a234bb0003a1a0fcf5a",
+    "preRegId": null,
+    "rating": 4,
+    "title": "Audio notes are goated",
+    "content": "I was excited about the audio process, and it satisfied me, but design should be improved",
+    "isApproved": true,
+    "isPublished": true,
+    "helpfulCount": 0,
+    "createdAt": "2026-06-07T16:13:59.316Z",
+    "userName": "ICT pdf tester",
+    "$id": "6a2598c70013cd729b55",
+    "$sequence": "5",
+    "$createdAt": "2026-06-07T16:13:59.490+00:00",
+    "$updatedAt": "2026-06-07T17:00:40.049+00:00",
+    "$permissions": [
+      "read(\"user:6a234bb0003a1a0fcf5a\")",
+      "update(\"user:6a234bb0003a1a0fcf5a\")",
+      "delete(\"user:6a234bb0003a1a0fcf5a\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "user_reviews"
+  },
+  {
+    "userId": "6a258b6a0000626a49ec",
+    "preRegId": null,
+    "rating": 5,
+    "title": "Experience and Advice",
+    "content": "The interface is simple the help is reliable just implement a dark mode",
+    "isApproved": true,
+    "isPublished": true,
+    "helpfulCount": 0,
+    "createdAt": "2026-06-07T16:17:23.013Z",
+    "userName": "johan",
+    "$id": "6a2599930000d5849c68",
+    "$sequence": "6",
+    "$createdAt": "2026-06-07T16:17:22.823+00:00",
+    "$updatedAt": "2026-06-07T17:00:40.051+00:00",
+    "$permissions": [
+      "read(\"user:6a258b6a0000626a49ec\")",
+      "update(\"user:6a258b6a0000626a49ec\")",
+      "delete(\"user:6a258b6a0000626a49ec\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "user_reviews"
+  },
+  {
+    "userId": "6a25915d0008b87fe8dd",
+    "preRegId": null,
+    "rating": 5,
+    "title": "The dynamic business",
+    "content": "Very helpful",
+    "isApproved": true,
+    "isPublished": true,
+    "helpfulCount": 0,
+    "createdAt": "2026-06-08T16:36:34.967Z",
+    "userName": "Suriaya Saftak Oboni",
+    "$id": "6a26ef92003c650117c4",
+    "$sequence": "7",
+    "$createdAt": "2026-06-08T16:36:35.749+00:00",
+    "$updatedAt": "2026-06-12T01:03:32.959+00:00",
+    "$permissions": [
+      "read(\"user:6a25915d0008b87fe8dd\")",
+      "update(\"user:6a25915d0008b87fe8dd\")",
+      "delete(\"user:6a25915d0008b87fe8dd\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "user_reviews"
+  }
+]

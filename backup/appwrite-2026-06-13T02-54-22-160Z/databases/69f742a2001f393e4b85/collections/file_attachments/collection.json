@@ -1,0 +1,244 @@
+{
+  "$id": "file_attachments",
+  "$createdAt": "2026-05-03T17:04:38.798+00:00",
+  "$updatedAt": "2026-05-04T09:53:32.832+00:00",
+  "$permissions": [
+    "create(\"users\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "file_attachments",
+  "enabled": true,
+  "documentSecurity": false,
+  "attributes": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T17:06:03.066+00:00",
+      "$updatedAt": "2026-05-03T17:06:03.244+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "sessionId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-03T17:08:19.183+00:00",
+      "$updatedAt": "2026-05-03T17:08:19.362+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "fileName",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-04T09:48:39.531+00:00",
+      "$updatedAt": "2026-05-04T09:48:39.759+00:00",
+      "size": 500,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "fileType",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-04T09:49:16.889+00:00",
+      "$updatedAt": "2026-05-04T09:49:17.089+00:00",
+      "size": 500,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "fileSize",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-04T09:50:17.058+00:00",
+      "$updatedAt": "2026-05-04T09:50:17.269+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "fileId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-04T09:50:44.625+00:00",
+      "$updatedAt": "2026-05-04T09:50:44.848+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "content",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-04T09:51:30.548+00:00",
+      "$updatedAt": "2026-05-04T09:51:30.796+00:00",
+      "size": 1048576,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "createdAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-04T09:52:07.338+00:00",
+      "$updatedAt": "2026-05-04T09:52:07.539+00:00",
+      "format": "",
+      "default": null
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_5_userId_index",
+      "$createdAt": "2026-05-06T06:18:02.999+00:00",
+      "$updatedAt": "2026-05-06T06:18:03.117+00:00",
+      "key": "userId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_5_sessionId_index",
+      "$createdAt": "2026-05-06T06:18:27.344+00:00",
+      "$updatedAt": "2026-05-06T06:18:27.459+00:00",
+      "key": "sessionId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "sessionId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_5_sessionId_createdAt_compound",
+      "$createdAt": "2026-05-06T06:19:15.470+00:00",
+      "$updatedAt": "2026-05-06T06:19:15.578+00:00",
+      "key": "sessionId_createdAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "sessionId",
+        "createdAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_5_userId_fileType_compound",
+      "$createdAt": "2026-05-06T06:19:51.193+00:00",
+      "$updatedAt": "2026-05-06T06:19:51.292+00:00",
+      "key": "userId_fileType_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId",
+        "fileType"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_5_userId_createdAt_compound",
+      "$createdAt": "2026-05-06T06:20:19.649+00:00",
+      "$updatedAt": "2026-05-06T06:20:19.779+00:00",
+      "key": "userId_createdAt_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId",
+        "createdAt"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "desc"
+      ]
+    },
+    {
+      "$id": "25687_5_userId_fileSize_compound",
+      "$createdAt": "2026-05-06T06:20:50.716+00:00",
+      "$updatedAt": "2026-05-06T06:20:50.833+00:00",
+      "key": "userId_fileSize_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId",
+        "fileSize"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "desc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 8169
+}

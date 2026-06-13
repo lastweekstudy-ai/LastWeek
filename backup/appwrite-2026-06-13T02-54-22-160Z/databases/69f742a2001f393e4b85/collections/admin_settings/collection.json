@@ -1,0 +1,137 @@
+{
+  "$id": "admin_settings",
+  "$createdAt": "2026-05-25T09:55:31.550+00:00",
+  "$updatedAt": "2026-05-25T10:23:33.480+00:00",
+  "$permissions": [
+    "read(\"any\")",
+    "create(\"user:69ff6bc9000ec45cda75\")",
+    "read(\"user:69ff6bc9000ec45cda75\")",
+    "update(\"user:69ff6bc9000ec45cda75\")",
+    "delete(\"user:69ff6bc9000ec45cda75\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "admin_settings",
+  "enabled": true,
+  "documentSecurity": false,
+  "attributes": [
+    {
+      "key": "preRegActive",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T09:56:20.755+00:00",
+      "$updatedAt": "2026-05-25T09:56:20.917+00:00",
+      "default": null
+    },
+    {
+      "key": "paymentsActive",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T09:59:59.356+00:00",
+      "$updatedAt": "2026-05-25T10:00:10.898+00:00",
+      "default": null
+    },
+    {
+      "key": "dailyFreeSlotsActive",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:00:35.080+00:00",
+      "$updatedAt": "2026-05-25T10:00:35.277+00:00",
+      "default": null
+    },
+    {
+      "key": "dailyFreeSlotCount",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:01:01.074+00:00",
+      "$updatedAt": "2026-05-25T10:01:01.283+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "freePlanActive",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:01:32.735+00:00",
+      "$updatedAt": "2026-05-25T10:01:32.904+00:00",
+      "default": null
+    },
+    {
+      "key": "proPlanActive",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:02:02.208+00:00",
+      "$updatedAt": "2026-05-25T10:02:02.409+00:00",
+      "default": null
+    },
+    {
+      "key": "plusPlanActive",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:02:38.135+00:00",
+      "$updatedAt": "2026-05-25T10:02:38.379+00:00",
+      "default": null
+    },
+    {
+      "key": "proPlusPlanActive",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:03:01.297+00:00",
+      "$updatedAt": "2026-05-25T10:03:01.500+00:00",
+      "default": null
+    },
+    {
+      "key": "preRegPriceId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-25T10:03:46.901+00:00",
+      "$updatedAt": "2026-05-25T10:03:47.080+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "updatedAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T10:04:21.133+00:00",
+      "$updatedAt": "2026-05-25T10:04:21.322+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [],
+  "bytesMax": 65535,
+  "bytesUsed": 3124
+}

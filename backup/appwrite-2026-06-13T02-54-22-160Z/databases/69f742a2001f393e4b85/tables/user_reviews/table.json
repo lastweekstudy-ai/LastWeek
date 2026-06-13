@@ -1,0 +1,201 @@
+{
+  "$id": "user_reviews",
+  "$createdAt": "2026-05-25T11:00:23.798+00:00",
+  "$updatedAt": "2026-05-27T11:25:28.850+00:00",
+  "$permissions": [
+    "update(\"user:69ff6bc9000ec45cda75\")",
+    "delete(\"user:69ff6bc9000ec45cda75\")",
+    "create(\"users\")",
+    "read(\"any\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "user_reviews",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:33:41.524+00:00",
+      "$updatedAt": "2026-05-25T11:33:41.683+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "preRegId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-25T11:34:14.384+00:00",
+      "$updatedAt": "2026-05-25T11:34:14.555+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "rating",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:34:48.287+00:00",
+      "$updatedAt": "2026-05-25T11:34:48.460+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "title",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:35:27.659+00:00",
+      "$updatedAt": "2026-05-25T11:35:56.795+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "content",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:36:13.831+00:00",
+      "$updatedAt": "2026-05-25T11:36:14.014+00:00",
+      "size": 2000,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "isApproved",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:36:53.902+00:00",
+      "$updatedAt": "2026-05-25T11:36:54.067+00:00",
+      "default": null
+    },
+    {
+      "key": "isPublished",
+      "type": "boolean",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:37:19.879+00:00",
+      "$updatedAt": "2026-05-25T11:37:20.047+00:00",
+      "default": null
+    },
+    {
+      "key": "helpfulCount",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:37:45.731+00:00",
+      "$updatedAt": "2026-05-25T11:37:45.888+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "createdAt",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-25T11:38:07.848+00:00",
+      "$updatedAt": "2026-05-25T11:38:08.033+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "userName",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-06-07T16:13:39.694+00:00",
+      "$updatedAt": "2026-06-07T16:13:40.011+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_34_idx_userId",
+      "$createdAt": "2026-05-25T11:40:09.971+00:00",
+      "$updatedAt": "2026-05-25T11:40:10.098+00:00",
+      "key": "idx_userId",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_34_idx_isApproved",
+      "$createdAt": "2026-05-25T11:40:49.725+00:00",
+      "$updatedAt": "2026-05-25T11:40:49.839+00:00",
+      "key": "idx_isApproved",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "isApproved"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_34_idx_isPublished",
+      "$createdAt": "2026-05-25T11:41:51.165+00:00",
+      "$updatedAt": "2026-05-25T11:41:51.255+00:00",
+      "key": "idx_isPublished",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "isPublished"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 14192
+}

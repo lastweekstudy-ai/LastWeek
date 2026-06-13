@@ -1,0 +1,176 @@
+[
+  {
+    "$id": "25687_2_sessionId_index",
+    "$createdAt": "2026-05-06T06:04:50.493+00:00",
+    "$updatedAt": "2026-05-06T06:04:50.608+00:00",
+    "key": "sessionId_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "sessionId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_2_sessionId_createdAt_compound",
+    "$createdAt": "2026-05-06T06:05:47.365+00:00",
+    "$updatedAt": "2026-05-06T06:05:47.489+00:00",
+    "key": "sessionId_createdAt_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "sessionId",
+      "createdAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_2_userId_index",
+    "$createdAt": "2026-05-06T06:07:39.669+00:00",
+    "$updatedAt": "2026-05-06T06:07:39.785+00:00",
+    "key": "userId_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_2_userId_createdAt_compound",
+    "$createdAt": "2026-05-06T06:08:13.776+00:00",
+    "$updatedAt": "2026-05-06T06:08:13.873+00:00",
+    "key": "userId_createdAt_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "userId",
+      "createdAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_2_sessionId_role_compound",
+    "$createdAt": "2026-05-06T06:08:53.211+00:00",
+    "$updatedAt": "2026-05-06T06:08:53.318+00:00",
+    "key": "sessionId_role_compound",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "sessionId",
+      "role"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_2_createdAt_index",
+    "$createdAt": "2026-05-06T06:09:27.008+00:00",
+    "$updatedAt": "2026-05-06T06:09:27.108+00:00",
+    "key": "createdAt_index",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "createdAt"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "desc"
+    ]
+  },
+  {
+    "$id": "25687_2_parentMessageId_idx",
+    "$createdAt": "2026-06-03T17:02:49.800+00:00",
+    "$updatedAt": "2026-06-03T17:02:49.942+00:00",
+    "key": "parentMessageId_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "parentMessageId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_2_sessionId_createdAt_idx",
+    "$createdAt": "2026-06-03T17:03:21.188+00:00",
+    "$updatedAt": "2026-06-03T17:03:21.341+00:00",
+    "key": "sessionId_createdAt_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "sessionId",
+      "$createdAt"
+    ],
+    "lengths": [
+      0,
+      0
+    ],
+    "orders": [
+      "asc",
+      "asc"
+    ]
+  },
+  {
+    "$id": "25687_2_isChunked_idx",
+    "$createdAt": "2026-06-03T17:03:46.363+00:00",
+    "$updatedAt": "2026-06-03T17:03:46.506+00:00",
+    "key": "isChunked_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "attributes": [
+      "isChunked"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  }
+]

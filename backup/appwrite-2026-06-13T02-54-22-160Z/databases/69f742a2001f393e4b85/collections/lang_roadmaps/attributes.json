@@ -1,0 +1,78 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T07:58:33.655+00:00",
+    "$updatedAt": "2026-05-12T07:58:33.808+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "primaryLanguage",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T07:59:18.422+00:00",
+    "$updatedAt": "2026-05-12T07:59:18.738+00:00",
+    "size": 10,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "targetLanguage",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T07:59:59.717+00:00",
+    "$updatedAt": "2026-05-12T07:59:59.864+00:00",
+    "size": 10,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "roadmap",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-12T08:05:53.658+00:00",
+    "$updatedAt": "2026-05-12T08:05:53.832+00:00",
+    "size": 65000,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "createdAt",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T08:06:36.385+00:00",
+    "$updatedAt": "2026-05-12T08:06:36.581+00:00",
+    "format": "",
+    "default": null
+  },
+  {
+    "key": "updatedAt",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-12T08:07:08.758+00:00",
+    "$updatedAt": "2026-05-12T08:07:08.917+00:00",
+    "format": "",
+    "default": null
+  }
+]

@@ -1,0 +1,182 @@
+{
+  "$id": "study_schedule",
+  "$createdAt": "2026-05-09T14:26:51.831+00:00",
+  "$updatedAt": "2026-05-09T14:40:29.375+00:00",
+  "$permissions": [
+    "create(\"users\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "study_schedule",
+  "enabled": true,
+  "documentSecurity": false,
+  "attributes": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-09T14:27:40.793+00:00",
+      "$updatedAt": "2026-05-09T14:27:40.955+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "sessionId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-09T14:28:13.060+00:00",
+      "$updatedAt": "2026-05-09T14:28:13.210+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "subject",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-09T14:28:38.119+00:00",
+      "$updatedAt": "2026-05-09T14:28:38.302+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "topic",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-09T14:29:15.272+00:00",
+      "$updatedAt": "2026-05-09T14:29:15.444+00:00",
+      "size": 500,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "repetitions",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-09T14:29:50.349+00:00",
+      "$updatedAt": "2026-05-09T14:29:50.510+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": null
+    },
+    {
+      "key": "easeFactor",
+      "type": "double",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-09T14:30:31.989+00:00",
+      "$updatedAt": "2026-05-09T14:30:32.161+00:00",
+      "min": -1.7976931348623157e+308,
+      "max": 1.7976931348623157e+308,
+      "default": 2.5
+    },
+    {
+      "key": "interval",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-09T14:30:58.601+00:00",
+      "$updatedAt": "2026-05-09T14:30:58.774+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 1
+    },
+    {
+      "key": "nextReviewDate",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-09T14:32:08.079+00:00",
+      "$updatedAt": "2026-05-09T14:32:08.264+00:00",
+      "size": 10,
+      "default": null,
+      "encrypt": false
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_9_userId_index",
+      "$createdAt": "2026-05-09T14:32:46.599+00:00",
+      "$updatedAt": "2026-05-09T14:32:46.702+00:00",
+      "key": "userId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_9_sessionId_index",
+      "$createdAt": "2026-05-09T14:33:06.738+00:00",
+      "$updatedAt": "2026-05-09T14:33:06.833+00:00",
+      "key": "sessionId_index",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "sessionId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_9_userId_nextReviewDate_compound",
+      "$createdAt": "2026-05-09T14:34:22.453+00:00",
+      "$updatedAt": "2026-05-09T14:34:22.583+00:00",
+      "key": "userId_nextReviewDate_compound",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "attributes": [
+        "userId",
+        "nextReviewDate"
+      ],
+      "lengths": [
+        0,
+        0
+      ],
+      "orders": [
+        "asc",
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 6197
+}

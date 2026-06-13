@@ -1,0 +1,342 @@
+[
+  {
+    "userId": "6a048dd800053a671f2f",
+    "pdfResourceId": "6a059f190026fdbf2ba8",
+    "pageNumber": 3,
+    "highlightedText": "Applying Newton’s Laws",
+    "position": "{\"topPct\":9.946857759166711,\"leftPct\":17.500003128022442,\"widthPct\":35.974505690277596,\"heightPct\":2.81443883507829}",
+    "createdAt": "2026-05-14T14:54:39.774+00:00",
+    "color": "yellow",
+    "$id": "6a05e22f00306e82c62e",
+    "$sequence": "25",
+    "$createdAt": "2026-05-14T14:54:49.839+00:00",
+    "$updatedAt": "2026-05-14T14:54:49.839+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a048dd800053a671f2f",
+    "pdfResourceId": "6a059f190026fdbf2ba8",
+    "pageNumber": 1,
+    "highlightedText": "Chapter 4",
+    "position": "{\"topPct\":18.760967850221753,\"leftPct\":6.685820393178654,\"widthPct\":34.80204439711297,\"heightPct\":5.673178641607424}",
+    "createdAt": "2026-05-14T15:40:27.338+00:00",
+    "color": "yellow",
+    "$id": "6a05eceb00152352c781",
+    "$sequence": "27",
+    "$createdAt": "2026-05-14T15:40:26.876+00:00",
+    "$updatedAt": "2026-05-14T15:40:26.876+00:00",
+    "$permissions": [
+      "read(\"user:6a048dd800053a671f2f\")",
+      "update(\"user:6a048dd800053a671f2f\")",
+      "delete(\"user:6a048dd800053a671f2f\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "pdfResourceId": "6a0608ba0023a1280e19",
+    "pageNumber": 1,
+    "highlightedText": "CIRCLES",
+    "position": "{\"topPct\":32.270676752281645,\"leftPct\":11.088910372752064,\"widthPct\":30.059382600604362,\"heightPct\":2.669157869940666}",
+    "createdAt": "2026-05-14T17:39:22.364+00:00",
+    "color": "yellow",
+    "$id": "6a0608ca0016c91e484f",
+    "$sequence": "28",
+    "$createdAt": "2026-05-14T17:39:23.312+00:00",
+    "$updatedAt": "2026-05-14T17:39:23.312+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "pdfResourceId": "6a0608ba0023a1280e19",
+    "pageNumber": 1,
+    "highlightedText": "C HAPTER 10",
+    "position": "{\"topPct\":25.500798188231915,\"leftPct\":66.13016124384703,\"widthPct\":18.351931231974785,\"heightPct\":6.90085294022462}",
+    "createdAt": "2026-05-14T17:42:56.575+00:00",
+    "color": "yellow",
+    "$id": "6a0609a00023f9807ec4",
+    "$sequence": "29",
+    "$createdAt": "2026-05-14T17:42:57.002+00:00",
+    "$updatedAt": "2026-05-14T17:42:57.002+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "pdfResourceId": "6a0608ba0023a1280e19",
+    "pageNumber": 1,
+    "highlightedText": "You may have come across many objects in daily life, which are round in shape, such as wheels of a vehicle, bangles, dials of many clocks, coins of denominations 50 p, Re 1 and Rs 5, key rings, buttons of shirts, etc. (see Fig.10.1). In a clock, you might have observed that the second’s hand goes round the dial of the clock rapidly and its tip moves in a round path. This path traced by the tip of the second’s hand is called a In this chapter, you will study about circles, other related terms and some",
+    "position": "{\"topPct\":33.0701920776838,\"leftPct\":77.15054311824969,\"widthPct\":7.33154935757213,\"heightPct\":25.290525889780348}",
+    "createdAt": "2026-05-14T17:43:14.657+00:00",
+    "color": "yellow",
+    "$id": "6a0609b20029141be5a8",
+    "$sequence": "31",
+    "$createdAt": "2026-05-14T17:43:15.080+00:00",
+    "$updatedAt": "2026-05-14T17:43:15.080+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "pdfResourceId": "6a0608ba0023a1280e19",
+    "pageNumber": 1,
+    "highlightedText": "10.1 Introduction You may have come across many objects in daily life, which are round in shape, such as wheels of a vehicle, bangles, dials of many clocks, coins of denominations 50 p, Re 1 and Rs 5, key rings, buttons of shirts, etc. (see Fig.10.1). In a clock, you might have observed that the second’s hand goes round the dial of the clock rapidly and its tip moves in a round path. This path traced by the tip of the second’s hand is called a In this chapter, you will study about circles, other related terms and some properties of a circle.",
+    "position": "{\"topPct\":32.460940833642276,\"leftPct\":25.95302234635079,\"widthPct\":23.881370451369747,\"heightPct\":20.55702954430886}",
+    "createdAt": "2026-05-14T17:43:17.434+00:00",
+    "color": "yellow",
+    "$id": "6a0609b5001b296fc5d6",
+    "$sequence": "32",
+    "$createdAt": "2026-05-14T17:43:17.805+00:00",
+    "$updatedAt": "2026-05-14T17:43:17.805+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "pdfResourceId": "6a0608ba0023a1280e19",
+    "pageNumber": 1,
+    "highlightedText": "You may have come across many objects in daily life, which are round in shape, such as wheels of a vehicle, bangles, dials of many clocks, coins of denominations 50 p, Re 1 and Rs 5, key rings, buttons of shirts, etc. (see Fig.10.1). In a clock, you might have observed that the second’s hand goes round the dial of the clock rapidly and its tip moves in a round path. This path traced by the tip of the second’s hand is called a In this chapter, you will study about circles, other related terms and some",
+    "position": "{\"topPct\":32.82759145707676,\"leftPct\":36.211026238616675,\"widthPct\":48.27106623720513,\"heightPct\":24.433272534896332}",
+    "createdAt": "2026-05-14T17:43:34.929+00:00",
+    "color": "yellow",
+    "$id": "6a0609c6003a14efe4b2",
+    "$sequence": "33",
+    "$createdAt": "2026-05-14T17:43:35.307+00:00",
+    "$updatedAt": "2026-05-14T17:43:35.307+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "pdfResourceId": "6a0608ba0023a1280e19",
+    "pageNumber": 1,
+    "highlightedText": "You may have come across many objects in daily life, which are round in shape, such as wheels of a vehicle, bangles, dials of many clocks, coins of denominations 50 p, Re 1 and Rs 5, key rings, buttons of shirts, etc. (see Fig.10.1). In a clock, you might",
+    "position": "{\"topPct\":41.475187292930876,\"leftPct\":15.017327772499122,\"widthPct\":15.402385956190088,\"heightPct\":3.5798290157690116}",
+    "createdAt": "2026-05-14T17:43:43.089+00:00",
+    "color": "yellow",
+    "$id": "6a0609cf0005935ef80a",
+    "$sequence": "34",
+    "$createdAt": "2026-05-14T17:43:43.462+00:00",
+    "$updatedAt": "2026-05-14T17:43:43.462+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "pdfResourceId": "6a0608ba0023a1280e19",
+    "pageNumber": 1,
+    "highlightedText": "C HAPTER 10 CIRCLES 10.1 Introduction You may have come across many objects in daily life, which are round in shape, such as wheels of a vehicle, bangles, dials of many clocks, coins of denominations 50 p, Re 1 and Rs 5, key rings, buttons of shirts, etc. (see Fig.10.1). In a clock, you might have observed that the second’s hand goes round the dial of the clock rapidly and its tip moves in a round path. This path traced by the tip of the second’s hand is called a circle . In this chapter, you will study about circles, other related terms and some properties of a circle.",
+    "position": "{\"topPct\":25.613993383923066,\"leftPct\":11.605713704505472,\"widthPct\":72.87637877131634,\"heightPct\":32.719768959029174}",
+    "createdAt": "2026-05-14T17:43:46.556+00:00",
+    "color": "yellow",
+    "$id": "6a0609d20022ce094020",
+    "$sequence": "35",
+    "$createdAt": "2026-05-14T17:43:46.969+00:00",
+    "$updatedAt": "2026-05-14T17:43:46.969+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a03db8b00256ca045b2",
+    "pdfResourceId": "6a0608ba0023a1280e19",
+    "pageNumber": 1,
+    "highlightedText": "C HAPTER 10 CIRCLES 10.1 Introduction You may have come across many objects in daily life, which are round in shape, such as wheels of a vehicle, bangles, dials of many clocks, coins of denominations 50 p, Re 1 and Rs 5, key rings, buttons of shirts, etc. (see Fig.10.1). In a clock, you might have observed that the second’s hand goes round the dial of the clock rapidly and its tip moves in a round path. This path traced by the tip of the second’s hand is called a circle . In this chapter, you will study about circles, other related terms and some properties of a circle.",
+    "position": "{\"topPct\":29.03747286730105,\"leftPct\":14.27029700510713,\"widthPct\":70.21179547071469,\"heightPct\":28.843399281037463}",
+    "createdAt": "2026-05-14T17:43:52.375+00:00",
+    "color": "yellow",
+    "$id": "6a0609d8001772779ad8",
+    "$sequence": "36",
+    "$createdAt": "2026-05-14T17:43:52.760+00:00",
+    "$updatedAt": "2026-05-14T17:43:52.760+00:00",
+    "$permissions": [
+      "read(\"user:6a03db8b00256ca045b2\")",
+      "update(\"user:6a03db8b00256ca045b2\")",
+      "delete(\"user:6a03db8b00256ca045b2\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "pdfResourceId": "6a06ee48002759dc9c7a",
+    "pageNumber": 2,
+    "highlightedText": "10.2 Tangent to a Circle",
+    "position": "{\"topPct\":32.54560571857921,\"leftPct\":8.590909206505978,\"widthPct\":32.87878787878788,\"heightPct\":2.6948590722390433}",
+    "createdAt": "2026-05-15T09:58:56.773+00:00",
+    "color": "yellow",
+    "$id": "6a06ee6000305c0f714f",
+    "$sequence": "37",
+    "$createdAt": "2026-05-15T09:58:55.492+00:00",
+    "$updatedAt": "2026-05-15T09:58:55.492+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a06ebcf002b85ccce41",
+    "pdfResourceId": "6a06ed52001608a9876d",
+    "pageNumber": 0,
+    "highlightedText": "Functions on the Unit Circle",
+    "position": "{}",
+    "createdAt": "2026-05-15T10:02:10.848+00:00",
+    "color": "yellow",
+    "$id": "6a06ef2200350ebc028f",
+    "$sequence": "38",
+    "$createdAt": "2026-05-15T10:02:09.537+00:00",
+    "$updatedAt": "2026-05-15T10:02:09.537+00:00",
+    "$permissions": [
+      "read(\"user:6a06ebcf002b85ccce41\")",
+      "update(\"user:6a06ebcf002b85ccce41\")",
+      "delete(\"user:6a06ebcf002b85ccce41\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a0a1037003c2ed568aa",
+    "pdfResourceId": "6a0a10b500391a5d684b",
+    "pageNumber": 1,
+    "highlightedText": "10.1 Introduction",
+    "position": "{\"topPct\":36.302023997650444,\"leftPct\":7.320520868749752,\"widthPct\":27.445997458703943,\"heightPct\":4.083760448604411}",
+    "createdAt": "2026-05-17T19:03:24.121+00:00",
+    "color": "yellow",
+    "$id": "6a0a10fc000790d4f64a",
+    "$sequence": "39",
+    "$createdAt": "2026-05-17T19:03:24.689+00:00",
+    "$updatedAt": "2026-05-17T19:03:24.689+00:00",
+    "$permissions": [
+      "read(\"user:6a0a1037003c2ed568aa\")",
+      "update(\"user:6a0a1037003c2ed568aa\")",
+      "delete(\"user:6a0a1037003c2ed568aa\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "6a0c011d00277fff8561",
+    "pdfResourceId": "6a0c64210011923ddc31",
+    "pageNumber": 3,
+    "highlightedText": "Activity 2 : On a paper, draw a circle and a secant PQ of the circle. Draw various lines parallel to the secant on both sides of it. You will find that after some steps, the length of the chord cut by the lines will gradually decrease, i.e., the two points of intersection of the line and the circle are coming closer and closer [see Fig. 10.3(ii)]. In one case, it becomes zero on one side of the secant and in",
+    "position": "{\"topPct\":14.246068455134134,\"leftPct\":9.142422192151557,\"widthPct\":44.2489851150203,\"heightPct\":16.37372802960222}",
+    "createdAt": "2026-05-19T13:23:30.217+00:00",
+    "color": "yellow",
+    "$id": "6a0c6452000d9e8236e6",
+    "$sequence": "40",
+    "$createdAt": "2026-05-19T13:23:29.904+00:00",
+    "$updatedAt": "2026-05-19T13:23:29.904+00:00",
+    "$permissions": [
+      "read(\"user:6a0c011d00277fff8561\")",
+      "update(\"user:6a0c011d00277fff8561\")",
+      "delete(\"user:6a0c011d00277fff8561\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "pdfResourceId": "6a2add61002457a747d9",
+    "pageNumber": 1,
+    "highlightedText": "You have studied in Class IX that a circle is a collection of all points in a plane which are at a constant distance (radius) from a fixed point (centre). You have also studied various terms related to a circle like chord, segment, sector, arc etc.",
+    "position": "{\"topPct\":41.62857872199943,\"leftPct\":55.92764430849453,\"widthPct\":34.411484749654456,\"heightPct\":4.070837797587218}",
+    "createdAt": "2026-06-11T22:35:36.686+00:00",
+    "color": "yellow",
+    "$id": "6a2b3838002aec65318e",
+    "$sequence": "44",
+    "$createdAt": "2026-06-11T22:35:39.108+00:00",
+    "$updatedAt": "2026-06-11T22:35:39.108+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "pdfResourceId": "6a20504e0015a003bf26",
+    "pageNumber": 1,
+    "highlightedText": "7. Find the value of the slop, and y intercept of the following:",
+    "position": "{\"topPct\":59.67742550757623,\"leftPct\":8.4532417487691,\"widthPct\":55.03596820222219,\"heightPct\":2.9569810436617945}",
+    "createdAt": "2026-06-12T01:36:13.552+00:00",
+    "color": "yellow",
+    "$id": "6a2b628d0022860a13d0",
+    "$sequence": "45",
+    "$createdAt": "2026-06-12T01:36:16.802+00:00",
+    "$updatedAt": "2026-06-12T01:36:16.802+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  },
+  {
+    "userId": "69ff6bc9000ec45cda75",
+    "pdfResourceId": "6a2add61002457a747d9",
+    "pageNumber": 2,
+    "highlightedText": "Q 3 , etc. In one position, you will see that it will",
+    "position": "{\"topPct\":57.094121571800706,\"leftPct\":10.389726012337084,\"widthPct\":47.59324889364113,\"heightPct\":1.168349743587217}",
+    "createdAt": "2026-06-13T00:53:20.411+00:00",
+    "color": "yellow",
+    "$id": "6a2caa000019b552ed93",
+    "$sequence": "46",
+    "$createdAt": "2026-06-13T00:53:28.459+00:00",
+    "$updatedAt": "2026-06-13T00:53:28.459+00:00",
+    "$permissions": [
+      "read(\"user:69ff6bc9000ec45cda75\")",
+      "update(\"user:69ff6bc9000ec45cda75\")",
+      "delete(\"user:69ff6bc9000ec45cda75\")"
+    ],
+    "$databaseId": "69f742a2001f393e4b85",
+    "$tableId": "pdf_highlights"
+  }
+]

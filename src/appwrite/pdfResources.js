@@ -3,6 +3,30 @@ import { ID, Query } from 'appwrite';
 
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
 const PDF_RESOURCES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_PDF_RESOURCES_COLLECTION_ID;
+const PDF_RESOURCE_LIST_FIELDS = [
+  '$id',
+  '$createdAt',
+  '$updatedAt',
+  'userId',
+  'sessionId',
+  'fileName',
+  'fileSize',
+  'storageFileId',
+  'pageCount',
+  'thumbnail',
+  'currentPage',
+  'tags',
+  'lastAccessedAt',
+  'createdAt',
+  'isPublic',
+  'aiTitle',
+  'isImported',
+  'originalResourceId',
+  'addCount',
+  'viewCount',
+  'studyTimeMinutes',
+  'category',
+];
 
 // ─── Cache Lookup (PDF Pipeline v4) ────────────────────────────────────────
 
@@ -99,7 +123,8 @@ export const getSessionPDFs = async (sessionId) => {
       [
         Query.equal('sessionId', sessionId),
         Query.orderDesc('lastAccessedAt'),
-        Query.limit(100) // Ensure we get all resources
+        Query.limit(100), // Ensure we get all resources
+        Query.select(PDF_RESOURCE_LIST_FIELDS)
       ]
     );
     return pdfs.documents;
@@ -118,7 +143,8 @@ export const getUserPDFs = async (userId, limit = 50) => {
       [
         Query.equal('userId', userId),
         Query.orderDesc('lastAccessedAt'),
-        Query.limit(limit)
+        Query.limit(limit),
+        Query.select(PDF_RESOURCE_LIST_FIELDS)
       ]
     );
     return pdfs.documents;
@@ -333,7 +359,8 @@ export const searchPDFsByTags = async (userId, tags) => {
       [
         Query.equal('userId', userId),
         Query.search('tags', tags),
-        Query.orderDesc('lastAccessedAt')
+        Query.orderDesc('lastAccessedAt'),
+        Query.select(PDF_RESOURCE_LIST_FIELDS)
       ]
     );
     return pdfs.documents;
@@ -368,7 +395,8 @@ export const getUserFavoritePDFs = async (userId, limit = 20) => {
         Query.equal('userId', userId),
         Query.equal('isFavorite', true),
         Query.orderDesc('lastAccessedAt'),
-        Query.limit(limit)
+        Query.limit(limit),
+        Query.select(PDF_RESOURCE_LIST_FIELDS)
       ]
     );
     return pdfs.documents;
@@ -388,7 +416,8 @@ export const getPDFsByCategory = async (userId, category, limit = 50) => {
         Query.equal('userId', userId),
         Query.equal('category', category),
         Query.orderDesc('lastAccessedAt'),
-        Query.limit(limit)
+        Query.limit(limit),
+        Query.select(PDF_RESOURCE_LIST_FIELDS)
       ]
     );
     return pdfs.documents;
@@ -408,7 +437,8 @@ export const getMostStudiedPDFs = async (userId, limit = 10) => {
         Query.equal('userId', userId),
         Query.greaterThan('studyTimeMinutes', 0),
         Query.orderDesc('studyTimeMinutes'),
-        Query.limit(limit)
+        Query.limit(limit),
+        Query.select(PDF_RESOURCE_LIST_FIELDS)
       ]
     );
     return pdfs.documents;
@@ -428,7 +458,8 @@ export const getMostViewedPDFs = async (userId, limit = 10) => {
         Query.equal('userId', userId),
         Query.greaterThan('viewCount', 0),
         Query.orderDesc('viewCount'),
-        Query.limit(limit)
+        Query.limit(limit),
+        Query.select(PDF_RESOURCE_LIST_FIELDS)
       ]
     );
     return pdfs.documents;

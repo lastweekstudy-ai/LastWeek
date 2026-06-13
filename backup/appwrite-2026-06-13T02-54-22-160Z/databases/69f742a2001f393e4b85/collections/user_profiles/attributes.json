@@ -1,0 +1,66 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-03T13:04:49.299+00:00",
+    "$updatedAt": "2026-05-03T13:04:49.523+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "displayName",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-03T13:05:10.315+00:00",
+    "$updatedAt": "2026-05-03T13:05:10.617+00:00",
+    "size": 200,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "currentMode",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-03T13:05:42.224+00:00",
+    "$updatedAt": "2026-05-03T13:06:17.647+00:00",
+    "size": 50,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "totalSessions",
+    "type": "integer",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-03T13:07:02.885+00:00",
+    "$updatedAt": "2026-05-03T13:07:03.110+00:00",
+    "min": "-9223372036854775808",
+    "max": "9223372036854775807",
+    "default": 0
+  },
+  {
+    "key": "createdAt",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-03T13:07:41.087+00:00",
+    "$updatedAt": "2026-05-03T13:07:41.384+00:00",
+    "format": "",
+    "default": null
+  }
+]

@@ -1,0 +1,89 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T12:21:16.035+00:00",
+    "$updatedAt": "2026-05-25T12:21:16.266+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "email",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T12:21:53.043+00:00",
+    "$updatedAt": "2026-05-25T12:21:53.253+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "date",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T12:25:55.666+00:00",
+    "$updatedAt": "2026-05-25T12:25:55.950+00:00",
+    "size": 20,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "hasReviewed",
+    "type": "boolean",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T12:27:29.290+00:00",
+    "$updatedAt": "2026-05-25T12:27:29.544+00:00",
+    "default": null
+  },
+  {
+    "key": "reviewId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-25T12:27:52.638+00:00",
+    "$updatedAt": "2026-05-26T17:35:50.076+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "addedToPreReg",
+    "type": "boolean",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T12:28:24.880+00:00",
+    "$updatedAt": "2026-05-25T12:28:25.099+00:00",
+    "default": null
+  },
+  {
+    "key": "createdAt",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-25T12:29:03.976+00:00",
+    "$updatedAt": "2026-05-25T12:29:04.193+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  }
+]

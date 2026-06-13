@@ -1,0 +1,191 @@
+{
+  "$id": "lang_users",
+  "$createdAt": "2026-05-12T07:39:09.268+00:00",
+  "$updatedAt": "2026-05-12T09:53:01.244+00:00",
+  "$permissions": [
+    "create(\"any\")",
+    "delete(\"any\")",
+    "read(\"users\")",
+    "update(\"users\")",
+    "delete(\"users\")"
+  ],
+  "databaseId": "69f742a2001f393e4b85",
+  "name": "lang_users",
+  "enabled": true,
+  "rowSecurity": false,
+  "columns": [
+    {
+      "key": "userId",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T07:40:01.936+00:00",
+      "$updatedAt": "2026-05-12T07:40:02.165+00:00",
+      "size": 255,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "primaryLanguage",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T07:40:23.523+00:00",
+      "$updatedAt": "2026-05-12T07:40:23.685+00:00",
+      "size": 10,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "targetLanguage",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": true,
+      "array": false,
+      "$createdAt": "2026-05-12T07:40:41.857+00:00",
+      "$updatedAt": "2026-05-12T07:40:42.020+00:00",
+      "size": 10,
+      "default": null,
+      "encrypt": false
+    },
+    {
+      "key": "learningRatio",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T07:41:49.049+00:00",
+      "$updatedAt": "2026-05-12T07:41:49.225+00:00",
+      "min": 10,
+      "max": 90,
+      "default": 70
+    },
+    {
+      "key": "totalXP",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T07:42:20.036+00:00",
+      "$updatedAt": "2026-05-12T07:42:20.195+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "currentStage",
+      "type": "string",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T07:44:44.973+00:00",
+      "$updatedAt": "2026-05-12T07:44:45.148+00:00",
+      "size": 50,
+      "default": "beginner",
+      "encrypt": false
+    },
+    {
+      "key": "streakDays",
+      "type": "integer",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T07:45:21.472+00:00",
+      "$updatedAt": "2026-05-12T07:45:21.636+00:00",
+      "min": "-9223372036854775808",
+      "max": "9223372036854775807",
+      "default": 0
+    },
+    {
+      "key": "lastActiveDate",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T07:46:00.326+00:00",
+      "$updatedAt": "2026-05-12T07:46:00.542+00:00",
+      "format": "",
+      "default": null
+    },
+    {
+      "key": "createdAt",
+      "type": "datetime",
+      "status": "available",
+      "error": "",
+      "required": false,
+      "array": false,
+      "$createdAt": "2026-05-12T07:46:23.747+00:00",
+      "$updatedAt": "2026-05-12T07:46:23.906+00:00",
+      "format": "",
+      "default": null
+    }
+  ],
+  "indexes": [
+    {
+      "$id": "25687_14_userId_idx",
+      "$createdAt": "2026-05-12T07:53:44.288+00:00",
+      "$updatedAt": "2026-05-12T07:53:44.373+00:00",
+      "key": "userId_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "userId"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_14_primaryLanguage_idx",
+      "$createdAt": "2026-05-12T07:54:44.457+00:00",
+      "$updatedAt": "2026-05-12T07:54:44.545+00:00",
+      "key": "primaryLanguage_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "primaryLanguage"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    },
+    {
+      "$id": "25687_14_targetLanguage_idx",
+      "$createdAt": "2026-05-12T07:54:59.404+00:00",
+      "$updatedAt": "2026-05-12T07:54:59.488+00:00",
+      "key": "targetLanguage_idx",
+      "type": "key",
+      "status": "available",
+      "error": "",
+      "columns": [
+        "targetLanguage"
+      ],
+      "lengths": [
+        0
+      ],
+      "orders": [
+        "asc"
+      ]
+    }
+  ],
+  "bytesMax": 65535,
+  "bytesUsed": 2405
+}

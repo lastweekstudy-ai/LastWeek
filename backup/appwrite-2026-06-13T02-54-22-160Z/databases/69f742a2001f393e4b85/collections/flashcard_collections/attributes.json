@@ -1,0 +1,66 @@
+[
+  {
+    "key": "userId",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-17T03:58:54.168+00:00",
+    "$updatedAt": "2026-05-17T03:58:54.312+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "name",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-17T03:59:20.467+00:00",
+    "$updatedAt": "2026-05-17T03:59:20.626+00:00",
+    "size": 255,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "color",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-17T04:01:39.107+00:00",
+    "$updatedAt": "2026-05-17T04:01:39.262+00:00",
+    "size": 20,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "icon",
+    "type": "string",
+    "status": "available",
+    "error": "",
+    "required": false,
+    "array": false,
+    "$createdAt": "2026-05-17T04:02:13.024+00:00",
+    "$updatedAt": "2026-05-17T04:02:13.193+00:00",
+    "size": 10,
+    "default": null,
+    "encrypt": false
+  },
+  {
+    "key": "createdAt",
+    "type": "datetime",
+    "status": "available",
+    "error": "",
+    "required": true,
+    "array": false,
+    "$createdAt": "2026-05-17T04:02:53.795+00:00",
+    "$updatedAt": "2026-05-17T04:02:53.940+00:00",
+    "format": "",
+    "default": null
+  }
+]

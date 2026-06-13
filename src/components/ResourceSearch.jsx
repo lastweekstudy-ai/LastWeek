@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { searchPublicResources, importSharedPDFResource, importSharedAudioLecture, expandSearchTerms, hasUserAddedResource } from '../appwrite/resourceLibrary';
+import { searchPublicResources, importSharedPDFResource, importSharedAudioLecture, expandSearchTerms, getUserImportedResourceIds } from '../appwrite/resourceLibrary';
 
 /**
  * ResourceSearch — search the shared resource library and import resources.
@@ -25,16 +25,18 @@ const ResourceSearch = ({ userId, sessionId, onImported, onClose }) => {
     try {
       const terms = expandSearchTerms(q);
       setExpandedTerms(terms.filter(t => t !== q.toLowerCase()));
-      const res = await searchPublicResources(q, 30);
+      const [res, importedIds] = await Promise.all([
+        searchPublicResources(q, 30),
+        getUserImportedResourceIds(userId),
+      ]);
 
-      // Check which ones the user has already added in a previous session
-      const alreadyAddedIds = new Set();
-      await Promise.all(
-        res.map(async (resource) => {
-          const resourceType = resource.resourceType || 'pdf';
-          const added = await hasUserAddedResource(userId, resource.$id, resourceType);
-          if (added) alreadyAddedIds.add(resource.$id);
-        })
+      const alreadyAddedIds = new Set(
+        res
+          .filter((resource) => {
+            const resourceType = resource.resourceType || 'pdf';
+            return importedIds[resourceType]?.has(resource.$id);
+          })
+          .map((resource) => resource.$id)
       );
       setAlreadyAdded(alreadyAddedIds);
       setResults(res);

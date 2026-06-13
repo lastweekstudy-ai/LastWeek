@@ -1,0 +1,20 @@
+[
+  {
+    "$id": "25687_21_userId_idx",
+    "$createdAt": "2026-05-13T03:04:29.797+00:00",
+    "$updatedAt": "2026-05-13T03:04:29.898+00:00",
+    "key": "userId_idx",
+    "type": "key",
+    "status": "available",
+    "error": "",
+    "columns": [
+      "userId"
+    ],
+    "lengths": [
+      0
+    ],
+    "orders": [
+      "asc"
+    ]
+  }
+]
