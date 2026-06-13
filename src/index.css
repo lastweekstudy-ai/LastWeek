@@ -3968,10 +3968,25 @@ html.dark[data-color] .practice-card.selected {
 }
 
 .recharts-pie-label-text {
-  fill: var(--color-text-primary) !important;
+  fill: #f8fafc !important;
   paint-order: stroke;
-  stroke: var(--color-bg-secondary);
+  stroke: rgba(15, 23, 42, 0.92);
   stroke-width: 3px;
+}
+
+.chart-container .recharts-sector,
+.chart-container .recharts-curve,
+.chart-container .recharts-dot,
+.chart-container .recharts-rectangle {
+  visibility: visible !important;
+}
+
+.chart-container .recharts-wrapper > svg.recharts-surface {
+  display: block !important;
+}
+
+.chart-container .recharts-legend-icon {
+  min-height: 0 !important;
 }
 
 .message-bubble,

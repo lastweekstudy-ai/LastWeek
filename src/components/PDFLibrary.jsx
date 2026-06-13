@@ -143,26 +143,32 @@ const PDFLibrary = ({
   };
 
   const handleViewResource = async (resource) => {
-    if (resource.resourceType === 'audio') {
-      const fullLecture = await getAudioLecture(resource.$id);
-      setSelectedResource({
-        ...resource,
-        ...fullLecture,
-        fileName: fullLecture.title || resource.fileName,
-        resourceType: 'audio',
-        audioData: {
-          audioUrl: fullLecture.audioUrl,
-          transcript: fullLecture.transcript || '',
-          lectureNotes: fullLecture.lectureNotes || '',
-          duration: fullLecture.duration,
-        },
-      });
-    } else if (resource.tags === 'application/pdf' || resource.fileName.endsWith('.pdf')) {
-      const fullResource = await getPDFResource(resource.$id);
-      setSelectedResource({ ...resource, ...fullResource });
-    } else {
+    try {
+      if (resource.resourceType === 'audio') {
+        const fullLecture = await getAudioLecture(resource.$id);
+        setSelectedResource({
+          ...resource,
+          ...fullLecture,
+          fileName: fullLecture.title || resource.fileName,
+          resourceType: 'audio',
+          audioData: {
+            audioUrl: fullLecture.audioUrl,
+            transcript: fullLecture.transcript || '',
+            lectureNotes: fullLecture.lectureNotes || '',
+            duration: fullLecture.duration,
+          },
+        });
+      } else if (resource.tags === 'application/pdf' || resource.fileName?.endsWith('.pdf')) {
+        const fullResource = await getPDFResource(resource.$id);
+        setSelectedResource({ ...resource, ...fullResource });
+      } else {
+        setSelectedResource(resource);
+      }
+    } catch (error) {
+      console.error('Failed to load resource details:', error);
       setSelectedResource(resource);
     }
+
     // Update activity time when user selects a resource
     if (lastActivityTime.current) {
       lastActivityTime.current = Date.now();
@@ -433,7 +439,7 @@ const PDFLibrary = ({
             sessionId={sessionId}
             subject={subject}
           />
-        ) : selectedResource.tags === 'application/pdf' || selectedResource.fileName.endsWith('.pdf') ? (
+        ) : selectedResource.tags === 'application/pdf' || selectedResource.fileName?.endsWith('.pdf') ? (
           <StudyInterface
             resource={selectedResource}
             onClose={handleCloseViewer}

@@ -29,7 +29,7 @@ export function hasUnformattedChartData(text) {
   if (!hasChartKeyword) return false;
   
   // AND must NOT already have proper [CHART:...] tags
-  if (/\[CHART:(bar|line|pie|area):[^\]]+\]/.test(text)) return false;
+  if (/\[CHART:[a-z-]+:[^\]]+\]/i.test(text)) return false;
   
   // Look for patterns that suggest chart data but aren't in [CHART:...] format
   const patterns = [
@@ -130,7 +130,7 @@ export function fixChartFormat(text, title = 'Chart') {
  */
 export function processAIResponse(response) {
   // If already has proper [CHART:...] tags, return as-is
-  if (/\[CHART:(bar|line|pie|area):[^\]]+\]/.test(response)) {
+  if (/\[CHART:[a-z-]+:[^\]]+\]/i.test(response)) {
     console.log('[chartFixer] Response already has proper chart format');
     return response;
   }

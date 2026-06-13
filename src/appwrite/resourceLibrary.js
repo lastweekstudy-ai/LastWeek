@@ -220,32 +220,45 @@ export const searchPublicResources = async (query, limit = 30) => {
 };
 
 export const getUserImportedResourceIds = async (userId) => {
+  const collectImportedIds = async (collectionId, originalField) => {
+    const importedIds = new Set();
+    let cursor = null;
+
+    while (true) {
+      const queries = [
+        Query.equal('userId', userId),
+        Query.select(['$id', originalField]),
+        Query.limit(100),
+      ];
+
+      if (cursor) {
+        queries.push(Query.cursorAfter(cursor));
+      }
+
+      const response = await databases.listDocuments(
+        DATABASE_ID,
+        collectionId,
+        queries
+      );
+
+      response.documents.forEach((doc) => {
+        if (doc[originalField]) importedIds.add(doc[originalField]);
+      });
+
+      if (response.documents.length < 100) break;
+      cursor = response.documents[response.documents.length - 1].$id;
+    }
+
+    return importedIds;
+  };
+
   try {
-    const [pdfs, audios] = await Promise.all([
-      databases.listDocuments(
-        DATABASE_ID,
-        PDF_RESOURCES_COLLECTION_ID,
-        [
-          Query.equal('userId', userId),
-          Query.select(['$id', 'originalResourceId']),
-          Query.limit(100),
-        ]
-      ),
-      databases.listDocuments(
-        DATABASE_ID,
-        AUDIO_LECTURES_COLLECTION_ID,
-        [
-          Query.equal('userId', userId),
-          Query.select(['$id', 'originalLectureId']),
-          Query.limit(100),
-        ]
-      ),
+    const [pdf, audio] = await Promise.all([
+      collectImportedIds(PDF_RESOURCES_COLLECTION_ID, 'originalResourceId'),
+      collectImportedIds(AUDIO_LECTURES_COLLECTION_ID, 'originalLectureId'),
     ]);
 
-    return {
-      pdf: new Set(pdfs.documents.map((doc) => doc.originalResourceId).filter(Boolean)),
-      audio: new Set(audios.documents.map((doc) => doc.originalLectureId).filter(Boolean)),
-    };
+    return { pdf, audio };
   } catch (err) {
     console.warn('[getUserImportedResourceIds] Failed:', err.message);
     return { pdf: new Set(), audio: new Set() };

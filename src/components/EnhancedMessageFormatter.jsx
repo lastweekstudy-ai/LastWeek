@@ -11,7 +11,7 @@ import InlineQuiz from './InlineQuiz';
 import { fixChartFormat, processAIResponse } from '../utils/chartFixer';
 
 
-const CHART_REGEX = /\[CHART:(bar|line|pie|area):([^\]]+)\]([\s\S]*?)\[\\?\/CHART\]/gi;
+const CHART_REGEX = /\[CHART:([a-z-]+):([^\]]+)\]([\s\S]*?)\[\\?\/CHART\]/gi;
 const MERMAID_REGEX = /```mermaid\n([\s\S]*?)```/gi;
 const FIGURE_REGEX = /\[FIGURE(?::([^\]]*))?\]([\s\S]*?)\[\/FIGURE\]/gi;
 const ACTION_BUTTON_REGEX = /\[ACTION:([^\]]+)\]/g;
@@ -577,7 +577,7 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
     let lastIndex = 0;
 
     // Create fresh regex instances with correct group indices
-    const chartRe = /\[CHART:(bar|line|pie|area):([^\]]+)\]([\s\S]*?)\[\\?\/CHART\]/gi;
+    const chartRe = new RegExp(CHART_REGEX.source, 'gi');
     const mermaidRe = /```mermaid\n([\s\S]*?)```/gi;
     const figureRe = /\[FIGURE(?::([^\]]*))?\]([\s\S]*?)\[\/FIGURE\]/gi;
     

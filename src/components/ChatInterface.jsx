@@ -66,6 +66,8 @@ const ChatInterface = ({
     if (messages.length <= windowSize) return messages;
     return messages.slice(messages.length - windowSize);
   }, [messages, isMobile]);
+  const lastMessageContentLength = messages[messages.length - 1]?.content?.length || 0;
+  const streamingScrollKey = isStreaming ? lastMessageContentLength : 0;
 
   // Optimized scroll with debouncing
   const scrollToBottom = useCallback(() => {
@@ -84,7 +86,7 @@ const ChatInterface = ({
         clearTimeout(scrollTimeoutRef.current);
       }
     };
-  }, [messages.length, scrollToBottom]); // Only scroll when message count changes
+  }, [messages.length, streamingScrollKey, scrollToBottom]);
 
   // Show scroll-to-bottom button when user scrolls up
   const handleMessagesScroll = useCallback(() => {
