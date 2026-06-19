@@ -10,6 +10,16 @@ import {
   isExistingUser,
 } from '../appwrite/admin';
 import SlotRefreshCountdown from '../components/SlotRefreshCountdown';
+import {
+  getCurriculumClasses,
+  getCurriculumCountries,
+  getCurriculumLanguages,
+  getCurriculumsForCountry,
+  normalizeAcademicProfile,
+  readLocalAcademicProfile,
+  splitProfileForStorage,
+  writeLocalAcademicProfile,
+} from '../utils/curriculum';
 
 const MIN_AGE = 13;
 
@@ -43,6 +53,7 @@ const Auth = () => {
   const [error, setError] = useState('');
   const [guestLoginAttempted, setGuestLoginAttempted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [learningProfile, setLearningProfile] = useState(() => readLocalAcademicProfile());
 
   // Pre-reg and daily slots state
   const [adminSettings, setAdminSettings] = useState(null);
@@ -54,6 +65,9 @@ const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, login, register, loginGuest } = useAuth();
+  const countries = getCurriculumCountries();
+  const curriculums = getCurriculumsForCountry(learningProfile.countryCode);
+  const selectedCurriculum = curriculums.find((item) => item.name === learningProfile.curriculum) || curriculums[0];
 
   // Load admin settings on mount
   useEffect(() => {
@@ -124,6 +138,36 @@ const Auth = () => {
       [name]: type === 'checkbox' ? checked : value,
     });
     setError('');
+  };
+
+  const updateLearningProfile = (patch) => {
+    setLearningProfile((current) => normalizeAcademicProfile({ ...current, ...patch }));
+  };
+
+  const handleLearningCountryChange = (countryCode) => {
+    const country = countries.find((item) => item.countryCode === countryCode);
+    const curriculum = country?.curriculums?.[0];
+    const nextProfile = { ...learningProfile, countryCode, country: country?.country };
+    updateLearningProfile({
+      countryCode,
+      country: country?.country,
+      curriculum: curriculum?.name,
+      track: curriculum?.tracks?.[0] || '',
+      classLevel: country?.defaultClassLevel || curriculum?.classes?.[0] || '',
+      examBoard: curriculum?.examBoards?.[0] || curriculum?.name,
+      studyLanguage: getCurriculumLanguages(curriculum, nextProfile)[0] || 'English',
+    });
+  };
+
+  const handleLearningCurriculumChange = (curriculumName) => {
+    const curriculum = curriculums.find((item) => item.name === curriculumName);
+    updateLearningProfile({
+      curriculum: curriculumName,
+      track: curriculum?.tracks?.[0] || '',
+      classLevel: curriculum?.classes?.[0] || learningProfile.classLevel,
+      examBoard: curriculum?.examBoards?.[0] || curriculumName,
+      studyLanguage: getCurriculumLanguages(curriculum, learningProfile)[0] || learningProfile.studyLanguage || 'English',
+    });
   };
 
   const validateSignup = () => {
@@ -206,6 +250,7 @@ const Auth = () => {
           agreedTermsAt: new Date().toISOString(),
           agreedPrivacyAt: new Date().toISOString(),
           agreedDataCollectionAt: new Date().toISOString(),
+          learningProfile: splitProfileForStorage(writeLocalAcademicProfile(learningProfile)),
         };
 
         // Register the user
@@ -272,6 +317,7 @@ const Auth = () => {
       agreePrivacy: false,
       agreeDataCollection: false,
     });
+    setLearningProfile(readLocalAcademicProfile());
   };
 
   // Max date for DOB (today minus MIN_AGE years)
@@ -572,6 +618,82 @@ const Auth = () => {
                     required
                   />
                   <small className="form-hint">You must be at least 13 years old to use LastWeek</small>
+                </div>
+
+                <div className="signup-learning-profile">
+                  <div className="signup-learning-header">
+                    <strong>Study profile</strong>
+                    <span>Saved to Settings. You can update it later.</span>
+                  </div>
+
+                  <div className="signup-learning-grid">
+                    <div className="form-group">
+                      <label className="form-label">Country *</label>
+                      <select
+                        className="form-input"
+                        value={learningProfile.countryCode}
+                        onChange={(e) => handleLearningCountryChange(e.target.value)}
+                        required
+                      >
+                        {countries.map((country) => (
+                          <option key={country.countryCode} value={country.countryCode}>
+                            {country.country}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Curriculum *</label>
+                      <select
+                        className="form-input"
+                        value={learningProfile.curriculum}
+                        onChange={(e) => handleLearningCurriculumChange(e.target.value)}
+                        required
+                      >
+                        {curriculums.map((curriculum) => (
+                          <option key={curriculum.name} value={curriculum.name}>
+                            {curriculum.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Class / Level *</label>
+                      <select
+                        className="form-input"
+                        value={learningProfile.classLevel}
+                        onChange={(e) => updateLearningProfile({ classLevel: e.target.value })}
+                        required
+                      >
+                        {getCurriculumClasses(selectedCurriculum).map((classLevel) => (
+                          <option key={classLevel} value={classLevel}>
+                            {classLevel}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Study Language *</label>
+                      <select
+                        className="form-input"
+                        value={learningProfile.studyLanguage}
+                        onChange={(e) => updateLearningProfile({
+                          studyLanguage: e.target.value,
+                          instructionLanguage: e.target.value,
+                        })}
+                        required
+                      >
+                        {getCurriculumLanguages(selectedCurriculum, learningProfile).map((language) => (
+                          <option key={language} value={language}>
+                            {language}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
               </>
             )}

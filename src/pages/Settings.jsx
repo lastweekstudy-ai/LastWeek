@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { account } from '../appwrite/config';
@@ -7,6 +7,18 @@ import UpgradeButton from '../components/UpgradeButton';
 import UsageWidget from '../components/UsageWidget';
 import useCombinedLimits from '../hooks/useCombinedLimits';
 import { formatLimit } from '../config/planLimits';
+import { getUserProfile, saveUserLearningProfile } from '../appwrite/database';
+import {
+  getCurriculumClasses,
+  getCurriculumCountries,
+  getCurriculumLanguages,
+  getCurriculumsForCountry,
+  normalizeAcademicProfile,
+  parseProfileFromDocument,
+  readLocalAcademicProfile,
+  splitProfileForStorage,
+  writeLocalAcademicProfile,
+} from '../utils/curriculum';
 
 const Settings = () => {
   const { user, logout, isGuest } = useAuth();
@@ -15,10 +27,14 @@ const Settings = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const { plan, planName, limits, usage, isTestingMode, loading: limitsLoading } = useCombinedLimits();
+  const countries = useMemo(() => getCurriculumCountries(), []);
 
   // Account settings state
   const [name, setName] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
+  const [learningProfile, setLearningProfile] = useState(() => readLocalAcademicProfile());
+  const [learningProfileNeedsSetup, setLearningProfileNeedsSetup] = useState(false);
+  const [learningProfileLoading, setLearningProfileLoading] = useState(false);
 
   // Show loading skeleton while limits are loading
   const isLoading = limitsLoading || !limits;
@@ -27,6 +43,52 @@ const Settings = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const curriculums = useMemo(
+    () => getCurriculumsForCountry(learningProfile.countryCode),
+    [learningProfile.countryCode]
+  );
+  const selectedCurriculum = useMemo(
+    () => curriculums.find((item) => item.name === learningProfile.curriculum) || curriculums[0],
+    [curriculums, learningProfile.curriculum]
+  );
+
+  useEffect(() => {
+    if (!user?.$id || isGuest) {
+      setLearningProfileNeedsSetup(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadLearningProfile = async () => {
+      try {
+        const remoteProfile = await getUserProfile(user.$id);
+        if (cancelled) return;
+
+        const parsedProfile = parseProfileFromDocument(remoteProfile);
+        const normalized = normalizeAcademicProfile(parsedProfile);
+        setLearningProfile(normalized);
+        writeLocalAcademicProfile(normalized);
+        setLearningProfileNeedsSetup(
+          !remoteProfile?.academicProfile ||
+          !normalized.countryCode ||
+          !normalized.curriculum ||
+          !normalized.classLevel ||
+          !normalized.studyLanguage
+        );
+      } catch (error) {
+        console.warn('Could not load learning profile:', error);
+        if (!cancelled) {
+          setLearningProfileNeedsSetup(true);
+        }
+      }
+    };
+
+    loadLearningProfile();
+    return () => {
+      cancelled = true;
+    };
+  }, [isGuest, user?.$id]);
 
   const showMessage = (type, text) => {
     setMessage({ type, text });
@@ -118,6 +180,63 @@ const Settings = () => {
     }
   };
 
+  const updateLearningProfile = (updates) => {
+    setLearningProfile((current) => {
+      const normalized = normalizeAcademicProfile({ ...current, ...updates });
+      writeLocalAcademicProfile(normalized);
+      return normalized;
+    });
+  };
+
+  const handleLearningCountryChange = (countryCode) => {
+    const country = countries.find((item) => item.countryCode === countryCode);
+    const countryCurriculums = getCurriculumsForCountry(countryCode);
+    const nextCurriculum = countryCurriculums[0];
+    const nextProfile = { ...learningProfile, countryCode, country: country?.country };
+    updateLearningProfile({
+      countryCode,
+      country: country?.country,
+      curriculum: nextCurriculum?.name || '',
+      curriculumVersion: nextCurriculum?.version || '',
+      classLevel: nextCurriculum?.classes?.[0] || '',
+      examBoard: nextCurriculum?.examBoards?.[0] || nextCurriculum?.name || '',
+      studyLanguage: getCurriculumLanguages(nextCurriculum, nextProfile)[0] || 'English',
+    });
+  };
+
+  const handleLearningCurriculumChange = (curriculumName) => {
+    const nextCurriculum = curriculums.find((item) => item.name === curriculumName);
+    updateLearningProfile({
+      curriculum: curriculumName,
+      curriculumVersion: nextCurriculum?.version || '',
+      classLevel: nextCurriculum?.classes?.[0] || '',
+      examBoard: nextCurriculum?.examBoards?.[0] || curriculumName,
+      studyLanguage: getCurriculumLanguages(nextCurriculum, learningProfile)[0] || learningProfile.studyLanguage || 'English',
+    });
+  };
+
+  const handleSaveLearningProfile = async (e) => {
+    e.preventDefault();
+    if (isGuest) {
+      showMessage('error', 'Guest users cannot save learning profile');
+      return;
+    }
+
+    try {
+      setLearningProfileLoading(true);
+      const normalized = normalizeAcademicProfile(learningProfile);
+      writeLocalAcademicProfile(normalized);
+      await saveUserLearningProfile(user.$id, splitProfileForStorage(normalized));
+      setLearningProfileNeedsSetup(false);
+      showMessage('success', 'Learning profile saved successfully');
+    } catch (error) {
+      console.error('Failed to save learning profile:', error);
+      showMessage('error', 'Failed to save learning profile: ' + error.message);
+    } finally {
+      setLearningProfileLoading(false);
+    }
+  };
+
   const keyboardShortcuts = [
     { keys: 'Ctrl + K', description: 'Show keyboard shortcuts' },
     { keys: 'Ctrl + D', description: 'Go to dashboard' },
@@ -166,6 +285,13 @@ const Settings = () => {
               Subscription
             </button>
             <button
+              className={`settings-tab ${activeTab === 'learning' ? 'active' : ''}`}
+              onClick={() => setActiveTab('learning')}
+            >
+              <UserIcon size={20} />
+              Learning Profile
+            </button>
+            <button
               className={`settings-tab ${activeTab === 'shortcuts' ? 'active' : ''}`}
               onClick={() => setActiveTab('shortcuts')}
             >
@@ -192,6 +318,24 @@ const Settings = () => {
                 {isGuest && (
                   <div className="alert alert-warning">
                     You are using a guest account. Some features are limited.
+                  </div>
+                )}
+
+                {!isGuest && learningProfileNeedsSetup && (
+                  <div className="alert alert-warning profile-alert">
+                    <div>
+                      <strong>Complete your learning profile.</strong>
+                      <p>
+                        Add your country, curriculum, class, exam board, and study language so new sessions can start with the right plan automatically.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setActiveTab('learning')}
+                    >
+                      Edit Learning Profile
+                    </button>
                   </div>
                 )}
 
@@ -275,6 +419,115 @@ const Settings = () => {
                     disabled={isGuest || loading}
                   >
                     {loading ? 'Changing...' : 'Change Password'}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {activeTab === 'learning' && (
+              <div className="settings-section learning-profile-form">
+                <h2>Learning Profile</h2>
+                <p className="settings-description">
+                  This profile powers guided tutor sessions, curriculum-aware study plans, and exam-focused recommendations.
+                </p>
+
+                <form onSubmit={handleSaveLearningProfile} className="settings-form">
+                  <div className="learning-profile-grid">
+                    <div className="form-group">
+                      <label htmlFor="countryCode">Country</label>
+                      <select
+                        id="countryCode"
+                        value={learningProfile.countryCode}
+                        onChange={(e) => handleLearningCountryChange(e.target.value)}
+                        disabled={isGuest || learningProfileLoading}
+                      >
+                        {countries.map((country) => (
+                          <option key={country.countryCode} value={country.countryCode}>
+                            {country.country}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="curriculum">Curriculum</label>
+                      <select
+                        id="curriculum"
+                        value={learningProfile.curriculum}
+                        onChange={(e) => handleLearningCurriculumChange(e.target.value)}
+                        disabled={isGuest || learningProfileLoading}
+                      >
+                        {curriculums.map((curriculum) => (
+                          <option key={curriculum.name} value={curriculum.name}>
+                            {curriculum.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="classLevel">Class / Level</label>
+                      <select
+                        id="classLevel"
+                        value={learningProfile.classLevel}
+                        onChange={(e) => updateLearningProfile({ classLevel: e.target.value })}
+                        disabled={isGuest || learningProfileLoading}
+                      >
+                        {getCurriculumClasses(selectedCurriculum).map((classLevel) => (
+                          <option key={classLevel} value={classLevel}>
+                            {classLevel}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="examBoard">Board / Track</label>
+                      <select
+                        id="examBoard"
+                        value={learningProfile.examBoard || learningProfile.board || selectedCurriculum?.name || 'General'}
+                        onChange={(e) => updateLearningProfile({ examBoard: e.target.value })}
+                        disabled={isGuest || learningProfileLoading}
+                      >
+                        {(selectedCurriculum?.examBoards || [learningProfile.examBoard || learningProfile.board || selectedCurriculum?.name || 'General']).map((board) => (
+                          <option key={board} value={board}>
+                            {board}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="studyLanguage">Preferred Study Language</label>
+                      <select
+                        id="studyLanguage"
+                        value={learningProfile.studyLanguage}
+                        onChange={(e) => updateLearningProfile({ studyLanguage: e.target.value })}
+                        disabled={isGuest || learningProfileLoading}
+                      >
+                        {getCurriculumLanguages(selectedCurriculum, learningProfile).map((language) => (
+                          <option key={language} value={language}>
+                            {language}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                  </div>
+
+                  <div className="guided-profile-preview">
+                    <span>Current context</span>
+                    <p>
+                      {learningProfile.countryCode || 'Country'} / {learningProfile.curriculum || 'Curriculum'} / {learningProfile.classLevel || 'Class'} / {learningProfile.studyLanguage || 'Language'}
+                    </p>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={isGuest || learningProfileLoading}
+                  >
+                    {learningProfileLoading ? 'Saving...' : 'Save Learning Profile'}
                   </button>
                 </form>
               </div>

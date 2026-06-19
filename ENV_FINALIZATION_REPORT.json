@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-06-18T01:09:51.605Z",
+  "source": ".env",
+  "totalKeys": 64,
+  "viteKeys": 54,
+  "duplicateKeys": [
+    {
+      "key": "APPWRITE_ENDPOINT",
+      "count": 2
+    },
+    {
+      "key": "APPWRITE_PROJECT_ID",
+      "count": 2
+    },
+    {
+      "key": "APPWRITE_DATABASE_ID",
+      "count": 2
+    },
+    {
+      "key": "APPWRITE_API_KEY",
+      "count": 2
+    }
+  ],
+  "outputFiles": [
+    ".env.vercel.production",
+    ".env.appwrite-function.example"
+  ],
+  "note": "Vercel file contains only VITE_* keys. Server API keys remain local/Appwrite-only."
+}

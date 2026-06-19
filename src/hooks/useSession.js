@@ -3,6 +3,7 @@ import { useSession as useSessionContext } from '../context/SessionContext';
 import useDeepSeek from './useDeepSeek';
 import { useGemini } from './useGemini';
 import { getPromptForMode } from '../utils/promptBuilder';
+import { buildCurriculumPromptBlock } from '../utils/curriculum';
 import { buildContextMessages } from '../utils/contextManager';
 import { saveSessionSummary } from '../appwrite/database';
 import { processAIResponse, addChartWarningIfNeeded } from '../utils/chartFixer';
@@ -57,12 +58,46 @@ const useSession = () => {
     }
 
     // Build system prompt for current mode — now includes student profile
-    const systemPrompt = getPromptForMode(
+    let promptSession = activeSession;
+    if (!activeSession.curriculumContext) {
+      try {
+        const [{ getUserProfile }, { normalizeAcademicProfile, parseProfileFromDocument }] = await Promise.all([
+          import('../appwrite/database'),
+          import('../utils/curriculum'),
+        ]);
+        const profileDoc = await getUserProfile(activeSession.userId);
+        const profile = normalizeAcademicProfile(parseProfileFromDocument(profileDoc));
+        promptSession = {
+          ...activeSession,
+          curriculumContext: JSON.stringify({
+            topic: activeSession.subject,
+            country: profile.country,
+            countryCode: profile.countryCode,
+            curriculum: profile.curriculum,
+            curriculumVersion: profile.curriculumVersion,
+            classLevel: profile.classLevel,
+            track: profile.track,
+            examBoard: profile.examBoard,
+            studyLanguage: profile.studyLanguage,
+            preferredLanguage: profile.studyLanguage,
+            source: 'user_profile_fallback',
+          }),
+        };
+      } catch (e) {
+        console.warn('[useSession] Could not load learning profile fallback:', e.message);
+      }
+    }
+
+    const baseSystemPrompt = getPromptForMode(
       activeSession.mode, 
       activeSession.subject, 
       persona,
       sessionCtx
     );
+    const curriculumPrompt = buildCurriculumPromptBlock(promptSession, sessionCtx);
+    const systemPrompt = curriculumPrompt
+      ? `${baseSystemPrompt}\n\n${curriculumPrompt}`
+      : baseSystemPrompt;
 
     // ── ROUTING ──────────────────────────────────────────────────────────────
     // Study mode (PDF open in split view): extract only the relevant page(s)

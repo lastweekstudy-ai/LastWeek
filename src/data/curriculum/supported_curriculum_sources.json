@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-06-18T06:40:06.025Z",
+  "sourceTextDir": "tmp/curriculum-pdf-text",
+  "sources": [
+    {
+      "countryCode": "BD",
+      "document": "bd class 9-10.pdf"
+    },
+    {
+      "countryCode": "BD",
+      "document": "BD college science.pdf"
+    },
+    {
+      "countryCode": "BD",
+      "document": "bd college commerce.pdf"
+    },
+    {
+      "countryCode": "BD",
+      "document": "Cambridge IGCSE.pdf"
+    },
+    {
+      "countryCode": "IN",
+      "document": "Handbook_for_students cbsc india.pdf"
+    },
+    {
+      "countryCode": "IN",
+      "document": "Cambridge IGCSE.pdf"
+    },
+    {
+      "countryCode": "US",
+      "document": "usa Detailed_Grades6_12_Curriculum_Handbook (1).pdf"
+    },
+    {
+      "countryCode": "US",
+      "document": "usa Middle_and_High_School_Curriculum_Guide.pdf"
+    },
+    {
+      "countryCode": "US",
+      "document": "Detailed_Grades6_12_Curriculum_Handbook.pdf"
+    },
+    {
+      "countryCode": "GB",
+      "document": "UK_Detailed_Curriculum_Handbook_Years7_13.pdf"
+    },
+    {
+      "countryCode": "GB",
+      "document": "Cambridge IGCSE.pdf"
+    },
+    {
+      "countryCode": "AU",
+      "document": "Australian_Detailed_Secondary_Curriculum_Handbook_Years7_12.pdf"
+    },
+    {
+      "countryCode": "FR",
+      "document": "France_Detailed_Curriculum_Handbook_Baccalaureat.pdf"
+    },
+    {
+      "countryCode": "DE",
+      "document": "Germany_Detailed_Curriculum_Handbook_Abitur.pdf"
+    },
+    {
+      "countryCode": "IT",
+      "document": "Italy_Detailed_Curriculum_Handbook_Maturita.pdf"
+    }
+  ]
+}

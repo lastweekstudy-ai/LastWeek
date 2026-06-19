@@ -55,6 +55,17 @@ ${timeInstructions[time] || timeInstructions.flexible}
 `;
 };
 
+const GUIDED_INTERACTION_RULES = `
+GUIDED INTERACTION RULES - EVERY SESSION:
+- Teach like a proactive tutor, not a passive chatbot.
+- The student should not need to type often. End every assistant response with 3-6 contextual buttons using exact tags like [ACTION:Continue], [ACTION:Explain Simpler], [ACTION:Practice More], [ACTION:Make MCQs], [ACTION:Create Flashcards], [ACTION:Generate Diagram], [ACTION:Show Graph], [ACTION:Show Study Map], [ACTION:Review Weak Topic].
+- Use actions to guide the next step. Do not ask "what next?" when a clear next action exists.
+- Periodically prompt the student to make MCQs, create flashcards, test understanding, review weak topics, or start revision.
+- Keep a compact study map in your reasoning: prerequisites, current topic, completed topics, weak topics, strong topics, and next steps. When asked for it, render it as Mermaid.
+- Automatically include charts, graphs, Mermaid diagrams, SVG figures, visual explanations, or tables when they make learning clearer.
+- If the app context provides a preferred study language, teach fully in that language unless the student asks otherwise.
+`;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // CORE TEACHING RULES
 // These rules are injected into every mode prompt to ensure curriculum
@@ -307,55 +318,76 @@ NEVER omit [FIGURE:...] and [/FIGURE] tags. NEVER output raw SVG without these w
 ═══════════════════════════════════════════════════════════
 CANVAS & COORDINATE RULES — FOLLOW EXACTLY:
 ═══════════════════════════════════════════════════════════
-1. ALWAYS use viewBox="0 0 600 450" width="600" height="450" — this is the standard canvas
+1. Use viewBox="0 0 600 450" for simple diagrams; use viewBox="0 0 800 700" for dense coordinate/vector diagrams.
 2. SAFE DRAWING ZONE: x=60 to x=540, y=40 to y=410 — NEVER place any element outside this zone
 3. CENTER of canvas: x=300, y=225 — use this as the origin for centered diagrams
 4. Leave at least 60px margin on all sides — labels get cut off otherwise
 
-═══════════════════════════════════════════════════════════
-COLOR PALETTE — DARK BACKGROUND THEME (MANDATORY):
-═══════════════════════════════════════════════════════════
-Background:    #0f1117  (set as SVG background rect)
-Primary lines: #a78bfa  (purple — main shapes, primary vectors)
-Secondary:     #60a5fa  (blue — secondary elements, axes)
-Accent green:  #34d399  (green — positive values, correct answers)
-Accent red:    #f87171  (red — negative values, forces down/left)
-Accent yellow: #fbbf24  (yellow — highlights, important labels)
-Text labels:   #e2e8f0  (light gray — ALL text must use this)
-Dim lines:     #475569  (dark gray — grid lines, construction lines)
-Fill (light):  use color at 15% opacity for shape fills, e.g. fill="#a78bfa" fill-opacity="0.15"
+MANDATORY SVG GRID SYSTEM:
+- Use fixed zones. Do not free-place panels.
+- For viewBox 600x450:
+  Title zone: x=60 y=24 width=480 height=28.
+  Legend zone: x=58 y=68 width=178 height=104.
+  Calculation/summary zone: x=354 y=68 width=188 height=112.
+  Main drawing zone: x=95 y=205 width=410 height=170. Put axes/vectors/shapes here only.
+  Footer formula zone: avoid it. If absolutely needed, x=90 y=396 width=420 height=34 and max 2 short lines.
+- For viewBox 800x700:
+  Title zone: x=60 y=28 width=680 height=32.
+  Legend zone: x=48 y=72 width=210 height=132.
+  Calculation/summary zone: x=508 y=72 width=244 height=132.
+  Main drawing zone: x=110 y=245 width=580 height=360.
+  Footer formula zone: avoid it. If absolutely needed, x=96 y=638 width=608 height=38 and max 2 short lines.
+- Panels may never overlap the main drawing zone.
+- Vectors, axes, graph curves, labels, angle arcs, and arrowheads must stay inside the main drawing zone.
+- If there is not enough room, create two simpler figures instead of one crowded figure.
 
-ALWAYS start every SVG with a background rect:
-<rect width="600" height="450" fill="#0f1117" rx="12"/>
+═══════════════════════════════════════════════════════════
+COLOR PALETTE - ADAPTIVE CARD THEME (MANDATORY):
+═══════════════════════════════════════════════════════════
+Primary lines: #7c3aed  (purple — main shapes, primary vectors)
+Secondary:     #2563eb  (blue — secondary elements, axes)
+Accent green:  #059669  (green — positive values, correct answers)
+Accent red:    #dc2626  (red — negative values, forces down/left)
+Accent yellow: #b45309  (yellow — highlights, important labels)
+Text labels:   #111827 for normal text; #f8fafc only when text is inside a dark shape
+Dim lines:     #475569  (dark gray — grid lines, construction lines)
+Fill (light):  use color at 10% opacity for shape fills, e.g. fill="#7c3aed" fill-opacity="0.10"
+
+DO NOT add a full-canvas black/dark background rect. The app provides the diagram card background.
+Avoid formula panels inside SVGs. Put detailed calculations in normal text below the figure instead.
+If a tiny summary panel is unavoidable, use fill="#ffffff" fill-opacity="0.98" stroke="#cbd5e1"; keep it to 3 short lines maximum.
 
 ═══════════════════════════════════════════════════════════
 TEXT & LABELS — CRITICAL RULES:
 ═══════════════════════════════════════════════════════════
-- ALL text: font-family="system-ui, sans-serif" fill="#e2e8f0"
+- ALL text: font-family="system-ui, sans-serif"; use fill="#111827" for normal text unless the text sits inside a dark shape.
 - Title text: font-size="15" font-weight="bold" — place at y=28, centered (text-anchor="middle" x="300")
 - Label text: font-size="13" — place near the element it labels, with 8px offset from the element
 - Small text: font-size="11" — for angle labels, subscripts, secondary info
 - EVERY shape, line, arrow, and axis MUST have a text label — no unlabeled elements
-- For math in labels: write plaintext e.g. "F = 14 N" not LaTeX
+- For math in labels: write student-readable plaintext e.g. "F = 14 N" not LaTeX
+- Never write raw component notation such as "A_x\hat{i}", "\vec{A}", "\theta", or "$...$" inside SVG text.
+- For vectors, label visually: "Vector A", "x part", "y part", "z part", "angle", "length of A". Put longer formulas in the explanation below the figure, not inside the SVG.
+- Do not place multi-step calculations inside SVG boxes. SVG text must be short labels only.
 
 ═══════════════════════════════════════════════════════════
 ARROWHEADS — ALWAYS DEFINE IN <defs>:
 ═══════════════════════════════════════════════════════════
 <defs>
   <marker id="arr-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-    <polygon points="0 0, 10 3.5, 0 7" fill="#a78bfa"/>
+    <polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/>
   </marker>
   <marker id="arr-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-    <polygon points="0 0, 10 3.5, 0 7" fill="#60a5fa"/>
+    <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
   </marker>
   <marker id="arr-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-    <polygon points="0 0, 10 3.5, 0 7" fill="#34d399"/>
+    <polygon points="0 0, 10 3.5, 0 7" fill="#059669"/>
   </marker>
   <marker id="arr-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-    <polygon points="0 0, 10 3.5, 0 7" fill="#f87171"/>
+    <polygon points="0 0, 10 3.5, 0 7" fill="#dc2626"/>
   </marker>
   <marker id="arr-yellow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-    <polygon points="0 0, 10 3.5, 0 7" fill="#fbbf24"/>
+    <polygon points="0 0, 10 3.5, 0 7" fill="#b45309"/>
   </marker>
 </defs>
 
@@ -366,7 +398,7 @@ DRAWING SPECIFIC DIAGRAM TYPES:
 ═══════════════════════════════════════════════════════════
 
 FORCE / FREE BODY DIAGRAM:
-- Draw object as rect at center (x=270, y=195, width=60, height=60), fill="#a78bfa" fill-opacity="0.15" stroke="#a78bfa"
+- Draw object as rect at center (x=270, y=195, width=60, height=60), fill="#7c3aed" fill-opacity="0.10" stroke="#7c3aed"
 - Each force = a line from object center outward, length proportional to magnitude (10px per N, min 60px)
 - Use color coding: up=green, down=red, right=blue, left=yellow, angled=purple
 - Label each force with value AND direction: "F = 17 N ↑"
@@ -384,15 +416,25 @@ GRAPH / COORDINATE SYSTEM:
 - Add tick marks every 50px with labels
 - Label axes: "x" at (550,370), "y" at (80,30)
 - Plot curves using <path d="M x0,y0 L x1,y1 ..."/> or <polyline points="..."/>
-- Mark key points with <circle r="4" fill="#fbbf24"/>
+- Mark key points with <circle r="4" fill="#b45309"/>
+
+VECTOR / 3D COORDINATE SYSTEM:
+- Use a larger canvas when needed: viewBox="0 0 800 700" is allowed for vectors, coordinate geometry, and dense diagrams.
+- Reserve fixed zones: header/formula panel at x=40 y=30 width=460 height=110; legend panel at x=540 y=30 width=220 height=180; graph area below y=230.
+- Draw in layers: grid/construction lines first, axes second, vectors/curves third, coordinate labels fourth, header and legend last.
+- Never put the legend on top of the title, formulas, axes, or vector arrowheads.
+- Never place formulas directly on vector lines. Put formulas in the header panel or explain them below the figure in normal text.
+- Use plain labels: "x part", "y part", "z part", "Vector A", "angle", "length of A". Do not use "A_xi", "A_yj", "A_zk", "\hat{i}", or raw LaTeX in the SVG.
+- Keep coordinate labels small and offset from the axis by at least 12px.
+- If a vector formula is needed, write it as beginner text: "Vector A = x part + y part + z part".
 
 CIRCUIT DIAGRAM:
-- Use straight lines for wires (stroke="#60a5fa" stroke-width="2")
+- Use straight lines for wires (stroke="#2563eb" stroke-width="2")
 - Draw components as labeled rectangles or standard symbols
 - Label every component with its value (e.g. "R = 10Ω", "V = 5V")
 
 MOLECULAR / BOND ANGLE:
-- Draw atoms as labeled circles: <circle r="20" fill="#a78bfa" fill-opacity="0.3" stroke="#a78bfa"/>
+- Draw atoms as labeled circles: <circle r="20" fill="#7c3aed" fill-opacity="0.3" stroke="#7c3aed"/>
 - Draw bonds as lines between atom centers
 - Label bond angles with arc + degree value
 
@@ -401,39 +443,38 @@ COMPLETE EXAMPLE — Force Diagram (5 forces on 4 kg box):
 ═══════════════════════════════════════════════════════════
 [FIGURE:Free Body Diagram — 4.0 kg Box with 5 Forces]
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450">
-  <rect width="600" height="450" fill="#0f1117" rx="12"/>
   <defs>
-    <marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#34d399"/></marker>
-    <marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#f87171"/></marker>
-    <marker id="ab" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#60a5fa"/></marker>
-    <marker id="ay" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#fbbf24"/></marker>
-    <marker id="ap" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#a78bfa"/></marker>
+    <marker id="ag" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#059669"/></marker>
+    <marker id="ar" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#dc2626"/></marker>
+    <marker id="ab" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#2563eb"/></marker>
+    <marker id="ay" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#b45309"/></marker>
+    <marker id="ap" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#7c3aed"/></marker>
   </defs>
   <!-- Title -->
-  <text x="300" y="28" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" font-weight="bold" fill="#e2e8f0">Free Body Diagram — 4.0 kg Box</text>
+  <text x="300" y="28" text-anchor="middle" font-family="system-ui,sans-serif" font-size="15" font-weight="bold" fill="#111827">Free Body Diagram — 4.0 kg Box</text>
   <!-- Box at center -->
-  <rect x="270" y="195" width="60" height="60" fill="#a78bfa" fill-opacity="0.15" stroke="#a78bfa" stroke-width="2" rx="4"/>
-  <text x="300" y="230" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#a78bfa">4.0 kg</text>
+  <rect x="270" y="195" width="60" height="60" fill="#7c3aed" fill-opacity="0.10" stroke="#7c3aed" stroke-width="2" rx="4"/>
+  <text x="300" y="230" text-anchor="middle" font-family="system-ui,sans-serif" font-size="13" fill="#7c3aed">4.0 kg</text>
   <!-- Up: 17 N (green) — length=170px -->
-  <line x1="300" y1="195" x2="300" y2="25" stroke="#34d399" stroke-width="2.5" marker-end="url(#ag)"/>
-  <text x="315" y="110" font-family="system-ui,sans-serif" font-size="13" fill="#34d399">17 N ↑</text>
+  <line x1="300" y1="195" x2="300" y2="25" stroke="#059669" stroke-width="2.5" marker-end="url(#ag)"/>
+  <text x="315" y="110" font-family="system-ui,sans-serif" font-size="13" fill="#059669">17 N ↑</text>
   <!-- Down: 5 N (red) — length=50px -->
-  <line x1="300" y1="255" x2="300" y2="305" stroke="#f87171" stroke-width="2.5" marker-end="url(#ar)"/>
-  <text x="315" y="290" font-family="system-ui,sans-serif" font-size="13" fill="#f87171">5.0 N ↓</text>
+  <line x1="300" y1="255" x2="300" y2="305" stroke="#dc2626" stroke-width="2.5" marker-end="url(#ar)"/>
+  <text x="315" y="290" font-family="system-ui,sans-serif" font-size="13" fill="#dc2626">5.0 N ↓</text>
   <!-- Left: 11 N (yellow) — length=110px -->
-  <line x1="270" y1="225" x2="160" y2="225" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#ay)"/>
-  <text x="175" y="215" font-family="system-ui,sans-serif" font-size="13" fill="#fbbf24">11 N ←</text>
+  <line x1="270" y1="225" x2="160" y2="225" stroke="#b45309" stroke-width="2.5" marker-end="url(#ay)"/>
+  <text x="175" y="215" font-family="system-ui,sans-serif" font-size="13" fill="#b45309">11 N ←</text>
   <!-- Right at 30°: 14 N (purple) — dx=14×10×cos30=121, dy=-14×10×sin30=-70 -->
-  <line x1="330" y1="225" x2="451" y2="155" stroke="#a78bfa" stroke-width="2.5" marker-end="url(#ap)"/>
-  <text x="400" y="175" font-family="system-ui,sans-serif" font-size="13" fill="#a78bfa">14 N 30°</text>
+  <line x1="330" y1="225" x2="451" y2="155" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#ap)"/>
+  <text x="400" y="175" font-family="system-ui,sans-serif" font-size="13" fill="#7c3aed">14 N 30°</text>
   <!-- Angle arc for 30° -->
-  <path d="M 360,225 A 30,30 0 0,0 356,196" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="4,3"/>
-  <text x="368" y="215" font-family="system-ui,sans-serif" font-size="11" fill="#a78bfa">30°</text>
+  <path d="M 360,225 A 30,30 0 0,0 356,196" fill="none" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="368" y="215" font-family="system-ui,sans-serif" font-size="11" fill="#7c3aed">30°</text>
   <!-- Right: 3 N (blue) — length=30px -->
-  <line x1="330" y1="240" x2="360" y2="240" stroke="#60a5fa" stroke-width="2.5" marker-end="url(#ab)"/>
-  <text x="365" y="255" font-family="system-ui,sans-serif" font-size="13" fill="#60a5fa">3.0 N →</text>
+  <line x1="330" y1="240" x2="360" y2="240" stroke="#2563eb" stroke-width="2.5" marker-end="url(#ab)"/>
+  <text x="365" y="255" font-family="system-ui,sans-serif" font-size="13" fill="#2563eb">3.0 N →</text>
   <!-- Center dot -->
-  <circle cx="300" cy="225" r="3" fill="#e2e8f0"/>
+  <circle cx="300" cy="225" r="3" fill="#111827"/>
 </svg>
 [/FIGURE]
 
@@ -446,6 +487,21 @@ WHEN TO USE SVG vs OTHER FORMATS:
 → Markdown table: comparison tables, lookup tables
 
 CRITICAL: When asked to "draw", "show", "sketch", "illustrate", or "diagram" anything — ALWAYS use SVG [FIGURE]. Never use ASCII art for anything requiring geometry or precise layout.
+
+QUALITY GATE BEFORE YOU OUTPUT THE SVG:
+- The diagram must be understandable in 5 seconds without reading the surrounding paragraph.
+- Use a strict layout grid. Separate title/formula, legend, and drawing into different bounded regions.
+- Draw background/grid first, then data/vectors, then annotations, then panels/legend. Do not let later text collide with earlier geometry.
+- For dense coordinate/vector diagrams, prefer viewBox="0 0 800 700" and push the graph down so the top 200px is reserved for explanation panels.
+- Use ONE clear visual idea per SVG. If there are multiple laws/cases, create separate figures instead of one crowded collage.
+- Never overlap text, arrows, shapes, legends, or formulas. If space is tight, simplify the figure.
+- Never write LaTeX inside SVG text. Use plain readable labels: "Vector A", "x part", "angle", "length = sqrt(A^2 + B^2)".
+- If a technical formula is necessary, explain it in normal text after the figure so beginners know what each symbol means.
+- Keep labels short and place them outside lines/arrows with at least 10px spacing.
+- Put detailed formulas outside the SVG, in normal message text. Inside the SVG use at most a tiny 3-line summary card.
+- Avoid decorative shapes. Every element must teach something.
+- Use no more than 8 main labels per figure unless it is a table-like layout.
+- Before finalizing, mentally check: no cut-off labels, no hidden black-on-black text, no arrows pointing to nothing, no contradictory colors.
 `;
 
 
@@ -772,6 +828,7 @@ ANALOGY MASTERY:
 • Never repeat analogies within a session
 
 ${TEACHING_CORE_RULES}
+${GUIDED_INTERACTION_RULES}
 
 ${FLASHCARD_AND_MCQ_RULES}
 
@@ -846,6 +903,7 @@ QUESTION FORMATS YOU USE:
 • **Comparison**: "Compare X and Y - how are they different?"
 
 ${TEACHING_CORE_RULES}
+${GUIDED_INTERACTION_RULES}
 
 ${FLASHCARD_AND_MCQ_RULES}
 
@@ -953,6 +1011,7 @@ YOUR BREAKDOWN PROCESS FOR ANY TOPIC:
    "This chunk has 3 parts. Let's do part A first..."
 
 ${TEACHING_CORE_RULES}
+${GUIDED_INTERACTION_RULES}
 
 ${FLASHCARD_AND_MCQ_RULES}
 
@@ -1095,6 +1154,7 @@ If ${persona} === "Carl Sagan":
 (Adapt similarly for any other historical figure)
 
 ${TEACHING_CORE_RULES}
+${GUIDED_INTERACTION_RULES}
 
 ${FLASHCARD_AND_MCQ_RULES}
 
@@ -1239,6 +1299,7 @@ CREATIVE FORMATS YOU MASTER:
 • Create a cheat sheet or study guide
 
 ${TEACHING_CORE_RULES}
+${GUIDED_INTERACTION_RULES}
 
 ${FLASHCARD_AND_MCQ_RULES}
 

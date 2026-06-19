@@ -1,24 +1,33 @@
 import React from 'react';
 
-/**
- * AITypingAnimation - Enhanced loading animation for AI responses
- * Shows a more engaging "AI is thinking" animation with multiple visual effects
- */
-const AITypingAnimation = ({ message = "Thinking..." }) => {
+const getThinkingLabel = (message) => {
+  if (/analys/i.test(message)) return 'Reading the material';
+  if (/generat/i.test(message)) return 'Building the answer';
+  return 'Thinking through the next step';
+};
+
+const AITypingAnimation = ({ message = 'Thinking...' }) => {
   return (
-    <div className="ai-typing-container">
-      {/* Animated dots */}
-      <div className="ai-typing-dots">
-        <span className="ai-dot"></span>
-        <span className="ai-dot"></span>
-        <span className="ai-dot"></span>
+    <div className="ai-thinking-card" role="status" aria-live="polite">
+      <div className="ai-thinking-orbit" aria-hidden="true">
+        <span className="ai-thinking-core" />
+        <span className="ai-thinking-ring ai-thinking-ring-a" />
+        <span className="ai-thinking-ring ai-thinking-ring-b" />
       </div>
-      
-      {/* Status text */}
-      <div className="ai-typing-text">{message}</div>
-      
-      {/* Pulse effect */}
-      <div className="ai-typing-pulse"></div>
+
+      <div className="ai-thinking-copy">
+        <span className="ai-thinking-kicker">LastWeek AI</span>
+        <strong>{getThinkingLabel(message)}</strong>
+        <span>{message}</span>
+      </div>
+
+      <div className="ai-thinking-wave" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
     </div>
   );
 };

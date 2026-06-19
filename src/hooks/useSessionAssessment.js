@@ -16,6 +16,10 @@ const useSessionAssessment = ({ user, sessionId, activeSession, messages, mode, 
     if (checkedRef.current) return;
     // Never show assessment for exam prep sessions — the AI already has full context
     if (mode === 'exam_prep') { checkedRef.current = true; return; }
+    if (activeSession.curriculumContext || activeSession.sessionPlan) {
+      checkedRef.current = true;
+      return;
+    }
     checkedRef.current = true;
 
     const check = async () => {

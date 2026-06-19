@@ -21,6 +21,18 @@ import {
   ExpandIcon
 } from './Icons';
 
+const isAssistantPlaceholderContent = (value) => {
+  const text = typeof value === 'string' ? value.trim() : '';
+  if (!text) return true;
+
+  const withoutCursorGlyphs = text
+    .replace(/[\u2580-\u259f\u25ae\u25af|]/g, '')
+    .replace(/&nbsp;/gi, '')
+    .trim();
+
+  return withoutCursorGlyphs.length === 0;
+};
+
 const ChatInterface = ({ 
   messages, 
   onSend, 
@@ -227,7 +239,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
   }, []);
 
   // Memoized message component to prevent re-renders
-  const MessageItem = useMemo(() => React.memo(({ message, mode, onCopy, onFlashcardRate, onMCQAnswer, onActionClick }) => {
+  const MessageItem = useMemo(() => React.memo(({ message, mode, onCopy, onFlashcardRate, onMCQAnswer, onActionClick, isChatBusy }) => {
     // Parse message content to check for file attachment
     let messageText = message.content;
     let fileAttachment = null;
@@ -242,6 +254,11 @@ This ensures I have the complete PDF content with accurate page and line numbers
       // Not JSON, use as-is
       messageText = message.content;
     }
+
+    const plainMessageText = typeof messageText === 'string' ? messageText.trim() : '';
+    const isAssistantThinking =
+      message.role === 'assistant' &&
+      isAssistantPlaceholderContent(plainMessageText);
     
     // Format timestamp
     const formatTime = (timestamp) => {
@@ -278,7 +295,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
               {getModeIcon(mode)}
             </div>
           )}
-          <div className="message-bubble">
+          <div className={`message-bubble ${isAssistantThinking ? 'thinking-bubble' : ''}`}>
             {/* Show file attachment for user messages */}
             {message.role === 'user' && fileAttachment && (
               <div className="message-file-attachment">
@@ -307,25 +324,31 @@ This ensures I have the complete PDF content with accurate page and line numbers
             
             <div className="message-text-improved">
               {message.role === 'assistant' ? (
-                <>
-                  <EnhancedMessageFormatter
-                    content={messageText}
-                    messageId={message.$id}
-                    onFlashcardRate={onFlashcardRate}
-                    onMCQAnswer={onMCQAnswer}
-                    onActionClick={onActionClick}
-                  />
-                  {message.isStreaming && <span className="streaming-cursor" aria-hidden="true">▋</span>}
-                </>
+                isAssistantThinking ? (
+                  <AITypingAnimation message="Building the next step..." />
+                ) : (
+                  <>
+                    <EnhancedMessageFormatter
+                      content={messageText}
+                      messageId={message.$id}
+                      onFlashcardRate={onFlashcardRate}
+                      onMCQAnswer={onMCQAnswer}
+                      onActionClick={onActionClick}
+                    />
+                    {message.isStreaming && <span className="streaming-cursor" aria-hidden="true">▋</span>}
+                  </>
+                )
               ) : (
                 <EnhancedMessageFormatter content={messageText} messageId={message.$id} onActionClick={onActionClick} />
               )}
             </div>
             
             {/* Timestamp */}
-            <div className="message-timestamp">
-              {formatTime(message.$createdAt || message.createdAt)}
-            </div>
+            {!isAssistantThinking && (
+              <div className="message-timestamp">
+                {formatTime(message.$createdAt || message.createdAt)}
+              </div>
+            )}
             
             {message.role === 'assistant' && (
               <div className="message-actions">
@@ -407,6 +430,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
             onFlashcardRate={onFlashcardRate}
             onMCQAnswer={onMCQAnswer}
             onActionClick={handleActionClick}
+            isChatBusy={isLoading || isStreaming || isAnalysing}
           />
         ))}
         
@@ -416,7 +440,7 @@ This ensures I have the complete PDF content with accurate page and line numbers
               <div className="message-avatar">
                 {getModeIcon(mode)}
               </div>
-              <div className="message-bubble">
+              <div className="message-bubble thinking-bubble">
                 <div className="message-text-improved">
                   <AITypingAnimation 
                     message={isAnalysing ? "Analysing document..." : isStreaming ? "Generating response..." : "Thinking..."} 

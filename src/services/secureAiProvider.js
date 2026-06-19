@@ -172,7 +172,7 @@ export async function callGroqVision(base64Image, prompt, mimeType = 'image/jpeg
  * @param {string} audioBase64 - Base64 encoded audio file
  * @returns {Promise<string>} - Transcribed text
  */
-export async function transcribeAudio(audioBase64) {
+export async function transcribeAudio(audioBase64, language = null) {
   try {
     // Get current user ID
     const user = await account.get();
@@ -200,6 +200,7 @@ export async function transcribeAudio(audioBase64) {
         action: 'transcribe_async',
         jobId: job.$id,
         audioFile: audioBase64,
+        language,
       }),
       true // async = true, bypasses 30s limit
     );

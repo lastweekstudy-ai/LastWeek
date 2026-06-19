@@ -36,18 +36,30 @@ export const SessionProvider = ({ children }) => {
   const sendInFlightRef = useRef(false);
 
   // Start a new session
-  const startSession = async (mode, studySubject, title) => {
+  const startSession = async (mode, studySubject, title, options = {}) => {
     if (!user) throw new Error('User must be logged in');
     
     try {
       setIsLoading(true);
       setError(null);
       
-      const session = await createSession(user.$id, mode, studySubject, title);
+      const session = await createSession(user.$id, mode, studySubject, title, options);
+      let initialMessages = [];
+
+      if (options.initialAssistantMessage) {
+        const openingMessage = await createMessage(
+          session.$id,
+          user.$id,
+          'assistant',
+          options.initialAssistantMessage
+        );
+        initialMessages = [openingMessage];
+      }
+
       setActiveSession(session);
       setCurrentMode(mode);
       setSubject(studySubject);
-      setMessages([]);
+      setMessages(initialMessages);
       setHasOlderMessages(false);
       setOlderMessagesCursor(null);
       

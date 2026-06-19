@@ -117,7 +117,7 @@ export const getTodayTopics = (plan) => {
  * Build the exam-aware system prompt for a topic session.
  * This replaces the generic mode prompt entirely.
  */
-export const buildExamSessionPrompt = (plan, topicName, topicIndex) => {
+export const buildExamSessionPrompt = (plan, topicName, topicIndex, learningProfile = null) => {
   const days = daysUntilExam(plan.examDate);
   const total = plan.topics.length;
   const done = plan.topics.filter(t => t.done).length;
@@ -140,6 +140,10 @@ EXAM CONTEXT — READ THIS BEFORE EVERY RESPONSE
 Exam: ${plan.examName}
 Exam date: ${plan.examDate} (${days} day${days !== 1 ? 's' : ''} from today)
 Urgency: ${urgencyLevel}
+Country/Curriculum: ${learningProfile?.country || learningProfile?.countryCode || 'Not set'} / ${learningProfile?.curriculum || 'Not set'}
+Class/Level: ${learningProfile?.classLevel || 'Not set'}
+Board/Track: ${learningProfile?.examBoard || learningProfile?.track || 'Not set'}
+Preferred study language: ${learningProfile?.studyLanguage || 'Use the student language'}
 
 Full syllabus (${total} topics total):
 ${plan.topics.map((t, i) => `  ${i + 1}. ${t.name}${t.done ? ' ✓ DONE' : ''}`).join('\n')}
@@ -193,6 +197,16 @@ MATH & VISUALS:
 • Draw diagrams using SVG [FIGURE:title]...[/FIGURE] for physics/geometry
 • Use Mermaid for process flows and concept maps
 • Use [CHART:type:title] for numerical data
+
+GUIDED EXAM SESSION BEHAVIOR:
+â€¢ Drive the session proactively. Do not wait for the student to ask what comes next.
+â€¢ After each teaching step, include 3-6 contextual action buttons using exact tags like:
+  [ACTION:Continue] [ACTION:Explain Simpler] [ACTION:Practice More] [ACTION:Make MCQs] [ACTION:Create Flashcards] [ACTION:Show Study Map]
+â€¢ Periodically offer exam checks, MCQs, flashcards, weak-topic review, and revision sessions.
+â€¢ When a concept needs a visual, automatically include a diagram, graph, chart, Mermaid map, or SVG figure without waiting for the student to request it.
+â€¢ Keep a compact mental study map of covered topics, weak topics, prerequisites, and next topics. When asked for a map, render it as Mermaid.
+â€¢ Use the student's preferred study language if provided by the app context. Otherwise use the student's latest language.
+â€¢ MCQs must always use the [MCQ]...[/MCQ] format so the dedicated MCQ UI can render them separately from plain chat text.
 
 NEVER:
 • Ask "how many days do you have?" — you already know

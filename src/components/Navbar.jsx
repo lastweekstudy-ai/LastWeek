@@ -279,14 +279,14 @@ const Navbar = ({ isSessionPage = false }) => {
 
   return (
     <>
-      <nav className={`fixed left-0 top-0 z-40 w-full border-b border-surface-200/80 bg-white/90 shadow-soft backdrop-blur-xl transition-transform duration-200 dark:border-surface-800 dark:bg-surface-950/88 lg:h-screen lg:w-64 lg:border-b-0 lg:border-r ${desktopNavOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'}`}>
+      <nav className={`app-sidebar-nav fixed left-0 top-0 z-40 w-full overflow-hidden border-b border-surface-200/80 bg-white shadow-soft backdrop-blur-xl transition-transform duration-200 dark:border-surface-800 dark:bg-surface-950 lg:h-screen lg:w-64 lg:border-b-0 lg:border-r ${desktopNavOpen ? 'lg:translate-x-0' : 'lg:-translate-x-full'}`}>
         <div className="mx-auto flex h-full max-w-7xl px-4 lg:max-w-none lg:flex-col lg:px-3 lg:py-4">
           <div className="flex h-16 w-full items-center justify-between gap-3 lg:h-full lg:flex-col lg:items-stretch lg:justify-start">
 
             {/* Left: brand + session info */}
             <div className="flex min-w-0 items-center gap-3 lg:flex-col lg:items-stretch">
               <div className="flex cursor-pointer items-center gap-3 rounded-2xl px-2 py-2 transition hover:bg-surface-100 dark:hover:bg-surface-900" onClick={() => navigate('/dashboard')}>
-                <img src="/logos/lastweek_main_logo.png" alt="LastWeek" className="h-9 w-9 rounded-xl object-contain" />
+                <span className="lastweek-nav-mark" aria-hidden="true">LW</span>
                 <span className="hidden text-lg font-bold text-surface-950 dark:text-white sm:inline lg:inline">LastWeek</span>
               </div>
               <button
@@ -378,11 +378,16 @@ const Navbar = ({ isSessionPage = false }) => {
 
       {!desktopNavOpen && (
         <button
-          className="btn-primary fixed left-4 top-4 z-50 hidden h-11 w-11 items-center justify-center rounded-full p-0 lg:flex"
+          className="fixed left-4 top-4 z-50 hidden h-11 w-11 items-center justify-center rounded-2xl border border-brand-200 bg-white text-[0] text-surface-700 shadow-soft transition hover:border-brand-400 hover:bg-brand-50 hover:text-brand-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:border-brand-600/25 dark:bg-surface-950 dark:text-surface-200 dark:hover:bg-surface-900 lg:flex"
           onClick={() => setDesktopNavOpen(true)}
           title="Open navigation"
           aria-label="Open navigation"
         >
+          <span className="flex flex-col gap-1" aria-hidden="true">
+            <span className="block h-0.5 w-5 rounded-full bg-current" />
+            <span className="block h-0.5 w-5 rounded-full bg-current" />
+            <span className="block h-0.5 w-5 rounded-full bg-current" />
+          </span>
           ☰
         </button>
       )}

@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
       
       // Create user profile
       try {
-        await createUserProfile(newUser.$id, name);
+        await createUserProfile(newUser.$id, name, profileData.learningProfile);
       } catch (profileError) {
         console.error('Failed to create user profile:', profileError);
       }

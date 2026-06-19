@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -11,6 +11,11 @@ import {
 } from '../appwrite/examPlanner';
 import useCombinedLimits from '../hooks/useCombinedLimits';
 import UsageLimitModal from '../components/UsageLimitModal';
+import {
+  getCurriculumTopicSuggestions,
+  getCurriculumsForCountry,
+  readLocalAcademicProfile,
+} from '../utils/curriculum';
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 const CalendarIcon = () => (
@@ -37,7 +42,7 @@ const PlusIcon = () => (
 );
 
 // ─── New Plan Form ─────────────────────────────────────────────────────────────
-const NewPlanForm = ({ onCreated, onCancel }) => {
+const NewPlanForm = ({ onCreated, onCancel, learningProfile }) => {
   const { user } = useAuth();
   const [examName, setExamName] = useState('');
   const [examDate, setExamDate] = useState('');
@@ -49,11 +54,29 @@ const NewPlanForm = ({ onCreated, onCancel }) => {
   const minDate = new Date();
   minDate.setDate(minDate.getDate() + 1);
   const minDateStr = minDate.toISOString().split('T')[0];
+  const selectedCurriculum = useMemo(() => {
+    const curriculums = getCurriculumsForCountry(learningProfile?.countryCode);
+    return curriculums.find((item) => item.name === learningProfile?.curriculum) || curriculums[0];
+  }, [learningProfile]);
+  const topicSuggestions = useMemo(
+    () => getCurriculumTopicSuggestions(selectedCurriculum, learningProfile, `${examName} ${topicInput} exam revision`),
+    [selectedCurriculum, learningProfile, examName, topicInput]
+  );
+  const visibleSuggestions = topicSuggestions
+    .filter((item) => !topics.some((topic) => topic.name.toLowerCase() === item.label.toLowerCase()))
+    .slice(0, 12);
 
-  const addTopic = () => {
-    const val = topicInput.trim();
+  const addTopic = (suggestion = null) => {
+    const val = (suggestion?.label || topicInput).trim();
     if (!val) return;
-    setTopics(prev => [...prev, { name: val, done: false, sessionId: null }]);
+    if (topics.some((topic) => topic.name.toLowerCase() === val.toLowerCase())) return;
+    setTopics(prev => [...prev, {
+      name: val,
+      done: false,
+      sessionId: null,
+      source: suggestion?.type || 'manual',
+      studyLanguage: learningProfile?.studyLanguage || 'English',
+    }]);
     setTopicInput('');
   };
 
@@ -113,15 +136,37 @@ const NewPlanForm = ({ onCreated, onCancel }) => {
           <div className="ep-topic-input-row">
             <input
               className="form-input"
-              placeholder="e.g. Newton's Laws of Motion"
+              placeholder={visibleSuggestions[0]?.label || "e.g. Newton's Laws of Motion"}
               value={topicInput}
               onChange={e => setTopicInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addTopic(); } }}
+              autoComplete="off"
             />
             <button type="button" className="btn btn-secondary" onClick={addTopic}>
               <PlusIcon /> Add
             </button>
           </div>
+          {visibleSuggestions.length > 0 && (
+            <div className="ep-topic-suggestions">
+              <span>
+                Suggested from {learningProfile?.curriculum || 'your curriculum'} / {learningProfile?.classLevel || 'level'}
+              </span>
+              <div className="curriculum-topic-chip-row">
+                {visibleSuggestions.map((item) => (
+                  <button
+                    key={`${item.type}-${item.label}`}
+                    type="button"
+                    className="curriculum-topic-chip"
+                    onClick={() => addTopic(item)}
+                    title={`${item.type}: ${item.label}`}
+                  >
+                    <small>{item.type}</small>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           {topics.length > 0 && (
             <ul className="ep-topic-list">
               {topics.map((t, i) => (
@@ -133,7 +178,7 @@ const NewPlanForm = ({ onCreated, onCancel }) => {
             </ul>
           )}
           {topics.length === 0 && (
-            <p className="ep-hint">Add each topic or chapter you need to study before the exam.</p>
+            <p className="ep-hint">Pick suggested curriculum topics or add specific chapters from your syllabus.</p>
           )}
         </div>
 
@@ -263,6 +308,7 @@ const ExamPlanner = () => {
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState('');
   const [limitBlocked, setLimitBlocked] = useState(null);
+  const [learningProfile] = useState(() => readLocalAcademicProfile());
   const { canDo, planName, isTestingMode } = useCombinedLimits();
 
   useEffect(() => {
@@ -349,7 +395,11 @@ const ExamPlanner = () => {
 
         {/* New plan form */}
         {showForm && (
-          <NewPlanForm onCreated={handleCreated} onCancel={() => setShowForm(false)} />
+          <NewPlanForm
+            onCreated={handleCreated}
+            onCancel={() => setShowForm(false)}
+            learningProfile={learningProfile}
+          />
         )}
 
         {/* Loading */}

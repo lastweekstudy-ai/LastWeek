@@ -1,6 +1,6 @@
 /**
  * Appwrite Function: Universal AI Proxy
- * Version: v8
+ * Version: v12
  *
  * Supports: DeepSeek, Gemini, Groq (chat, vision, transcription)
  *
@@ -30,6 +30,7 @@ const CORS_HEADERS = {
 
 const MAX_PROXY_MESSAGE_CHARS = 24000;
 const MAX_PROXY_PROMPT_CHARS = 32000;
+const FETCH_TIMEOUT_MS = Number(process.env.AI_PROXY_FETCH_TIMEOUT_MS || 25000);
 
 function trimText(value, maxChars) {
   const text = typeof value === 'string' ? value : '';
@@ -44,6 +45,28 @@ function trimMessages(messages = [], maxChars = MAX_PROXY_MESSAGE_CHARS) {
     role: message.role === 'assistant' ? 'assistant' : 'user',
     content: trimText(message.content, maxChars),
   }));
+}
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = FETCH_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      throw new Error(`Provider request timed out after ${Math.round(timeoutMs / 1000)}s`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function readProviderError(response, fallback) {
+  const errData = await response.clone().json().catch(async () => ({
+    message: await response.text().catch(() => ''),
+  }));
+  return trimText(errData.error?.message || errData.message || fallback, 500);
 }
 
 export default async ({ req, res, log, error }) => {
@@ -72,6 +95,7 @@ export default async ({ req, res, log, error }) => {
     image,
     mimeType = 'image/jpeg',
     audioFile,
+    language,
     temperature = 0.7,
     maxTokens = 4096,
   } = body;
@@ -80,7 +104,7 @@ export default async ({ req, res, log, error }) => {
     return res.json({ success: false, error: 'provider is required' }, 400, CORS_HEADERS);
   }
 
-  log(`[aiProxy] v8 - ${provider} ${action} request`);
+  log(`[aiProxy] v12 - ${provider} ${action} request`);
 
   try {
     let result;
@@ -93,9 +117,9 @@ export default async ({ req, res, log, error }) => {
         break;
       case 'groq':
         if (action === 'transcribe_async') {
-          result = await handleAsyncTranscription({ jobId: body.jobId, audioData: body.audioFile }, { log, error });
+          result = await handleAsyncTranscription({ jobId: body.jobId, audioData: body.audioFile, language }, { log, error });
         } else {
-          result = await handleGroq({ action, systemPrompt, messages, prompt, image, mimeType, audioFile, model, temperature, maxTokens }, { log, error });
+          result = await handleGroq({ action, systemPrompt, messages, prompt, image, mimeType, audioFile, language, model, temperature, maxTokens }, { log, error });
         }
         break;
       default:
@@ -127,7 +151,7 @@ async function handleDeepSeek(params, { log, error }) {
 
   log(`[DeepSeek] Calling with ${msgs.length} messages`);
 
-  const response = await fetch(ENDPOINTS.deepseek, {
+  const response = await fetchWithTimeout(ENDPOINTS.deepseek, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
@@ -143,8 +167,7 @@ async function handleDeepSeek(params, { log, error }) {
   });
 
   if (!response.ok) {
-    const errData = await response.json().catch(() => ({}));
-    throw new Error(errData.error?.message || `DeepSeek error: ${response.status}`);
+    throw new Error(await readProviderError(response, `DeepSeek error: ${response.status}`));
   }
 
   const data = await response.json();
@@ -176,14 +199,14 @@ async function handleGemini(params, { log, error }) {
     if (systemPrompt) textContent += systemPrompt + '\n\n';
     if (prompt) textContent += trimText(prompt, MAX_PROXY_PROMPT_CHARS);
     if (messages && messages.length > 0) {
-      textContent += trimMessages(messages).map(m => `${m.role}: ${m.content}`).join('\n');
+      textContent += `\n\n${trimMessages(messages).map(m => `${m.role}: ${m.content}`).join('\n')}`;
     }
     parts.push({ text: textContent });
   }
 
   log(`[Gemini] Calling ${model} with ${parts.length} parts`);
 
-  const response = await fetch(endpoint, {
+  const response = await fetchWithTimeout(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -195,8 +218,7 @@ async function handleGemini(params, { log, error }) {
   });
 
   if (!response.ok) {
-    const errData = await response.json().catch(() => ({}));
-    throw new Error(errData.error?.message || `Gemini error: ${response.status}`);
+    throw new Error(await readProviderError(response, `Gemini error: ${response.status}`));
   }
 
   const data = await response.json();
@@ -214,7 +236,7 @@ async function handleGroq(params, { log, error }) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) throw new Error('GROQ_API_KEY not configured');
 
-  const { action, systemPrompt, messages, prompt, image, mimeType, audioFile, model, temperature, maxTokens } = params;
+  const { action, systemPrompt, messages, prompt, image, mimeType, audioFile, language, model, temperature, maxTokens } = params;
 
   // Synchronous transcription (only for short audio, may timeout for >30s)
   if (action === 'transcribe') {
@@ -225,16 +247,16 @@ async function handleGroq(params, { log, error }) {
     const formData = new FormData();
     formData.append('file', new Blob([buffer], { type: 'audio/webm' }), 'audio.webm');
     formData.append('model', 'whisper-large-v3');
+    if (language) formData.append('language', language);
 
-    const response = await fetch(ENDPOINTS.groqTranscribe, {
+    const response = await fetchWithTimeout(ENDPOINTS.groqTranscribe, {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}` },
       body: formData,
     });
 
     if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error?.message || `Groq transcribe error: ${response.status}`);
+      throw new Error(await readProviderError(response, `Groq transcribe error: ${response.status}`));
     }
 
     const data = await response.json();
@@ -269,7 +291,7 @@ async function handleGroq(params, { log, error }) {
 
   log(`[Groq] Calling ${chatModel} with ${msgs.length} messages`);
 
-  const response = await fetch(ENDPOINTS.groq, {
+  const response = await fetchWithTimeout(ENDPOINTS.groq, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
@@ -284,8 +306,7 @@ async function handleGroq(params, { log, error }) {
   });
 
   if (!response.ok) {
-    const errData = await response.json().catch(() => ({}));
-    throw new Error(errData.error?.message || `Groq error: ${response.status}`);
+    throw new Error(await readProviderError(response, `Groq error: ${response.status}`));
   }
 
   const data = await response.json();
@@ -299,19 +320,19 @@ async function handleGroq(params, { log, error }) {
 // ASYNC TRANSCRIPTION HANDLER (bypasses 30s sync timeout via DB polling)
 // ═══════════════════════════════════════════════════════════════════════════════
 
-async function handleAsyncTranscription({ jobId, audioData }, { log, error }) {
+async function handleAsyncTranscription({ jobId, audioData, language }, { log, error }) {
   const apiKey = process.env.GROQ_API_KEY;
   const appwriteApiKey = process.env.APPWRITE_API_KEY;
   const appwriteEndpoint = process.env.APPWRITE_ENDPOINT || 'https://sgp.cloud.appwrite.io/v1';
   const projectId = process.env.APPWRITE_PROJECT_ID;
   const databaseId = process.env.APPWRITE_DATABASE_ID || '69f742a2001f393e4b85';
-  const collectionId = 'transcription_jobs';
+  const collectionId = process.env.APPWRITE_TRANSCRIPTION_JOBS_COLLECTION_ID || 'transcription_jobs';
 
   if (!apiKey) throw new Error('GROQ_API_KEY not configured');
   if (!appwriteApiKey) throw new Error('APPWRITE_API_KEY not configured');
 
   const patchJob = async (fields) => {
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `${appwriteEndpoint}/databases/${databaseId}/collections/${collectionId}/documents/${jobId}`,
       {
         method: 'PATCH',
@@ -340,18 +361,18 @@ async function handleAsyncTranscription({ jobId, audioData }, { log, error }) {
     const formData = new FormData();
     formData.append('file', new Blob([buffer], { type: 'audio/webm' }), 'audio.webm');
     formData.append('model', 'whisper-large-v3');
+    if (language) formData.append('language', language);
 
-    log(`[AsyncTranscription] Calling Groq Whisper, size: ${Math.round(buffer.length / 1024)}KB`);
+    log(`[AsyncTranscription] Calling Groq Whisper, size: ${Math.round(buffer.length / 1024)}KB, language: ${language || 'auto'}`);
 
-    const response = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', {
+    const response = await fetchWithTimeout('https://api.groq.com/openai/v1/audio/transcriptions', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${apiKey}` },
       body: formData,
     });
 
     if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error?.message || `Groq transcribe error: ${response.status}`);
+      throw new Error(await readProviderError(response, `Groq transcribe error: ${response.status}`));
     }
 
     const data = await response.json();

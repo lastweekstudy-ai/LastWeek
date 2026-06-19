@@ -5,6 +5,7 @@ import { getPlanLimits, getUserPlan } from '../config/planLimits';
 import { getUserSubscription, isSubscriptionActive } from '../appwrite/subscription';
 import { useAuth } from '../context/AuthContext';
 import useCombinedLimits from '../hooks/useCombinedLimits';
+import { readLocalAcademicProfile } from '../utils/curriculum';
 
 /**
  * AudioProcessor - Upload or record audio, transcribe with Gemini, process with DeepSeek
@@ -136,9 +137,14 @@ const AudioProcessor = ({ userId, sessionId, onClose, onLectureCreated }) => {
     });
 
     try {
+      const learningProfile = readLocalAcademicProfile();
       const result = await processAudioLecture(audioFile, userId, sessionId, (progressMsg) => {
         console.log('[Audio] Progress:', progressMsg);
         setProgress(progressMsg);
+      }, {
+        studyLanguage: learningProfile.studyLanguage,
+        resourceLanguage: learningProfile.studyLanguage,
+        curriculumContext: learningProfile,
       });
 
       console.log('[Audio] Success:', result);

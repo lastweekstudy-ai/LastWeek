@@ -16,6 +16,26 @@ const MERMAID_REGEX = /```mermaid\n([\s\S]*?)```/gi;
 const FIGURE_REGEX = /\[FIGURE(?::([^\]]*))?\]([\s\S]*?)\[\/FIGURE\]/gi;
 const ACTION_BUTTON_REGEX = /\[ACTION:([^\]]+)\]/g;
 
+const MarkdownTable = ({ children, ...props }) => (
+  <div className="study-table-wrap">
+    <table className="study-table" {...props}>
+      {children}
+    </table>
+  </div>
+);
+
+const MarkdownTh = ({ children, ...props }) => (
+  <th className="study-table-heading" {...props}>
+    {children}
+  </th>
+);
+
+const MarkdownTd = ({ children, ...props }) => (
+  <td className="study-table-cell" {...props}>
+    {children}
+  </td>
+);
+
 // Matches a single flashcard block (front + back)
 // The lookahead allows: "---\n**How confident" OR end of string OR end of block
 const FLASHCARD_REGEX = /\*\*FRONT OF CARD\*\*\s*([\s\S]*?)\s*---\s*\*\*BACK OF CARD\*\*\s*([\s\S]*?)(?=\s*---\s*\*\*How confident|\s*$)/i;
@@ -349,11 +369,9 @@ const MCQRenderer = ({ messageId, prefix, questions, suffix, onMCQAnswer }) => {
   const allAnswered   = answeredCount === questions.length;
 
   const markdownComponents = {
-    table: ({ node, ...props }) => (
-      <div style={{ overflowX: 'auto', margin: '0.5rem 0' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }} {...props} />
-      </div>
-    ),
+    table: ({ node, ...props }) => <MarkdownTable {...props} />,
+    th: ({ node, ...props }) => <MarkdownTh {...props} />,
+    td: ({ node, ...props }) => <MarkdownTd {...props} />,
   };
 
   return (
@@ -407,11 +425,9 @@ const FlashcardSetRenderer = ({ cards, prefix, suffix, onFlashcardRate }) => {
   };
 
   const markdownComponents = {
-    table: ({ node, ...props }) => (
-      <div style={{ overflowX: 'auto', margin: '0.5rem 0' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }} {...props} />
-      </div>
-    ),
+    table: ({ node, ...props }) => <MarkdownTable {...props} />,
+    th: ({ node, ...props }) => <MarkdownTh {...props} />,
+    td: ({ node, ...props }) => <MarkdownTd {...props} />,
   };
 
   return (
@@ -509,34 +525,9 @@ const EnhancedMessageFormatter = ({ content, messageId, onFlashcardRate, onMCQAn
 
   // Markdown component overrides
   const markdownComponents = {
-    table: ({ node, ...props }) => (
-      <div style={{ overflowX: 'auto', margin: '1rem 0' }}>
-        <table style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '8px',
-          overflow: 'hidden'
-        }} {...props} />
-      </div>
-    ),
-    th: ({ node, ...props }) => (
-      <th style={{
-        padding: '0.75rem',
-        textAlign: 'left',
-        borderBottom: '2px solid var(--color-border)',
-        backgroundColor: 'var(--color-bg-tertiary)',
-        fontWeight: 600,
-        color: 'var(--color-text-primary)'
-      }} {...props} />
-    ),
-    td: ({ node, ...props }) => (
-      <td style={{
-        padding: '0.75rem',
-        borderBottom: '1px solid var(--color-border)',
-        color: 'var(--color-text-secondary)'
-      }} {...props} />
-    ),
+    table: ({ node, ...props }) => <MarkdownTable {...props} />,
+    th: ({ node, ...props }) => <MarkdownTh {...props} />,
+    td: ({ node, ...props }) => <MarkdownTd {...props} />,
     code: ({ node, inline, className, children, ...props }) => {
       return inline ? (
         <code style={{

@@ -14,10 +14,8 @@ const BrandLogo = ({
 }) => {
   const [imageError, setImageError] = useState(false);
 
-  // Determine which logo file to use
-  const logoPath = variant === 'text' 
-    ? '/logos/lastweek_text_logo.png'
-    : '/logos/lastweek_main_logo.png';
+  // The icon PNG has a baked-in dark background, so render a theme-aware mark.
+  const logoPath = '/logos/lastweek_text_logo.png';
 
   // Default alt text
   const altText = alt || (variant === 'text' ? 'LastWeek wordmark' : 'LastWeek logo');
@@ -31,6 +29,36 @@ const BrandLogo = ({
   };
 
   // Fallback text if image fails to load
+  if (variant === 'icon') {
+    return (
+      <span
+        className={`lastweek-nav-mark ${className}`}
+        style={{ width: `${width}px`, height: `${height}px` }}
+        aria-label={altText}
+        role="img"
+      >
+        LW
+      </span>
+    );
+  }
+
+  if (variant === 'text') {
+    return (
+      <span
+        className={`inline-flex items-center gap-2 font-display font-bold text-surface-900 dark:text-white ${className}`}
+        style={{
+          minHeight: `${height}px`,
+          fontSize: Math.max(18, Math.round(height * 0.34)),
+        }}
+      >
+        <span className="lastweek-nav-mark" style={{ width: `${Math.min(width, height)}px`, height: `${Math.min(width, height)}px` }} aria-hidden="true">
+          LW
+        </span>
+        <span className="text-gradient">LastWeek</span>
+      </span>
+    );
+  }
+
   if (imageError) {
     return (
       <div
@@ -38,10 +66,10 @@ const BrandLogo = ({
         style={{
           width: `${width}px`,
           height: `${height}px`,
-          fontSize: variant === 'text' ? '14px' : '12px',
+          fontSize: '12px',
         }}
       >
-        {variant === 'text' ? 'LastWeek' : 'LW'}
+        LW
       </div>
     );
   }
@@ -57,7 +85,6 @@ const BrandLogo = ({
         onError={handleError}
         loading={priority ? 'eager' : 'lazy'}
       />
-      {variant === 'text' && <span className="text-gradient">LastWeek</span>}
     </span>
   );
 };

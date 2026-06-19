@@ -18,6 +18,7 @@ import PDFLibrary from '../components/PDFLibrary';
 import PomodoroTimer from '../components/PomodoroTimer';
 import usePerformanceTracking from '../hooks/usePerformanceTracking';
 import UsageLimitModal from '../components/UsageLimitModal';
+import { readLocalAcademicProfile } from '../utils/curriculum';
 
 /**
  * ExamSession — a dedicated session page for exam preparation.
@@ -162,7 +163,7 @@ const ExamSession = () => {
       }
     }
 
-    const systemPrompt = buildExamSessionPrompt(plan, topic.name, topicIdx);
+    const systemPrompt = buildExamSessionPrompt(plan, topic.name, topicIdx, readLocalAcademicProfile());
     const msgForAI = aiContextMessage || userDisplayMessage;
 
     const { messages: contextualMessages } = buildContextMessages(

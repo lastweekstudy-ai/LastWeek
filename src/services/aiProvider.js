@@ -246,7 +246,7 @@ export async function transcribeAudio(audioFile, language = null) {
   const base64Audio = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
 
   console.log(`[Whisper] Sending ${Math.round(fileToSend.size / 1024)}KB via secure proxy`);
-  return await SecureAI.transcribeAudio(base64Audio);
+  return await SecureAI.transcribeAudio(base64Audio, language);
 }
 
 /**

@@ -9,24 +9,97 @@ const PROFILES_COLLECTION_ID = import.meta.env.VITE_APPWRITE_PROFILES_COLLECTION
 const ATTACHMENTS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_ATTACHMENTS_COLLECTION_ID;
 const FLASHCARD_COLLECTIONS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_FLASHCARD_COLLECTIONS_COLLECTION_ID;
 
+const safeJsonString = (value, maxLength = 5000) => {
+  if (value === undefined || value === null || value === '') return null;
+  const text = typeof value === 'string' ? value : JSON.stringify(value);
+  return text.length > maxLength ? text.slice(0, maxLength) : text;
+};
+
+const isMissingAttributeError = (error) =>
+  /unknown attribute|invalid document structure|attribute.*not found/i.test(error?.message || '');
+
 // Sessions CRUD
-export const createSession = async (userId, mode, subject, title) => {
+export const createSession = async (userId, mode, subject, title, options = {}) => {
   try {
+    const basePayload = {
+      userId,
+      mode,
+      subject,
+      title,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    const extendedPayload = {
+      ...basePayload,
+      ...(options.curriculumContext && {
+        curriculumContext: safeJsonString(options.curriculumContext, 6000),
+      }),
+      ...(options.sessionPlan && {
+        sessionPlan: safeJsonString(options.sessionPlan, 10000),
+      }),
+      ...(options.guidedPlan && {
+        guidedPlan: safeJsonString(options.guidedPlan, 6000),
+      }),
+      ...(options.sessionState && {
+        sessionState: safeJsonString(options.sessionState, 6000),
+      }),
+    };
+
     const session = await databases.createDocument(
       DATABASE_ID,
       SESSIONS_COLLECTION_ID,
       ID.unique(),
-      {
+      extendedPayload
+    );
+    return session;
+  } catch (error) {
+    if (isMissingAttributeError(error) && (options.curriculumContext || options.sessionPlan || options.guidedPlan || options.sessionState)) {
+      const compactPayload = {
         userId,
         mode,
         subject,
         title,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
+        ...(options.curriculumContext && {
+          curriculumContext: safeJsonString(options.curriculumContext, 6000),
+        }),
+        ...(options.sessionState && {
+          sessionState: safeJsonString(options.sessionState, 6000),
+        }),
+        ...(options.guidedPlan && {
+          guidedPlan: safeJsonString(options.guidedPlan, 6000),
+        }),
+      };
+
+      try {
+        return await databases.createDocument(
+          DATABASE_ID,
+          SESSIONS_COLLECTION_ID,
+          ID.unique(),
+          compactPayload
+        );
+      } catch (compactError) {
+        if (!isMissingAttributeError(compactError)) {
+          throw new Error(compactError.message);
+        }
+        const session = await databases.createDocument(
+          DATABASE_ID,
+          SESSIONS_COLLECTION_ID,
+          ID.unique(),
+          {
+            userId,
+            mode,
+            subject,
+            title,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        );
+        return session;
       }
-    );
-    return session;
-  } catch (error) {
+    }
     throw new Error(error.message);
   }
 };
@@ -94,11 +167,25 @@ export const getUserSessions = async (userId, limit = 50) => {
         Query.notEqual('mode', 'exam_prep'), // exam sessions live at /exam-session, not /session
         Query.orderDesc('updatedAt'),
         Query.limit(limit),
-        Query.select(['$id', '$createdAt', '$updatedAt', 'userId', 'mode', 'subject', 'title', 'summary', 'createdAt', 'updatedAt'])
+        Query.select(['$id', '$createdAt', '$updatedAt', 'userId', 'mode', 'subject', 'title', 'summary', 'createdAt', 'updatedAt', 'curriculumContext', 'guidedPlan', 'sessionState'])
       ]
     );
     return sessions.documents;
   } catch (error) {
+    if (isMissingAttributeError(error)) {
+      const sessions = await databases.listDocuments(
+        DATABASE_ID,
+        SESSIONS_COLLECTION_ID,
+        [
+          Query.equal('userId', userId),
+          Query.notEqual('mode', 'exam_prep'),
+          Query.orderDesc('updatedAt'),
+          Query.limit(limit),
+          Query.select(['$id', '$createdAt', '$updatedAt', 'userId', 'mode', 'subject', 'title', 'summary', 'createdAt', 'updatedAt'])
+        ]
+      );
+      return sessions.documents;
+    }
     console.error('getUserSessions error:', error);
     // Provide more helpful error messages
     if (error.message.includes('Collection with the requested ID could not be found')) {
@@ -466,7 +553,16 @@ export const getDueFlashcards = async (userId, limit = 50) => {
 };
 
 // User Profiles CRUD
-export const createUserProfile = async (userId, displayName) => {
+export const createUserProfile = async (userId, displayName, profileData = {}) => {
+  const profilePayload = {
+    ...(profileData.academicProfile && {
+      academicProfile: safeJsonString(profileData.academicProfile, 6000),
+    }),
+    ...(profileData.languageProfile && {
+      languageProfile: safeJsonString(profileData.languageProfile, 3000),
+    }),
+  };
+
   try {
     const profile = await databases.createDocument(
       DATABASE_ID,
@@ -477,11 +573,26 @@ export const createUserProfile = async (userId, displayName) => {
         displayName,
         currentMode: null,
         totalSessions: 0,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        ...profilePayload,
       }
     );
     return profile;
   } catch (error) {
+    if (isMissingAttributeError(error) && Object.keys(profilePayload).length) {
+      return await databases.createDocument(
+        DATABASE_ID,
+        PROFILES_COLLECTION_ID,
+        ID.unique(),
+        {
+          userId,
+          displayName,
+          currentMode: null,
+          totalSessions: 0,
+          createdAt: new Date().toISOString()
+        }
+      );
+    }
     throw new Error(error.message);
   }
 };
@@ -509,6 +620,51 @@ export const updateUserProfile = async (profileId, data) => {
     );
     return profile;
   } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+export const saveUserLearningProfile = async (userId, profileData) => {
+  const payload = {
+    ...(profileData.academicProfile && {
+      academicProfile: safeJsonString(profileData.academicProfile, 6000),
+    }),
+    ...(profileData.languageProfile && {
+      languageProfile: safeJsonString(profileData.languageProfile, 3000),
+    }),
+  };
+
+  if (!Object.keys(payload).length) return null;
+
+  try {
+    const profile = await getUserProfile(userId);
+    if (profile?.$id) {
+      return await databases.updateDocument(
+        DATABASE_ID,
+        PROFILES_COLLECTION_ID,
+        profile.$id,
+        payload
+      );
+    }
+
+    return await databases.createDocument(
+      DATABASE_ID,
+      PROFILES_COLLECTION_ID,
+      ID.unique(),
+      {
+        userId,
+        displayName: '',
+        currentMode: null,
+        totalSessions: 0,
+        createdAt: new Date().toISOString(),
+        ...payload,
+      }
+    );
+  } catch (error) {
+    if (isMissingAttributeError(error)) {
+      console.warn('[saveUserLearningProfile] Profile fields are not available yet; using local profile only.');
+      return null;
+    }
     throw new Error(error.message);
   }
 };

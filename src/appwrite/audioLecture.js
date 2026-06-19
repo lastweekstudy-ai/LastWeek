@@ -23,13 +23,24 @@ const AUDIO_LECTURE_LIST_FIELDS = [
   'updatedAt',
 ];
 
+const LANGUAGE_TO_WHISPER_CODE = {
+  English: 'en',
+  Bangla: 'bn',
+  Bengali: 'bn',
+  Hindi: 'hi',
+  Spanish: 'es',
+  French: 'fr',
+  German: 'de',
+  Italian: 'it',
+};
+
 /**
  * Transcribe audio with Groq Whisper (via secure proxy)
  */
-async function transcribeWithSecureProxy(audioFile, onProgress) {
+async function transcribeWithSecureProxy(audioFile, onProgress, language = null) {
   try {
-    onProgress?.('Transcribing audio...');
-    const transcript = await transcribeAudio(audioFile);
+    onProgress?.(`Transcribing audio${language ? ` (${language})` : ''}...`);
+    const transcript = await transcribeAudio(audioFile, LANGUAGE_TO_WHISPER_CODE[language] || null);
     
     if (!transcript || transcript.length < 50) {
       throw new Error('Transcript too short or empty');
@@ -46,20 +57,38 @@ async function transcribeWithSecureProxy(audioFile, onProgress) {
 /**
  * Process audio file: upload to R2 → transcribe (Groq Whisper → Gemini) → structure with DeepSeek → save
  */
-export const processAudioLecture = async (audioFile, userId, sessionId, onProgress) => {
+export const processAudioLecture = async (audioFile, userId, sessionId, onProgress, options = {}) => {
   try {
+    const studyLanguage = options.studyLanguage || 'English';
+    const resourceLanguage = options.resourceLanguage || studyLanguage;
+    const curriculumContext = options.curriculumContext || {};
     // Step 1: Upload audio to Cloudflare R2
     onProgress?.('Uploading audio to cloud storage...');
     const { fileId, url: audioUrl } = await uploadAudioToR2(audioFile, userId);
 
     // Step 2: Transcribe (Groq Whisper via secure proxy)
-    const transcript = await transcribeWithSecureProxy(audioFile, onProgress);
+    const transcript = await transcribeWithSecureProxy(audioFile, onProgress, resourceLanguage);
 
     // Step 3: Process transcript with DeepSeek to create structured lecture notes
     onProgress?.('Creating structured lecture notes...');
     
-    const systemPrompt = 'You are an expert educational content creator. Convert lecture transcripts into well-structured, comprehensive study notes.';
+    const systemPrompt = `You are an expert educational content creator. Convert lecture transcripts into well-structured, comprehensive study notes.
+
+Language rules:
+- The source audio language is likely ${resourceLanguage}.
+- The student's preferred study language is ${studyLanguage}.
+- Write the final notes, summaries, study questions, and explanations in ${studyLanguage}.
+- Keep important original terminology from the transcript when helpful, with short translations if needed.
+- If the transcript is mixed-language, preserve meaning and explain clearly in ${studyLanguage}.`;
     const userPrompt = `Convert this lecture transcript into structured study notes with the following format:
+
+Student context:
+- Country: ${curriculumContext.country || 'Not set'}
+- Curriculum: ${curriculumContext.curriculum || 'Not set'}
+- Class/level: ${curriculumContext.classLevel || 'Not set'}
+- Track/board: ${curriculumContext.track || curriculumContext.examBoard || 'Not set'}
+- Study language: ${studyLanguage}
+- Source audio language: ${resourceLanguage}
 
 # [Lecture Title - infer from content]
 
@@ -80,10 +109,9 @@ export const processAudioLecture = async (audioFile, userId, sessionId, onProgre
 SVG FIGURE RULES — FOLLOW EXACTLY:
 [FIGURE:Descriptive Title of the Figure]
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 450" width="600" height="450">
-  <rect width="600" height="450" fill="#0f1117" rx="12"/>
   <!-- SAFE ZONE: x=60 to x=540, y=40 to y=410. NEVER place elements outside this zone. -->
-  <!-- Colors: lines=#a78bfa, secondary=#60a5fa, positive=#34d399, negative=#f87171, highlight=#fbbf24 -->
-  <!-- ALL text: font-family="system-ui,sans-serif" fill="#e2e8f0" -->
+  <!-- Colors: lines=#7c3aed, secondary=#2563eb, positive=#059669, negative=#dc2626, highlight=#b45309 -->
+  <!-- ALL text: font-family="system-ui,sans-serif" fill="#111827" unless text sits inside a dark shape -->
   <!-- Title: font-size="15" font-weight="bold" at y=28 text-anchor="middle" x="300" -->
   <!-- Labels: font-size="13", placed 8px away from the element they label -->
   <!-- Arrowheads: define colored markers in <defs>, use marker-end="url(#arr-purple)" etc. -->
@@ -92,16 +120,34 @@ SVG FIGURE RULES — FOLLOW EXACTLY:
 [/FIGURE]
 
 SVG QUALITY RULES:
-1. ALWAYS use viewBox="0 0 600 450" width="600" height="450" — standard canvas
-2. ALWAYS start with <rect width="600" height="450" fill="#0f1117" rx="12"/> as background
+1. Use viewBox="0 0 600 450" for simple diagrams; use viewBox="0 0 800 700" for dense coordinate/vector diagrams.
+2. DO NOT add a full-canvas black/dark background rect. The app provides the diagram card background.
+2a. Avoid formula panels inside SVGs. Put detailed calculations in normal text below the figure instead. If a tiny summary panel is unavoidable, use fill="#ffffff" fill-opacity="0.98" stroke="#cbd5e1" and keep it to 3 short lines maximum.
 3. SAFE ZONE: x=60–540, y=40–410. Nothing outside this zone.
-4. Title at top: <text x="300" y="28" text-anchor="middle" font-size="15" font-weight="bold" fill="#e2e8f0">Title</text>
-5. ALL text: font-family="system-ui,sans-serif" fill="#e2e8f0"
+4. Title at top: <text x="300" y="28" text-anchor="middle" font-size="15" font-weight="bold" fill="#111827">Title</text>
+5. ALL text: font-family="system-ui,sans-serif" fill="#111827" unless text sits inside a dark shape
 6. Color code by meaning: purple=primary, blue=secondary, green=positive/up, red=negative/down, yellow=highlight
 7. EVERY shape, line, arrow, axis must have a text label with value and unit
 8. For angled vectors: compute exact dx=length×cos(θ), dy=-length×sin(θ) — use real trig values
 9. Define arrowhead markers in <defs> for each color used
 10. Make figures fill the safe zone — use the full 480×370px drawing area
+11. Use ONE clear visual idea per SVG. If the lecture needs multiple cases, create separate figures.
+12. Never overlap text, arrows, shapes, legends, or formulas. If the figure feels crowded, simplify it.
+13. Never write raw LaTeX in SVG text. Use beginner-readable labels like "Vector A", "x part", "angle", "length of A"; explain longer formulas in normal text below the figure.
+14. Put formulas in a clean footer/caption area instead of on top of arrows or shapes.
+14a. Do not place multi-step calculations inside SVG boxes. SVG text must be short labels only.
+15. Before finalizing, check that labels are not cut off, black-on-black, duplicated, or pointing to the wrong object.
+16. Use a strict layout grid for dense visuals: title/formula panel, legend, and drawing must live in separate bounded regions.
+17. Draw in layers: grid/construction lines first, axes second, vectors/curves third, coordinate labels fourth, header and legend last.
+18. For dense coordinate/vector diagrams, use viewBox="0 0 800 700" and reserve the top 200px for title/formula/legend panels.
+19. Do not use labels like "A_xi", "A_yj", "A_zk", "\\hat{i}", or raw component notation inside SVG text. Use "x part", "y part", "z part", "Vector A".
+
+MANDATORY SVG GRID:
+- For 600x450, use title x=60 y=24 w=480 h=28, legend x=58 y=68 w=178 h=104, summary x=354 y=68 w=188 h=112, main drawing x=95 y=205 w=410 h=170.
+- For 800x700, use title x=60 y=28 w=680 h=32, legend x=48 y=72 w=210 h=132, summary x=508 y=72 w=244 h=132, main drawing x=110 y=245 w=580 h=360.
+- Do not draw vectors, graph lines, arrows, axes, or labels into legend/summary zones.
+- Avoid footer formula panels. Put detailed formulas in normal text below the SVG.
+- If the diagram cannot fit this grid, split it into two simpler SVG figures.
 
 WHEN TO ADD FIGURES:
 - Geometric shapes, trigonometry → labeled triangle/circle with all sides and angles

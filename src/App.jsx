@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useNavigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { SessionProvider } from './context/SessionContext';
@@ -9,43 +9,42 @@ import useCombinedLimits from './hooks/useCombinedLimits';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
 import MigrationHelper from './components/MigrationHelper';
-import LandingPage from './pages/landing/LandingPage';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import Pricing from './pages/Pricing';
-import RefundPolicy from './pages/RefundPolicy';
-import CookiePolicy from './pages/CookiePolicy';
-import Auth from './pages/Auth';
-import Dashboard from './pages/DashboardEnhanced';
-import ModeSelector from './pages/ModeSelector';
-import Settings from './pages/Settings';
-import DocsPage from './pages/docs/DocsPage';
-import PDFManager from './components/PDFManager';
-import MentalModel from './pages/modes/MentalModel';
-import ActiveRecall from './pages/modes/ActiveRecall';
-import FocusBreakdown from './pages/modes/FocusBreakdown';
-import CollaborativeScholar from './pages/modes/CollaborativeScholar';
-import CreativeSynthesis from './pages/modes/CreativeSynthesis';
-import ExamPlanner from './pages/ExamPlanner';
-import ExamSession from './pages/ExamSession';
-import LanguageLearning from './pages/LanguageLearning';
-import LanguageLearningLesson from './pages/LanguageLearningLesson';
-import LanguageLearningLessons from './pages/LanguageLearningLessons';
-import LanguageLearningPractice from './pages/LanguageLearningPractice';
-import FlashcardLibrary from './pages/FlashcardLibrary';
-import PreRegistration from './pages/PreRegistration';
-import SecureAITest from './components/SecureAITest';
+const LandingPage = lazy(() => import('./pages/landing/LandingPage'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Pricing = lazy(() => import('./pages/Pricing'));
+const RefundPolicy = lazy(() => import('./pages/RefundPolicy'));
+const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
+const Auth = lazy(() => import('./pages/Auth'));
+const Dashboard = lazy(() => import('./pages/DashboardEnhanced'));
+const ModeSelector = lazy(() => import('./pages/ModeSelector'));
+const Settings = lazy(() => import('./pages/Settings'));
+const DocsPage = lazy(() => import('./pages/docs/DocsPage'));
+const PDFManager = lazy(() => import('./components/PDFManager'));
+const MentalModel = lazy(() => import('./pages/modes/MentalModel'));
+const ActiveRecall = lazy(() => import('./pages/modes/ActiveRecall'));
+const FocusBreakdown = lazy(() => import('./pages/modes/FocusBreakdown'));
+const CollaborativeScholar = lazy(() => import('./pages/modes/CollaborativeScholar'));
+const CreativeSynthesis = lazy(() => import('./pages/modes/CreativeSynthesis'));
+const ExamPlanner = lazy(() => import('./pages/ExamPlanner'));
+const ExamSession = lazy(() => import('./pages/ExamSession'));
+const LanguageLearning = lazy(() => import('./pages/LanguageLearning'));
+const LanguageLearningLesson = lazy(() => import('./pages/LanguageLearningLesson'));
+const LanguageLearningLessons = lazy(() => import('./pages/LanguageLearningLessons'));
+const LanguageLearningPractice = lazy(() => import('./pages/LanguageLearningPractice'));
+const FlashcardLibrary = lazy(() => import('./pages/FlashcardLibrary'));
+const PreRegistration = lazy(() => import('./pages/PreRegistration'));
+const SecureAITest = lazy(() => import('./components/SecureAITest'));
 
-// Admin Panel
-import AdminLayout from './pages/admin/AdminLayout';
-import AdminDashboard from './pages/admin/Dashboard';
-import AdminPreReg from './pages/admin/PreRegUsers';
-import AdminDailySlots from './pages/admin/DailySlots';
-import AdminReviews from './pages/admin/Reviews';
-import AdminSettings from './pages/admin/Settings';
-import AdminTestingUsers from './pages/admin/TestingUsers';
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+const AdminPreReg = lazy(() => import('./pages/admin/PreRegUsers'));
+const AdminDailySlots = lazy(() => import('./pages/admin/DailySlots'));
+const AdminReviews = lazy(() => import('./pages/admin/Reviews'));
+const AdminSettings = lazy(() => import('./pages/admin/Settings'));
+const AdminTestingUsers = lazy(() => import('./pages/admin/TestingUsers'));
 
 const LoadingScreen = ({ label = 'Loading...' }) => (
   <div className="flex min-h-screen items-center justify-center bg-brand-50 px-4 text-surface-600 dark:bg-surface-950 dark:text-surface-300">
@@ -184,6 +183,7 @@ function App() {
             <MigrationHelper />
             <Router>
               <div className="min-h-screen bg-brand-50 text-surface-900 antialiased dark:bg-surface-950 dark:text-surface-100">
+                <Suspense fallback={<LoadingScreen />}>
                 <Routes>
               {/* Public routes */}
               <Route path="/" element={<LandingPage />} />
@@ -445,7 +445,8 @@ function App() {
               
               {/* Catch all route */}
               <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+                </Routes>
+                </Suspense>
           </div>
         </Router>
       </SessionProvider>

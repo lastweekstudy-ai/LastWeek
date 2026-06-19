@@ -100,9 +100,13 @@ const RichTextViewer = ({ content, mode, onEdit, onCopy, onExpand }) => {
                 strong: ({children}) => <strong className="text-bold">{children}</strong>,
                 em: ({children}) => <em className="text-italic">{children}</em>,
                 a: ({href, children}) => <a href={href} className="text-link" target="_blank" rel="noopener noreferrer">{children}</a>,
-                table: ({children}) => <table className="text-table">{children}</table>,
-                th: ({children}) => <th className="text-table-header">{children}</th>,
-                td: ({children}) => <td className="text-table-cell">{children}</td>,
+                table: ({children}) => (
+                  <div className="study-table-wrap">
+                    <table className="study-table text-table">{children}</table>
+                  </div>
+                ),
+                th: ({children}) => <th className="study-table-heading text-table-header">{children}</th>,
+                td: ({children}) => <td className="study-table-cell text-table-cell">{children}</td>,
               }}
             >
               {editedContent}
