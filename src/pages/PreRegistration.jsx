@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
-import { getAdminSettings, createPreRegistration, getPreRegistrationByUserId, isExistingUser } from '../appwrite/admin';
+import { getAdminSettings, getPreRegistrationByEmail } from '../appwrite/admin';
+import { getPaddleClientToken, getPaddleEnvironment, isMissingPaddlePrice } from '../utils/paddleConfig';
+import { getPreRegPricing } from '../utils/preRegPricing';
 
 /**
  * Pre-Registration Page
  * 
- * $5 path: User fills form → pays $5 → added to pre-reg list
+ * Paid path: User fills form -> pays the configured Paddle price -> added to pre-reg list
  * NO website access - just collects info for when pre-reg ends
  * Gets Plus for 1 year when pre-reg ends
  */
@@ -17,7 +19,6 @@ const PreRegistration = () => {
   const [paid, setPaid] = useState(false);
   const [error, setError] = useState('');
   const [adminSettings, setAdminSettings] = useState(null);
-  const [existingPreReg, setExistingPreReg] = useState(null);
   
   // Form state for non-logged-in users
   const [formData, setFormData] = useState({
@@ -25,52 +26,61 @@ const PreRegistration = () => {
     email: '',
   });
   const [formError, setFormError] = useState('');
+  const preRegPricing = getPreRegPricing(adminSettings);
 
   useEffect(() => {
+    let cancelled = false;
+
+    const loadData = async () => {
+      try {
+        const settings = await getAdminSettings();
+        if (!cancelled) {
+          setAdminSettings(settings);
+        }
+      } catch (err) {
+        console.error('Failed to load data:', err);
+      }
+    };
+
+    const initPaddle = async () => {
+      const clientToken = getPaddleClientToken();
+      if (!clientToken) {
+        setError('Payment system not configured');
+        return;
+      }
+
+      try {
+        const paddleInstance = await initializePaddle({
+          environment: getPaddleEnvironment(),
+          token: clientToken,
+          eventCallback: async (event) => {
+            if (event.name === 'checkout.completed') {
+              console.log('[PreReg] Payment completed:', event.data);
+              setPaid(true);
+              setLoading(false);
+            }
+            if (event.name === 'checkout.closed') {
+              setLoading(false);
+            }
+          },
+        });
+
+        if (paddleInstance && !cancelled) {
+          setPaddle(paddleInstance);
+        }
+      } catch (err) {
+        console.error('[PreReg] Paddle init failed:', err);
+        setError('Payment system unavailable');
+      }
+    };
+
     loadData();
     initPaddle();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
-
-  const loadData = async () => {
-    try {
-      const settings = await getAdminSettings();
-      setAdminSettings(settings);
-    } catch (err) {
-      console.error('Failed to load data:', err);
-    }
-  };
-
-  const initPaddle = async () => {
-    const clientToken = import.meta.env.VITE_PADDLE_CLIENT_TOKEN;
-    if (!clientToken) {
-      setError('Payment system not configured');
-      return;
-    }
-
-    try {
-      const paddleInstance = await initializePaddle({
-        environment: import.meta.env.VITE_PADDLE_ENVIRONMENT || 'sandbox',
-        token: clientToken,
-        eventCallback: async (event) => {
-          if (event.name === 'checkout.completed') {
-            console.log('[PreReg] Payment completed:', event.data);
-            setPaid(true);
-            setLoading(false);
-          }
-          if (event.name === 'checkout.closed') {
-            setLoading(false);
-          }
-        },
-      });
-
-      if (paddleInstance) {
-        setPaddle(paddleInstance);
-      }
-    } catch (err) {
-      console.error('[PreReg] Paddle init failed:', err);
-      setError('Payment system unavailable');
-    }
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -104,16 +114,19 @@ const PreRegistration = () => {
       return;
     }
 
-    // Check if email is already an existing user
-    const existing = await isExistingUser(formData.email);
-    if (existing) {
-      setFormError('This email is already registered. Existing users cannot join pre-registration.');
+    const existingPreReg = await getPreRegistrationByEmail(formData.email);
+    if (existingPreReg?.type === 'paid') {
+      setFormError('This email already has a paid pre-registration.');
+      return;
+    }
+    if (existingPreReg?.status === 'converted') {
+      setFormError('This email has already received its pre-registration reward.');
       return;
     }
 
     const priceId = adminSettings?.preRegPriceId || import.meta.env.VITE_PADDLE_PRE_REG_PRICE_ID;
 
-    if (!priceId) {
+    if (isMissingPaddlePrice(priceId)) {
       setError('Pre-registration price not configured. Please contact support.');
       return;
     }
@@ -130,6 +143,7 @@ const PreRegistration = () => {
           userEmail: formData.email,
           preReg: true,
           type: 'paid',
+          existingPreRegistrationId: existingPreReg?.$id || '',
         },
         settings: {
           displayMode: 'overlay',
@@ -333,7 +347,7 @@ const PreRegistration = () => {
             🎉 Pre-Registration
           </h1>
           <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
-            Pay $5 now → Get Plus free for 1 year
+            Pay {preRegPricing.priceLabel} now and get Plus free for 1 year
           </p>
         </div>
 
@@ -345,7 +359,7 @@ const PreRegistration = () => {
             color: 'var(--color-text-primary)',
             marginBottom: '0.25rem',
           }}>
-            $5
+            {preRegPricing.priceLabel}
           </div>
           <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.85rem' }}>
             One-time payment • No subscription
@@ -363,7 +377,7 @@ const PreRegistration = () => {
             What you get:
           </h4>
           <ul style={{ margin: 0, padding: '0 0 0 1.25rem', color: 'var(--color-text-secondary)', fontSize: '0.85rem' }}>
-            <li style={{ marginBottom: '0.25rem' }}>✅ <strong style={{ color: 'var(--color-accent)' }}>Plus plan free for 1 year</strong> (a $180 value)</li>
+            <li style={{ marginBottom: '0.25rem' }}>✅ <strong style={{ color: 'var(--color-accent)' }}>Plus plan free for 1 year</strong> (a {preRegPricing.valueLabel} value)</li>
             <li style={{ marginBottom: '0.25rem' }}>✅ Unique promo code to share with friends</li>
             <li style={{ marginBottom: '0.25rem' }}>✅ Every 10 signups = +6 months free for you</li>
             <li style={{ marginBottom: '0.25rem' }}>✅ 100 sessions, 7,000 messages/month</li>
@@ -431,6 +445,11 @@ const PreRegistration = () => {
             {formError}
           </p>
         )}
+        {error && (
+          <p style={{ color: '#ef4444', fontSize: '0.85rem', marginBottom: '1rem', marginTop: formError ? '0.5rem' : 0 }}>
+            {error}
+          </p>
+        )}
 
         {/* Pay Button */}
         <button
@@ -449,7 +468,7 @@ const PreRegistration = () => {
             marginBottom: '1rem',
           }}
         >
-          {loading ? 'Processing...' : 'Pay $5 & Pre-Register'}
+          {loading ? 'Processing...' : `Pay ${preRegPricing.priceLabel} & Pre-Register`}
         </button>
 
         {/* Free trial option */}

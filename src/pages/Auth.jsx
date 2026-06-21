@@ -10,6 +10,7 @@ import {
   isExistingUser,
 } from '../appwrite/admin';
 import SlotRefreshCountdown from '../components/SlotRefreshCountdown';
+import { getPreRegPricing } from '../utils/preRegPricing';
 import {
   getCurriculumClasses,
   getCurriculumCountries,
@@ -58,6 +59,7 @@ const Auth = () => {
   // Pre-reg and daily slots state
   const [adminSettings, setAdminSettings] = useState(null);
   const [remainingSlots, setRemainingSlots] = useState(null);
+  const preRegPricing = getPreRegPricing(adminSettings);
   const [showFreeSlotFlow, setShowFreeSlotFlow] = useState(false);
   const [checkingSlot, setCheckingSlot] = useState(false);
   const [preRegEmail, setPreRegEmail] = useState('');
@@ -421,7 +423,7 @@ const Auth = () => {
                   {adminSettings?.preRegActive && adminSettings?.dailyFreeSlotsActive ? 'Two Ways to Join' : 'How to Join'}
                 </h3>
 
-                {/* Option 1: Pay $5 (only if pre-reg active) */}
+                {/* Option 1: paid pre-registration (only if pre-reg active) */}
                 {adminSettings?.preRegActive && (
                   <div style={{
                     backgroundColor: 'var(--color-bg-primary)',
@@ -430,10 +432,10 @@ const Auth = () => {
                     marginBottom: adminSettings?.dailyFreeSlotsActive ? '1rem' : '0',
                   }}>
                     <h4 style={{ color: 'var(--color-text-primary)', margin: '0 0 0.5rem', fontSize: '0.95rem' }}>
-                      💳 Pay $5 Now
+                      💳 Pay {preRegPricing.priceLabel} Now
                     </h4>
                     <p style={{ color: 'var(--color-text-secondary)', margin: '0 0 0.75rem', fontSize: '0.85rem' }}>
-                      Get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong> (a $180 value!) 
+                      Get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong> (a {preRegPricing.valueLabel} value!) 
                       + unique promo code. Every 10 friends who join = +6 months free!
                     </p>
                     <button

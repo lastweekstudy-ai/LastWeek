@@ -1,8 +1,29 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PixelIcon } from '../../../components/shared/pixel-art/PixelIcons';
+import { getAdminSettings } from '../../../appwrite/admin';
+import { getPreRegPricing } from '../../../utils/preRegPricing';
 
 const FAQ = () => {
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const [adminSettings, setAdminSettings] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getAdminSettings()
+      .then((settings) => {
+        if (!cancelled) setAdminSettings(settings);
+      })
+      .catch(() => {
+        if (!cancelled) setAdminSettings(null);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const preRegPricing = getPreRegPricing(adminSettings);
 
   const faqs = [
     {
@@ -27,11 +48,11 @@ const FAQ = () => {
     },
     {
       question: 'Can I use LastWeek offline?',
-      answer: 'The Pro and Team plans include offline access. You can download your study materials and continue learning without internet. Changes sync automatically when you reconnect.',
+      answer: 'LastWeek is built as an online AI tutor, so AI chat, processing, and sync need an internet connection. You can still review downloaded files from your device outside the app.',
     },
     {
       question: 'How much does it cost?',
-      answer: 'LastWeek is free to start with up to 3 sessions. Pro plan is $9.99/month with unlimited sessions and advanced features. Team plan is $29.99/month for study groups. All plans include a 14-day free trial.',
+      answer: `LastWeek is free to start. Plus is $9/month for serious multi-subject study, and Pro+ is $19.99/month for heavy exam-season use with unlimited positioning. During pre-registration, a ${preRegPricing.priceLabel} one-time payment grants Plus for 1 year.`,
     },
     {
       question: 'Can I cancel my subscription anytime?',

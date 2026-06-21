@@ -1,4 +1,4 @@
-import { databases, ID } from './config';
+import { databases, functions, ID } from './config';
 import { Query } from 'appwrite';
 
 const DATABASE_ID = import.meta.env.VITE_APPWRITE_DATABASE_ID;
@@ -9,9 +9,20 @@ const USER_REVIEWS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_USER_REVIEWS_CO
 const DAILY_FREE_SLOTS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_DAILY_FREE_SLOTS_COLLECTION_ID || 'daily_free_slots';
 const DAILY_SLOT_USAGE_COLLECTION_ID = import.meta.env.VITE_APPWRITE_DAILY_SLOT_USAGE_COLLECTION_ID || 'daily_slot_usage';
 const SUBSCRIPTIONS_COLLECTION_ID = import.meta.env.VITE_APPWRITE_SUBSCRIPTIONS_COLLECTION_ID || 'subscriptions';
+const TESTING_USAGE_COLLECTION_ID = import.meta.env.VITE_APPWRITE_TESTING_USAGE_COLLECTION_ID || 'testing_usage';
+const PADDLE_WEBHOOK_FUNCTION_ID = import.meta.env.VITE_PADDLE_WEBHOOK_FUNCTION_ID || 'paddleWebhook';
 
 // Singleton document ID for admin settings
 const ADMIN_SETTINGS_DOC_ID = 'admin_settings_doc';
+const DEFAULT_ADMIN_PAGE_SIZE = 25;
+
+const getListTotal = async (collectionId, queries = []) => {
+  const result = await databases.listDocuments(DATABASE_ID, collectionId, [
+    ...queries,
+    Query.limit(1),
+  ]);
+  return result.total || 0;
+};
 
 /**
  * Generate a unique promo code for a user
@@ -68,6 +79,8 @@ export const getAdminSettings = async () => {
       plusPlanActive: true,
       proPlusPlanActive: true,
       preRegPriceId: '',
+      preRegDisplayPrice: 4,
+      preRegDisplayValue: 108,
     };
   }
 };
@@ -123,6 +136,37 @@ export const getPreRegistrations = async (filters = {}) => {
   }
 };
 
+export const getPreRegistrationsPage = async ({ filters = {}, page = 0, limit = DEFAULT_ADMIN_PAGE_SIZE } = {}) => {
+  try {
+    const queries = [
+      Query.orderDesc('createdAt'),
+      Query.limit(limit),
+      Query.offset(Math.max(0, page) * limit),
+      Query.select([
+        '$id',
+        'userId',
+        'email',
+        'name',
+        'type',
+        'promoCode',
+        'promoCodeUses',
+        'bonusMonthsEarned',
+        'status',
+        'plusUntil',
+        'createdAt',
+      ]),
+    ];
+
+    if (filters.status) queries.push(Query.equal('status', filters.status));
+    if (filters.type) queries.push(Query.equal('type', filters.type));
+
+    return await databases.listDocuments(DATABASE_ID, PRE_REGISTRATIONS_COLLECTION_ID, queries);
+  } catch (err) {
+    console.error('[admin] Failed to get paged pre-registrations:', err.message);
+    return { documents: [], total: 0 };
+  }
+};
+
 /**
  * Get pre-registration by user ID
  */
@@ -136,6 +180,20 @@ export const getPreRegistrationByUserId = async (userId) => {
     return result.documents[0] || null;
   } catch (err) {
     console.error('[admin] Failed to get pre-registration:', err.message);
+    return null;
+  }
+};
+
+export const getPreRegistrationByEmail = async (email) => {
+  try {
+    const result = await databases.listDocuments(
+      DATABASE_ID,
+      PRE_REGISTRATIONS_COLLECTION_ID,
+      [Query.equal('email', email), Query.limit(1)]
+    );
+    return result.documents[0] || null;
+  } catch (err) {
+    console.error('[admin] Failed to get pre-registration by email:', err.message);
     return null;
   }
 };
@@ -162,6 +220,31 @@ export const getPreRegistrationByPromoCode = async (promoCode) => {
  */
 export const createPreRegistration = async (data) => {
   try {
+    const existingQueries = data.email
+      ? [Query.equal('email', data.email), Query.limit(1)]
+      : [Query.equal('userId', data.userId), Query.limit(1)];
+    const existing = await databases.listDocuments(
+      DATABASE_ID,
+      PRE_REGISTRATIONS_COLLECTION_ID,
+      existingQueries
+    );
+
+    if (existing.documents.length > 0) {
+      const doc = existing.documents[0];
+      const updates = {};
+
+      if (data.type === 'paid' && doc.type !== 'paid') {
+        updates.type = 'paid';
+      }
+      if (data.name && !doc.name) updates.name = data.name;
+      if (data.reviewId && !doc.reviewId) updates.reviewId = data.reviewId;
+      if (data.paddlePaymentId && !doc.paddlePaymentId) updates.paddlePaymentId = data.paddlePaymentId;
+      if (data.userId && doc.userId !== data.userId) updates.userId = data.userId;
+
+      if (Object.keys(updates).length === 0) return doc;
+      return databases.updateDocument(DATABASE_ID, PRE_REGISTRATIONS_COLLECTION_ID, doc.$id, updates);
+    }
+
     const doc = await databases.createDocument(
       DATABASE_ID,
       PRE_REGISTRATIONS_COLLECTION_ID,
@@ -307,6 +390,23 @@ export const getPromoCodeUsageStats = async () => {
   }
 };
 
+export const getPromoCodeUsagePage = async ({ page = 0, limit = 20 } = {}) => {
+  try {
+    return await databases.listDocuments(
+      DATABASE_ID,
+      PROMO_CODE_USAGE_COLLECTION_ID,
+      [
+        Query.limit(limit),
+        Query.offset(Math.max(0, page) * limit),
+        Query.select(['$id', 'promoCode', 'referrerId', 'newUserEmail', 'createdAt']),
+      ]
+    );
+  } catch (err) {
+    console.error('[admin] Failed to get promo code usage page:', err.message);
+    return { documents: [], total: 0 };
+  }
+};
+
 // ============================================
 // USER REVIEWS
 // ============================================
@@ -334,6 +434,36 @@ export const getReviews = async (filters = {}) => {
   } catch (err) {
     console.error('[admin] Failed to get reviews:', err.message);
     return [];
+  }
+};
+
+export const getReviewsPage = async ({ filters = {}, page = 0, limit = DEFAULT_ADMIN_PAGE_SIZE } = {}) => {
+  try {
+    const queries = [
+      Query.orderDesc('createdAt'),
+      Query.limit(limit),
+      Query.offset(Math.max(0, page) * limit),
+      Query.select([
+        '$id',
+        'userId',
+        'userName',
+        'rating',
+        'title',
+        'content',
+        'isApproved',
+        'isPublished',
+        'helpfulCount',
+        'createdAt',
+      ]),
+    ];
+
+    if (filters.isApproved !== undefined) queries.push(Query.equal('isApproved', filters.isApproved));
+    if (filters.isPublished !== undefined) queries.push(Query.equal('isPublished', filters.isPublished));
+
+    return await databases.listDocuments(DATABASE_ID, USER_REVIEWS_COLLECTION_ID, queries);
+  } catch (err) {
+    console.error('[admin] Failed to get paged reviews:', err.message);
+    return { documents: [], total: 0 };
   }
 };
 
@@ -688,6 +818,24 @@ export const getDailySlotsHistory = async (days = 30) => {
   }
 };
 
+export const getDailySlotsHistoryPage = async ({ page = 0, limit = DEFAULT_ADMIN_PAGE_SIZE } = {}) => {
+  try {
+    return await databases.listDocuments(
+      DATABASE_ID,
+      DAILY_FREE_SLOTS_COLLECTION_ID,
+      [
+        Query.orderDesc('date'),
+        Query.limit(limit),
+        Query.offset(Math.max(0, page) * limit),
+        Query.select(['$id', 'date', 'totalSlots', 'usedSlots', 'createdAt']),
+      ]
+    );
+  } catch (err) {
+    console.error('[admin] Failed to get paged slots history:', err.message);
+    return { documents: [], total: 0 };
+  }
+};
+
 // ============================================
 // STATS & ANALYTICS
 // ============================================
@@ -697,29 +845,37 @@ export const getDailySlotsHistory = async (days = 30) => {
  */
 export const getAdminStats = async () => {
   try {
-    const [preRegs, reviews, promoUsage] = await Promise.all([
-      getPreRegistrations(),
-      getReviews(),
-      getPromoCodeUsageStats(),
+    const [
+      totalPreRegistrations,
+      activePreRegistrations,
+      reviewsTotal,
+      approvedReviews,
+      promoUsageTotal,
+      preRegSample,
+    ] = await Promise.all([
+      getListTotal(PRE_REGISTRATIONS_COLLECTION_ID),
+      getListTotal(PRE_REGISTRATIONS_COLLECTION_ID, [Query.equal('status', 'active')]),
+      getListTotal(USER_REVIEWS_COLLECTION_ID),
+      getListTotal(USER_REVIEWS_COLLECTION_ID, [Query.equal('isApproved', true)]),
+      getListTotal(PROMO_CODE_USAGE_COLLECTION_ID),
+      getPreRegistrations({}),
     ]);
 
-    const activePreRegs = preRegs.filter(p => p.status === 'active');
-    const totalBonusMonths = preRegs.reduce((sum, p) => sum + (p.bonusMonthsEarned || 0), 0);
-    const approvedReviews = reviews.filter(r => r.isApproved);
+    const totalBonusMonths = preRegSample.reduce((sum, p) => sum + (p.bonusMonthsEarned || 0), 0);
 
-    // Calculate "owed" value (each month of Plus = $14.99 value)
-    const owedValue = totalBonusMonths * 14.99;
+    // Calculate "owed" value (each month of Plus = $9 value)
+    const owedValue = totalBonusMonths * 9;
 
     return {
-      totalPreRegistrations: preRegs.length,
-      activePreRegistrations: activePreRegs.length,
-      totalPromoCodesIssued: preRegs.filter(p => p.promoCode).length,
-      totalPromoCodeUses: promoUsage.total,
+      totalPreRegistrations,
+      activePreRegistrations,
+      totalPromoCodesIssued: totalPreRegistrations,
+      totalPromoCodeUses: promoUsageTotal,
       totalBonusMonthsEarned: totalBonusMonths,
       estimatedOwedValue: owedValue.toFixed(2),
-      totalReviews: reviews.length,
-      approvedReviews: approvedReviews.length,
-      pendingReviews: reviews.length - approvedReviews.length,
+      totalReviews: reviewsTotal,
+      approvedReviews,
+      pendingReviews: reviewsTotal - approvedReviews,
     };
   } catch (err) {
     console.error('[admin] Failed to get stats:', err.message);
@@ -741,8 +897,6 @@ export const getAdminStats = async () => {
 // ============================================
 // TESTING USAGE TRACKING
 // ============================================
-
-const TESTING_USAGE_COLLECTION_ID = import.meta.env.VITE_APPWRITE_TESTING_USAGE_COLLECTION_ID || 'testing_usage';
 
 /**
  * Get or create testing usage document for a user
@@ -968,6 +1122,78 @@ export const isTestingUser = async (userId) => {
   }
 };
 
+export const getTestingUsersPage = async ({ page = 0, limit = DEFAULT_ADMIN_PAGE_SIZE } = {}) => {
+  try {
+    return await databases.listDocuments(
+      DATABASE_ID,
+      TESTING_USAGE_COLLECTION_ID,
+      [
+        Query.orderDesc('createdAt'),
+        Query.limit(limit),
+        Query.offset(Math.max(0, page) * limit),
+        Query.select([
+          '$id',
+          'userId',
+          'email',
+          'sessions',
+          'pdfs',
+          'audios',
+          'messages',
+          'flashcards',
+          'mcqs',
+          'examPlans',
+          'languageLearningSessions',
+          'libraryImports',
+          'hasReviewed',
+          'addedToPreReg',
+          'createdAt',
+        ]),
+      ]
+    );
+  } catch (err) {
+    console.error('[admin] Failed to get testing users page:', err.message);
+    return { documents: [], total: 0 };
+  }
+};
+
+export const getSubscriptionsPage = async ({ page = 0, limit = DEFAULT_ADMIN_PAGE_SIZE } = {}) => {
+  try {
+    const result = await databases.listDocuments(DATABASE_ID, SUBSCRIPTIONS_COLLECTION_ID, [
+      Query.select([
+        '$id',
+        '$createdAt',
+        '$updatedAt',
+        'userId',
+        'paddleSubscriptionId',
+        'paddleCustomerId',
+        'plan',
+        'status',
+        'currentPeriodStart',
+        'currentPeriodEnd',
+        'canceledAt',
+        'priceId',
+        'currency',
+        'amount',
+        'interval',
+        'createdAt',
+        'updatedAt',
+      ]),
+      Query.limit(limit),
+      Query.offset(page * limit),
+    ]);
+
+    return {
+      documents: result.documents || [],
+      total: result.total || 0,
+      page,
+      limit,
+    };
+  } catch (err) {
+    console.error('[admin] Failed to get subscriptions page:', err.message);
+    throw err;
+  }
+};
+
 // ============================================
 // COMPLETE PRE-REGISTRATIONS (GRANT PLUS)
 // ============================================
@@ -1038,7 +1264,7 @@ export const grantPlusPlan = async (userId, months = 12) => {
  * Complete all pre-registrations - Grant Plus plans to all active pre-registered users
  * Call this when pre-registration period ends
  */
-export const completeAllPreRegistrations = async () => {
+export const completeAllPreRegistrationsClientSide = async () => {
   console.log('[admin] Starting pre-registration completion...');
   
   try {
@@ -1116,6 +1342,62 @@ export const completeAllPreRegistrations = async () => {
     return results;
   } catch (err) {
     console.error('[admin] Failed to complete pre-registrations:', err.message);
+    throw err;
+  }
+};
+
+/**
+ * Complete all pre-registrations through the server-side Paddle webhook function.
+ * This keeps user-label updates and reward grants off the browser client.
+ */
+export const completeAllPreRegistrations = async () => {
+  try {
+    const execution = await functions.createExecution(
+      PADDLE_WEBHOOK_FUNCTION_ID,
+      JSON.stringify({ action: 'complete_pre_registrations' }),
+      false
+    );
+
+    if (execution.status === 'failed') {
+      throw new Error(execution.errors || 'Reward function execution failed.');
+    }
+
+    const response = JSON.parse(execution.responseBody || '{}');
+    if (response.ok === false || response.error) {
+      throw new Error(response.error || response.message || 'Reward function rejected the request.');
+    }
+
+    return response;
+  } catch (err) {
+    console.error('[admin] Failed to complete pre-registrations:', err.message);
+    throw err;
+  }
+};
+
+export const grantSinglePreRegistrationReward = async (preRegistrationId) => {
+  try {
+    const execution = await functions.createExecution(
+      PADDLE_WEBHOOK_FUNCTION_ID,
+      JSON.stringify({
+        action: 'grant_single_pre_registration',
+        preRegistrationId,
+      }),
+      false
+    );
+
+    if (execution.status === 'failed') {
+      throw new Error(execution.errors || 'Single reward function execution failed.');
+    }
+
+    const response = JSON.parse(execution.responseBody || '{}');
+    if (response.ok === false || response.error) {
+      const detail = response.details?.[0]?.error || response.details?.[0]?.reason;
+      throw new Error(response.error || detail || 'Reward function rejected the request.');
+    }
+
+    return response;
+  } catch (err) {
+    console.error('[admin] Failed to grant single pre-registration reward:', err.message);
     throw err;
   }
 };

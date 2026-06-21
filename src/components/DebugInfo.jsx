@@ -10,17 +10,14 @@ const DebugInfo = () => {
     SESSIONS_COLLECTION_ID: import.meta.env.VITE_APPWRITE_SESSIONS_COLLECTION_ID,
     MESSAGES_COLLECTION_ID: import.meta.env.VITE_APPWRITE_MESSAGES_COLLECTION_ID,
     FLASHCARDS_COLLECTION_ID: import.meta.env.VITE_APPWRITE_FLASHCARDS_COLLECTION_ID,
-    PROFILES_COLLECTION_ID: import.meta.env.VITE_APPWRITE_PROFILES_COLLECTION_ID,
-    DEEPSEEK_API_KEY: import.meta.env.VITE_DEEPSEEK_API_KEY ? 'Set' : 'Not Set'
+    PROFILES_COLLECTION_ID: import.meta.env.VITE_APPWRITE_PROFILES_COLLECTION_ID
   };
 
   const hasPlaceholders = Object.entries(envVars).some(([key, value]) => 
-    key !== 'DEEPSEEK_API_KEY' && (
-      !value || 
-      value.includes('REPLACE') || 
-      value.includes('<') || 
-      value.includes('>')
-    )
+    !value || 
+    value.includes('REPLACE') || 
+    value.includes('<') || 
+    value.includes('>')
   );
 
   if (!isVisible) {

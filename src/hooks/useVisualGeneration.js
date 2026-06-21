@@ -1,17 +1,11 @@
 import { useState } from 'react';
-
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+import { callGeminiText } from '../services/secureAiProvider';
 
 export const useVisualGeneration = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const generateVisual = async (topic, visualType, context = '') => {
-    if (!GEMINI_API_KEY) {
-      throw new Error('Gemini API key not configured');
-    }
-
     setLoading(true);
     setError(null);
 
@@ -149,28 +143,7 @@ Context: ${context}
 Choose the most appropriate format (diagram, table, chart, etc.) and create a clear, educational visualization using ASCII art or markdown formatting.`;
       }
 
-      const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: prompt
-            }]
-          }]
-        }),
-        signal: AbortSignal.timeout(30000)
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error?.message || `HTTP ${response.status}: Failed to generate visual`);
-      }
-
-      const data = await response.json();
-      const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      const content = await callGeminiText(prompt);
       
       if (!content) {
         throw new Error('No content received from Gemini API');

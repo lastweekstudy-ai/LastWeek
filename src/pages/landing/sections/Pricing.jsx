@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAdminSettings } from '../../../appwrite/admin';
 import SlotRefreshCountdown from '../../../components/SlotRefreshCountdown';
+import { getPreRegPricing } from '../../../utils/preRegPricing';
 
 const CHECK = (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5">
@@ -40,35 +41,12 @@ const plans = [
     ],
   },
   {
-    name: 'Pro',
-    price: '$9.99',
-    period: '/month',
-    description: 'For students with one active subject',
-    badge: 'Most Popular',
-    highlighted: true,
-    cta: 'Start Pro',
-    ctaLink: '/auth',
-    planKey: 'pro',
-    features: [
-      { text: '30 sessions / month', included: true },
-      { text: '3,000 AI messages / month', included: true },
-      { text: '20 PDF uploads (10MB each)', included: true },
-      { text: '10 audio uploads (25MB each)', included: true },
-      { text: 'Unlimited flashcards', included: true },
-      { text: 'Unlimited MCQs', included: true },
-      { text: 'All 5 study modes', included: true },
-      { text: 'Exam planner (3 active plans)', included: true },
-      { text: 'Language learning', included: true },
-      { text: 'Community resource library', included: true },
-    ],
-  },
-  {
     name: 'Plus',
-    price: '$14.99',
+    price: '$9',
     period: '/month',
     description: 'For students juggling multiple subjects',
-    badge: null,
-    highlighted: false,
+    badge: 'Most Popular',
+    highlighted: true,
     cta: 'Start Plus',
     ctaLink: '/auth',
     planKey: 'plus',
@@ -115,19 +93,23 @@ const Pricing = () => {
   const [loadingSettings, setLoadingSettings] = useState(true);
 
   useEffect(() => {
-    loadAdminSettings();
-  }, []);
+    let cancelled = false;
 
-  const loadAdminSettings = async () => {
-    try {
-      const settings = await getAdminSettings();
-      setAdminSettings(settings);
-    } catch (err) {
-      console.error('Failed to load admin settings:', err);
-    } finally {
-      setLoadingSettings(false);
-    }
-  };
+    getAdminSettings()
+      .then((settings) => {
+        if (!cancelled) setAdminSettings(settings);
+      })
+      .catch((err) => {
+        console.error('Failed to load admin settings:', err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingSettings(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Show loading skeleton while fetching admin settings
   if (loadingSettings) {
@@ -155,7 +137,7 @@ const Pricing = () => {
             gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', 
             gap: '1.5rem' 
           }}>
-            {[1, 2, 3, 4].map(i => (
+            {[1, 2, 3].map(i => (
               <div key={i} style={{
                 backgroundColor: 'var(--color-bg-secondary)',
                 borderRadius: '16px',
@@ -180,29 +162,28 @@ const Pricing = () => {
   const isPreRegMode = adminSettings?.preRegActive;
   const paymentsActive = adminSettings?.paymentsActive;
   const dailyFreeSlotsActive = adminSettings?.dailyFreeSlotsActive;
+  const preRegPricing = getPreRegPricing(adminSettings);
 
-  // Get plan visibility
-  const getPlanVisibility = (planKey) => {
+  const getPlanActive = (planKey) => {
     if (!adminSettings) return true;
     const planMap = {
       free: adminSettings.freePlanActive,
-      pro: adminSettings.proPlanActive,
       plus: adminSettings.plusPlanActive,
       proplus: adminSettings.proPlusPlanActive,
     };
     return planMap[planKey] !== false;
   };
 
-  // Filter visible plans
-  const visiblePlans = plans.filter(p => getPlanVisibility(p.planKey));
-
   // Get CTA for a plan based on admin settings
   const getCTA = (plan) => {
+    if (!getPlanActive(plan.planKey)) {
+      return { text: 'Currently unavailable', link: null, disabled: true };
+    }
     if (isPreRegMode) {
       if (plan.planKey === 'plus') {
-        return { text: 'Pre-Register ($5)', link: '/pre-register' };
+        return { text: `Pre-Register (${preRegPricing.priceLabel})`, link: '/pre-register' };
       }
-      return { text: 'Coming Soon', link: null, disabled: true };
+      return { text: 'Pre-registration only', link: null, disabled: true };
     }
     if (!paymentsActive) {
       if (plan.planKey === 'free' && dailyFreeSlotsActive) {
@@ -236,7 +217,7 @@ const Pricing = () => {
               🎉 Pre-Registration Now Open!
             </h3>
             <p style={{ color: 'var(--text-secondary, #a1a1aa)', margin: '0 0 1.5rem', fontSize: '0.95rem', textAlign: 'center' }}>
-              Two ways to get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong> (a $180 value!)
+              Two ways to get <strong style={{ color: 'var(--color-accent)' }}>Plus free for 1 year</strong> (a {preRegPricing.valueLabel} value!)
             </p>
 
             {/* Two Options Grid */}
@@ -245,7 +226,7 @@ const Pricing = () => {
               gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
               gap: '1rem',
             }}>
-              {/* Option 1: Pay $5 */}
+              {/* Option 1: paid pre-registration */}
               <div style={{
                 backgroundColor: 'rgba(var(--color-accent-rgb), 0.1)',
                 borderRadius: '12px',
@@ -253,7 +234,7 @@ const Pricing = () => {
                 border: '1px solid rgba(var(--color-accent-rgb), 0.3)',
               }}>
                 <h4 style={{ color: 'var(--color-accent)', margin: '0 0 0.5rem', fontSize: '1rem' }}>
-                  💳 Pay $5 Now
+                  💳 Pay {preRegPricing.priceLabel} Now
                 </h4>
                 <p style={{ color: 'var(--text-secondary, #a1a1aa)', margin: '0 0 1rem', fontSize: '0.85rem' }}>
                   One-time payment. Get your promo code instantly. Every 10 friends who join = +6 months free!
@@ -342,15 +323,28 @@ const Pricing = () => {
           gap: '1.5rem',
           marginBottom: '2rem',
         }}>
-          {visiblePlans.map((plan) => {
+          {plans.map((plan) => {
             const cta = getCTA(plan);
+            const planActive = getPlanActive(plan.planKey);
+            const badge = planActive ? plan.badge : 'Unavailable';
             return (
               <div
                 key={plan.name}
-                className={`pricing-card ${plan.highlighted ? 'highlighted' : ''}`}
-                style={{ display: 'flex', flexDirection: 'column' }}
+                className={`pricing-card ${plan.highlighted && planActive ? 'highlighted' : ''}`}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  opacity: planActive ? 1 : 0.72,
+                }}
               >
-                {plan.badge && <div className="pricing-badge">{plan.badge}</div>}
+                {badge && (
+                  <div
+                    className="pricing-badge"
+                    style={!planActive ? { background: 'var(--color-bg-tertiary)', color: 'var(--color-text-muted)' } : undefined}
+                  >
+                    {badge}
+                  </div>
+                )}
 
                 <h3 className="pricing-name">{plan.name}</h3>
                 <div className="pricing-amount">

@@ -1,364 +1,193 @@
-import React, { useState, useEffect } from 'react';
-import { getReviews, updateReview, deleteReview } from '../../appwrite/admin';
+import { useEffect, useMemo, useState } from 'react';
+import { deleteReview, getReviewsPage, updateReview } from '../../appwrite/admin';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  LoadingState,
+  PageHeader,
+  Pagination,
+  StatCard,
+} from './AdminUI';
+import { formatDate } from './adminFormat';
+
+const PAGE_SIZE = 20;
+
+const filterToQuery = (filter) => {
+  if (filter === 'pending') return { isApproved: false };
+  if (filter === 'approved') return { isApproved: true };
+  if (filter === 'published') return { isPublished: true };
+  return {};
+};
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState('all'); // all, pending, approved
   const [actionLoading, setActionLoading] = useState(null);
-
-  useEffect(() => {
-    loadReviews();
-  }, []);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   const loadReviews = async () => {
     setLoading(true);
-    const data = await getReviews();
-    setReviews(data);
+    const result = await getReviewsPage({ filters: filterToQuery(filter), page, limit: PAGE_SIZE });
+    setReviews(result.documents || []);
+    setTotal(result.total || 0);
     setLoading(false);
   };
 
-  const handleApprove = async (reviewId) => {
-    setActionLoading(reviewId);
-    try {
-      await updateReview(reviewId, { isApproved: true });
-      setReviews(reviews.map(r => 
-        r.$id === reviewId ? { ...r, isApproved: true } : r
-      ));
-    } catch (err) {
-      alert(`Failed to approve: ${err.message}`);
-    } finally {
-      setActionLoading(null);
-    }
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      const result = await getReviewsPage({ filters: filterToQuery(filter), page, limit: PAGE_SIZE });
+      if (!cancelled) {
+        setReviews(result.documents || []);
+        setTotal(result.total || 0);
+        setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [filter, page]);
+
+  const pageStats = useMemo(() => ({
+    pending: reviews.filter((review) => !review.isApproved).length,
+    approved: reviews.filter((review) => review.isApproved).length,
+    published: reviews.filter((review) => review.isPublished).length,
+  }), [reviews]);
+
+  const changeFilter = (nextFilter) => {
+    setPage(0);
+    setFilter(nextFilter);
   };
 
-  const handleReject = async (reviewId) => {
+  const mutateReview = async (reviewId, patch) => {
     setActionLoading(reviewId);
     try {
-      await updateReview(reviewId, { isApproved: false, isPublished: false });
-      setReviews(reviews.map(r => 
-        r.$id === reviewId ? { ...r, isApproved: false, isPublished: false } : r
-      ));
+      await updateReview(reviewId, patch);
+      setReviews((items) => items.map((item) => (item.$id === reviewId ? { ...item, ...patch } : item)));
     } catch (err) {
-      alert(`Failed to reject: ${err.message}`);
+      window.alert(`Failed to update review: ${err.message}`);
     } finally {
       setActionLoading(null);
     }
   };
 
   const handleDelete = async (reviewId) => {
-    if (!window.confirm('Are you sure you want to delete this review?')) return;
-    
     setActionLoading(reviewId);
     try {
       await deleteReview(reviewId);
-      setReviews(reviews.filter(r => r.$id !== reviewId));
+      setReviews((items) => items.filter((item) => item.$id !== reviewId));
+      setDeleteConfirm(null);
     } catch (err) {
-      alert(`Failed to delete: ${err.message}`);
+      window.alert(`Failed to delete review: ${err.message}`);
     } finally {
       setActionLoading(null);
     }
   };
-
-  const handleTogglePublish = async (reviewId, currentStatus) => {
-    setActionLoading(reviewId);
-    try {
-      await updateReview(reviewId, { isPublished: !currentStatus });
-      setReviews(reviews.map(r => 
-        r.$id === reviewId ? { ...r, isPublished: !currentStatus } : r
-      ));
-    } catch (err) {
-      alert(`Failed to update: ${err.message}`);
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  // Filter reviews
-  const filteredReviews = reviews.filter(r => {
-    if (filter === 'pending') return !r.isApproved;
-    if (filter === 'approved') return r.isApproved;
-    return true;
-  });
-
-  const pendingCount = reviews.filter(r => !r.isApproved).length;
-  const approvedCount = reviews.filter(r => r.isApproved).length;
-  const publishedCount = reviews.filter(r => r.isPublished).length;
 
   return (
     <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
-          Review Management
-        </h1>
-        <p style={{ color: 'var(--color-text-muted)', margin: '0.5rem 0 0' }}>
-          Moderate user reviews for the website
-        </p>
+      <PageHeader
+        eyebrow="Moderation"
+        title="Review Management"
+        description="Approve, publish, and remove public reviews with a cleaner audit-friendly workflow."
+        actions={<Button onClick={loadReviews} disabled={loading}>Refresh</Button>}
+      />
+
+      <div className="admin-grid admin-grid--4">
+        <StatCard label="Matching Reviews" value={total} hint="Current server filter" />
+        <StatCard label="Pending Here" value={pageStats.pending} hint="Loaded page" tone="warning" />
+        <StatCard label="Approved Here" value={pageStats.approved} hint="Loaded page" tone="success" />
+        <StatCard label="Published Here" value={pageStats.published} hint="Loaded page" tone="info" />
       </div>
 
-      {/* Stats */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2rem',
-      }}>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-border)',
-          padding: '1rem',
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-            {reviews.length}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Total Reviews
-          </div>
-        </div>
-        <div style={{
-          backgroundColor: pendingCount > 0 ? 'rgba(245, 158, 11, 0.1)' : 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: `1px solid ${pendingCount > 0 ? '#f59e0b' : 'var(--color-border)'}`,
-          padding: '1rem',
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: pendingCount > 0 ? '#f59e0b' : 'var(--color-text-primary)' }}>
-            {pendingCount}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Pending Approval
-          </div>
-        </div>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-border)',
-          padding: '1rem',
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#10b981' }}>
-            {approvedCount}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Approved
-          </div>
-        </div>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-border)',
-          padding: '1rem',
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-accent)' }}>
-            {publishedCount}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Published
-          </div>
-        </div>
-      </div>
-
-      {/* Filter Tabs */}
-      <div style={{
-        display: 'flex',
-        gap: '0.5rem',
-        marginBottom: '1.5rem',
-      }}>
-        {['all', 'pending', 'approved'].map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            style={{
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              border: filter === f ? 'none' : '1px solid var(--color-border)',
-              backgroundColor: filter === f ? 'var(--color-accent)' : 'var(--color-bg-secondary)',
-              color: filter === f ? 'white' : 'var(--color-text-primary)',
-              cursor: 'pointer',
-              fontWeight: 500,
-              textTransform: 'capitalize',
-            }}
-          >
-            {f} {f === 'pending' && `(${pendingCount})`}
-          </button>
-        ))}
-      </div>
-
-      {/* Reviews List */}
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--color-text-muted)' }}>
-          Loading reviews...
-        </div>
-      ) : filteredReviews.length === 0 ? (
-        <div style={{
-          textAlign: 'center',
-          padding: '4rem',
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '12px',
-          border: '1px solid var(--color-border)',
-        }}>
-          <p style={{ color: 'var(--color-text-muted)', margin: 0 }}>
-            No reviews found
-          </p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {filteredReviews.map((review) => (
-            <div
-              key={review.$id}
-              style={{
-                backgroundColor: 'var(--color-bg-secondary)',
-                borderRadius: '12px',
-                border: `1px solid ${review.isApproved ? 'var(--color-border)' : '#f59e0b'}`,
-                padding: '1.5rem',
-                opacity: actionLoading === review.$id ? 0.7 : 1,
-              }}
+      <Card title="Moderation Queue">
+        <div className="admin-tabs">
+          {['all', 'pending', 'approved', 'published'].map((item) => (
+            <button
+              key={item}
+              type="button"
+              className={`admin-tab ${filter === item ? 'is-active' : ''}`}
+              onClick={() => changeFilter(item)}
             >
-              {/* Header */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'flex-start',
-                marginBottom: '1rem',
-              }}>
+              {item}
+            </button>
+          ))}
+        </div>
+      </Card>
+
+      {loading ? (
+        <LoadingState label="Loading reviews" />
+      ) : reviews.length === 0 ? (
+        <EmptyState title="No reviews found" description="There are no reviews matching this moderation filter." />
+      ) : (
+        <div className="admin-review-list">
+          {reviews.map((review) => (
+            <article className="admin-review-card" key={review.$id} aria-busy={actionLoading === review.$id}>
+              <div className="admin-review-card__header">
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                    {/* Star Rating */}
-                    {[...Array(5)].map((_, i) => (
-                      <span key={i} style={{ color: i < review.rating ? '#fbbf24' : 'var(--color-text-muted)' }}>
-                        ★
-                      </span>
+                  <div className="admin-stars" aria-label={`${review.rating || 0} out of 5 stars`}>
+                    {Array.from({ length: 5 }, (_, index) => (
+                      <span key={index} className={index < (review.rating || 0) ? 'is-filled' : ''}>★</span>
                     ))}
                   </div>
-                  <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--color-text-primary)' }}>
-                    {review.title}
-                  </h3>
+                  <h2>{review.title || 'Untitled review'}</h2>
+                  <p>{review.userName || review.userId || 'Unknown user'} / {formatDate(review.createdAt)}</p>
                 </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{
-                    padding: '0.25rem 0.5rem',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    backgroundColor: review.isApproved ? '#10b981' : '#f59e0b',
-                    color: 'white',
-                  }}>
-                    {review.isApproved ? 'Approved' : 'Pending'}
-                  </div>
-                  <div style={{
-                    marginTop: '0.25rem',
-                    padding: '0.25rem 0.5rem',
-                    borderRadius: '4px',
-                    fontSize: '0.75rem',
-                    backgroundColor: review.isPublished ? 'var(--color-accent)' : 'var(--color-bg-tertiary)',
-                    color: review.isPublished ? 'white' : 'var(--color-text-muted)',
-                  }}>
-                    {review.isPublished ? 'Published' : 'Unpublished'}
-                  </div>
+                <div className="admin-badge-row">
+                  <Badge tone={review.isApproved ? 'success' : 'warning'}>{review.isApproved ? 'Approved' : 'Pending'}</Badge>
+                  <Badge tone={review.isPublished ? 'info' : 'neutral'}>{review.isPublished ? 'Published' : 'Unpublished'}</Badge>
                 </div>
               </div>
 
-              {/* Content */}
-              <p style={{
-                color: 'var(--color-text-secondary)',
-                margin: '0 0 1rem',
-                lineHeight: 1.6,
-              }}>
-                {review.content}
-              </p>
+              <p className="admin-review-card__body">{review.content || 'No review text.'}</p>
 
-              {/* Meta */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '0.8rem',
-                color: 'var(--color-text-muted)',
-                marginBottom: '1rem',
-              }}>
-                <span>
-                  User ID: {review.userId.slice(0, 12)}... • {new Date(review.createdAt).toLocaleDateString()}
-                </span>
-                <span>
-                  👍 {review.helpfulCount || 0} helpful
-                </span>
+              <div className="admin-review-card__meta">
+                <span>User ID: {review.userId ? `${review.userId.slice(0, 16)}...` : '-'}</span>
+                <span>{review.helpfulCount || 0} helpful votes</span>
               </div>
 
-              {/* Actions */}
-              <div style={{
-                display: 'flex',
-                gap: '0.5rem',
-                flexWrap: 'wrap',
-              }}>
-                {!review.isApproved && (
-                  <button
-                    onClick={() => handleApprove(review.$id)}
-                    disabled={actionLoading === review.$id}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      borderRadius: '6px',
-                      border: 'none',
-                      backgroundColor: '#10b981',
-                      color: 'white',
-                      cursor: 'pointer',
-                      fontWeight: 500,
-                    }}
-                  >
-                    ✓ Approve
-                  </button>
-                )}
-                {review.isApproved && (
-                  <button
-                    onClick={() => handleReject(review.$id)}
-                    disabled={actionLoading === review.$id}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      borderRadius: '6px',
-                      border: '1px solid #f59e0b',
-                      backgroundColor: 'transparent',
-                      color: '#f59e0b',
-                      cursor: 'pointer',
-                      fontWeight: 500,
-                    }}
-                  >
+              <div className="admin-actions">
+                {review.isApproved ? (
+                  <Button variant="secondary" onClick={() => mutateReview(review.$id, { isApproved: false, isPublished: false })} disabled={actionLoading === review.$id}>
                     Unapprove
-                  </button>
+                  </Button>
+                ) : (
+                  <Button variant="success" onClick={() => mutateReview(review.$id, { isApproved: true })} disabled={actionLoading === review.$id}>
+                    Approve
+                  </Button>
                 )}
-                <button
-                  onClick={() => handleTogglePublish(review.$id, review.isPublished)}
+                <Button
+                  variant="secondary"
+                  onClick={() => mutateReview(review.$id, { isPublished: !review.isPublished })}
                   disabled={actionLoading === review.$id}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    border: '1px solid var(--color-border)',
-                    backgroundColor: 'transparent',
-                    color: 'var(--color-text-primary)',
-                    cursor: 'pointer',
-                    fontWeight: 500,
-                  }}
                 >
                   {review.isPublished ? 'Unpublish' : 'Publish'}
-                </button>
-                <button
-                  onClick={() => handleDelete(review.$id)}
-                  disabled={actionLoading === review.$id}
-                  style={{
-                    padding: '0.5rem 1rem',
-                    borderRadius: '6px',
-                    border: '1px solid #ef4444',
-                    backgroundColor: 'transparent',
-                    color: '#ef4444',
-                    cursor: 'pointer',
-                    fontWeight: 500,
-                  }}
-                >
-                  🗑️ Delete
-                </button>
+                </Button>
+                {deleteConfirm === review.$id ? (
+                  <>
+                    <Button variant="danger" onClick={() => handleDelete(review.$id)} disabled={actionLoading === review.$id}>
+                      Confirm Delete
+                    </Button>
+                    <Button variant="ghost" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
+                  </>
+                ) : (
+                  <Button variant="danger" onClick={() => setDeleteConfirm(review.$id)} disabled={actionLoading === review.$id}>
+                    Delete
+                  </Button>
+                )}
               </div>
-            </div>
+            </article>
           ))}
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
         </div>
       )}
     </div>

@@ -23,17 +23,20 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment files — NEVER commit these (contain API keys and secrets)
+# Environment files - NEVER commit these (contain API keys and secrets)
 .env
 .env.*
+.env*
 appwrite_f.env
-!.env.example
-
-# Appwrite function environment files (contain secrets)
 appwrite-functions/**/.env
+appwrite-functions/**/.env.*
+
+# Keep safe env templates trackable.
+!.env.example
+!.env.*.example
+
 nul
 .vercel
-.env*
 
 # Private API keys (never commit)
 .ACTUAL_API_KEYS_PRIVATE.txt

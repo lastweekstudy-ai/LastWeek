@@ -83,6 +83,8 @@ const useAdminSettings = () => {
     paymentsActive: settings?.paymentsActive ?? true,
     dailyFreeSlotsActive: settings?.dailyFreeSlotsActive ?? false,
     dailyFreeSlotCount: settings?.dailyFreeSlotCount ?? 10,
+    preRegDisplayPrice: settings?.preRegDisplayPrice ?? 4,
+    preRegDisplayValue: settings?.preRegDisplayValue ?? 108,
     freePlanActive: settings?.freePlanActive ?? true,
     proPlanActive: settings?.proPlanActive ?? true,
     plusPlanActive: settings?.plusPlanActive ?? true,

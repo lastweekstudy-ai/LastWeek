@@ -1,46 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import BrandLogo from '../../../components/shared/BrandLogo';
 import { PixelIcon } from '../../../components/shared/pixel-art/PixelIcons';
 import { getAdminSettings, getPublishedReviews, getRemainingSlotsToday } from '../../../appwrite/admin';
+import { getPreRegPricing } from '../../../utils/preRegPricing';
 
 const Hero = () => {
   const [adminSettings, setAdminSettings] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [remainingSlots, setRemainingSlots] = useState(null);
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    loadData();
-  }, []);
+    let cancelled = false;
 
-  const loadData = async () => {
-    setLoading(false);
-
-    const [settings, publishedReviews, slots] = await Promise.allSettled([
+    Promise.allSettled([
       getAdminSettings(),
       getPublishedReviews(50),
       getRemainingSlotsToday(),
-    ]);
+    ]).then(([settings, publishedReviews, slots]) => {
+      if (cancelled) return;
 
-    if (settings.status === 'fulfilled') {
-      setAdminSettings(settings.value);
-      if (slots.status !== 'fulfilled') {
-        setRemainingSlots(settings.value?.dailyFreeSlotCount || 10);
+      if (settings.status === 'fulfilled') {
+        setAdminSettings(settings.value);
+        if (slots.status !== 'fulfilled') {
+          setRemainingSlots(settings.value?.dailyFreeSlotCount || 10);
+        }
       }
-    }
-    if (publishedReviews.status === 'fulfilled') {
-      setReviews(publishedReviews.value);
-    }
-    if (slots.status === 'fulfilled') {
-      setRemainingSlots(slots.value);
-    }
-  };
+      if (publishedReviews.status === 'fulfilled') {
+        setReviews(publishedReviews.value);
+      }
+      if (slots.status === 'fulfilled') {
+        setRemainingSlots(slots.value);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const isPreRegMode = adminSettings?.preRegActive;
   const dailyFreeSlotsActive = adminSettings?.dailyFreeSlotsActive;
   const displaySlots = remainingSlots !== null ? remainingSlots : (adminSettings?.dailyFreeSlotCount || 10);
   const totalSlots = adminSettings?.dailyFreeSlotCount || 10;
+  const preRegPricing = getPreRegPricing(adminSettings);
 
   return (
     <section className="hero">
@@ -56,7 +58,7 @@ const Hero = () => {
               <span className="prereg-badge">Limited time</span>
               <h3 className="prereg-title">Pre-registration is open</h3>
               <p className="prereg-subtitle">
-                Pay $5 now and get <strong>Plus free for 1 year</strong>, a $180 value.
+                Pay {preRegPricing.priceLabel} now and get <strong>Plus free for 1 year</strong>, a {preRegPricing.valueLabel} value.
               </p>
               <div className="prereg-actions">
                 <Link to="/pre-register" className="btn btn-primary btn-sm">

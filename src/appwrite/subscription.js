@@ -117,9 +117,15 @@ export const getSubscriptionDisplayInfo = (subscription) => {
   }
 
   if (active) {
+    const planLabels = {
+      pro: 'Pro',
+      plus: 'Plus',
+      proplus: 'Pro+',
+    };
+
     return {
       plan: subscription.plan,
-      label: subscription.plan === 'max' ? '🚀 Max' : '⭐ Pro',
+      label: planLabels[subscription.plan] || 'Pro',
       color: 'var(--color-accent)',
       active: true,
       daysLeft,

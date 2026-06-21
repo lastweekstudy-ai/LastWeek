@@ -1,10 +1,8 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useScrollToTop from '../hooks/useScrollToTop';
 
 const Terms = () => {
   useScrollToTop();
-  const navigate = useNavigate();
 
   return (
     <div className="page-container">
@@ -163,9 +161,9 @@ const Terms = () => {
           <h3 style={{ marginTop: '1rem', marginBottom: '0.5rem', fontSize: '1rem' }}>Available Plans</h3>
           <ul>
             <li><strong>Free:</strong> 5 sessions/month, 500 AI messages/month, 3 PDFs, 1 audio upload. No credit card required.</li>
-            <li><strong>Pro ($9.99/month):</strong> 30 sessions/month, 3,000 AI messages/month, 20 PDFs, 10 audio uploads, language learning, 3 exam plans.</li>
-            <li><strong>Plus ($14.99/month):</strong> 100 sessions/month, 7,000 AI messages/month, 60 PDFs, 30 audio uploads, language learning, 10 exam plans.</li>
+            <li><strong>Plus ($9/month):</strong> 100 sessions/month, 7,000 AI messages/month, 60 PDFs, 30 audio uploads, language learning, 10 exam plans.</li>
             <li><strong>Pro+ ($19.99/month):</strong> Unlimited sessions, unlimited AI messages, unlimited PDFs and audio uploads, language learning, unlimited exam plans.</li>
+            <li><strong>Legacy Pro:</strong> Existing Pro subscribers keep their Pro access until they cancel, downgrade, or change plans.</li>
           </ul>
 
           <h3 style={{ marginTop: '1rem', marginBottom: '0.5rem', fontSize: '1rem' }}>Billing Terms</h3>

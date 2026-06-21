@@ -28,12 +28,6 @@
 // 🔐 Import secure AI provider (routes through Appwrite Function)
 import * as SecureAI from './secureAiProvider';
 
-// Legacy API key references (DEPRECATED - kept for compatibility with old code)
-// These are no longer used as all calls go through secure proxy
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY || 'DEPRECATED_USE_SECURE_PROXY';
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || 'DEPRECATED_USE_SECURE_PROXY';
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY || 'DEPRECATED_USE_SECURE_PROXY';
-
 /**
  * Model selection guide (May 2026 free tiers):
  *

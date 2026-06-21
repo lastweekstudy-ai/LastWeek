@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import UpgradeButton from '../components/UpgradeButton';
 import useCombinedLimits from '../hooks/useCombinedLimits';
 import { PLANS, formatLimit } from '../config/planLimits';
 import { getAdminSettings } from '../appwrite/admin';
+import { getPreRegPricing } from '../utils/preRegPricing';
 
 const CHECK = '✅';
 const CROSS = '❌';
@@ -26,33 +26,35 @@ const FEATURES = [
 ];
 
 const PADDLE_PRICES = {
-  pro: import.meta.env.VITE_PADDLE_PRO_PRICE_ID,
   plus: import.meta.env.VITE_PADDLE_PLUS_PRICE_ID,
   proplus: import.meta.env.VITE_PADDLE_PROPLUS_PRICE_ID,
 };
 
 const Pricing = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { plan: currentPlan, isTestingMode } = useCombinedLimits();
+  const { plan: currentPlan } = useCombinedLimits();
   const [billing, setBilling] = useState('monthly');
   const [adminSettings, setAdminSettings] = useState(null);
   const [loadingSettings, setLoadingSettings] = useState(true);
 
   useEffect(() => {
-    loadAdminSettings();
-  }, []);
+    let cancelled = false;
 
-  const loadAdminSettings = async () => {
-    try {
-      const settings = await getAdminSettings();
-      setAdminSettings(settings);
-    } catch (err) {
-      console.error('Failed to load admin settings:', err);
-    } finally {
-      setLoadingSettings(false);
-    }
-  };
+    getAdminSettings()
+      .then((settings) => {
+        if (!cancelled) setAdminSettings(settings);
+      })
+      .catch((err) => {
+        console.error('Failed to load admin settings:', err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingSettings(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Show loading skeleton while fetching admin settings
   if (loadingSettings) {
@@ -87,7 +89,7 @@ const Pricing = () => {
             gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
             gap: '1rem' 
           }}>
-            {[1, 2, 3, 4].map(i => (
+            {[1, 2, 3].map(i => (
               <div key={i} style={{
                 backgroundColor: 'var(--color-bg-secondary)',
                 borderRadius: '16px',
@@ -109,12 +111,10 @@ const Pricing = () => {
     );
   }
 
-  // Determine which plans to show based on admin settings
-  const getPlanVisibility = (planId) => {
+  const getPlanActive = (planId) => {
     if (!adminSettings) return true;
     const planMap = {
       free: adminSettings.freePlanActive,
-      pro: adminSettings.proPlanActive,
       plus: adminSettings.plusPlanActive,
       proplus: adminSettings.proPlusPlanActive,
     };
@@ -124,13 +124,13 @@ const Pricing = () => {
   // Check if pre-reg mode is active
   const isPreRegMode = adminSettings?.preRegActive;
   const paymentsActive = adminSettings?.paymentsActive;
+  const preRegPricing = getPreRegPricing(adminSettings);
 
   const tiers = [
     { id: 'free', highlight: false },
-    { id: 'pro', highlight: true, badge: 'Most Popular' },
-    { id: 'plus', highlight: false },
+    { id: 'plus', highlight: true, badge: 'Most Popular' },
     { id: 'proplus', highlight: false, badge: 'Best Value' },
-  ].filter(t => getPlanVisibility(t.id));
+  ];
 
   const annualDiscount = 0.25; // 25% off annual
   const getPrice = (plan) => {
@@ -161,7 +161,7 @@ const Pricing = () => {
               🎉 Pre-Registration Now Open!
             </h3>
             <p style={{ color: 'var(--color-text-secondary)', margin: 0, fontSize: '0.9rem' }}>
-              Pay $5 now and get <strong>Plus free for 1 year</strong> (a $180 value!). 
+              Pay {preRegPricing.priceLabel} now and get <strong>Plus free for 1 year</strong> (a {preRegPricing.valueLabel} value!). 
               Plus, get a unique promo code — for every 10 friends who join, earn 6 more months free!
             </p>
           </div>
@@ -230,22 +230,25 @@ const Pricing = () => {
             const plan = PLANS[id];
             const isCurrent = currentPlan === id;
             const priceId = PADDLE_PRICES[id];
+            const planActive = getPlanActive(id);
+            const effectiveBadge = !planActive ? 'Unavailable' : badge;
 
             return (
               <div key={id} style={{
                 backgroundColor: 'var(--color-bg-secondary)',
                 borderRadius: '16px',
                 padding: '1.5rem',
-                border: highlight ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
+                border: highlight && planActive ? '2px solid var(--color-accent)' : '1px solid var(--color-border)',
                 position: 'relative',
-                boxShadow: highlight ? '0 0 30px rgba(var(--color-accent-rgb),0.15)' : 'none',
+                boxShadow: highlight && planActive ? '0 0 30px rgba(var(--color-accent-rgb),0.15)' : 'none',
+                opacity: planActive ? 1 : 0.72,
               }}>
-                {badge && (
+                {effectiveBadge && (
                   <span style={{
                     position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)',
-                    backgroundColor: 'var(--color-accent)', color: 'white', fontSize: '0.72rem', fontWeight: 700,
+                    backgroundColor: planActive ? 'var(--color-accent)' : 'var(--color-bg-tertiary)', color: planActive ? 'white' : 'var(--color-text-muted)', fontSize: '0.72rem', fontWeight: 700,
                     padding: '0.2rem 0.75rem', borderRadius: '999px', whiteSpace: 'nowrap',
-                  }}>{badge}</span>
+                  }}>{effectiveBadge}</span>
                 )}
 
                 <div style={{ marginBottom: '1rem' }}>
@@ -289,7 +292,31 @@ const Pricing = () => {
                 </ul>
 
                 {/* CTA */}
-                {isCurrent ? (
+                {!planActive ? (
+                  <div style={{
+                    width: '100%', padding: '0.6rem', borderRadius: '8px', textAlign: 'center',
+                    backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-muted)', fontWeight: 600, fontSize: '0.9rem',
+                  }}>
+                    Currently unavailable
+                  </div>
+                ) : isPreRegMode ? (
+                  // Pre-reg mode: keep cards visible, but only Plus can be purchased.
+                  id === 'plus' ? (
+                    <button onClick={() => navigate('/pre-register')} style={{
+                      width: '100%', padding: '0.6rem', borderRadius: '8px', border: 'none',
+                      backgroundColor: 'var(--color-accent)', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
+                    }}>
+                      Pre-Register ({preRegPricing.priceLabel})
+                    </button>
+                  ) : (
+                    <div style={{
+                      width: '100%', padding: '0.6rem', borderRadius: '8px', textAlign: 'center',
+                      backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-muted)', fontWeight: 600, fontSize: '0.9rem',
+                    }}>
+                      Pre-registration only
+                    </div>
+                  )
+                ) : isCurrent ? (
                   <div style={{
                     width: '100%', padding: '0.6rem', borderRadius: '8px', textAlign: 'center',
                     backgroundColor: 'rgba(var(--color-accent-rgb),0.1)', color: 'var(--color-accent)', fontWeight: 600, fontSize: '0.9rem',
@@ -311,23 +338,6 @@ const Pricing = () => {
                     }}>
                       Continue Free
                     </button>
-                  )
-                ) : isPreRegMode ? (
-                  // Pre-reg mode: show pre-reg button instead of normal pricing
-                  id === 'plus' ? (
-                    <button onClick={() => navigate('/auth?preReg=true')} style={{
-                      width: '100%', padding: '0.6rem', borderRadius: '8px', border: 'none',
-                      backgroundColor: 'var(--color-accent)', color: 'white', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem',
-                    }}>
-                      Pre-Register ($5)
-                    </button>
-                  ) : (
-                    <div style={{
-                      width: '100%', padding: '0.6rem', borderRadius: '8px', textAlign: 'center',
-                      backgroundColor: 'var(--color-bg-tertiary)', color: 'var(--color-text-muted)', fontWeight: 600, fontSize: '0.9rem',
-                    }}>
-                      Coming Soon
-                    </div>
                   )
                 ) : !paymentsActive ? (
                   <div style={{

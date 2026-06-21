@@ -1,345 +1,220 @@
-import React, { useState, useEffect } from 'react';
-import { getDailySlotsHistory, getRemainingSlotsToday, getTodailySlots, cleanupDuplicateDailySlots } from '../../appwrite/admin';
+import { useEffect, useMemo, useState } from 'react';
+import { cleanupDuplicateDailySlots, getDailySlotsHistoryPage, getRemainingSlotsToday, getTodailySlots } from '../../appwrite/admin';
 import useAdminSettings from '../../hooks/useAdminSettings';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  LoadingState,
+  PageHeader,
+  Pagination,
+  StatCard,
+  TableCard,
+  ToggleRow,
+} from './AdminUI';
+
+const PAGE_SIZE = 25;
 
 const DailySlots = () => {
   const { dailyFreeSlotsActive, dailyFreeSlotCount, toggleDailyFreeSlots, setDailySlotCount, settings } = useAdminSettings();
   const [history, setHistory] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
   const [todaySlots, setTodaySlots] = useState(null);
   const [remaining, setRemaining] = useState(null);
+  const [slotDraft, setSlotDraft] = useState(settings?.dailyFreeSlotCount || dailyFreeSlotCount || 10);
+  const [cleanupText, setCleanupText] = useState('');
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [cleaning, setCleaning] = useState(false);
+  const [saving, setSaving] = useState(null);
 
   useEffect(() => {
-    loadData();
-  }, []);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSlotDraft(settings?.dailyFreeSlotCount || dailyFreeSlotCount || 10);
+  }, [dailyFreeSlotCount, settings?.dailyFreeSlotCount]);
 
-  const loadData = async () => {
-    setLoading(true);
-    const [historyData, todayData, remainingData] = await Promise.all([
-      getDailySlotsHistory(30),
-      getTodailySlots().catch(() => null),
-      getRemainingSlotsToday().catch(() => null),
-    ]);
-    setHistory(historyData);
-    setTodaySlots(todayData);
-    setRemaining(remainingData);
-    setLoading(false);
-  };
-  
-  const handleCleanupDuplicates = async () => {
-    if (!confirm('This will delete duplicate daily slot documents for today. Continue?')) return;
-    
-    setCleaning(true);
-    try {
-      const result = await cleanupDuplicateDailySlots();
-      alert(`Cleaned up ${result.cleaned} duplicate documents.`);
-      loadData();
-    } catch (err) {
-      alert(`Failed to cleanup: ${err.message}`);
-    } finally {
-      setCleaning(false);
-    }
-  };
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      setLoading(true);
+      const [historyData, todayData, remainingData] = await Promise.all([
+        getDailySlotsHistoryPage({ page, limit: PAGE_SIZE }),
+        getTodailySlots().catch(() => null),
+        getRemainingSlotsToday().catch(() => null),
+      ]);
+      if (!cancelled) {
+        setHistory(historyData.documents || []);
+        setTotal(historyData.total || 0);
+        setTodaySlots(todayData);
+        setRemaining(remainingData);
+        setLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [page]);
+
+  const visibleStats = useMemo(() => {
+    const used = history.reduce((sum, item) => sum + (item.usedSlots || 0), 0);
+    const capacity = history.reduce((sum, item) => sum + (item.totalSlots || 0), 0);
+    return {
+      used,
+      average: history.length ? (used / history.length).toFixed(1) : '0',
+      usagePercent: capacity ? Math.round((used / capacity) * 100) : 0,
+    };
+  }, [history]);
 
   const handleToggleSlots = async () => {
-    setSaving(true);
+    setSaving('active');
     try {
       await toggleDailyFreeSlots(!dailyFreeSlotsActive);
     } catch (err) {
-      alert(`Failed to toggle: ${err.message}`);
+      window.alert(`Failed to toggle slots: ${err.message}`);
     } finally {
-      setSaving(false);
+      setSaving(null);
     }
   };
 
-  const handleSlotCountChange = async (e) => {
-    const value = parseInt(e.target.value) || 10;
-    if (value < 1) return;
-    setSaving(true);
+  const handleSaveSlotCount = async () => {
+    const value = Number(slotDraft);
+    if (!Number.isFinite(value) || value < 1) {
+      window.alert('Slot count must be at least 1.');
+      return;
+    }
+
+    setSaving('count');
     try {
       await setDailySlotCount(value);
+      window.alert('Daily slot count saved.');
     } catch (err) {
-      alert(`Failed to update: ${err.message}`);
+      window.alert(`Failed to update slot count: ${err.message}`);
     } finally {
-      setSaving(false);
+      setSaving(null);
     }
   };
 
-  // Calculate stats
-  const totalSlotsGiven = history.reduce((sum, h) => sum + (h.usedSlots || 0), 0);
-  const avgUsage = history.length > 0 
-    ? (history.reduce((sum, h) => sum + h.usedSlots, 0) / history.length).toFixed(1)
-    : 0;
+  const handleCleanupDuplicates = async () => {
+    setSaving('cleanup');
+    try {
+      const result = await cleanupDuplicateDailySlots();
+      setCleanupText('');
+      window.alert(`Cleaned up ${result.cleaned || 0} duplicate documents.`);
+    } catch (err) {
+      window.alert(`Failed to cleanup duplicates: ${err.message}`);
+    } finally {
+      setSaving(null);
+    }
+  };
 
   return (
     <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
-          Daily Free Slots
-        </h1>
-        <p style={{ color: 'var(--color-text-muted)', margin: '0.5rem 0 0' }}>
-          Manage daily free testing slots for new users
-        </p>
+      <PageHeader
+        eyebrow="Launch Control"
+        title="Daily Free Slots"
+        description="Manage the testing slot gate without scanning usage collections or writing settings accidentally."
+        actions={<Button onClick={() => setPage(0)} disabled={loading}>Refresh</Button>}
+      />
+
+      <div className="admin-grid admin-grid--4">
+        <StatCard label="Mode" value={dailyFreeSlotsActive ? 'Active' : 'Off'} hint="Free testing gate" tone={dailyFreeSlotsActive ? 'success' : 'neutral'} />
+        <StatCard label="Remaining Today" value={remaining ?? '-'} hint={todaySlots ? `${todaySlots.usedSlots || 0}/${todaySlots.totalSlots || 0} used` : 'No slot doc'} tone="info" />
+        <StatCard label="Visible Used" value={visibleStats.used} hint={`${visibleStats.average} per loaded day`} />
+        <StatCard label="Visible Fill Rate" value={`${visibleStats.usagePercent}%`} hint="Loaded page only" tone="warning" />
       </div>
 
-      {/* Today's Status */}
-      <div style={{
-        backgroundColor: dailyFreeSlotsActive ? 'rgba(16, 185, 129, 0.1)' : 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: `1px solid ${dailyFreeSlotsActive ? '#10b981' : 'var(--color-border)'}`,
-        padding: '1.5rem',
-        marginBottom: '2rem',
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0 }}>
-              {dailyFreeSlotsActive ? '✅ Daily Free Slots Active' : '⏸️ Daily Free Slots Disabled'}
-            </h2>
-            <p style={{ color: 'var(--color-text-muted)', margin: '0.5rem 0 0', fontSize: '0.875rem' }}>
-              {dailyFreeSlotsActive 
-                ? 'New users can claim a free testing slot today' 
-                : 'Enable to allow free testing with review requirement'}
-            </p>
-          </div>
-          <button
-            onClick={handleToggleSlots}
-            disabled={saving}
-            style={{
-              padding: '0.75rem 1.5rem',
-              borderRadius: '8px',
-              border: 'none',
-              backgroundColor: dailyFreeSlotsActive ? '#ef4444' : '#10b981',
-              color: 'white',
-              cursor: saving ? 'wait' : 'pointer',
-              fontWeight: 600,
-            }}
-          >
-            {saving ? 'Saving...' : dailyFreeSlotsActive ? 'Disable' : 'Enable'}
-          </button>
-        </div>
-
-        {dailyFreeSlotsActive && todaySlots && (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-            gap: '1rem',
-            marginTop: '1rem',
-          }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                {todaySlots.totalSlots}
-              </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Total Slots</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 700, color: '#10b981' }}>
-                {remaining ?? '?'}
-              </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Remaining</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 700, color: '#f59e0b' }}>
-                {todaySlots.usedSlots}
-              </div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>Used Today</div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Slot Count Setting */}
-      <div style={{
-        backgroundColor: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)',
-        padding: '1.5rem',
-        marginBottom: '2rem',
-      }}>
-        <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>
-          Slot Configuration
-        </h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-          <label style={{ color: 'var(--color-text-secondary)' }}>
-            Daily Slot Count:
-          </label>
+      <Card title="Today" description="This controls whether new users can claim a daily testing slot.">
+        <ToggleRow
+          label="Daily free slots"
+          description={dailyFreeSlotsActive ? 'New users can claim testing access today.' : 'Testing slot claims are disabled.'}
+          checked={dailyFreeSlotsActive}
+          onChange={handleToggleSlots}
+          loading={saving === 'active'}
+        />
+        <div className="admin-toolbar admin-section">
           <input
+            className="admin-input admin-input--small"
             type="number"
             min="1"
             max="1000"
-            value={settings?.dailyFreeSlotCount || dailyFreeSlotCount || 10}
-            onChange={handleSlotCountChange}
-            disabled={saving}
-            style={{
-              width: '100px',
-              padding: '0.5rem',
-              borderRadius: '6px',
-              border: '1px solid var(--color-border)',
-              backgroundColor: 'var(--color-bg-primary)',
-              color: 'var(--color-text-primary)',
-              textAlign: 'center',
-            }}
+            value={slotDraft}
+            onChange={(event) => setSlotDraft(event.target.value)}
           />
-          <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>
-            slots per day (US Eastern Time)
-          </span>
-          <button
-            onClick={handleCleanupDuplicates}
-            disabled={cleaning}
-            style={{
-              marginLeft: 'auto',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              border: '1px solid #f59e0b',
-              backgroundColor: 'transparent',
-              color: '#f59e0b',
-              cursor: cleaning ? 'wait' : 'pointer',
-              fontSize: '0.8rem',
-            }}
-          >
-            {cleaning ? 'Cleaning...' : 'Cleanup Duplicates'}
-          </button>
+          <Button onClick={handleSaveSlotCount} disabled={saving === 'count'}>
+            {saving === 'count' ? 'Saving' : 'Save Count'}
+          </Button>
+          <span className="admin-muted">Slots per day. Changes apply through the shared admin settings document.</span>
         </div>
-      </div>
+      </Card>
 
-      {/* Stats */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2rem',
-      }}>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-border)',
-          padding: '1rem',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-            {history.length}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Days Tracked
-          </div>
+      <Card
+        title="Maintenance"
+        description="Duplicate cleanup deletes duplicate daily slot documents for today. Keep it manual and intentional."
+        tone="warning"
+      >
+        <div className="admin-toolbar">
+          <input
+            className="admin-input"
+            value={cleanupText}
+            onChange={(event) => setCleanupText(event.target.value)}
+            placeholder="Type CLEANUP to enable duplicate cleanup"
+          />
+          <Button variant="danger" onClick={handleCleanupDuplicates} disabled={cleanupText !== 'CLEANUP' || saving === 'cleanup'}>
+            {saving === 'cleanup' ? 'Cleaning' : 'Cleanup Duplicates'}
+          </Button>
         </div>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-border)',
-          padding: '1rem',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-            {totalSlotsGiven}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Total Slots Given
-          </div>
-        </div>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-border)',
-          padding: '1rem',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-            {avgUsage}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Avg Usage/Day
-          </div>
-        </div>
-      </div>
+      </Card>
 
-      {/* History Table */}
-      <div style={{
-        backgroundColor: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)',
-        overflow: 'hidden',
-      }}>
-        <div style={{ padding: '1rem', borderBottom: '1px solid var(--color-border)' }}>
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: 0 }}>
-            Slot Usage History (Last 30 Days)
-          </h2>
-        </div>
+      <TableCard title="Slot Usage History" description="Paged Appwrite reads keep this usable as daily slot history grows.">
         {loading ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-            Loading history...
-          </div>
+          <LoadingState label="Loading slot history" />
+        ) : history.length === 0 ? (
+          <EmptyState title="No slot history yet" description="Daily usage documents will appear here after slots are claimed." />
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+          <>
+            <table className="admin-table">
               <thead>
-                <tr style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
-                  <th style={thStyle}>Date</th>
-                  <th style={thStyle}>Total Slots</th>
-                  <th style={thStyle}>Used</th>
-                  <th style={thStyle}>Remaining</th>
-                  <th style={thStyle}>Usage %</th>
+                <tr>
+                  <th>Date</th>
+                  <th>Total Slots</th>
+                  <th>Used</th>
+                  <th>Remaining</th>
+                  <th>Usage</th>
                 </tr>
               </thead>
               <tbody>
-                {history.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>
-                      No history yet
-                    </td>
-                  </tr>
-                ) : (
-                  history.map((h, i) => {
-                    const usagePercent = h.totalSlots > 0 
-                      ? Math.round((h.usedSlots / h.totalSlots) * 100) 
-                      : 0;
-                    return (
-                      <tr key={h.$id} style={{ borderTop: i === 0 ? 'none' : '1px solid var(--color-border)' }}>
-                        <td style={tdStyle}>{h.date}</td>
-                        <td style={tdStyle}>{h.totalSlots}</td>
-                        <td style={tdStyle}>{h.usedSlots}</td>
-                        <td style={tdStyle}>{h.totalSlots - h.usedSlots}</td>
-                        <td style={tdStyle}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <div style={{
-                              width: '60px',
-                              height: '6px',
-                              borderRadius: '3px',
-                              backgroundColor: 'var(--color-bg-tertiary)',
-                              overflow: 'hidden',
-                            }}>
-                              <div style={{
-                                width: `${usagePercent}%`,
-                                height: '100%',
-                                backgroundColor: usagePercent >= 80 ? '#10b981' : usagePercent >= 50 ? '#f59e0b' : '#6b7280',
-                              }} />
-                            </div>
-                            <span>{usagePercent}%</span>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
+                {history.map((item) => {
+                  const totalSlots = item.totalSlots || 0;
+                  const usedSlots = item.usedSlots || 0;
+                  const usagePercent = totalSlots ? Math.round((usedSlots / totalSlots) * 100) : 0;
+                  return (
+                    <tr key={item.$id}>
+                      <td>{item.date}</td>
+                      <td>{totalSlots}</td>
+                      <td>{usedSlots}</td>
+                      <td>{Math.max(0, totalSlots - usedSlots)}</td>
+                      <td>
+                        <div className="admin-progress">
+                          <span style={{ width: `${Math.min(100, usagePercent)}%` }} />
+                        </div>
+                        <Badge tone={usagePercent >= 80 ? 'success' : usagePercent >= 50 ? 'warning' : 'neutral'}>
+                          {usagePercent}%
+                        </Badge>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
-          </div>
+            <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
+          </>
         )}
-      </div>
+      </TableCard>
     </div>
   );
-};
-
-const thStyle = {
-  padding: '0.75rem 1rem',
-  textAlign: 'left',
-  color: 'var(--color-text-secondary)',
-  fontWeight: 600,
-  whiteSpace: 'nowrap',
-};
-
-const tdStyle = {
-  padding: '0.75rem 1rem',
-  color: 'var(--color-text-primary)',
-  whiteSpace: 'nowrap',
 };
 
 export default DailySlots;

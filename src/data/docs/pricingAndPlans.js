@@ -13,17 +13,20 @@ export const pricingAndPlansContent = {
 
 Choose the plan that fits your learning needs.
 
-### Starter Plan (Free)
+### Free Plan
 
 **Price:** Free forever
 
 **Features:**
-- Up to 3 study sessions
+- 5 study sessions per month
+- 500 AI messages per month
+- 3 PDF uploads per month
+- 1 audio upload per month
 - 50MB storage
 - Basic AI features
 - Community support
 - Access to all 5 study modes
-- Basic analytics
+- Community resource library
 
 **Best For:**
 - Students trying LastWeek
@@ -35,24 +38,24 @@ Choose the plan that fits your learning needs.
 - Limited storage
 - No offline access
 - No advanced analytics
-- No resource sharing
 - Community support only
 
-### Pro Plan
+### Plus Plan
 
-**Price:** $9.99/month (or $99/year - save 17%)
+**Price:** $9/month
 
 **Features:**
-- Unlimited study sessions
-- 10GB storage
+- 100 study sessions per month
+- 7,000 AI messages per month
+- 60 PDF uploads per month
+- 30 audio uploads per month
+- 2GB storage
 - Advanced AI features
 - Priority email support
-- Offline access
-- Advanced analytics
 - Resource sharing
-- Collaborative features
 - Spaced repetition system
-- Exam planner
+- Exam planner with 10 active plans
+- Language learning
 - Custom study schedules
 
 **Best For:**
@@ -62,98 +65,92 @@ Choose the plan that fits your learning needs.
 - Long-term learning
 
 **Benefits:**
-- Unlimited sessions
-- Offline studying
+- Strong monthly limits
 - Advanced features
 - Priority support
 - Better analytics
 
-### Team Plan
+### Pro+ Plan
 
-**Price:** $29.99/month (or $299/year - save 17%)
+**Price:** $19.99/month
 
 **Features:**
-- Everything in Pro
-- Up to 10 team members
+- Unlimited sessions
+- Unlimited AI messages
+- Unlimited PDF uploads
+- Unlimited audio uploads
+- 10GB storage
+- Language learning
+- Unlimited exam plans
 - Shared resource library
-- Team analytics
-- Admin controls
-- Custom branding
-- API access
-- Dedicated support
-- Team collaboration tools
-- Group study features
+- Priority support
 
 **Best For:**
-- Study groups
-- Classes
-- Tutoring centers
-- Educational institutions
+- Exam season
+- Heavy users
+- Students managing many subjects
+- Users who want unlimited positioning
 
 **Benefits:**
-- Collaborate with team
-- Shared resources
-- Team analytics
-- Admin controls
-- Dedicated support
+- No monthly session/message ceiling
+- Highest upload limits
+- Unlimited flashcards and MCQs
+- Unlimited exam planning
 
 ## Plan Comparison Table
 
-| Feature | Starter | Pro | Team |
-|---------|---------|-----|------|
-| Study Sessions | 3 | Unlimited | Unlimited |
-| Storage | 50MB | 10GB | 50GB |
-| AI Features | Basic | Advanced | Advanced |
-| Offline Access | No | Yes | Yes |
-| Resource Sharing | No | Yes | Yes |
-| Exam Planner | No | Yes | Yes |
-| Team Members | 1 | 1 | Up to 10 |
-| Support | Community | Priority | Dedicated |
-| Price | Free | $9.99/mo | $29.99/mo |
+| Feature | Free | Plus | Pro+ |
+|---------|------|------|------|
+| Study Sessions | 5/month | 100/month | Unlimited |
+| AI Messages | 500/month | 7,000/month | Unlimited |
+| PDF Uploads | 3/month | 60/month | Unlimited |
+| Audio Uploads | 1/month | 30/month | Unlimited |
+| Storage | 50MB | 2GB | 10GB |
+| Language Learning | No | Yes | Yes |
+| Exam Planner | 1 plan | 10 active plans | Unlimited |
+| Support | Community | Priority | Priority |
+| Price | Free | $9/mo | $19.99/mo |
 
 ## Free Trial
 
-**14-Day Free Trial:**
-- Try Pro features free
-- No credit card required
-- Full access to all features
-- Cancel anytime
-- No charges if cancelled
+**Pre-registration:**
+- Pay the configured one-time pre-registration price
+- Get Plus free for 1 year when pre-registration ends
+- Receive a promo code
+- Every 10 referred signups adds 6 more months
 
-**How to Start Trial:**
-1. Click "Start Free Trial"
+**How to Pre-register:**
+1. Click "Pre-register"
 2. Create account
 3. Verify email
-4. Start using Pro features
-5. Cancel anytime before trial ends
+4. Complete the Paddle checkout
+5. Watch your email for your promo code
 
 ## Upgrading Your Plan
 
-**From Starter to Pro:**
+**From Free to Plus:**
 1. Go to Settings > Billing
-2. Click "Upgrade to Pro"
-3. Choose billing period (monthly/yearly)
+2. Click "Upgrade to Plus"
+3. Choose the monthly plan
 4. Enter payment information
 5. Confirm upgrade
-6. Instant access to Pro features
+6. Instant access to Plus features
 
-**From Pro to Team:**
+**From Plus to Pro+:**
 1. Go to Settings > Billing
-2. Click "Upgrade to Team"
-3. Enter team size
-4. Choose billing period
-5. Enter payment information
-6. Confirm upgrade
-7. Invite team members
+2. Click "Upgrade to Pro+"
+3. Enter payment information
+4. Confirm upgrade
+5. Unlimited positioning applies immediately
 
 ## Downgrading Your Plan
 
-**From Pro to Starter:**
+**From Plus or Pro+ to Free:**
 1. Go to Settings > Billing
-2. Click "Downgrade to Starter"
+2. Click "Cancel Subscription"
 3. Confirm downgrade
-4. Excess data archived
-5. Downgrade effective next billing cycle
+4. Access continues until the end of your billing period
+5. Your account returns to Free afterward
 
 **Data During Downgrade:**
 - Excess sessions archived
@@ -448,12 +445,12 @@ We're here to help you succeed with LastWeek.
 - support@lastweek.com
 - Response time: 24 hours
 - Available for all plans
-- Priority for Pro/Team plans
+- Priority for Plus and Pro+ plans
 
 **Live Chat:**
 - Available during business hours
 - Instant answers to questions
-- Pro/Team plans only
+- Plus and Pro+ plans only
 - Weekdays 9am-6pm EST
 
 **Community Forum:**
@@ -561,7 +558,7 @@ We're here to help you succeed with LastWeek.
 - Appreciated by team
 - May be featured in updates
 
-### Premium Support (Pro/Team)
+### Premium Support (Plus/Pro+)
 
 **Priority Support:**
 - Faster response times
@@ -575,9 +572,9 @@ We're here to help you succeed with LastWeek.
 - Phone: 10am-5pm EST weekdays
 
 **Support Tiers:**
-- Starter: Community support
-- Pro: Priority email support
-- Team: Dedicated support + phone
+- Free: Community support
+- Plus: Priority email support
+- Pro+: Priority support for heavy usage and billing issues
       `,
     },
   ],

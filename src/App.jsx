@@ -42,6 +42,7 @@ const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 const AdminPreReg = lazy(() => import('./pages/admin/PreRegUsers'));
 const AdminDailySlots = lazy(() => import('./pages/admin/DailySlots'));
+const AdminBilling = lazy(() => import('./pages/admin/Billing'));
 const AdminReviews = lazy(() => import('./pages/admin/Reviews'));
 const AdminSettings = lazy(() => import('./pages/admin/Settings'));
 const AdminTestingUsers = lazy(() => import('./pages/admin/TestingUsers'));
@@ -371,6 +372,7 @@ function App() {
                 <Route path="testing-users" element={<AdminTestingUsers />} />
                 <Route path="pre-reg" element={<AdminPreReg />} />
                 <Route path="daily-slots" element={<AdminDailySlots />} />
+                <Route path="billing" element={<AdminBilling />} />
                 <Route path="reviews" element={<AdminReviews />} />
                 <Route path="settings" element={<AdminSettings />} />
               </Route>

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
 import { useAuth } from '../context/AuthContext';
 import useCombinedLimits from '../hooks/useCombinedLimits';
+import { getPaddleClientToken, getPaddleEnvironment, isMissingPaddlePrice } from '../utils/paddleConfig';
 
 /**
  * UpgradeButton
@@ -15,29 +16,29 @@ import useCombinedLimits from '../hooks/useCombinedLimits';
  *   navigateToPricing — If true, button goes to /pricing instead of opening checkout
  */
 const UpgradeButton = ({
-  priceId = import.meta.env.VITE_PADDLE_PRO_PLAN_PRICE_ID || 'pri_REPLACE_ME',
-  label = 'Upgrade to Pro',
+  priceId = import.meta.env.VITE_PADDLE_PLUS_PRICE_ID || 'pri_REPLACE_ME',
+  label = 'Upgrade to Plus',
   className = '',
   onSuccess = null,
   navigateToPricing = false,
 }) => {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
-  const { plan, planName, refresh: refreshLimits, isTestingMode } = useCombinedLimits();
+  const { plan, refresh: refreshLimits } = useCombinedLimits();
   const [paddle, setPaddle] = useState(null);
   const [loading, setLoading] = useState(false);
   const [paid, setPaid] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const clientToken = import.meta.env.VITE_PADDLE_CLIENT_TOKEN;
+    const clientToken = getPaddleClientToken();
     if (!clientToken) {
       console.warn('[UpgradeButton] VITE_PADDLE_CLIENT_TOKEN not set in .env');
       return;
     }
 
     initializePaddle({
-      environment: import.meta.env.VITE_PADDLE_ENVIRONMENT || 'sandbox',
+      environment: getPaddleEnvironment(),
       token: clientToken,
       eventCallback: async (event) => {
         if (event.name === 'checkout.completed') {
@@ -54,7 +55,7 @@ const UpgradeButton = ({
             } catch (e) {
               console.warn('[UpgradeButton] Could not auto-refresh user:', e.message);
             }
-          }, 2500); // 2.5s — enough time for webhook to process
+          }, 2500);
 
           onSuccess?.(event.data);
         }
@@ -71,6 +72,8 @@ const UpgradeButton = ({
       console.error('[Paddle] Initialization failed:', err);
       setError('Payment system unavailable');
     });
+    // Paddle should initialize once for this mounted button.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCheckout = async () => {
@@ -82,6 +85,10 @@ const UpgradeButton = ({
 
     if (!paddle) { setError('Payment system not ready. Please try again.'); return; }
     if (!user)   { setError('Please log in to upgrade.'); return; }
+    if (isMissingPaddlePrice(priceId)) {
+      setError('Payment price is not configured. Please contact support.');
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -116,10 +123,10 @@ const UpgradeButton = ({
 
   if (isPaid) {
     const badgeText = {
-      proplus: '🚀 Pro+',
-      plus: '✨ Plus',
-      pro: '⭐ Pro',
-    }[plan] || (user?.labels?.includes('premium') ? '⭐ Pro' : null);
+      proplus: 'Pro+',
+      plus: 'Plus',
+      pro: 'Pro',
+    }[plan] || (user?.labels?.includes('premium') ? 'Pro' : null);
 
     if (badgeText) {
       return (

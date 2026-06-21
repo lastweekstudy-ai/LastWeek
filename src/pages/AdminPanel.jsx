@@ -307,7 +307,7 @@ const AdminPanel = () => {
             }}>
               <SettingToggle
                 label="Pre-Registration Active"
-                description="Enable $5 pre-registration mode for new users"
+                description="Enable the configured pre-registration mode for new users"
                 checked={adminSettings?.preRegActive || false}
                 onChange={(checked) => handleSettingsUpdate({ preRegActive: checked })}
                 disabled={saving}

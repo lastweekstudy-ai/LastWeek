@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import useScrollToTop from '../hooks/useScrollToTop';
 
@@ -109,9 +108,9 @@ const RefundPolicy = () => {
         </div>
 
         <div className="page-section">
-          <h2>7. Team Plan Refunds</h2>
+          <h2>7. Paid Plan Refunds</h2>
           <p>
-            For Team plan subscriptions, refund requests must be made by the account owner or administrator. Refunds for Team plans follow the same 14-day policy as individual plans. If team members are removed mid-cycle, no prorated refund is issued for the remaining period.
+            For Plus and Pro+ subscriptions, refund requests must be made by the account owner. Paid plan refunds follow the same 14-day policy above. There is no prorated refund for unused time after cancellation unless required by law.
           </p>
         </div>
 

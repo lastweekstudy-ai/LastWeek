@@ -1,5 +1,23 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useAdminSettings from '../../hooks/useAdminSettings';
+import { formatMoney, getPreRegPricing } from '../../utils/preRegPricing';
+import {
+  Badge,
+  Button,
+  Card,
+  LoadingState,
+  PageHeader,
+  StatCard,
+  ToggleRow,
+} from './AdminUI';
+import { formatDateTime } from './adminFormat';
+
+const planFields = [
+  { plan: 'free', key: 'freePlanActive', label: 'Free Plan', description: 'Basic free tier with limited features.' },
+  { plan: 'pro', key: 'proPlanActive', label: 'Legacy Pro Plan', description: 'Kept for existing Pro subscribers; not shown in the public lineup.' },
+  { plan: 'plus', key: 'plusPlanActive', label: 'Plus Plan', description: '$9 launch plan for serious students.' },
+  { plan: 'proplus', key: 'proPlusPlanActive', label: 'Pro+ Plan', description: 'Premium unlimited subscription.' },
+];
 
 const Settings = () => {
   const {
@@ -14,32 +32,37 @@ const Settings = () => {
   } = useAdminSettings();
 
   const [saving, setSaving] = useState(null);
-  const [preRegPriceId, setPreRegPriceId] = useState(settings?.preRegPriceId || '');
+  const [preRegPriceId, setPreRegPriceId] = useState('');
+  const [preRegDisplayPrice, setPreRegDisplayPrice] = useState('4');
+  const [preRegDisplayValue, setPreRegDisplayValue] = useState('108');
+  const [slotDraft, setSlotDraft] = useState(10);
+
+  useEffect(() => {
+    const pricing = getPreRegPricing(settings);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPreRegPriceId(settings?.preRegPriceId || '');
+    setPreRegDisplayPrice(String(pricing.price));
+    setPreRegDisplayValue(String(pricing.value));
+    setSlotDraft(settings?.dailyFreeSlotCount || 10);
+  }, [settings]);
 
   const handleToggle = async (toggleFn, key) => {
     setSaving(key);
     try {
       await toggleFn(!settings[key]);
     } catch (err) {
-      alert(`Failed to update: ${err.message}`);
+      window.alert(`Failed to update setting: ${err.message}`);
     } finally {
       setSaving(null);
     }
   };
 
-  const handlePlanToggle = async (planKey) => {
-    const fieldMap = {
-      free: 'freePlanActive',
-      pro: 'proPlanActive',
-      plus: 'plusPlanActive',
-      proplus: 'proPlusPlanActive',
-    };
-    const key = fieldMap[planKey];
+  const handlePlanToggle = async ({ plan, key }) => {
     setSaving(key);
     try {
-      await togglePlan(planKey, !settings[key]);
+      await togglePlan(plan, !settings[key]);
     } catch (err) {
-      alert(`Failed to update: ${err.message}`);
+      window.alert(`Failed to update plan: ${err.message}`);
     } finally {
       setSaving(null);
     }
@@ -48,343 +71,206 @@ const Settings = () => {
   const handleSavePreRegPrice = async () => {
     setSaving('preRegPriceId');
     try {
-      await updateAdminSettings({ preRegPriceId });
-      alert('Pre-registration price ID saved!');
+      await updateAdminSettings({ preRegPriceId: preRegPriceId.trim() });
+      window.alert('Pre-registration price ID saved.');
     } catch (err) {
-      alert(`Failed to save: ${err.message}`);
+      window.alert(`Failed to save price ID: ${err.message}`);
     } finally {
       setSaving(null);
     }
   };
 
-  if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '4rem' }}>
-        <p style={{ color: 'var(--color-text-muted)' }}>Loading settings...</p>
-      </div>
-    );
-  }
+  const handleSavePreRegDisplayPrice = async () => {
+    const price = Number(preRegDisplayPrice);
+    const value = Number(preRegDisplayValue);
+
+    if (!Number.isFinite(price) || price <= 0) {
+      window.alert('Pre-registration display price must be greater than 0.');
+      return;
+    }
+    if (!Number.isFinite(value) || value <= 0) {
+      window.alert('Pre-registration display value must be greater than 0.');
+      return;
+    }
+
+    setSaving('preRegDisplayPrice');
+    try {
+      await updateAdminSettings({
+        preRegDisplayPrice: price,
+        preRegDisplayValue: value,
+      });
+      window.alert('Pre-registration display price saved.');
+    } catch (err) {
+      window.alert(
+        `Failed to save display price: ${err.message}\n\nIf Appwrite says the attribute is unknown, add optional float attributes named preRegDisplayPrice and preRegDisplayValue to admin_settings.`
+      );
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  const handleSaveSlotCount = async () => {
+    const value = Number(slotDraft);
+    if (!Number.isFinite(value) || value < 1) {
+      window.alert('Daily slot count must be at least 1.');
+      return;
+    }
+
+    setSaving('dailyFreeSlotCount');
+    try {
+      await setDailySlotCount(value);
+      window.alert('Daily free slot count saved.');
+    } catch (err) {
+      window.alert(`Failed to save slot count: ${err.message}`);
+    } finally {
+      setSaving(null);
+    }
+  };
+
+  if (loading) return <LoadingState label="Loading admin settings" />;
 
   return (
     <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
-          Admin Settings
-        </h1>
-        <p style={{ color: 'var(--color-text-muted)', margin: '0.5rem 0 0' }}>
-          Configure all website settings in one place
-        </p>
+      <PageHeader
+        eyebrow="Configuration"
+        title="Admin Settings"
+        description="Control launch mode, plan activation, payments, and free testing gates from one place."
+      />
+
+      <div className="admin-grid admin-grid--4">
+        <StatCard label="Mode" value={settings?.preRegActive ? 'Pre-Reg' : 'Commercial'} hint="Current product mode" tone={settings?.preRegActive ? 'warning' : 'success'} />
+        <StatCard label="Payments" value={settings?.paymentsActive ? 'Active' : 'Off'} hint="Paddle visibility" tone={settings?.paymentsActive ? 'success' : 'neutral'} />
+        <StatCard label="Daily Slots" value={settings?.dailyFreeSlotsActive ? 'Active' : 'Off'} hint={`${settings?.dailyFreeSlotCount || 10} per day`} tone={settings?.dailyFreeSlotsActive ? 'success' : 'neutral'} />
+        <StatCard label="Updated" value={settings?.updatedAt ? 'Saved' : 'Unknown'} hint={formatDateTime(settings?.updatedAt)} />
       </div>
 
-      {/* Mode Switching */}
-      <div style={{
-        backgroundColor: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)',
-        padding: '1.5rem',
-        marginBottom: '1.5rem',
-      }}>
-        <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>
-          Mode Switching
-        </h2>
-        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', marginBottom: '1rem' }}>
-          Switch between commercial and promotional modes. All data syncs properly when switching modes.
-        </p>
-        
-        <div style={{ display: 'grid', gap: '1rem' }}>
+      <div className="admin-grid admin-grid--2">
+        <Card title="Mode Switching" description="Use these toggles for launch and billing readiness.">
           <ToggleRow
-            label="Pre-Registration Mode"
-            description="Enable pre-registration ($5 for 1 year Plus). Disables normal payments when active."
+            label="Pre-registration mode"
+            description={`Enable the ${formatMoney(preRegDisplayPrice)} pre-registration flow and pause normal commercial payments.`}
             checked={settings?.preRegActive}
             onChange={() => handleToggle(togglePreReg, 'preRegActive')}
             loading={saving === 'preRegActive'}
           />
           <ToggleRow
-            label="All Payments"
-            description="Master toggle for all payment processing via Paddle"
+            label="All payments"
+            description="Master availability switch for payment processing."
             checked={settings?.paymentsActive}
             onChange={() => handleToggle(togglePayments, 'paymentsActive')}
             loading={saving === 'paymentsActive'}
           />
           <ToggleRow
-            label="Daily Free Slots"
-            description="Allow daily free testing with review requirement"
+            label="Daily free slots"
+            description="Allow limited free testing with review requirement."
             checked={settings?.dailyFreeSlotsActive}
             onChange={() => handleToggle(toggleDailyFreeSlots, 'dailyFreeSlotsActive')}
             loading={saving === 'dailyFreeSlotsActive'}
           />
-        </div>
-      </div>
+        </Card>
 
-      {/* Plan Availability */}
-      <div style={{
-        backgroundColor: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)',
-        padding: '1.5rem',
-        marginBottom: '1.5rem',
-      }}>
-        <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>
-          Plan Availability
-        </h2>
-        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', marginBottom: '1rem' }}>
-          Control which plans are available for purchase/signup
-        </p>
-        
-        <div style={{ display: 'grid', gap: '0.75rem' }}>
-          <ToggleRow
-            label="Free Plan"
-            description="Basic free tier with limited features"
-            checked={settings?.freePlanActive}
-            onChange={() => handlePlanToggle('free')}
-            loading={saving === 'freePlanActive'}
-          />
-          <ToggleRow
-            label="Pro Plan ($9.99/mo)"
-            description="Mid-tier subscription"
-            checked={settings?.proPlanActive}
-            onChange={() => handlePlanToggle('pro')}
-            loading={saving === 'proPlanActive'}
-          />
-          <ToggleRow
-            label="Plus Plan ($14.99/mo)"
-            description="Higher-tier subscription"
-            checked={settings?.plusPlanActive}
-            onChange={() => handlePlanToggle('plus')}
-            loading={saving === 'plusPlanActive'}
-          />
-          <ToggleRow
-            label="Pro+ Plan ($19.99/mo)"
-            description="Premium unlimited subscription"
-            checked={settings?.proPlusPlanActive}
-            onChange={() => handlePlanToggle('proplus')}
-            loading={saving === 'proPlusPlanActive'}
-          />
-        </div>
-      </div>
-
-      {/* Pre-Registration Configuration */}
-      <div style={{
-        backgroundColor: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)',
-        padding: '1.5rem',
-        marginBottom: '1.5rem',
-      }}>
-        <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>
-          Pre-Registration Configuration
-        </h2>
-        
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{
-            display: 'block',
-            color: 'var(--color-text-secondary)',
-            marginBottom: '0.5rem',
-            fontSize: '0.875rem',
-          }}>
-            Pre-Registration Price ID (Paddle)
-          </label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input
-              type="text"
-              value={preRegPriceId}
-              onChange={(e) => setPreRegPriceId(e.target.value)}
-              placeholder="pri_01xxx..."
-              style={{
-                flex: 1,
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                border: '1px solid var(--color-border)',
-                backgroundColor: 'var(--color-bg-primary)',
-                color: 'var(--color-text-primary)',
-                fontFamily: 'monospace',
-              }}
+        <Card title="Plan Activation" description="Deactivated plans remain visible for comparison but cannot be purchased.">
+          {planFields.map((item) => (
+            <ToggleRow
+              key={item.key}
+              label={item.label}
+              description={item.description}
+              checked={settings?.[item.key]}
+              onChange={() => handlePlanToggle(item)}
+              loading={saving === item.key}
             />
-            <button
-              onClick={handleSavePreRegPrice}
-              disabled={saving === 'preRegPriceId'}
-              style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '6px',
-                border: 'none',
-                backgroundColor: 'var(--color-accent)',
-                color: 'white',
-                cursor: 'pointer',
-                fontWeight: 500,
-              }}
-            >
-              Save
-            </button>
+          ))}
+        </Card>
+      </div>
+
+      <div className="admin-grid admin-grid--2">
+        <Card title="Pre-Registration Display Price" description="Controls website copy only. Paddle still charges whatever amount belongs to the saved price ID.">
+          <div className="admin-toolbar">
+            <label className="admin-field">
+              <span className="admin-label">Website price</span>
+              <input
+                className="admin-input admin-input--small"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={preRegDisplayPrice}
+                onChange={(event) => setPreRegDisplayPrice(event.target.value)}
+              />
+            </label>
+            <label className="admin-field">
+              <span className="admin-label">Displayed value</span>
+              <input
+                className="admin-input admin-input--small"
+                type="number"
+                min="0.01"
+                step="0.01"
+                value={preRegDisplayValue}
+                onChange={(event) => setPreRegDisplayValue(event.target.value)}
+              />
+            </label>
+            <Button onClick={handleSavePreRegDisplayPrice} disabled={saving === 'preRegDisplayPrice'}>
+              {saving === 'preRegDisplayPrice' ? 'Saving' : 'Save Display Price'}
+            </Button>
           </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
-            Create a $5 one-time price in Paddle Dashboard → Catalog → Prices
+          <p className="admin-muted">
+            Current public copy will show {formatMoney(preRegDisplayPrice)} for pre-registration and {formatMoney(preRegDisplayValue)} as the Plus one-year value.
           </p>
-        </div>
+        </Card>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{
-            display: 'block',
-            color: 'var(--color-text-secondary)',
-            marginBottom: '0.5rem',
-            fontSize: '0.875rem',
-          }}>
-            Daily Free Slot Count
-          </label>
-          <input
-            type="number"
-            min="1"
-            max="1000"
-            value={settings?.dailyFreeSlotCount || 10}
-            onChange={async (e) => {
-              const value = parseInt(e.target.value) || 10;
-              setSaving('dailyFreeSlotCount');
-              try {
-                await setDailySlotCount(value);
-              } catch (err) {
-                alert(`Failed to update: ${err.message}`);
-              } finally {
-                setSaving(null);
-              }
-            }}
-            disabled={saving === 'dailyFreeSlotCount'}
-            style={{
-              width: '100px',
-              padding: '0.5rem 1rem',
-              borderRadius: '6px',
-              border: '1px solid var(--color-border)',
-              backgroundColor: 'var(--color-bg-primary)',
-              color: 'var(--color-text-primary)',
-            }}
-          />
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.5rem' }}>
-            Number of free testing slots per day (US Eastern Time)
-          </p>
-        </div>
+        <Card title="Pre-Registration Paddle Price ID" description="Paddle one-time price used by the early access checkout.">
+          <div className="admin-toolbar">
+            <input
+              className="admin-input admin-code-input"
+              value={preRegPriceId}
+              onChange={(event) => setPreRegPriceId(event.target.value)}
+              placeholder="pri_01..."
+            />
+            <Button onClick={handleSavePreRegPrice} disabled={saving === 'preRegPriceId'}>
+              {saving === 'preRegPriceId' ? 'Saving' : 'Save'}
+            </Button>
+          </div>
+          <p className="admin-muted">Create the real one-time price in Paddle, then paste only the price ID here. This ID is the payment source of truth.</p>
+        </Card>
+
+        <Card title="Daily Slot Count" description="Edit locally first, then save intentionally.">
+          <div className="admin-toolbar">
+            <input
+              className="admin-input admin-input--small"
+              type="number"
+              min="1"
+              max="1000"
+              value={slotDraft}
+              onChange={(event) => setSlotDraft(event.target.value)}
+            />
+            <Button onClick={handleSaveSlotCount} disabled={saving === 'dailyFreeSlotCount'}>
+              {saving === 'dailyFreeSlotCount' ? 'Saving' : 'Save Count'}
+            </Button>
+          </div>
+          <p className="admin-muted">The app currently uses the configured testing timezone logic from the existing service.</p>
+        </Card>
       </div>
 
-      {/* Status Overview */}
-      <div style={{
-        backgroundColor: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)',
-        padding: '1.5rem',
-      }}>
-        <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--color-text-primary)', margin: '0 0 1rem' }}>
-          Current Status Overview
-        </h2>
-        
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '1rem',
-        }}>
-          <StatusItem 
-            label="Mode" 
-            value={settings?.preRegActive ? 'Pre-Registration' : 'Commercial'} 
-            color={settings?.preRegActive ? 'var(--color-accent)' : '#10b981'}
-          />
-          <StatusItem 
-            label="Payments" 
-            value={settings?.paymentsActive ? 'Active' : 'Disabled'} 
-            color={settings?.paymentsActive ? '#10b981' : '#ef4444'}
-          />
-          <StatusItem 
-            label="Daily Slots" 
-            value={settings?.dailyFreeSlotsActive ? 'Active' : 'Disabled'} 
-            color={settings?.dailyFreeSlotsActive ? '#10b981' : '#6b7280'}
-          />
-          <StatusItem 
-            label="Free Plan" 
-            value={settings?.freePlanActive ? 'Available' : 'Hidden'} 
-            color={settings?.freePlanActive ? '#10b981' : '#6b7280'}
-          />
-          <StatusItem 
-            label="Pro Plan" 
-            value={settings?.proPlanActive ? 'Available' : 'Hidden'} 
-            color={settings?.proPlanActive ? '#10b981' : '#6b7280'}
-          />
-          <StatusItem 
-            label="Plus Plan" 
-            value={settings?.plusPlanActive ? 'Available' : 'Hidden'} 
-            color={settings?.plusPlanActive ? '#10b981' : '#6b7280'}
-          />
-          <StatusItem 
-            label="Pro+ Plan" 
-            value={settings?.proPlusPlanActive ? 'Available' : 'Hidden'} 
-            color={settings?.proPlusPlanActive ? '#10b981' : '#6b7280'}
-          />
+      <Card title="Operational Snapshot" description="Current public switches and plan activation.">
+        <div className="admin-status-grid">
+          <span>Pre-registration <Badge tone={settings?.preRegActive ? 'warning' : 'neutral'}>{settings?.preRegActive ? 'On' : 'Off'}</Badge></span>
+          <span>Payments <Badge tone={settings?.paymentsActive ? 'success' : 'neutral'}>{settings?.paymentsActive ? 'On' : 'Off'}</Badge></span>
+          <span>Daily slots <Badge tone={settings?.dailyFreeSlotsActive ? 'success' : 'neutral'}>{settings?.dailyFreeSlotsActive ? 'On' : 'Off'}</Badge></span>
+          {planFields.map((item) => (
+            <span key={item.key}>
+              {item.label} <Badge tone={settings?.[item.key] ? 'success' : 'neutral'}>{settings?.[item.key] ? 'Active' : 'Deactivated'}</Badge>
+            </span>
+          ))}
         </div>
+      </Card>
 
-        <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
-          Last updated: {settings?.updatedAt ? new Date(settings.updatedAt).toLocaleString() : 'N/A'}
-        </div>
-      </div>
+      <Card title="Next Admin Safety Upgrade" tone="info">
+        <p className="admin-muted">
+          High-risk admin writes such as granting Plus, deleting reviews, and cleaning duplicate slot documents should move into Appwrite Functions
+          with server-side permission checks and audit logs before payment automation goes live.
+        </p>
+      </Card>
     </div>
   );
 };
-
-// Toggle Row Component
-const ToggleRow = ({ label, description, checked, onChange, loading }) => (
-  <div style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '0.75rem 0',
-    borderBottom: '1px solid var(--color-border)',
-  }}>
-    <div>
-      <div style={{ fontWeight: 500, color: 'var(--color-text-primary)' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-        {description}
-      </div>
-    </div>
-    <button
-      onClick={onChange}
-      disabled={loading}
-      style={{
-        width: '50px',
-        height: '28px',
-        borderRadius: '14px',
-        border: 'none',
-        backgroundColor: checked ? '#10b981' : 'var(--color-bg-tertiary)',
-        cursor: loading ? 'wait' : 'pointer',
-        position: 'relative',
-        transition: 'background-color 0.2s',
-      }}
-    >
-      <div style={{
-        width: '22px',
-        height: '22px',
-        borderRadius: '50%',
-        backgroundColor: 'white',
-        position: 'absolute',
-        top: '3px',
-        left: checked ? '25px' : '3px',
-        transition: 'left 0.2s',
-      }} />
-    </button>
-  </div>
-);
-
-// Status Item Component
-const StatusItem = ({ label, value, color }) => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '0.75rem',
-    backgroundColor: 'var(--color-bg-primary)',
-    borderRadius: '8px',
-  }}>
-    <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
-      {label}
-    </span>
-    <span style={{ color, fontWeight: 600, fontSize: '0.875rem' }}>
-      {value}
-    </span>
-  </div>
-);
 
 export default Settings;

@@ -1,394 +1,286 @@
-import React, { useState, useEffect } from 'react';
-import { getPreRegistrations, getPromoCodeUsageStats } from '../../appwrite/admin';
+import { useEffect, useMemo, useState } from 'react';
+import { getPreRegistrationsPage, getPromoCodeUsagePage, grantSinglePreRegistrationReward } from '../../appwrite/admin';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  LoadingState,
+  PageHeader,
+  Pagination,
+  StatCard,
+  TableCard,
+} from './AdminUI';
+import { formatDate } from './adminFormat';
+
+const PAGE_SIZE = 25;
+const PROMO_PAGE_SIZE = 10;
+
+const escapeCsv = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+
+const typeTone = (type) => {
+  if (type === 'paid') return 'success';
+  if (type === 'reviewer') return 'info';
+  if (type === 'free_slot') return 'warning';
+  return 'neutral';
+};
+
+const statusTone = (status) => {
+  if (status === 'active') return 'success';
+  if (status === 'expired') return 'danger';
+  if (status === 'converted') return 'info';
+  return 'neutral';
+};
 
 const PreRegUsers = () => {
   const [preRegs, setPreRegs] = useState([]);
+  const [total, setTotal] = useState(0);
   const [promoUsages, setPromoUsages] = useState([]);
+  const [promoTotal, setPromoTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [promoPage, setPromoPage] = useState(0);
+  const [filters, setFilters] = useState({ status: '', type: '' });
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState({ status: '', type: '' });
-  const [searchEmail, setSearchEmail] = useState('');
+  const [promoLoading, setPromoLoading] = useState(true);
+  const [grantingId, setGrantingId] = useState('');
+  const [grantNotice, setGrantNotice] = useState('');
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const loadPreRegs = async () => {
     setLoading(true);
-    const [preRegData, promoData] = await Promise.all([
-      getPreRegistrations(filter),
-      getPromoCodeUsageStats(),
-    ]);
-    setPreRegs(preRegData);
-    setPromoUsages(promoData.usages);
+    const result = await getPreRegistrationsPage({ filters, page, limit: PAGE_SIZE });
+    setPreRegs(result.documents || []);
+    setTotal(result.total || 0);
     setLoading(false);
   };
 
-  const handleFilterChange = (key, value) => {
-    setFilter({ ...filter, [key]: value });
-  };
+  useEffect(() => {
+    let cancelled = false;
 
-  const applyFilters = () => {
-    loadData();
-  };
-
-  // Calculate owed benefits
-  const calculateOwed = () => {
-    let totalMonths = 0;
-    preRegs.forEach(p => {
-      totalMonths += p.bonusMonthsEarned || 0;
-    });
-    return {
-      months: totalMonths,
-      value: (totalMonths * 14.99).toFixed(2),
+    const load = async () => {
+      if (!cancelled) {
+        await loadPreRegs();
+      }
     };
-  };
 
-  const owed = calculateOwed();
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [filters, page]);
 
-  // Filter by email search
-  const filteredPreRegs = preRegs.filter(p => 
-    !searchEmail || p.email.toLowerCase().includes(searchEmail.toLowerCase())
-  );
+  useEffect(() => {
+    let cancelled = false;
 
-  // Export to CSV
+    const load = async () => {
+      setPromoLoading(true);
+      const result = await getPromoCodeUsagePage({ page: promoPage, limit: PROMO_PAGE_SIZE });
+      if (!cancelled) {
+        setPromoUsages(result.documents || []);
+        setPromoTotal(result.total || 0);
+        setPromoLoading(false);
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [promoPage]);
+
+  const visiblePreRegs = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return preRegs;
+    return preRegs.filter((item) =>
+      [item.email, item.name, item.promoCode, item.userId]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .includes(query)
+    );
+  }, [preRegs, search]);
+
+  const visibleOwed = useMemo(() => {
+    const months = visiblePreRegs.reduce((sum, item) => sum + (item.bonusMonthsEarned || 0), 0);
+    return { months, value: (months * 9).toFixed(2) };
+  }, [visiblePreRegs]);
+
   const exportCSV = () => {
     const headers = ['Email', 'Name', 'Type', 'Promo Code', 'Uses', 'Bonus Months', 'Status', 'Plus Until', 'Created'];
-    const rows = filteredPreRegs.map(p => [
-      p.email,
-      p.name || '',
-      p.type,
-      p.promoCode,
-      p.promoCodeUses,
-      p.bonusMonthsEarned,
-      p.status,
-      new Date(p.plusUntil).toLocaleDateString(),
-      new Date(p.createdAt).toLocaleDateString(),
+    const rows = visiblePreRegs.map((item) => [
+      item.email,
+      item.name || '',
+      item.type || '',
+      item.promoCode || '',
+      item.promoCodeUses || 0,
+      item.bonusMonthsEarned || 0,
+      item.status || '',
+      formatDate(item.plusUntil),
+      formatDate(item.createdAt),
     ]);
-    
-    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
+
+    const csv = [headers, ...rows].map((row) => row.map(escapeCsv).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `pre-registrations-${new Date().toISOString().split('T')[0]}.csv`;
-    a.click();
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `pre-registrations-${new Date().toISOString().slice(0, 10)}.csv`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
-  if (loading) {
-    return (
-      <div style={{ textAlign: 'center', padding: '4rem' }}>
-        <p style={{ color: 'var(--color-text-muted)' }}>Loading pre-registrations...</p>
-      </div>
-    );
-  }
+  const updateFilter = (key, value) => {
+    setPage(0);
+    setFilters((current) => ({ ...current, [key]: value }));
+  };
+
+  const handleGrantSingle = async (item) => {
+    if (item.status !== 'active') return;
+    const confirmed = window.confirm(`Grant Plus reward to ${item.email || item.userId || 'this pre-registration'} now?`);
+    if (!confirmed) return;
+
+    setGrantingId(item.$id);
+    setGrantNotice('');
+    try {
+      const result = await grantSinglePreRegistrationReward(item.$id);
+      const detail = result.details?.[0];
+      setGrantNotice(`${detail?.email || item.email || 'User'} converted until ${formatDate(detail?.plusUntil)}.`);
+      await loadPreRegs();
+    } catch (err) {
+      window.alert(`Failed to grant reward: ${err.message}`);
+    } finally {
+      setGrantingId('');
+    }
+  };
 
   return (
     <div>
-      <div style={{ marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
-          Pre-Registrations
-        </h1>
-        <p style={{ color: 'var(--color-text-muted)', margin: '0.5rem 0 0' }}>
-          Manage pre-registered users and their promo codes
-        </p>
+      <PageHeader
+        eyebrow="Growth"
+        title="Pre-Registrations"
+        description="Review signups, promo codes, reviewer rewards, and early Plus obligations."
+        actions={<Button onClick={exportCSV} disabled={visiblePreRegs.length === 0}>Export visible CSV</Button>}
+      />
+
+      {grantNotice && (
+        <Card className="admin-callout" style={{ marginBottom: '1rem' }}>
+          {grantNotice}
+        </Card>
+      )}
+
+      <div className="admin-grid admin-grid--4">
+        <StatCard label="Total Matching" value={total} hint="Server-side filtered records" />
+        <StatCard label="Loaded Page" value={visiblePreRegs.length} hint={`Page ${page + 1}`} />
+        <StatCard label="Active Here" value={visiblePreRegs.filter((item) => item.status === 'active').length} hint="Current page only" tone="success" />
+        <StatCard label="Visible Owed" value={`$${visibleOwed.value}`} hint={`${visibleOwed.months} Plus months`} tone="warning" />
       </div>
 
-      {/* Summary Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: '1rem',
-        marginBottom: '2rem',
-      }}>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-border)',
-          padding: '1rem',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-            {preRegs.length}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Total Pre-Regs
-          </div>
+      <Card title="Controls" description="Filters are server-side. Search narrows the currently loaded page.">
+        <div className="admin-toolbar">
+          <input
+            className="admin-input"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search loaded page by email, name, user ID, or promo code"
+          />
+          <select className="admin-select" value={filters.status} onChange={(event) => updateFilter('status', event.target.value)}>
+            <option value="">All status</option>
+            <option value="active">Active</option>
+            <option value="expired">Expired</option>
+            <option value="converted">Converted</option>
+          </select>
+          <select className="admin-select" value={filters.type} onChange={(event) => updateFilter('type', event.target.value)}>
+            <option value="">All types</option>
+            <option value="paid">Paid</option>
+            <option value="free_slot">Free slot</option>
+            <option value="reviewer">Reviewer</option>
+          </select>
         </div>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-border)',
-          padding: '1rem',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-            {preRegs.filter(p => p.type === 'paid').length}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Paid ($5)
-          </div>
-        </div>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-border)',
-          padding: '1rem',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-            {preRegs.filter(p => p.type === 'reviewer').length}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            From Reviews
-          </div>
-        </div>
-        <div style={{
-          backgroundColor: 'rgba(var(--color-accent-rgb), 0.1)',
-          borderRadius: '10px',
-          border: '1px solid var(--color-accent)',
-          padding: '1rem',
-        }}>
-          <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-accent)' }}>
-            ${owed.value}
-          </div>
-          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-            Owed Value ({owed.months} months)
-          </div>
-        </div>
-      </div>
+      </Card>
 
-      {/* Filters & Search */}
-      <div style={{
-        backgroundColor: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)',
-        padding: '1rem',
-        marginBottom: '1.5rem',
-        display: 'flex',
-        gap: '1rem',
-        flexWrap: 'wrap',
-        alignItems: 'center',
-      }}>
-        <input
-          type="text"
-          placeholder="Search by email..."
-          value={searchEmail}
-          onChange={(e) => setSearchEmail(e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            border: '1px solid var(--color-border)',
-            backgroundColor: 'var(--color-bg-primary)',
-            color: 'var(--color-text-primary)',
-            flex: 1,
-            minWidth: '200px',
-          }}
-        />
-        <select
-          value={filter.status}
-          onChange={(e) => handleFilterChange('status', e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            border: '1px solid var(--color-border)',
-            backgroundColor: 'var(--color-bg-primary)',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="expired">Expired</option>
-          <option value="converted">Converted</option>
-        </select>
-        <select
-          value={filter.type}
-          onChange={(e) => handleFilterChange('type', e.target.value)}
-          style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            border: '1px solid var(--color-border)',
-            backgroundColor: 'var(--color-bg-primary)',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          <option value="">All Types</option>
-          <option value="paid">Paid ($5)</option>
-          <option value="free_slot">Free Slot</option>
-          <option value="reviewer">Reviewer</option>
-        </select>
-        <button
-          onClick={applyFilters}
-          style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            border: 'none',
-            backgroundColor: 'var(--color-accent)',
-            color: 'white',
-            cursor: 'pointer',
-            fontWeight: 500,
-          }}
-        >
-          Apply
-        </button>
-        <button
-          onClick={exportCSV}
-          style={{
-            padding: '0.5rem 1rem',
-            borderRadius: '6px',
-            border: '1px solid var(--color-border)',
-            backgroundColor: 'var(--color-bg-primary)',
-            color: 'var(--color-text-primary)',
-            cursor: 'pointer',
-            fontWeight: 500,
-          }}
-        >
-          📥 Export CSV
-        </button>
-      </div>
-
-      {/* Table */}
-      <div style={{
-        backgroundColor: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)',
-        overflow: 'hidden',
-      }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+      {loading ? (
+        <LoadingState label="Loading pre-registrations" />
+      ) : visiblePreRegs.length === 0 ? (
+        <EmptyState title="No pre-registrations found" description="Try a different status/type filter or clear the page search." />
+      ) : (
+        <TableCard title="Pre-Registration Records">
+          <table className="admin-table">
             <thead>
-              <tr style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
-                <th style={thStyle}>Email</th>
-                <th style={thStyle}>Name</th>
-                <th style={thStyle}>Type</th>
-                <th style={thStyle}>Promo Code</th>
-                <th style={thStyle}>Uses</th>
-                <th style={thStyle}>Bonus</th>
-                <th style={thStyle}>Status</th>
-                <th style={thStyle}>Plus Until</th>
-                <th style={thStyle}>Created</th>
+              <tr>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Promo</th>
+                <th>Uses</th>
+                <th>Bonus</th>
+                <th>Status</th>
+                <th>Plus Until</th>
+                <th>Created</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {filteredPreRegs.length === 0 ? (
-                <tr>
-                  <td colSpan={9} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>
-                    No pre-registrations found
+              {visiblePreRegs.map((item) => (
+                <tr key={item.$id}>
+                  <td>{item.email || 'Unknown'}</td>
+                  <td>{item.name || 'Not set'}</td>
+                  <td><Badge tone={typeTone(item.type)}>{item.type || 'unknown'}</Badge></td>
+                  <td><code>{item.promoCode || '-'}</code></td>
+                  <td>{item.promoCodeUses || 0}</td>
+                  <td>{item.bonusMonthsEarned || 0} mo</td>
+                  <td><Badge tone={statusTone(item.status)}>{item.status || 'unknown'}</Badge></td>
+                  <td>{formatDate(item.plusUntil)}</td>
+                  <td>{formatDate(item.createdAt)}</td>
+                  <td>
+                    <Button
+                      size="sm"
+                      onClick={() => handleGrantSingle(item)}
+                      disabled={item.status !== 'active' || grantingId === item.$id}
+                    >
+                      {grantingId === item.$id ? 'Granting' : 'Grant Plus'}
+                    </Button>
                   </td>
                 </tr>
-              ) : (
-                filteredPreRegs.map((p, i) => (
-                  <tr key={p.$id} style={{ borderTop: i === 0 ? 'none' : '1px solid var(--color-border)' }}>
-                    <td style={tdStyle}>{p.email}</td>
-                    <td style={tdStyle}>{p.name || '—'}</td>
-                    <td style={tdStyle}>
-                      <span style={{
-                        padding: '0.2rem 0.5rem',
-                        borderRadius: '4px',
-                        fontSize: '0.75rem',
-                        backgroundColor: p.type === 'paid' ? '#10b981' : p.type === 'reviewer' ? '#3b82f6' : '#f59e0b',
-                        color: 'white',
-                      }}>
-                        {p.type}
-                      </span>
-                    </td>
-                    <td style={tdStyle}>
-                      <code style={{
-                        padding: '0.2rem 0.5rem',
-                        borderRadius: '4px',
-                        backgroundColor: 'var(--color-bg-tertiary)',
-                        fontSize: '0.75rem',
-                      }}>
-                        {p.promoCode}
-                      </code>
-                    </td>
-                    <td style={tdStyle}>{p.promoCodeUses}</td>
-                    <td style={tdStyle}>{p.bonusMonthsEarned} mo</td>
-                    <td style={tdStyle}>
-                      <span style={{
-                        color: p.status === 'active' ? '#10b981' : p.status === 'expired' ? '#ef4444' : '#6b7280',
-                      }}>
-                        {p.status}
-                      </span>
-                    </td>
-                    <td style={tdStyle}>
-                      {new Date(p.plusUntil).toLocaleDateString()}
-                    </td>
-                    <td style={tdStyle}>
-                      {new Date(p.createdAt).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
-        </div>
-      </div>
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
+        </TableCard>
+      )}
 
-      {/* Promo Code Usage Section */}
-      <div style={{ marginTop: '2rem' }}>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: '1rem' }}>
-          Recent Promo Code Usage
-        </h2>
-        <div style={{
-          backgroundColor: 'var(--color-bg-secondary)',
-          borderRadius: '12px',
-          border: '1px solid var(--color-border)',
-          overflow: 'hidden',
-        }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+      <TableCard title="Promo Code Usage" description="Paged safely so this view does not pull the full usage collection.">
+        {promoLoading ? (
+          <LoadingState label="Loading promo usage" />
+        ) : promoUsages.length === 0 ? (
+          <EmptyState title="No promo usage yet" description="Usage records will appear here as users redeem referral codes." />
+        ) : (
+          <>
+            <table className="admin-table">
               <thead>
-                <tr style={{ backgroundColor: 'var(--color-bg-tertiary)' }}>
-                  <th style={thStyle}>Promo Code</th>
-                  <th style={thStyle}>Referrer</th>
-                  <th style={thStyle}>New User Email</th>
-                  <th style={thStyle}>Date</th>
+                <tr>
+                  <th>Promo Code</th>
+                  <th>Referrer</th>
+                  <th>New User Email</th>
+                  <th>Date</th>
                 </tr>
               </thead>
               <tbody>
-                {promoUsages.length === 0 ? (
-                  <tr>
-                    <td colSpan={4} style={{ textAlign: 'center', padding: '2rem', color: 'var(--color-text-muted)' }}>
-                      No promo code usage recorded yet
-                    </td>
+                {promoUsages.map((item) => (
+                  <tr key={item.$id}>
+                    <td><code>{item.promoCode || '-'}</code></td>
+                    <td>{item.referrerId ? `${item.referrerId.slice(0, 12)}...` : '-'}</td>
+                    <td>{item.newUserEmail || '-'}</td>
+                    <td>{formatDate(item.createdAt)}</td>
                   </tr>
-                ) : (
-                  promoUsages.slice(0, 20).map((u, i) => (
-                    <tr key={u.$id} style={{ borderTop: i === 0 ? 'none' : '1px solid var(--color-border)' }}>
-                      <td style={tdStyle}>
-                        <code style={{
-                          padding: '0.2rem 0.5rem',
-                          borderRadius: '4px',
-                          backgroundColor: 'var(--color-bg-tertiary)',
-                          fontSize: '0.75rem',
-                        }}>
-                          {u.promoCode}
-                        </code>
-                      </td>
-                      <td style={tdStyle}>{u.referrerId.slice(0, 8)}...</td>
-                      <td style={tdStyle}>{u.newUserEmail}</td>
-                      <td style={tdStyle}>{new Date(u.createdAt).toLocaleDateString()}</td>
-                    </tr>
-                  ))
-                )}
+                ))}
               </tbody>
             </table>
-          </div>
-        </div>
-      </div>
+            <Pagination page={promoPage} pageSize={PROMO_PAGE_SIZE} total={promoTotal} onPageChange={setPromoPage} />
+          </>
+        )}
+      </TableCard>
     </div>
   );
-};
-
-const thStyle = {
-  padding: '0.75rem 1rem',
-  textAlign: 'left',
-  color: 'var(--color-text-secondary)',
-  fontWeight: 600,
-  whiteSpace: 'nowrap',
-};
-
-const tdStyle = {
-  padding: '0.75rem 1rem',
-  color: 'var(--color-text-primary)',
-  whiteSpace: 'nowrap',
 };
 
 export default PreRegUsers;

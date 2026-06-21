@@ -40,7 +40,7 @@ export const PLANS = {
   },
   plus: {
     name: 'Plus',
-    price: 14.99,
+    price: 9,
     sessions: 100,
     messages: 7000,
     pdfs: 60,
