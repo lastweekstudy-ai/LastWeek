@@ -29,7 +29,7 @@ const getListTotal = async (collectionId, queries = []) => {
  */
 export const generatePromoCode = (userId) => {
   const prefix = 'LW';
-  const hash = userId.slice(-6).toUpperCase().replace(/[^A-Z0-9]/g, 'X');
+  const hash = String(userId || 'pending').slice(-6).toUpperCase().replace(/[^A-Z0-9]/g, 'X');
   const random = Math.random().toString(36).slice(2, 6).toUpperCase();
   return `${prefix}${hash}${random}`;
 };
@@ -240,6 +240,7 @@ export const createPreRegistration = async (data) => {
       if (data.reviewId && !doc.reviewId) updates.reviewId = data.reviewId;
       if (data.paddlePaymentId && !doc.paddlePaymentId) updates.paddlePaymentId = data.paddlePaymentId;
       if (data.userId && doc.userId !== data.userId) updates.userId = data.userId;
+      if (data.status && doc.status !== 'converted' && doc.status !== data.status) updates.status = data.status;
 
       if (Object.keys(updates).length === 0) return doc;
       return databases.updateDocument(DATABASE_ID, PRE_REGISTRATIONS_COLLECTION_ID, doc.$id, updates);
@@ -254,11 +255,11 @@ export const createPreRegistration = async (data) => {
         email: data.email,
         name: data.name || '',
         type: data.type, // 'paid' | 'free_slot' | 'reviewer'
-        promoCode: data.promoCode || generatePromoCode(data.userId),
+        promoCode: data.promoCode || generatePromoCode(data.userId || data.email),
         promoCodeUses: 0,
         bonusMonthsEarned: 0,
         plusUntil: data.plusUntil || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-        status: 'active',
+        status: data.status || 'active',
         reviewId: data.reviewId || null,
         paddlePaymentId: data.paddlePaymentId || '',
         createdAt: new Date().toISOString(),

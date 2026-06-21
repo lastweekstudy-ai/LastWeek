@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { initializePaddle } from '@paddle/paddle-js';
-import { getAdminSettings, getPreRegistrationByEmail } from '../appwrite/admin';
+import { createPreRegistration, getAdminSettings, getPreRegistrationByEmail } from '../appwrite/admin';
 import { getPaddleClientToken, getPaddleEnvironment, isMissingPaddlePrice } from '../utils/paddleConfig';
 import { getPreRegPricing } from '../utils/preRegPricing';
 
@@ -25,6 +25,7 @@ const PreRegistration = () => {
     name: '',
     email: '',
   });
+  const formDataRef = useRef(formData);
   const [formError, setFormError] = useState('');
   const preRegPricing = getPreRegPricing(adminSettings);
 
@@ -56,6 +57,20 @@ const PreRegistration = () => {
           eventCallback: async (event) => {
             if (event.name === 'checkout.completed') {
               console.log('[PreReg] Payment completed:', event.data);
+              try {
+                const submittedForm = formDataRef.current;
+                const transactionId = event.data?.id || event.data?.transaction_id || event.data?.transactionId || '';
+                await createPreRegistration({
+                  userId: submittedForm.email,
+                  email: submittedForm.email,
+                  name: submittedForm.name,
+                  type: 'paid',
+                  status: 'pending_payment',
+                  paddlePaymentId: transactionId,
+                });
+              } catch (err) {
+                console.error('[PreReg] Failed to create pending payment record:', err);
+              }
               setPaid(true);
               setLoading(false);
             }
@@ -84,7 +99,11 @@ const PreRegistration = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      const next = { ...prev, [name]: value };
+      formDataRef.current = next;
+      return next;
+    });
     setFormError('');
   };
 
@@ -133,6 +152,7 @@ const PreRegistration = () => {
 
     setLoading(true);
     setError('');
+    formDataRef.current = formData;
 
     try {
       paddle.Checkout.open({

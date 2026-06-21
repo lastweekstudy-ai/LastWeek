@@ -21,6 +21,8 @@ const getCustomData = (data = {}) => (
   || {}
 );
 
+const isTruthy = (value) => value === true || value === 'true' || value === '1' || value === 1;
+
 const getHeader = (headers = {}, names = []) => {
   const entries = Object.entries(headers || {});
   for (const name of names) {
@@ -332,6 +334,42 @@ const markTestingUserAddedToPreReg = async ({ databases, databaseId, testingUsag
   }
 };
 
+const sendPaymentNotification = async ({ log, kind, payload }) => {
+  const webhookUrl = process.env.PAYMENT_NOTIFICATION_WEBHOOK_URL || '';
+  if (!webhookUrl) {
+    log(`[paddleWebhook] Payment notification skipped for ${kind}: PAYMENT_NOTIFICATION_WEBHOOK_URL is not configured`);
+    return;
+  }
+
+  const headers = {
+    'content-type': 'application/json',
+  };
+  const secret = process.env.PAYMENT_NOTIFICATION_WEBHOOK_SECRET || '';
+  if (secret) headers['x-lastweek-notification-secret'] = secret;
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        source: 'lastweek-paddle-webhook',
+        kind,
+        occurredAt: new Date().toISOString(),
+        ...payload,
+      }),
+    });
+
+    if (!response.ok) {
+      log(`[paddleWebhook] Payment notification failed for ${kind}: HTTP ${response.status}`);
+      return;
+    }
+
+    log(`[paddleWebhook] Payment notification sent for ${kind}`);
+  } catch (err) {
+    log(`[paddleWebhook] Payment notification failed for ${kind}: ${err.message}`);
+  }
+};
+
 
 const grantPreRegistrationRecords = async ({ records, users, databases, databaseId, preRegistrationsCollectionId, subscriptionsCollectionId, log }) => {
   const baseMonths = Number(process.env.PRE_REG_REWARD_BASE_MONTHS || 12);
@@ -494,7 +532,7 @@ export default async ({ req, res, log, error }) => {
     const preRegistrationsCollectionId = process.env.APPWRITE_PRE_REGISTRATIONS_COLLECTION_ID || 'pre_registrations';
     const testingUsageCollectionId = process.env.APPWRITE_TESTING_USAGE_COLLECTION_ID || 'testing_usage';
     const preRegPriceId = process.env.PADDLE_PRE_REG_PRICE_ID || '';
-    const isPreRegPayment = Boolean(preRegPriceId && priceId === preRegPriceId);
+    const isPreRegPayment = Boolean((preRegPriceId && priceId === preRegPriceId) || isTruthy(customData.preReg));
 
     log(`[paddleWebhook] Event: ${eventType || 'unknown'}`);
     log(`[paddleWebhook] Price: ${priceId || 'none'} Plan: ${plan || 'none'} User: ${appwriteUserId || 'none'}`);
@@ -607,6 +645,23 @@ export default async ({ req, res, log, error }) => {
         }
       }
 
+      await sendPaymentNotification({
+        log,
+        kind: 'pre_registration_payment',
+        payload: {
+          eventType,
+          email,
+          name: name || existingUser?.name || '',
+          userId: existingUser?.$id || '',
+          preRegistrationStatus: preRegStatus,
+          paymentId,
+          paddleCustomerId: getCustomerId(data),
+          priceId,
+          amount: getAmount(data),
+          currency: getCurrency(data),
+        },
+      });
+
       return res.json({ success: true, message: `Pre-registration recorded for ${email}` });
     }
 
@@ -664,6 +719,25 @@ export default async ({ req, res, log, error }) => {
           amount: getAmount(data),
           interval: getInterval(data),
           updatedAt: new Date().toISOString(),
+        },
+      });
+    }
+
+    if (eventType === 'transaction.completed' || eventType === 'transaction.payment_failed') {
+      await sendPaymentNotification({
+        log,
+        kind: eventType === 'transaction.payment_failed' ? 'subscription_payment_failed' : 'subscription_payment',
+        payload: {
+          eventType,
+          userId: appwriteUserId,
+          plan: resolvedPlan,
+          status,
+          paddleSubscriptionId: getSubscriptionId(eventType, data),
+          paddleCustomerId: getCustomerId(data),
+          priceId,
+          amount: getAmount(data),
+          currency: getCurrency(data),
+          interval: getInterval(data),
         },
       });
     }

@@ -29,6 +29,7 @@ const statusTone = (status) => {
   if (status === 'active') return 'success';
   if (status === 'expired') return 'danger';
   if (status === 'converted') return 'info';
+  if (status === 'pending' || status === 'pending_payment') return 'warning';
   return 'neutral';
 };
 
@@ -186,6 +187,8 @@ const PreRegUsers = () => {
           <select className="admin-select" value={filters.status} onChange={(event) => updateFilter('status', event.target.value)}>
             <option value="">All status</option>
             <option value="active">Active</option>
+            <option value="pending">Pending account</option>
+            <option value="pending_payment">Pending payment</option>
             <option value="expired">Expired</option>
             <option value="converted">Converted</option>
           </select>
